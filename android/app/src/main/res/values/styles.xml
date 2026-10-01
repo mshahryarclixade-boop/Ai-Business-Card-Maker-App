@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+    </style>
+
+    <!-- Theme for the image-crop screen (UCropActivity). See AndroidManifest.xml.
+         windowOptOutEdgeToEdgeEnforcement stops Android 15 from drawing the
+         toolbar behind the status bar. -->
+    <style name="CropperTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- 96dp = 72dp bar + 24dp top padding (see CropperToolbar) -->
+        <item name="actionBarSize">96dp</item>
+        <item name="android:actionBarSize" tools:targetApi="21">96dp</item>
+        <item name="toolbarStyle">@style/CropperToolbar</item>
+        <item name="toolbarNavigationButtonStyle">@style/CropperNavButton</item>
+        <item name="actionButtonStyle">@style/CropperActionButton</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:windowTranslucentStatus">false</item>
+    </style>
+
+    <style name="CropperToolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:paddingTop">24dp</item>
+    </style>
+
+    <!-- X button: paddingBottom 24dp lifts it 12dp (confirmed working). -->
+    <style name="CropperNavButton" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="android:minHeight">72dp</item>
+        <item name="android:paddingBottom">24dp</item>
+    </style>
+
+    <!-- Tick button: the padding here did NOT move the tick in your test. -->
+    <style name="CropperActionButton" parent="Widget.AppCompat.ActionButton">
+        <item name="android:minHeight">72dp</item>
+        <!-- moves the tick up by 12dp; the X is left alone -->
+        <item name="android:translationY">-12dp</item>
+    </style>
+</resources>
