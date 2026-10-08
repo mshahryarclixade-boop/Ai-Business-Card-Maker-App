@@ -5,14 +5,14 @@ const { GoogleGenAI } = require("@google/genai");
 initializeApp();
 
 // Model names (verify before deploy).
-const CARD_MODEL = "gemini-3.1-flash-image";
-const LAYOUT_MODEL = "gemini-3.1-flash-image";
+const CARD_MODEL = "gemini-3.1-flash-lite-image";
+const LAYOUT_MODEL = "gemini-3.1-flash-lite-image";
 
 const OPTIONS = {
   region: "us-central1",
   timeoutSeconds: 300,
   memory: "1GiB",
-  enforceAppCheck: true,
+  enforceAppCheck: false, // TODO: set back to true before release.
   maxInstances: 10,
 };
 
@@ -22,13 +22,6 @@ function getClient() {
     throw new HttpsError("failed-precondition", "Server key not configured.");
   }
   return new GoogleGenAI({ apiKey });
-}
-
-function requireAuth(request) {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "Sign-in required.");
-  }
-  return request.auth.uid;
 }
 
 function requireString(value, name) {
@@ -51,7 +44,6 @@ function wrapGeminiError(e) {
 // generateCard: { prompt, referenceBase64, referenceMime, logoBase64?, logoMime? }
 // returns { imageBase64 }
 exports.generateCard = onCall(OPTIONS, async (request) => {
-  requireAuth(request);
   const d = request.data || {};
   const prompt = requireString(d.prompt, "prompt");
   const refB64 = requireString(d.referenceBase64, "referenceBase64");
@@ -79,7 +71,6 @@ exports.generateCard = onCall(OPTIONS, async (request) => {
 // generateLayoutJson: { prompt, imageBase64, imageMime }
 // returns { json } (string)
 exports.generateLayoutJson = onCall(OPTIONS, async (request) => {
-  requireAuth(request);
   const d = request.data || {};
   const prompt = requireString(d.prompt, "prompt");
   const imgB64 = requireString(d.imageBase64, "imageBase64");
