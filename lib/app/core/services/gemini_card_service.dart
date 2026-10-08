@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:firebase_ai/firebase_ai.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 /// Error with a message that is safe to show to the user.
@@ -14,145 +16,80 @@ class GeminiException implements Exception {
   String toString() => message;
 }
 
+/// Talks to the Gemini model through Firebase Cloud Functions.
+/// The API key and model live on the server only.
 class GeminiCardService {
-  static const String _model = 'gemini-3.1-flash-image';
+  static const String _region = 'us-central1';
 
-  static const String _layoutModel = 'gemini-2.5-flash';
+  final FirebaseFunctions _functions =
+  FirebaseFunctions.instanceFor(region: _region);
+
+  /// The functions require a signed-in user (anonymous is fine).
+  Future<void> _ensureSignedIn() async {
+    final auth = FirebaseAuth.instance;
+    if (auth.currentUser == null) {
+      await auth.signInAnonymously();
+    }
+  }
 
   Future<Uint8List> generateCard({
     required String prompt,
     required Uint8List referenceBytes,
     required String referenceMime,
+    Uint8List? logoBytes,
+    String logoMime = 'image/png',
   }) async {
-    debugPrint('========== FIREBASE AI REQUEST START ==========');
-    debugPrint('Model: $_model');
-    debugPrint('Reference MIME: $referenceMime');
-    debugPrint('Reference bytes: ${referenceBytes.length}');
-    debugPrint('Prompt length: ${prompt.length}');
-    debugPrint('================================================');
+    debugPrint('GeminiCardService.generateCard: '
+        'reference=${referenceBytes.length}B '
+        'logo=${logoBytes?.length ?? 0}B prompt=${prompt.length} chars');
 
     try {
-      /*
-       * Firebase AI Logic model.
-       *
-       * The model is configured to return image output only.
-       */
-      final model = FirebaseAI.googleAI().generativeModel(
-        model: _model,
-        generationConfig: GenerationConfig(
-          responseModalities: [
-            ResponseModalities.image,
-          ],
-        ),
+      await _ensureSignedIn();
+
+      final callable = _functions.httpsCallable(
+        'generateCard',
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 180)),
       );
 
-      /*
-       * Send the selected business-card template/reference image
-       * together with the prompt.
-       */
-      final imagePart = InlineDataPart(
-        referenceMime,
-        referenceBytes,
-      );
+      final result = await callable.call(<String, dynamic>{
+        'prompt': prompt,
+        'referenceBase64': base64Encode(referenceBytes),
+        'referenceMime': referenceMime,
+        if (logoBytes != null) 'logoBase64': base64Encode(logoBytes),
+        if (logoBytes != null) 'logoMime': logoMime,
+      }).timeout(const Duration(seconds: 190));
 
-      final textPart = TextPart(prompt);
+      final data = result.data;
+      final b64 = data is Map ? data['imageBase64'] : null;
 
-      final content = Content.multi([
-        imagePart,
-        textPart,
-      ]);
-
-      debugPrint('Sending image + prompt to Firebase AI Logic...');
-
-      final response = await model
-          .generateContent([
-        content,
-      ])
-          .timeout(
-        const Duration(seconds: 180),
-      );
-
-      debugPrint('========== FIREBASE AI RESPONSE ==========');
-      debugPrint(
-        'Candidates: ${response.candidates.length}',
-      );
-      debugPrint(
-        'Image parts: ${response.inlineDataParts.length}',
-      );
-      debugPrint('==========================================');
-
-      /*
-       * Gemini image models return the generated image
-       * as an InlineDataPart.
-       */
-      if (response.inlineDataParts.isNotEmpty) {
-        final imageBytes =
-            response.inlineDataParts.first.bytes;
-
-        if (imageBytes.isEmpty) {
-          throw const GeminiException(
-            "The AI didn't return a card this time. Please try again.",
-          );
-        }
-
-        debugPrint(
-          '========== GENERATED IMAGE FOUND ==========',
+      if (b64 is! String || b64.isEmpty) {
+        throw const GeminiException(
+          'The AI did not return a generated card image. Please try again.',
         );
-        debugPrint(
-          'Generated image bytes: ${imageBytes.length}',
-        );
-        debugPrint(
-          '===========================================',
-        );
-
-        return imageBytes;
       }
 
-      /*
-       * If Gemini returned text instead of an image,
-       * log it for debugging.
-       */
-      final textResponse = response.text;
+      final bytes = base64Decode(b64);
+      if (bytes.isEmpty) {
+        throw const GeminiException(
+          "The AI didn't return a card this time. Please try again.",
+        );
+      }
 
-      debugPrint(
-        'Firebase AI text response: $textResponse',
-      );
-
-      throw const GeminiException(
-        'The AI did not return a generated card image. Please try again.',
-      );
+      debugPrint('GeminiCardService.generateCard: got ${bytes.length}B');
+      return bytes;
     } on TimeoutException {
-      debugPrint(
-        '========== FIREBASE AI TIMEOUT ==========',
-      );
-
       throw const GeminiException(
         'The AI took too long to respond. Please try again.',
       );
     } on GeminiException {
       rethrow;
-    } on FirebaseAIException catch (e, stackTrace) {
-      debugPrint(
-        '========== FIREBASE AI ERROR ==========',
-      );
-      debugPrint('Error: $e');
-      debugPrint('Message: ${e.message}');
-      debugPrint('Stack: $stackTrace');
-      debugPrint('========================================');
-
-      throw GeminiException(
-        _messageForFirebaseError(
-          e.message,
-        ),
-      );
+    } on FirebaseFunctionsException catch (e, stackTrace) {
+      debugPrint('generateCard function error: ${e.code} ${e.message}');
+      debugPrint('$stackTrace');
+      throw GeminiException(_messageForFunctionsError(e));
     } catch (e, stackTrace) {
-      debugPrint(
-        '========== FIREBASE AI UNKNOWN ERROR ==========',
-      );
-      debugPrint('ERROR: $e');
-      debugPrint('STACK: $stackTrace');
-      debugPrint('===============================================');
-
+      debugPrint('generateCard unknown error: $e');
+      debugPrint('$stackTrace');
       throw const GeminiException(
         'Could not reach the AI service. Check your connection and try again.',
       );
@@ -166,32 +103,27 @@ class GeminiCardService {
     required Uint8List imageBytes,
     required String imageMime,
   }) async {
-    debugPrint('========== FIREBASE AI LAYOUT REQUEST ==========');
-    debugPrint('Model: $_layoutModel');
-    debugPrint('Image bytes: ${imageBytes.length}');
-    debugPrint('================================================');
+    debugPrint('GeminiCardService.generateLayoutJson: '
+        'image=${imageBytes.length}B prompt=${prompt.length} chars');
 
     try {
-      final model = FirebaseAI.googleAI().generativeModel(
-        model: _layoutModel,
-        generationConfig: GenerationConfig(
-          temperature: 0.1,
-          responseMimeType: 'application/json',
-        ),
+      await _ensureSignedIn();
+
+      final callable = _functions.httpsCallable(
+        'generateLayoutJson',
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 120)),
       );
 
-      final response = await model
-          .generateContent([
-        Content.multi([
-          InlineDataPart(imageMime, imageBytes),
-          TextPart(prompt),
-        ]),
-      ])
-          .timeout(const Duration(seconds: 90));
+      final result = await callable.call(<String, dynamic>{
+        'prompt': prompt,
+        'imageBase64': base64Encode(imageBytes),
+        'imageMime': imageMime,
+      }).timeout(const Duration(seconds: 130));
 
-      final text = response.text;
+      final data = result.data;
+      final text = data is Map ? data['json'] : null;
 
-      if (text == null || text.trim().isEmpty) {
+      if (text is! String || text.trim().isEmpty) {
         throw const GeminiException(
           "The AI didn't return the card layout. Please try again.",
         );
@@ -200,64 +132,43 @@ class GeminiCardService {
       debugPrint('Layout JSON length: ${text.length}');
       return text;
     } on TimeoutException {
-      debugPrint('========== FIREBASE AI LAYOUT TIMEOUT ==========');
-
       throw const GeminiException(
         'The AI took too long to respond. Please try again.',
       );
     } on GeminiException {
       rethrow;
-    } on FirebaseAIException catch (e, stackTrace) {
-      debugPrint('========== FIREBASE AI LAYOUT ERROR ==========');
-      debugPrint('Message: ${e.message}');
-      debugPrint('Stack: $stackTrace');
-      debugPrint('==============================================');
-
-      throw GeminiException(_messageForFirebaseError(e.message));
+    } on FirebaseFunctionsException catch (e, stackTrace) {
+      debugPrint('generateLayoutJson function error: ${e.code} ${e.message}');
+      debugPrint('$stackTrace');
+      throw GeminiException(_messageForFunctionsError(e));
     } catch (e, stackTrace) {
-      debugPrint('========== FIREBASE AI LAYOUT UNKNOWN ERROR ==========');
-      debugPrint('ERROR: $e');
-      debugPrint('STACK: $stackTrace');
-      debugPrint('======================================================');
-
+      debugPrint('generateLayoutJson unknown error: $e');
+      debugPrint('$stackTrace');
       throw const GeminiException(
         'Could not reach the AI service. Check your connection and try again.',
       );
     }
   }
 
-  String _messageForFirebaseError(String message) {
-    final lowerMessage = message.toLowerCase();
-
-    if (lowerMessage.contains('has not been used') ||
-        lowerMessage.contains('disabled') ||
-        lowerMessage.contains('not enabled')) {
-      return 'Firebase AI Logic is not enabled for this Firebase project yet. '
-          'Enable it in the Firebase console (Build → AI Logic) and try again.';
+  String _messageForFunctionsError(FirebaseFunctionsException e) {
+    switch (e.code) {
+      case 'deadline-exceeded':
+        return 'The AI took too long to respond. Please try again.';
+      case 'resource-exhausted':
+        return 'The AI service is busy or its limit has been reached. '
+            'Please try again later.';
+      case 'unauthenticated':
+      case 'permission-denied':
+        return 'The AI service could not verify this app. Please try again.';
+      case 'invalid-argument':
+        return 'The AI image request was rejected. Please try again.';
+      case 'failed-precondition':
+        return 'The AI service is not set up yet. Please try again later.';
+      case 'unavailable':
+      case 'internal':
+        return 'The AI service is temporarily unavailable. Please try again.';
+      default:
+        return 'Something went wrong while generating the card.';
     }
-
-    if (lowerMessage.contains('quota') ||
-        lowerMessage.contains('resource-exhausted') ||
-        lowerMessage.contains('billing') ||
-        lowerMessage.contains('exceeded')) {
-      return 'The Gemini image-generation quota or billing limit has been reached.';
-    }
-
-    if (lowerMessage.contains('permission') ||
-        lowerMessage.contains('unauthenticated') ||
-        lowerMessage.contains('unauthorized')) {
-      return 'Firebase AI is not authorized for this app. Check your Firebase AI configuration.';
-    }
-
-    if (lowerMessage.contains('invalid')) {
-      return 'The AI image request was rejected. Please try again.';
-    }
-
-    if (lowerMessage.contains('unavailable') ||
-        lowerMessage.contains('internal')) {
-      return 'The Gemini AI service is temporarily unavailable. Please try again.';
-    }
-
-    return 'Something went wrong while generating the card.';
   }
 }

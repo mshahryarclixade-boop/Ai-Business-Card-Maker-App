@@ -1,0 +1,80 @@
+{
+  "id": "travel_04",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_04_front.png",
+    "elements": [
+      {
+        "id": "f_logo", "type": "image",
+        "position": { "dx": 130.11, "dy": 102.19 },
+        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_04_logo.png",
+        "width": 122.79, "height": 122.2
+      },
+      {
+        "id": "f_line1", "type": "text", "field": "tagline",
+        "position": { "dx": 128.2, "dy": 34.47 },
+        "text": "How many moons",
+        "fontFamily": "Inter", "fontSize": 19.67, "fontWeight": 6
+      },
+      {
+        "id": "f_line2", "type": "text", "field": "tagline2",
+        "position": { "dx": 128.2, "dy": 56.76 },
+        "text": "do you know?",
+        "fontFamily": "Inter", "fontSize": 19.67, "fontWeight": 6
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_04_back.png",
+    "elements": [
+      {
+        "id": "b_hello", "type": "text",
+        "position": { "dx": 29.0, "dy": 28.35 },
+        "text": "HELLO!",
+        "fontFamily": "Inter", "fontSize": 29.24, "fontWeight": 6
+      },
+      {
+        "id": "b_email", "type": "text", "field": "email",
+        "position": { "dx": 28.98, "dy": 97.34 },
+        "text": "wsmith@agency.com",
+        "fontFamily": "Inter", "fontSize": 10.49, "fontWeight": 3
+      },
+      {
+        "id": "b_phone", "type": "text", "field": "phone",
+        "position": { "dx": 28.98, "dy": 149.91 },
+        "text": "626 66 71 60",
+        "fontFamily": "Inter", "fontSize": 15.74, "fontWeight": 6
+      },
+      {
+        "id": "b_name", "type": "text", "field": "name",
+        "position": { "dx": 186.33, "dy": 31.74 },
+        "text": "Wendy Smith",
+        "fontFamily": "Inter", "fontSize": 15.74, "fontWeight": 6
+      },
+      {
+        "id": "b_title", "type": "text", "field": "title",
+        "position": { "dx": 186.33, "dy": 50.8 },
+        "text": "Travel agent",
+        "fontFamily": "Inter", "fontSize": 11.8, "fontWeight": 3
+      },
+      {
+        "id": "b_address1", "type": "text", "field": "address1",
+        "position": { "dx": 186.68, "dy": 100.39 },
+        "text": "6801 Hollywood Blvd,",
+        "fontFamily": "Inter", "fontSize": 10.49, "fontWeight": 3
+      },
+      {
+        "id": "b_address2", "type": "text", "field": "address2",
+        "position": { "dx": 186.68, "dy": 111.05 },
+        "text": "CA 90028, EE. UU.",
+        "fontFamily": "Inter", "fontSize": 10.49, "fontWeight": 3
+      },
+      {
+        "id": "b_social", "type": "text", "field": "social",
+        "position": { "dx": 186.33, "dy": 153.58 },
+        "text": "@agency_official",
+        "fontFamily": "Inter", "fontSize": 10.49, "fontWeight": 3
+      }
+    ]
+  }
+}

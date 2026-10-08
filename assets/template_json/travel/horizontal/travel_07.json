@@ -1,0 +1,56 @@
+{
+  "id": "travel_07",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_07_front.png",
+    "elements": [
+      {
+        "id": "f_logo", "type": "image",
+        "position": { "dx": 127.59, "dy": 70.24 },
+        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_07_logo.png",
+        "width": 70.6, "height": 34.2
+      },
+      {
+        "id": "f_company", "type": "text", "field": "company",
+        "position": { "dx": 97.03, "dy": 105.19 },
+        "text": "Travel Solutions",
+        "fontFamily": "Poppins", "fontSize": 16.94, "fontWeight": 5
+      },
+      {
+        "id": "f_slogan", "type": "text", "field": "slogan",
+        "position": { "dx": 120.32, "dy": 124.51 },
+        "text": "YOUR SLOGAN HERE",
+        "fontFamily": "Poppins", "fontSize": 7.68, "fontWeight": 4
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_07_back.png",
+    "elements": [
+      {
+        "id": "b_headline", "type": "text",
+        "position": { "dx": 81.19, "dy": 22.94 },
+        "text": "Book an adventure!",
+        "fontFamily": "Poppins", "fontSize": 16.94, "fontWeight": 5
+      },
+      {
+        "id": "b_website", "type": "text", "field": "website",
+        "position": { "dx": 83.1, "dy": 57.9 },
+        "text": "www.travelsolutions.com",
+        "fontFamily": "Poppins", "fontSize": 13.05, "fontWeight": 4
+      },
+      {
+        "id": "b_email", "type": "text", "field": "email",
+        "position": { "dx": 79.51, "dy": 84.79 },
+        "text": "travelsolutions@mail.com",
+        "fontFamily": "Poppins", "fontSize": 13.05, "fontWeight": 4
+      },
+      {
+        "id": "b_phone", "type": "text", "field": "phone",
+        "position": { "dx": 113.14, "dy": 113.47 },
+        "text": "+00 123 456 789",
+        "fontFamily": "Poppins", "fontSize": 13.05, "fontWeight": 4
+      }
+    ]
+  }
+}

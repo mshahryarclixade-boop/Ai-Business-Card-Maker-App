@@ -15,7 +15,7 @@ import '../widgets/main_bottom_nav_bar.dart';
 const double _kDialogWidth = 332;
 const double _kDialogMinHeight = 188;
 const double _kDialogRadius = 24;
-const double _kDialogSideMargin = 31; // (393 - 332) / 2
+const double _kDialogSideMargin = 31;
 const EdgeInsets _kDialogPadding = EdgeInsets.fromLTRB(24, 20, 24, 20);
 const double _kSectionGap = 24;
 
@@ -45,6 +45,7 @@ class MainNavView extends GetView<MainNavController> {
 
     // Already on Home: ask before exiting.
     final shouldExit = await _showExitDialog();
+
     if (shouldExit == true) {
       SystemNavigator.pop();
     }
@@ -56,11 +57,14 @@ class MainNavView extends GetView<MainNavController> {
         child: Material(
           color: Colors.transparent,
           child: Padding(
-            padding:
-            const EdgeInsets.symmetric(horizontal: _kDialogSideMargin),
+            padding: const EdgeInsets.symmetric(
+              horizontal: _kDialogSideMargin,
+            ),
             child: Container(
               width: _kDialogWidth,
-              constraints: const BoxConstraints(minHeight: _kDialogMinHeight),
+              constraints: const BoxConstraints(
+                minHeight: _kDialogMinHeight,
+              ),
               padding: _kDialogPadding,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -112,12 +116,14 @@ class MainNavView extends GetView<MainNavController> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFF1F1F3),
                             elevation: 0,
-                            padding:
-                            const EdgeInsets.symmetric(horizontal: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                            ),
                             minimumSize: Size.zero,
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.circular(_kButtonRadius),
+                              borderRadius: BorderRadius.circular(
+                                _kButtonRadius,
+                              ),
                             ),
                           ),
                           child: const Text(
@@ -140,12 +146,14 @@ class MainNavView extends GetView<MainNavController> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.buttonDark,
                             elevation: 0,
-                            padding:
-                            const EdgeInsets.symmetric(horizontal: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                            ),
                             minimumSize: Size.zero,
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.circular(_kButtonRadius),
+                              borderRadius: BorderRadius.circular(
+                                _kButtonRadius,
+                              ),
                             ),
                           ),
                           child: const Text(
@@ -183,36 +191,45 @@ class MainNavView extends GetView<MainNavController> {
       },
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBg,
-        extendBody: true, // lets page content sit behind the transparent nav
-        body: SafeArea(
-          bottom: false,
-          child: Obx(
-                () => IndexedStack(
-              index: controller.tabIndex.value,
-              children: const [
-                HomeView(),
-                TemplateView(),
-                ContactsView(),
-                ProfileView(),
-              ],
-            ),
-          ),
-        ),
-        bottomNavigationBar: Material(
-          type: MaterialType.transparency,
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(14, 0, 16, 14),
+
+        // No bottomNavigationBar here.
+        // The navigation pill is placed directly over the body
+        // so Scaffold cannot create a rectangular bottom-nav area.
+        body: Stack(
+          children: [
+            SafeArea(
+              bottom: false,
               child: Obx(
-                    () => MainBottomNavBar(
-                  currentIndex: controller.tabIndex.value,
-                  onTabSelected: controller.changeTab,
-                  onScanTap: controller.onScanTap,
+                    () => IndexedStack(
+                  index: controller.tabIndex.value,
+                  children: const [
+                    HomeView(),
+                    TemplateView(),
+                    ContactsView(),
+                    ProfileView(),
+                  ],
                 ),
               ),
             ),
-          ),
+
+            // Floating bottom navigation pill.
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 14,
+              child: SafeArea(
+                top: false,
+                child: Center(
+                  child: Obx(
+                        () => MainBottomNavBar(
+                      currentIndex: controller.tabIndex.value,
+                      onTabSelected: controller.onNavTap,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

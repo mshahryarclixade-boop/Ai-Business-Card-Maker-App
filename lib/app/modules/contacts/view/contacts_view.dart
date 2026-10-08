@@ -136,7 +136,7 @@ class _ContactsViewState extends State<ContactsView> {
 
       // Separate FAB widget.
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 120), // adjust value as needed
+        padding: const EdgeInsets.only(bottom: 108),
         child: ContactsFab(onTap: _openAddOptions),
       ),
     );
@@ -197,37 +197,66 @@ class _ContactsViewState extends State<ContactsView> {
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        height: 44,
-        decoration: BoxDecoration(
-          color: AppColors.contactsSearchBg,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFD9D9D9)),
-        ),
-        child: TextField(
-          controller: _searchCtrl,
-          onTap: () => setState(() => _searchFocused = true),
-          onChanged: (v) => controller.updateSearch(v),
-          style: const TextStyle(
-            fontFamily: AppTextStyles.fontFamily,
-            fontSize: 14,
-          ),
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            prefixIcon: Icon(
-              Icons.search,
-              color: AppColors.contactsSubtitleGrey,
-              size: 20,
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.contactsSearchBg,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFD9D9D9)),
+              ),
+              child: TextField(
+                controller: _searchCtrl,
+                onTap: () => setState(() => _searchFocused = true),
+                onChanged: (v) => controller.updateSearch(v),
+                style: const TextStyle(
+                  fontFamily: AppTextStyles.fontFamily,
+                  fontSize: 14,
+                ),
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: AppColors.contactsSubtitleGrey,
+                    size: 20,
+                  ),
+                  hintText: 'Search Contacts...',
+                  hintStyle: TextStyle(
+                    fontFamily: AppTextStyles.fontFamily,
+                    color: AppColors.contactsSubtitleGrey,
+                    fontSize: 14,
+                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                ),
+              ),
             ),
-            hintText: 'Search Contacts...',
-            hintStyle: TextStyle(
-              fontFamily: AppTextStyles.fontFamily,
-              color: AppColors.contactsSubtitleGrey,
-              fontSize: 14,
-            ),
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
           ),
-        ),
+          const SizedBox(width: 10),
+          // Quick access to scanning.
+          InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () => Get.to(
+                  () => const ScanCardView(),
+              transition: Transition.rightToLeft,
+            ),
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.contactsLavenderBg,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.contactsLavenderBorder),
+              ),
+              child: const Icon(
+                Icons.document_scanner_outlined,
+                size: 22,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

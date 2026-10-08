@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
 import '../../../routes/app_routes.dart';
 import '../../onboarding/controller/onboarding_controller.dart';
 
@@ -34,10 +32,11 @@ class _SplashViewState extends State<SplashView>
 
     _controller.forward();
 
+
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        // Onboarding is only shown the first time. After the user finishes
-        // or skips it, the flag is true and we go straight to the app.
+        // Onboarding is only shown the first time. After that the flag is
+        // true and we go straight to the app.
         final seen =
             GetStorage().read<bool>(OnboardingController.seenKey) ?? false;
         Get.offAllNamed(seen ? Routes.MAIN : Routes.ONBOARDING);
@@ -54,77 +53,88 @@ class _SplashViewState extends State<SplashView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      backgroundColor: AppColors.splashBg,
+      body: SizedBox(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(gradient: AppColors.splashBackground),
         child: SafeArea(
           child: Column(
             children: [
-              const Spacer(flex: 5),
-              // Icon circle
-              Container(
-                width: 100,
-                height: 100,
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
+              const Spacer(flex: 26),
+              // Logo (exported with its own background and padding)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(21.32),
+                child: Image.asset(
+                  'assets/images/splash_logo.png',
+                  width: 151,
+                  height: 151,
+                  fit: BoxFit.cover,
                 ),
-                alignment: Alignment.center,
-                child: const Text(
-                  'Icon',
+              ),
+              const SizedBox(height: 25),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'AI Business\nCard Maker',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontFamily: AppTextStyles.fontFamily,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.white,
+                    fontFamily: 'Inter',
+                    fontSize: 30,
+                    fontWeight: FontWeight.w700,
+                    height: 1.2,
+                    letterSpacing: 0,
+                    color: AppColors.splashTextPrimary,
                   ),
                 ),
               ),
-              const SizedBox(height: 28),
+              const Spacer(flex: 18),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 19),
                 child: Text(
-                  'AI Business Card Maker',
+                  'Your Next First Impression',
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.splashTitle,
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    height: 1.0,
+                    letterSpacing: 0,
+                    color: AppColors.splashTextPrimary,
+                  ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 11),
               const Text(
-                'Create & Scan Business Cards',
+                'SMART CARDS REAL CONNECTIONS',
                 textAlign: TextAlign.center,
-                style: AppTextStyles.splashSubtitle,
+                style: TextStyle(
+                  fontFamily: 'SF Pro',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  height: 22 / 14,
+                  letterSpacing: 0,
+                  color: AppColors.splashTextSecondary,
+                ),
               ),
-              const Spacer(flex: 6),
-              // Progress bar
+              const SizedBox(height: 13),
+              // Progress indicator, still driven by the same _progress animation
               AnimatedBuilder(
                 animation: _progress,
                 builder: (context, _) {
-                  return Container(
-                    width: 219,
-                    height: 9,
-                    decoration: BoxDecoration(
-                      color: AppColors.progressTrack,
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: FractionallySizedBox(
-                        widthFactor: _progress.value,
-                        child: Container(
-                          height: 9,
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                        ),
-                      ),
+                  return SizedBox(
+                    width: 34,
+                    height: 34,
+                    child: CircularProgressIndicator(
+                      value: _progress.value,
+                      strokeWidth: 4,
+                      strokeCap: StrokeCap.round,
+                      color: AppColors.splashProgress,
+                      backgroundColor: Colors.transparent,
                     ),
                   );
                 },
               ),
-              const SizedBox(height: 80),
+              const SizedBox(height: 54),
             ],
           ),
         ),

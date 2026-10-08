@@ -22,7 +22,6 @@ class TemplateView extends GetView<TemplateController> {
     Get.put(TemplateController());
 
     return GestureDetector(
-      // tapping anywhere outside the search field dismisses the keyboard
       onTap: () => FocusScope.of(context).unfocus(),
       child: Container(
         color: AppColors.scaffoldBg,
@@ -46,7 +45,7 @@ class _TemplateListing extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Fixed header (never scrolls) ──────────────────────────
+        // ── Fixed header
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
           child: SizedBox(
@@ -101,7 +100,7 @@ class _TemplateListing extends StatelessWidget {
           child: TemplateSearchBar(controller: controller),
         ),
 
-        // Orientation tabs + filter chips — fixed, hidden while searching
+        // Orientation tabs + filter chips
         Obx(
               () => controller.isSearching.value
               ? const SizedBox.shrink()
@@ -118,7 +117,7 @@ class _TemplateListing extends StatelessWidget {
           ),
         ),
 
-        // ── Scrollable body (only this part scrolls) ──────────────
+        // ── Scrollable body
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),

@@ -1,9 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
+import 'dart:io';
 import '../../../core/services/recent_designs_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/side_switcher.dart';
+import '../../template/model/template_item.dart';
 import '../controller/card_editor_controller.dart';
 import '../controller/card_editor_symbols_controller_ext.dart';
 import '../model/card_element_model.dart';
@@ -19,10 +22,14 @@ import '../widgets/top_bar.dart';
 
 class CardEditorView extends StatefulWidget {
   final RecentDesign? design;
+  final TemplateItem? template;
+  final File? qrToAdd;
 
   const CardEditorView({
     super.key,
     this.design,
+    this.template,
+    this.qrToAdd,
   });
 
   @override
@@ -32,12 +39,69 @@ class CardEditorView extends StatefulWidget {
 class _CardEditorViewState extends State<CardEditorView> {
   late final CardEditorController controller;
 
+  String _emptyBgPath(String previewPath) => previewPath.replaceFirst(
+    'assets/images/templates/',
+    'assets/images/empty_templates/',
+  );
+
+  String _templateJsonPath(TemplateItem t) => t.frontImagePath
+      .replaceFirst('assets/images/templates/', 'assets/template_json/')
+      .replaceFirst('_front.png', '.json');
+
+  /// Adds the generated QR after the design/template has finished loading,
+  /// so nothing can reset the canvas after the QR is placed.
+  void _scheduleQrAdd() {
+    final qr = widget.qrToAdd;
+    if (qr == null) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        debugPrint('QR add: file=${qr.path}, exists=${qr.existsSync()}');
+        await controller.addGeneratedQrToCanvas(qr);
+        debugPrint('QR added: elements=${controller.elements.length}');
+      } catch (e, st) {
+        debugPrint('QR add FAILED: $e\n$st');
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
+    final template = widget.template;
+
     // Create a fresh controller for this editor screen.
-    controller = Get.put(CardEditorController());
+    controller = Get.put(
+      CardEditorController(
+        initialOrientation: template?.orientation == TemplateOrientation.vertical
+            ? CardOrientation.portrait
+            : CardOrientation.landscape,
+      ),
+    );
+
+    if (template != null) {
+      controller.loadFromTemplateAssets(
+        frontAsset: _emptyBgPath(template.frontImagePath),
+        backAsset: _emptyBgPath(template.backImagePath),
+        orientation: template.orientation == TemplateOrientation.vertical
+            ? CardOrientation.portrait
+            : CardOrientation.landscape,
+      );
+
+      // TEMP: put the template logo on both sides so we can position it.
+      // final logoPath = template.frontImagePath
+      //     .replaceFirst('assets/images/templates/', 'assets/images/template_logos/')
+      //     .replaceFirst('_front.png', '_logo.png');
+      // controller.addAssetImage(logoPath);
+      // controller.switchToSide(1);
+      // controller.addAssetImage(logoPath);
+      // controller.switchToSide(0);
+      controller.loadFromTemplateJson(_templateJsonPath(template));
+
+      _scheduleQrAdd();
+      return;
+    }
 
     final design = widget.design;
     if (design != null) {
@@ -53,12 +117,121 @@ class _CardEditorViewState extends State<CardEditorView> {
         );
       }
     }
+
+    _scheduleQrAdd();
   }
 
   @override
   void dispose() {
     Get.delete<CardEditorController>();
     super.dispose();
+  }
+
+  /// DEV ONLY: prints the template JSON in the console and copies it.
+  Future<void> _exportTemplateJson() async {
+    // Works for both: opened from "Edit Template" and from a saved design.
+    final templateId = widget.template?.id ?? 'travel_01';
+
+    controller.selectElement(null);
+    final json = controller.buildTemplateJson(templateId);
+
+    debugPrint('===== TEMPLATE JSON START =====');
+    debugPrint(json);
+    debugPrint('===== TEMPLATE JSON END =====');
+
+    await Clipboard.setData(ClipboardData(text: json));
+
+    Get.snackbar(
+      'JSON exported',
+      'Copied to clipboard and printed in the console.',
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(15),
+    );
+  }
+
+  /// DEV ONLY: type an exact font size.
+  void _typeFontSize(double current) {
+    final textController =
+    TextEditingController(text: current.toStringAsFixed(1));
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Font size'),
+        content: TextField(
+          controller: textController,
+          autofocus: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              final v = double.tryParse(textController.text.trim());
+              if (v != null) controller.setSelectedFontSize(v);
+              Navigator.of(context).pop();
+            },
+            child: const Text('Done'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _devStepButton(IconData icon, double step) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => controller.nudgeSelectedFontSize(step),
+      // long press = half step, for fine tuning
+      onLongPress: () => controller.nudgeSelectedFontSize(step / 2),
+      child: Padding(
+        padding: const EdgeInsets.all(6),
+        child: Icon(icon, size: 18),
+      ),
+    );
+  }
+
+  /// DEV ONLY: "-  18.0  +" bar, visible when a text element is selected.
+  Widget _devSizeBar() {
+    return Obx(() {
+      final el = controller.selectedElement;
+      if (el == null || el.type != CardElementType.text) {
+        return const SizedBox.shrink();
+      }
+
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: const [
+            BoxShadow(color: Color(0x33000000), blurRadius: 6),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _devStepButton(Icons.remove, -1),
+            GestureDetector(
+              onTap: () => _typeFontSize(el.fontSize),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Text(
+                  el.fontSize.toStringAsFixed(1),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+            _devStepButton(Icons.add, 1),
+          ],
+        ),
+      );
+    });
   }
 
   @override
@@ -127,6 +300,35 @@ class _CardEditorViewState extends State<CardEditorView> {
                 BottomToolbar(controller: controller),
               ],
             ),
+
+            // DEV ONLY: shows only in debug builds, and only for templates.
+            if (false && kDebugMode)
+              Positioned(
+                top: 70,
+                left: 8,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: _exportTemplateJson,
+                      icon: const Icon(Icons.data_object, size: 16),
+                      label: const Text('JSON'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    _devSizeBar(),
+                  ],
+                ),
+              ),
 
             Obx(() {
               final target = controller.colorPickerTarget.value;

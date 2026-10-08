@@ -1,0 +1,62 @@
+{
+  "id": "travel_06",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_06_front.png",
+    "elements": [
+      {
+        "id": "f_logo", "type": "image",
+        "position": { "dx": 145.66, "dy": 33.37 },
+        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_06_logo.png",
+        "width": 39.3, "height": 39.3
+      },
+      {
+        "id": "f_company_first", "type": "text", "field": "companyFirst",
+        "position": { "dx": 137.28, "dy": 73.33 },
+        "text": "SKY",
+        "fontFamily": "Saira Condensed", "fontSize": 40.65, "fontWeight": 6,
+        "color": 4278190080
+      },
+      {
+        "id": "f_company_rest", "type": "text", "field": "companyRest",
+        "position": { "dx": 135.78, "dy": 120.8 },
+        "text": "AGENCY",
+        "fontFamily": "Poppins", "fontSize": 11.8, "fontWeight": 3,
+        "color": 4278190080
+      },
+      {
+        "id": "f_slogan", "type": "text", "field": "slogan",
+        "position": { "dx": 100.42, "dy": 143.52 },
+        "text": "Time to travel",
+        "fontFamily": "Poppins", "fontSize": 18.36, "fontWeight": 6,
+        "color": 4278190080
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_06_back.png",
+    "elements": [
+      {
+        "id": "b_address1", "type": "text", "field": "address1",
+        "position": { "dx": 129.27, "dy": 48.32 },
+        "text": "North Street, London",
+        "fontFamily": "Poppins", "fontSize": 9.98, "fontWeight": 3,
+        "color": 4278190080
+      },
+      {
+        "id": "b_phone", "type": "text", "field": "phone",
+        "position": { "dx": 127.96, "dy": 78.38 },
+        "text": "+ 0634 5580 8567",
+        "fontFamily": "Poppins", "fontSize": 9.78, "fontWeight": 3,
+        "color": 4278190080
+      },
+      {
+        "id": "b_website", "type": "text", "field": "website",
+        "position": { "dx": 127.06, "dy": 106.16 },
+        "text": "www.skyagency.com",
+        "fontFamily": "Poppins", "fontSize": 9.98, "fontWeight": 3,
+        "color": 4278190080
+      }
+    ]
+  }
+}

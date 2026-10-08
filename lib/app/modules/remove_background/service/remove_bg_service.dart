@@ -8,7 +8,7 @@ class RemoveBgService {
       : apiKey = apiKey ??
       const String.fromEnvironment(
         'REMOVE_BG_API_KEY',
-        defaultValue: 'API-KEY-HERE',
+        defaultValue: 'JCLz8sKstHV6BQtjHGPoXzD3',
       );
 
   final String apiKey;

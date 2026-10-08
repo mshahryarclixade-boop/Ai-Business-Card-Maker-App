@@ -3,6 +3,51 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
+  // Splash screen
+  static const Color splashBg = Color(0xFFFDFDFD);
+  static const Color splashTextPrimary = Color(0xFF1C1C1C);
+  static const Color splashTextSecondary = Color(0xFF737373);
+  static const Color splashProgress = Color(0xFF5425CF);
+
+  // Onboarding
+  static const Color onboardingTopCardBg = Color(0xFFF4F4FF);
+  static const Color onboardingIconBg = Color(0xFFE8E8FB);
+  static const Color onboardingBtnStart = Color(0xFF524DBE);
+  static const Color onboardingBtnEnd = Color(0xFF3F3CA3);
+  static const Color onboardingBtnShadow = Color(0x12000000);
+  static const Color onboardingCardShadow = Color(0x14000000);
+  // Purple used for "Endless Possibilities."
+  static const Color onboardingAccent = onboardingBtnStart;
+
+  static const LinearGradient onboardingButtonGradient = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: [onboardingBtnStart, onboardingBtnEnd],
+  );
+
+  // Profile setup
+  static const Color profileStepActive = Color(0xFF4D48B7);
+  static const Color profileStepInactive = Color(0xFFF0F0F0);
+  static const Color profileStepLabel = Color(0xFF282828);
+  static const Color profileFieldBorder = Color(0xFFCCCDCF);
+  static const Color profileHintBg = Color(0xFFF5F5F5);
+  static const Color profileHintBorder = Color(0xFFEAEDF1);
+  static const Color profileHintText = Color(0xFF878787);
+  static const Color profileError = Color(0xFFD93025);
+  static const Color profileOptionSelectedBg = Color(0xFFF5F5FF);
+  static const Color profileLink = Color(0xFF0789DA);
+
+  // First card generation
+  static const Color firstCardCheck = Color(0xFF4440AA);
+
+  // CSS: linear-gradient(180deg, #FFFFFF 68.6%, #EDEDFF 100%)
+  static const LinearGradient firstCardBackground = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0xFFFFFFFF), Color(0xFFFFFFFF), Color(0xFFEDEDFF)],
+    stops: [0.0, 0.686, 1.0],
+  );
+
   // Brand
   static const Color primary = Color(0xFF5858B5); // circle / progress fill
   static const Color primaryDark = Color(0xFF2E2B65);
@@ -21,8 +66,7 @@ class AppColors {
   static const Color white = Color(0xFFFFFFFF);
   static const Color progressTrack = Color(0xFFEDEDF6);
 
-  // Splash / Onboarding background gradient
-  // CSS: linear-gradient(168.07deg, #FFFFFF 0%, #E0E0FF 99.29%)
+  // OLD Splash / Onboarding background gradient
   static const Color splashGradientStart = Color(0xFFFFFFFF);
   static const Color splashGradientEnd = Color(0xFFE0E0FF);
 

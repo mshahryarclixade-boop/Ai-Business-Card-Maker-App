@@ -1,1 +1,44 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"ai-business-card-e1cde","appId":"1:680754775838:android:03d937ee636b0e28852b0f","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"ai-business-card-e1cde","configurations":{"android":"1:680754775838:android:03d937ee636b0e28852b0f","web":"1:680754775838:web:bd5c8094f38667af852b0f"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "ai-business-card-e1cde",
+          "appId": "1:680754775838:android:03d937ee636b0e28852b0f",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "ai-business-card-e1cde",
+          "configurations": {
+            "android": "1:680754775838:android:03d937ee636b0e28852b0f",
+            "web": "1:680754775838:web:bd5c8094f38667af852b0f"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "lib/card_page",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ]
+}

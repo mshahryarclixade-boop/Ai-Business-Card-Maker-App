@@ -1,8 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-/// The two card shapes the user can start with. Sizes follow a standard
-/// business-card ratio (~1.586) so the canvas looks like a real card.
 enum CardOrientation { portrait, landscape }
 
 extension CardOrientationSize on CardOrientation {
@@ -50,11 +48,6 @@ extension CardImageMaskLabel on CardImageMask {
     }
   }
 }
-
-/// A single item placed on the card canvas (a text box, an image, or a
-/// sticker/symbol). Kept as one flat class — rather than a class
-/// hierarchy — so it's trivial to deep-copy for undo/redo and to
-/// serialize later.
 class CardElement {
   final String id;
   final CardElementType type;
@@ -70,33 +63,29 @@ class CardElement {
 
   // ---- image-only fields ----
   File? imageFile;
+
+  /// Bundled asset image (template logos). Used when [imageFile] is null.
+  String? imageAsset;
+
   double width;
   double height;
 
-  /// Shapes tab: silhouette the image is clipped to. Only meaningful
-  /// when [type] is [CardElementType.image].
   CardImageMask imageMask;
 
-  // ---- symbol/sticker fields (Symbols, Social, Arrow, Icons tools) ----
-  /// Legacy unicode/emoji symbol (e.g. "★"). Used when neither [iconData]
-  /// nor [iconAsset] is set, so existing symbol stickers keep working.
   String symbol;
 
-  /// Built-in Material icon — used by the Arrow and Icons tabs, which
-  /// only need glyphs Flutter already ships (no extra assets).
   IconData? iconData;
 
-  /// Path to an image asset — used by the Social tab for brand logos
-  /// that aren't in Material Icons. Register the files under an
-  /// `assets:` entry in pubspec.yaml.
   String? iconAsset;
 
-  /// Recolor applied to [iconData]/[iconAsset] stickers (and reused as
-  /// the "tint" for any element the Color palette is shown for).
   Color tintColor;
 
-  /// 0.0–1.0 opacity, adjustable from the Social/Arrow/Icons panels.
   double opacity;
+
+  String? field;
+
+  bool italic;
+
 
   CardElement({
     required this.id,
@@ -109,6 +98,7 @@ class CardElement {
     this.color = const Color(0xFF1E1E24),
     this.fontWeight = FontWeight.w400,
     this.imageFile,
+    this.imageAsset,
     this.width = 80,
     this.height = 80,
     this.imageMask = CardImageMask.none,
@@ -117,6 +107,8 @@ class CardElement {
     this.iconAsset,
     this.tintColor = const Color(0xFF1E1E24),
     this.opacity = 1.0,
+    this.field,
+    this.italic = false,
   });
 
   factory CardElement.text({
@@ -149,6 +141,24 @@ class CardElement {
     );
   }
 
+  /// Image that comes from a bundled asset (e.g. a template logo).
+  factory CardElement.assetImage({
+    required String id,
+    required Offset position,
+    required String asset,
+    double width = 60,
+    double height = 60,
+  }) {
+    return CardElement(
+      id: id,
+      type: CardElementType.image,
+      position: position,
+      imageAsset: asset,
+      width: width,
+      height: height,
+    );
+  }
+
   factory CardElement.symbol({
     required String id,
     required Offset position,
@@ -164,9 +174,6 @@ class CardElement {
     );
   }
 
-  /// Social / Arrow / Icons sticker — pass exactly one of [iconData] or
-  /// [iconAsset]. Both share [CardElementType.symbol] so the canvas,
-  /// drag/resize handling and delete button all "just work" for them.
   factory CardElement.sticker({
     required String id,
     required Offset position,
@@ -199,6 +206,7 @@ class CardElement {
     Color? color,
     FontWeight? fontWeight,
     File? imageFile,
+    String? imageAsset,
     double? width,
     double? height,
     CardImageMask? imageMask,
@@ -207,6 +215,9 @@ class CardElement {
     String? iconAsset,
     Color? tintColor,
     double? opacity,
+    String? field,
+    bool? italic,
+
   }) {
     return CardElement(
       id: id,
@@ -219,6 +230,7 @@ class CardElement {
       color: color ?? this.color,
       fontWeight: fontWeight ?? this.fontWeight,
       imageFile: imageFile ?? this.imageFile,
+      imageAsset: imageAsset ?? this.imageAsset,
       width: width ?? this.width,
       height: height ?? this.height,
       imageMask: imageMask ?? this.imageMask,
@@ -227,6 +239,8 @@ class CardElement {
       iconAsset: iconAsset ?? this.iconAsset,
       tintColor: tintColor ?? this.tintColor,
       opacity: opacity ?? this.opacity,
+      field: field ?? this.field,
+      italic: italic ?? this.italic,
     );
   }
 
@@ -241,6 +255,7 @@ class CardElement {
     'color': color.toARGB32(),
     'fontWeight': fontWeight.index,
     'imageFilePath': imageFile?.path,
+    'imageAsset': imageAsset,
     'width': width,
     'height': height,
     'imageMask': imageMask.name,
@@ -251,6 +266,9 @@ class CardElement {
     'iconAsset': iconAsset,
     'tintColor': tintColor.toARGB32(),
     'opacity': opacity,
+    'field': field,
+    'italic': italic,
+
   };
 
   factory CardElement.fromJson(Map<String, dynamic> json) {
@@ -272,6 +290,7 @@ class CardElement {
       imageFile: json['imageFilePath'] != null
           ? File(json['imageFilePath'] as String)
           : null,
+      imageAsset: json['imageAsset'] as String?,
       width: (json['width'] as num?)?.toDouble() ?? 80,
       height: (json['height'] as num?)?.toDouble() ?? 80,
       imageMask:
@@ -287,16 +306,14 @@ class CardElement {
       iconAsset: json['iconAsset'] as String?,
       tintColor: Color(json['tintColor'] as int? ?? 0xFF1E1E24),
       opacity: (json['opacity'] as num?)?.toDouble() ?? 1.0,
+      field: json['field'] as String?,
+      italic: json['italic'] as bool? ?? false,
     );
   }
 }
 
-/// The small fixed list of sample fonts shown in the "Fonts" tab.
-/// NOTE: these are just family-name strings for now — to actually render
-/// with these fonts, add the .ttf files under a `fonts:` section in
-/// pubspec.yaml and register each family name used here.
 const List<String> kSampleFontFamilies = [
-  'SF Pro', // system default — not a Google Font, handled specially
+  'SF Pro', // system default
   'Share Tech',
   'Shippori Antique B1',
   'Single Day',
@@ -306,7 +323,6 @@ const List<String> kSampleFontFamilies = [
   'Tangerine',
 ];
 
-/// The fixed list of sizes shown in the "Size" tab.
 const List<double> kSampleFontSizes = [10, 18, 20, 22, 24, 36, 48, 64];
 
 /// Preset swatches shown in the "Color" tab, left to right / row by row.

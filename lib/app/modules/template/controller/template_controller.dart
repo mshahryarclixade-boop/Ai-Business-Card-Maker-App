@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../../../routes/app_routes.dart';
+import '../../custom_create/view/card_editor_view.dart';
 import '../../profile/model/profile_model.dart';
 import '../../profile/service/profile_repository.dart';
 import '../model/template_item.dart';
@@ -49,7 +50,7 @@ class TemplateController extends GetxController {
   final RxList<TemplateItem> allTemplates = <TemplateItem>[].obs;
   final RxBool isLoading = true.obs;
 
-  // Matches e.g.
+  // e.g.
   // assets/images/templates/travel/horizontal/travel_01_front.png
   static final RegExp _frontRegex = RegExp(
     r'^assets/images/templates/([^/]+)/(horizontal|vertical)/(.+)_front\.(png|jpe?g|webp)$',
@@ -227,7 +228,7 @@ class TemplateController extends GetxController {
   void onEditTemplateTap() {
     final item = selectedTemplate.value;
     if (item == null) return;
-    Get.toNamed(Routes.TEMPLATE_EDIT, arguments: item);
+    Get.to(() => CardEditorView(template: item));
   }
 
   @override

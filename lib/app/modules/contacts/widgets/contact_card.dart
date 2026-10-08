@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../model/contact_model.dart';
 import 'avatar_widget.dart';
+import 'confirm_delete_contact.dart';
 import 'contact_actions_menu.dart';
 
 class ContactCard extends StatelessWidget {
@@ -18,65 +19,13 @@ class ContactCard extends StatelessWidget {
     required this.onDelete,
   });
 
-  Future<bool> _confirmDelete(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppColors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: const [
-            Icon(Icons.delete_outline, color: Colors.red, size: 32),
-            SizedBox(height: 8),
-            Text(
-              'Are you Sure?',
-              style: TextStyle(
-                fontFamily: AppTextStyles.fontFamily,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
-        content: const Text(
-          'This contact will be removed from your list',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: AppTextStyles.fontFamily,
-            fontSize: 13,
-            color: AppColors.contactsSubtitleGrey,
-          ),
-        ),
-        actionsAlignment: MainAxisAlignment.center,
-        actions: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.progressTrack,
-              foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
+  Future<bool> _confirmDelete(BuildContext context) =>
+      confirmDeleteContact(context);
 
-    return confirmed ?? false;
-  }
+  /// Company shown under the name (job title if there is no company).
+  String get _companyLine => contact.companyName.trim().isNotEmpty
+      ? contact.companyName.trim()
+      : contact.jobTitle.trim();
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +51,6 @@ class ContactCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           onTap: onTap,
           child: Padding(
-
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [
@@ -121,11 +69,11 @@ class ContactCard extends StatelessWidget {
                           color: AppColors.contactsTitleDark,
                         ),
                       ),
-                      if (contact.subtitle.isNotEmpty)
+                      if (_companyLine.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 2),
                           child: Text(
-                            contact.subtitle,
+                            _companyLine,
                             style: const TextStyle(
                               fontFamily: AppTextStyles.fontFamily,
                               fontSize: 12,

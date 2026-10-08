@@ -18,6 +18,8 @@ import '../widgets/labeled_field.dart';
 import '../widgets/section_card.dart';
 import '../widgets/section_header.dart';
 
+enum _DuplicateChoice { update, separate }
+
 class AddContactView extends StatefulWidget {
   final ContactModel? existing;
 
@@ -55,6 +57,33 @@ class _AddContactViewState extends State<AddContactView> {
 
   bool get _isEditing => widget.existing != null;
   bool get _isFromScan => !_isEditing && widget.scannedData != null;
+
+  // ----- Dialog button styles (app theme) -----
+
+  ButtonStyle get _dialogOutlinedStyle => OutlinedButton.styleFrom(
+    foregroundColor: AppColors.primary,
+    side: const BorderSide(color: AppColors.primary),
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    textStyle: const TextStyle(
+      fontFamily: AppTextStyles.fontFamily,
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+    ),
+  );
+
+  ButtonStyle get _dialogFilledStyle => ElevatedButton.styleFrom(
+    backgroundColor: AppColors.primary,
+    foregroundColor: Colors.white,
+    elevation: 0,
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    textStyle: const TextStyle(
+      fontFamily: AppTextStyles.fontFamily,
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+    ),
+  );
 
   @override
   void initState() {
@@ -139,6 +168,77 @@ class _AddContactViewState extends State<AddContactView> {
     setState(() => _customLinks.add(added.url));
   }
 
+  /// New non-empty value wins; otherwise the old one is kept.
+  String _pick(String fresh, String old) => fresh.trim().isNotEmpty ? fresh : old;
+
+  /// Merges a freshly entered contact into an already-saved duplicate.
+  ContactModel _mergeInto(ContactModel old, ContactModel fresh) {
+    final links = <String>{...old.customLinks, ...fresh.customLinks}.toList();
+    return old.copyWith(
+      firstName: _pick(fresh.firstName, old.firstName),
+      lastName: _pick(fresh.lastName, old.lastName),
+      companyName: _pick(fresh.companyName, old.companyName),
+      jobTitle: _pick(fresh.jobTitle, old.jobTitle),
+      email: _pick(fresh.email, old.email),
+      phone: _pick(fresh.phone, old.phone),
+      linkedin: _pick(fresh.linkedin, old.linkedin),
+      website: _pick(fresh.website, old.website),
+      notes: _pick(fresh.notes, old.notes),
+      customLinks: links,
+      companyEmail: _pick(fresh.companyEmail, old.companyEmail),
+      companyLinkedin: _pick(fresh.companyLinkedin, old.companyLinkedin),
+      companyAddress: _pick(fresh.companyAddress, old.companyAddress),
+      imagePath: fresh.imagePath ?? old.imagePath,
+    );
+  }
+
+  Future<_DuplicateChoice?> _askDuplicateChoice(ContactModel existing) {
+    return showDialog<_DuplicateChoice>(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColors.contactsScaffoldBg,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Contact already exists',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: AppTextStyles.fontFamily,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: AppColors.contactsTitleDark,
+          ),
+        ),
+        content: Text(
+          '"${existing.fullName}" looks like a contact you already saved. '
+              'Update it with the new details, or save this as a separate contact?',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontFamily: AppTextStyles.fontFamily,
+            fontSize: 13,
+            color: AppColors.contactsSubtitleGrey,
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actionsOverflowAlignment: OverflowBarAlignment.center,
+        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        actions: [
+          OutlinedButton(
+            style: _dialogOutlinedStyle,
+            onPressed: () => Navigator.pop(context, _DuplicateChoice.separate),
+            child: const Text('Save Separate'),
+          ),
+          ElevatedButton(
+            style: _dialogFilledStyle,
+            onPressed: () => Navigator.pop(context, _DuplicateChoice.update),
+            child: const Text('Update Existing'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -189,6 +289,19 @@ class _AddContactViewState extends State<AddContactView> {
         imagePath: imagePath,
       );
 
+      // Already saved? Let the user choose: update it or keep both.
+      final duplicate = controller.findDuplicate(contact);
+      if (duplicate != null) {
+        final choice = await _askDuplicateChoice(duplicate);
+        if (choice == null) return; // dialog dismissed, stay on the form
+
+        if (choice == _DuplicateChoice.update) {
+          await controller.updateContact(_mergeInto(duplicate, contact));
+          Get.back();
+          return;
+        }
+      }
+
       await controller.addContact(contact);
     }
 
@@ -199,6 +312,9 @@ class _AddContactViewState extends State<AddContactView> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
+        backgroundColor: AppColors.contactsScaffoldBg,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Column(
           mainAxisSize: MainAxisSize.min,
@@ -209,7 +325,9 @@ class _AddContactViewState extends State<AddContactView> {
               'Are you Sure?',
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
+                fontSize: 17,
                 fontWeight: FontWeight.w700,
+                color: AppColors.contactsTitleDark,
               ),
             ),
           ],
@@ -224,13 +342,15 @@ class _AddContactViewState extends State<AddContactView> {
           ),
         ),
         actionsAlignment: MainAxisAlignment.center,
+        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         actions: [
           OutlinedButton(
+            style: _dialogOutlinedStyle,
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+            style: _dialogFilledStyle,
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete'),
           ),

@@ -1,0 +1,117 @@
+{
+  "id": "travel_03",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_03_front.png",
+    "elements": [
+      {
+        "id": "f_logo", "type": "image",
+        "position": { "dx": 100.42, "dy": 49.76 },
+        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_03_logo.png",
+        "width": 123.26, "height": 76.06
+      },
+      {
+        "id": "f_company", "type": "text", "field": "company",
+        "position": { "dx": 111.58, "dy": 137.15 },
+        "text": "COMPANY NAME",
+        "fontFamily": "Roboto", "fontSize": 13.19, "fontWeight": 3,
+        "color": 4294967295
+      },
+      {
+        "id": "f_tagline", "type": "text", "field": "tagline",
+        "position": { "dx": 121.55, "dy": 153.55 },
+        "text": "Tagline Here",
+        "fontFamily": "Roboto", "fontSize": 9.53, "fontWeight": 3,
+        "color": 4294413854
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_03_back.png",
+    "elements": [
+      {
+        "id": "b_logo", "type": "image",
+        "position": { "dx": 227.62, "dy": 57.63 },
+        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_03_logo_back.png",
+        "width": 104.9, "height": 64.26
+      },
+      {
+        "id": "b_company", "type": "text", "field": "company",
+        "position": { "dx": 238.87, "dy": 133.7 },
+        "text": "COMPANY NAME",
+        "fontFamily": "Roboto", "fontSize": 10.64, "fontWeight": 3,
+        "color": 4294967295
+      },
+      {
+        "id": "b_tagline", "type": "text", "field": "tagline",
+        "position": { "dx": 246.89, "dy": 146.92 },
+        "text": "Tagline Here",
+        "fontFamily": "Roboto", "fontSize": 7.68, "fontWeight": 3,
+        "color": 4282466370
+      },
+      {
+        "id": "b_name", "type": "text", "field": "name",
+        "position": { "dx": 14.35, "dy": 20.06 },
+        "text": "Micheal Smith",
+        "fontFamily": "Roboto", "fontSize": 14.77, "fontWeight": 3,
+        "color": 4294413854
+      },
+      {
+        "id": "b_title", "type": "text", "field": "title",
+        "position": { "dx": 14.35, "dy": 37.87 },
+        "text": "Project Manager",
+        "fontFamily": "Roboto", "fontSize": 10.33, "fontWeight": 3,
+        "color": 4282466370
+      },
+      {
+        "id": "b_phone", "type": "text", "field": "phone",
+        "position": { "dx": 40.27, "dy": 85.42 },
+        "text": "+00 1234 567 8900",
+        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
+        "color": 4282466370
+      },
+      {
+        "id": "b_phone2", "type": "text", "field": "phone2",
+        "position": { "dx": 40.27, "dy": 96.57 },
+        "text": "+00 1234 567 8900",
+        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
+        "color": 4282466370
+      },
+      {
+        "id": "b_email", "type": "text", "field": "email",
+        "position": { "dx": 40.27, "dy": 113.46 },
+        "text": "yourmailadress@domain.com",
+        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
+        "color": 4282466370
+      },
+      {
+        "id": "b_email2", "type": "text", "field": "email2",
+        "position": { "dx": 40.27, "dy": 124.61 },
+        "text": "secondmail@domain.com",
+        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
+        "color": 4282466370
+      },
+      {
+        "id": "b_address1", "type": "text", "field": "address1",
+        "position": { "dx": 40.27, "dy": 151.93 },
+        "text": "Street, 234 Lorem Ipsum,",
+        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
+        "color": 4282466370
+      },
+      {
+        "id": "b_address2", "type": "text", "field": "address2",
+        "position": { "dx": 40.27, "dy": 163.08 },
+        "text": "Big Vallejo, California, 00917",
+        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
+        "color": 4282466370
+      },
+      {
+        "id": "b_web", "type": "text", "field": "website",
+        "position": { "dx": 40.18, "dy": 176.78 },
+        "text": "www.yourwebsite.com",
+        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
+        "color": 4282466370
+      }
+    ]
+  }
+}

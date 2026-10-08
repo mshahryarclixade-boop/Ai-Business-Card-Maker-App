@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#4f46e5" />
+    <meta name="color-scheme" content="light" />
+    <title>Digital Business Card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+          color-scheme: light;
+          --bg: #eef0f7;
+          --card: #ffffff;
+          --text: #14141a;
+          --muted: #7a7a88;
+          --line: #eeeef3;
+          --primary: #4f46e5;
+          --primary-2: #7c3aed;
+          --tint: #eef0ff;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+          margin: 0;
+          font-family: Inter, -apple-system, "Segoe UI", Roboto, sans-serif;
+          background: var(--bg);
+          color: var(--text);
+          min-height: 100vh;
+          display: flex;
+          justify-content: center;
+          padding: 20px 16px 130px;
+        }
+        #app { width: 100%; max-width: 420px; }
+
+        .card {
+          background: var(--card);
+          border-radius: 28px;
+          overflow: hidden;
+          box-shadow: 0 20px 50px rgba(79, 70, 229, 0.15);
+          animation: rise 0.5s ease both;
+        }
+        @keyframes rise {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .banner {
+          height: 130px;
+          background: linear-gradient(135deg, var(--primary), var(--primary-2));
+          position: relative;
+        }
+        .banner::before, .banner::after {
+          content: "";
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.12);
+        }
+        .banner::before { width: 160px; height: 160px; top: -60px; right: -40px; }
+        .banner::after  { width: 100px; height: 100px; bottom: -50px; left: -20px; }
+
+        .body { padding: 0 24px 28px; text-align: center; }
+
+        .avatar {
+          width: 104px; height: 104px;
+          margin: -52px auto 0;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #818cf8, var(--primary-2));
+          border: 5px solid var(--card);
+          color: #fff;
+          font-size: 42px;
+          font-weight: 700;
+          display: flex; align-items: center; justify-content: center;
+          position: relative;
+          box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        h1 { margin: 16px 0 4px; font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
+        .role { margin: 0; color: var(--muted); font-size: 15px; font-weight: 500; }
+
+        .actions {
+          display: flex; justify-content: center; gap: 14px;
+          margin: 24px 0 8px;
+        }
+        .action {
+          width: 54px; height: 54px;
+          border-radius: 50%;
+          background: var(--tint);
+          color: var(--primary);
+          display: flex; align-items: center; justify-content: center;
+          text-decoration: none;
+          transition: transform 0.15s ease;
+        }
+        .action:active { transform: scale(0.92); }
+        .action svg { width: 24px; height: 24px; }
+
+        .list { margin-top: 16px; text-align: left; }
+        .row {
+          display: flex; align-items: center; gap: 14px;
+          padding: 14px 0;
+          border-top: 1px solid var(--line);
+          text-decoration: none; color: inherit;
+        }
+        .row .ic {
+          flex: 0 0 42px; height: 42px;
+          border-radius: 14px;
+          background: var(--tint);
+          color: var(--primary);
+          display: flex; align-items: center; justify-content: center;
+        }
+        .row .ic svg { width: 20px; height: 20px; }
+        .row .label { font-size: 12px; color: var(--muted); font-weight: 500; }
+        .row .value { font-size: 16px; font-weight: 500; word-break: break-word; margin-top: 2px; }
+
+        .bar {
+          position: fixed; left: 0; right: 0; bottom: 0;
+          padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+          background: linear-gradient(to top, var(--bg) 60%, transparent);
+          display: flex; justify-content: center;
+        }
+        .btn {
+          width: 100%; max-width: 420px;
+          border: 0; border-radius: 18px;
+          background: linear-gradient(135deg, var(--primary), var(--primary-2));
+          color: #fff;
+          font-family: inherit;
+          font-size: 17px; font-weight: 600;
+          padding: 17px;
+          cursor: pointer;
+          display: flex; align-items: center; justify-content: center; gap: 10px;
+          box-shadow: 0 10px 24px rgba(79, 70, 229, 0.4);
+          transition: transform 0.15s ease;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn svg { width: 22px; height: 22px; }
+
+        .error { text-align: center; color: #d93025; margin-top: 80px; font-weight: 500; }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+<div class="bar" id="bar" style="display:none">
+    <button class="btn" id="addBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        Add to Contacts
+    </button>
+</div>
+
+<script>
+    // Icons (fixed, trusted SVG strings)
+    var ICONS = {
+      phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+      mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m22 7-10 6L2 7"/></svg>',
+      globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>'
+    };
+
+    // 1) Link ke # ke baad wala data parho
+    function readCard() {
+      var hash = location.hash.slice(1);
+      if (!hash) return null;
+      try {
+        var b64 = hash.replace(/-/g, '+').replace(/_/g, '/');
+        while (b64.length % 4) b64 += '=';
+        var bin = atob(b64);
+        var bytes = Uint8Array.from(bin, function (c) { return c.charCodeAt(0); });
+        return JSON.parse(new TextDecoder('utf-8').decode(bytes));
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // 2) vCard text banao
+    function esc(v) {
+      return String(v)
+        .replace(/\\/g, '\\\\')
+        .replace(/;/g, '\\;')
+        .replace(/,/g, '\\,')
+        .replace(/\n/g, ' ');
+    }
+
+    function buildVCard(c) {
+      var lines = ['BEGIN:VCARD', 'VERSION:3.0'];
+      if (c.n) lines.push('FN:' + esc(c.n));
+      if (c.c) lines.push('ORG:' + esc(c.c));
+      if (c.d) lines.push('TITLE:' + esc(c.d));
+      if (c.p) lines.push('TEL;TYPE=CELL:' + esc(c.p));
+      if (c.e) lines.push('EMAIL:' + esc(c.e));
+      if (c.w) lines.push('URL:' + esc(c.w));
+      lines.push('END:VCARD');
+      return lines.join('\r\n');
+    }
+
+    // 3) Add to Contacts
+    function addToContacts(c) {
+      var blob = new Blob([buildVCard(c)], { type: 'text/vcard;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = (c.n || 'contact').replace(/[^\w\- ]/g, '') + '.vcf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+    }
+
+    // 4) UI helpers
+    function actionBtn(iconKey, href) {
+      var a = document.createElement('a');
+      a.className = 'action';
+      a.href = href;
+      a.innerHTML = ICONS[iconKey];
+      return a;
+    }
+
+    function row(iconKey, label, value, href) {
+      var el = document.createElement('a');
+      el.className = 'row';
+      el.href = href;
+      var ic = document.createElement('div');
+      ic.className = 'ic';
+      ic.innerHTML = ICONS[iconKey];
+      var box = document.createElement('div');
+      var l = document.createElement('div');
+      l.className = 'label';
+      l.textContent = label;
+      var v = document.createElement('div');
+      v.className = 'value';
+      v.textContent = value;
+      box.appendChild(l);
+      box.appendChild(v);
+      el.appendChild(ic);
+      el.appendChild(box);
+      return el;
+    }
+
+    function render() {
+      var app = document.getElementById('app');
+      var c = readCard();
+
+      if (!c || !c.n) {
+        app.innerHTML = '<p class="error">This card link is invalid or incomplete.</p>';
+        return;
+      }
+
+      document.title = c.n + ' - Digital Business Card';
+
+      var card = document.createElement('div');
+      card.className = 'card';
+
+      var banner = document.createElement('div');
+      banner.className = 'banner';
+      card.appendChild(banner);
+
+      var body = document.createElement('div');
+      body.className = 'body';
+
+      var avatar = document.createElement('div');
+      avatar.className = 'avatar';
+      avatar.textContent = c.n.trim().charAt(0).toUpperCase();
+      body.appendChild(avatar);
+
+      var h1 = document.createElement('h1');
+      h1.textContent = c.n;
+      body.appendChild(h1);
+
+      var roleText = [c.d, c.c].filter(Boolean).join(' at ');
+      if (roleText) {
+        var role = document.createElement('p');
+        role.className = 'role';
+        role.textContent = roleText;
+        body.appendChild(role);
+      }
+
+      var phoneHref = c.p ? 'tel:' + c.p.replace(/\s/g, '') : null;
+      var mailHref = c.e ? 'mailto:' + c.e : null;
+      var siteHref = c.w ? (/^https?:\/\//i.test(c.w) ? c.w : 'https://' + c.w) : null;
+
+      // Round quick-action buttons
+      if (phoneHref || mailHref || siteHref) {
+        var actions = document.createElement('div');
+        actions.className = 'actions';
+        if (phoneHref) actions.appendChild(actionBtn('phone', phoneHref));
+        if (mailHref) actions.appendChild(actionBtn('mail', mailHref));
+        if (siteHref) {
+          var s = actionBtn('globe', siteHref);
+          s.target = '_blank';
+          s.rel = 'noopener';
+          actions.appendChild(s);
+        }
+        body.appendChild(actions);
+      }
+
+      // Detail rows
+      var list = document.createElement('div');
+      list.className = 'list';
+      if (c.p) list.appendChild(row('phone', 'Phone', c.p, phoneHref));
+      if (c.e) list.appendChild(row('mail', 'Email', c.e, mailHref));
+      if (c.w) {
+        var r = row('globe', 'Website', c.w, siteHref);
+        r.target = '_blank';
+        r.rel = 'noopener';
+        list.appendChild(r);
+      }
+      body.appendChild(list);
+
+      card.appendChild(body);
+      app.appendChild(card);
+
+      var bar = document.getElementById('bar');
+      bar.style.display = 'flex';
+      document.getElementById('addBtn').onclick = function () { addToContacts(c); };
+    }
+
+    render();
+</script>
+</body>
+</html>

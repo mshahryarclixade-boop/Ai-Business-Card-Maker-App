@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -11,6 +13,7 @@ import '../../../core/widgets/add_link_sheet.dart';
 import '../../paywall/view/paywall_view.dart';
 import '../../profile/model/profile_model.dart';
 import '../../profile/service/profile_repository.dart';
+import '../../profile_setup/service/profile_store.dart';
 import '../service/qr_generator_service.dart';
 import '../model/qr_profile_data.dart';
 import 'qr_preview_screen.dart';
@@ -33,6 +36,9 @@ class _SocialLinkEntry {
 }
 
 class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
+  /// GetStorage key for the last QR form the user generated.
+  static const String _storeKey = 'qr_form_data';
+
   final _fullName = TextEditingController();
   final _phone = TextEditingController();
   final _email = TextEditingController();
@@ -47,6 +53,12 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
   bool _autoFill = false;
 
   @override
+  void initState() {
+    super.initState();
+    _loadForm();
+  }
+
+  @override
   void dispose() {
     _fullName.dispose();
     _phone.dispose();
@@ -57,6 +69,78 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
     _country.dispose();
     _city.dispose();
     super.dispose();
+  }
+
+  String _s(dynamic v) => v is String ? v : '';
+
+  /// Opens with the last saved QR details. The first time, the form is
+  /// filled from the details entered during profile setup.
+  void _loadForm() {
+    final raw = GetStorage().read<String>(_storeKey);
+
+    if (raw != null) {
+      try {
+        final m = jsonDecode(raw) as Map<String, dynamic>;
+        _fullName.text = _s(m['fullName']);
+        _phone.text = _s(m['phone']);
+        _email.text = _s(m['email']);
+        _company.text = _s(m['company']);
+        _designation.text = _s(m['designation']);
+        _website.text = _s(m['website']);
+        _country.text = _s(m['country']);
+        _city.text = _s(m['city']);
+
+        final links = (m['links'] as List?) ?? const [];
+        for (final item in links) {
+          if (item is Map) {
+            _socialLinks.add(
+              _SocialLinkEntry(
+                _s(item['platform']),
+                _s(item['imagePath']),
+                _s(item['url']),
+              ),
+            );
+          }
+        }
+        return;
+      } catch (_) {
+        // Unreadable saved data: fall back to the setup details below.
+      }
+    }
+
+    final d = ProfileStore.to.profile.value;
+    _fullName.text = d.fullName;
+    _phone.text = d.phone;
+    _email.text = d.email;
+    _company.text = d.companyName;
+    _designation.text = d.designation;
+    _website.text = d.website;
+  }
+
+  /// Remembers the form so "Edit Digital Card Details" opens with it again.
+  void _saveForm() {
+    GetStorage().write(
+      _storeKey,
+      jsonEncode({
+        'fullName': _fullName.text.trim(),
+        'phone': _phone.text.trim(),
+        'email': _email.text.trim(),
+        'company': _company.text.trim(),
+        'designation': _designation.text.trim(),
+        'website': _website.text.trim(),
+        'country': _country.text.trim(),
+        'city': _city.text.trim(),
+        'links': _socialLinks
+            .map(
+              (e) => {
+            'platform': e.platform,
+            'imagePath': e.imagePath,
+            'url': e.url,
+          },
+        )
+            .toList(),
+      }),
+    );
   }
 
   /// Opens the shared white bottom sheet (4 platform icons per row),
@@ -136,22 +220,22 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
       return;
     }
 
+    // Keep these details for next time.
+    _saveForm();
+
     setState(() => _isGenerating = true);
 
     try {
       final bytes = await QrGeneratorService().generatePngBytes(profile);
 
       final dir = await getTemporaryDirectory();
-      // File is generated and kept available on disk (e.g. for future use
-      // by the card editor); the Preview screen re-renders the QR from
-      // `profile` directly, so it doesn't need this path itself.
       await File(
         '${dir.path}/qr_${DateTime.now().millisecondsSinceEpoch}.png',
       ).writeAsBytes(bytes);
 
       if (!mounted) return;
 
-      Get.to(() => QrPreviewScreen(profile: profile));
+      Get.off(() => QrPreviewScreen(profile: profile));
     } catch (_) {
       Get.snackbar(
         'Something went wrong',
@@ -407,7 +491,8 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: _Field(label: 'Country',
+                          child: _Field(
+                            label: 'Country',
                             controller: _country,
                             textInputAction: TextInputAction.next,
                           ),
@@ -445,8 +530,12 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                             color: Colors.white,
                           ),
                         )
-                            : const Text('Generate QR Code',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                            : const Text(
+                          'Generate QR Code',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                       ),
                     ),

@@ -46,3 +46,8 @@ app.*.map.json
 
 # Firebase
 android/app/google-services.json
+
+# Secrets
+.env
+functions/.env
+.firebase/

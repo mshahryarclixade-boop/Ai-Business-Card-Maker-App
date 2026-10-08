@@ -87,6 +87,44 @@ class ContactsController extends GetxController {
   void updateSearch(String query) => searchQuery.value = query;
 
   // ---------------------------------------------------------------------
+  // Duplicate detection
+  // ---------------------------------------------------------------------
+
+  String _digits(String s) => s.replaceAll(RegExp(r'[^0-9]'), '');
+
+  /// Returns an already-saved contact that looks like [candidate]:
+  /// same email, same phone number, or same name + company.
+  ContactModel? findDuplicate(ContactModel candidate) {
+    final email = candidate.email.trim().toLowerCase();
+    final phone = _digits(candidate.phone);
+    final name = candidate.fullName.trim().toLowerCase();
+    final company = candidate.companyName.trim().toLowerCase();
+
+    for (final c in contacts) {
+      if (c.id == candidate.id) continue;
+
+      if (email.isNotEmpty && c.email.trim().toLowerCase() == email) return c;
+
+      final otherPhone = _digits(c.phone);
+      if (phone.length >= 7 && otherPhone.length >= 7) {
+        // Compare the last 9 digits so "+92 308..." and "0308..." match.
+        final a = phone.length > 9 ? phone.substring(phone.length - 9) : phone;
+        final b = otherPhone.length > 9
+            ? otherPhone.substring(otherPhone.length - 9)
+            : otherPhone;
+        if (a == b) return c;
+      }
+
+      if (name.isNotEmpty &&
+          c.fullName.trim().toLowerCase() == name &&
+          c.companyName.trim().toLowerCase() == company) {
+        return c;
+      }
+    }
+    return null;
+  }
+
+  // ---------------------------------------------------------------------
   // Image handling — copies the picked file into app storage so it
   // survives after the OS image-picker cache is cleared.
   // ---------------------------------------------------------------------

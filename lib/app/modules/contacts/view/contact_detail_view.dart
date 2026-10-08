@@ -6,6 +6,8 @@ import '../../../core/theme/app_text_styles.dart';
 import '../controller/contacts_controller.dart';
 import '../model/contact_model.dart';
 import '../widgets/company_info_card.dart';
+import '../widgets/confirm_delete_contact.dart';
+import '../widgets/contact_action_row.dart';
 import '../widgets/contact_info_card.dart';
 import 'add_contact_view.dart';
 import '../widgets/info_row.dart';
@@ -52,6 +54,9 @@ class ContactDetailView extends StatelessWidget {
             InfoRow(icon: Icons.language, text: current.website),
           if (current.linkedin.isNotEmpty)
             InfoRow(icon: Icons.link, text: current.linkedin),
+          ...current.customLinks
+              .where((l) => l.trim().isNotEmpty)
+              .map((l) => InfoRow(icon: Icons.link, text: l.trim())),
         ];
 
         final companyInfoRows = <Widget>[
@@ -77,9 +82,7 @@ class ContactDetailView extends StatelessWidget {
             ),
 
             // White card: positioned explicitly from `cardTop` down to
-            // the literal bottom of the screen (bottom: 0). No gap is
-            // possible because this box's layout position — not just
-            // its paint — is what's being set.
+            // the literal bottom of the screen (bottom: 0).
             Positioned(
               top: cardTop,
               left: 0,
@@ -120,6 +123,10 @@ class ContactDetailView extends StatelessWidget {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 14),
+
+                        // Message / Email / Share / Save to Phone.
+                        ContactActionRow(contact: current),
                         const SizedBox(height: 16),
 
                         CompanyInfoCard(
@@ -136,6 +143,44 @@ class ContactDetailView extends StatelessWidget {
                           const SizedBox(height: 12),
                           ContactInfoCard(rows: companyInfoRows),
                         ],
+
+                        if (current.notes.trim().isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          ContactInfoCard(
+                            rows: [
+                              InfoRow(
+                                icon: Icons.notes,
+                                text: current.notes.trim(),
+                              ),
+                            ],
+                          ),
+                        ],
+
+                        const SizedBox(height: 12),
+                        Center(
+                          child: TextButton.icon(
+                            onPressed: () async {
+                              if (await confirmDeleteContact(context)) {
+                                await controller.deleteContact(current.id);
+                                Get.back();
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              size: 20,
+                              color: Colors.red,
+                            ),
+                            label: const Text(
+                              'Delete Contact',
+                              style: TextStyle(
+                                fontFamily: AppTextStyles.fontFamily,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

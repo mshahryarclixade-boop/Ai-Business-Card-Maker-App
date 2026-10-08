@@ -1,0 +1,99 @@
+{
+  "id": "travel_02",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_02_front.png",
+    "elements": [
+      {
+        "id": "f_logo", "type": "image",
+        "position": { "dx": 92.42, "dy": 37.96 },
+        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_02_logo.png",
+        "width": 81.3, "height": 46.55
+      },
+      {
+        "id": "f_global", "type": "text", "field": "companyFirst",
+        "position": { "dx": 180.32, "dy": 39.29 },
+        "text": "Global",
+        "fontFamily": "Poppins", "fontSize": 17.07, "fontWeight": 6,
+        "color": 4292072414
+      },
+      {
+        "id": "f_logistic", "type": "text", "field": "companyRest",
+        "position": { "dx": 180.32, "dy": 55.1 },
+        "text": "Logistic",
+        "fontFamily": "Poppins", "fontSize": 17.07, "fontWeight": 6,
+        "color": 4281359280
+      },
+      {
+        "id": "f_web", "type": "text", "field": "website", "italic": true,
+        "position": { "dx": 110.83, "dy": 158.48 },
+        "text": "www.yourweb.com",
+        "fontFamily": "Poppins", "fontSize": 9.18, "fontWeight": 4,
+        "color": 4294967295
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_02_back.png",
+    "elements": [
+      {
+        "id": "b_logo", "type": "image",
+        "position": { "dx": 207.56, "dy": 31.41 },
+        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_02_logo.png",
+        "width": 52.45, "height": 30.16
+      },
+      {
+        "id": "b_global", "type": "text", "field": "companyFirst",
+        "position": { "dx": 265.21, "dy": 30.74 },
+        "text": "Global",
+        "fontFamily": "Poppins", "fontSize": 11.15, "fontWeight": 6,
+        "color": 4292072414
+      },
+      {
+        "id": "b_logistic", "type": "text", "field": "companyRest",
+        "position": { "dx": 265.21, "dy": 41.07 },
+        "text": "Logistic",
+        "fontFamily": "Poppins", "fontSize": 11.15, "fontWeight": 6,
+        "color": 4281359280
+      },
+      {
+        "id": "b_name", "type": "text", "field": "name",
+        "position": { "dx": 21.06, "dy": 73.79 },
+        "text": "ERICA SCHUTZE",
+        "fontFamily": "Poppins", "fontSize": 17.4, "fontWeight": 6,
+        "color": 4280558630
+      },
+      {
+        "id": "b_title", "type": "text", "field": "title", "italic": true,
+        "position": { "dx": 21.06, "dy": 97.05 },
+        "text": "General Manager",
+        "fontFamily": "Poppins", "fontSize": 10.49, "fontWeight": 4,
+        "color": 4281359280
+      },
+      {
+        "id": "b_phone", "type": "text", "field": "phone",
+        "position": { "dx": 38.11, "dy": 123.48 },
+        "text": "+123 456 789",
+        "fontFamily": "Poppins", "fontSize": 9.18, "fontWeight": 4
+      },
+      {
+        "id": "b_email", "type": "text", "field": "email", "italic": true,
+        "position": { "dx": 38.11, "dy": 136.25 },
+        "text": "hello@email.com",
+        "fontFamily": "Poppins", "fontSize": 9.18, "fontWeight": 4
+      },
+      {
+        "id": "b_address", "type": "text", "field": "address1",
+        "position": { "dx": 38.11, "dy": 152.15 },
+        "text": "123 Streets, Landshut, Bavaria",
+        "fontFamily": "Poppins", "fontSize": 9.18, "fontWeight": 4
+      },
+      {
+        "id": "b_web", "type": "text", "field": "website", "italic": true,
+        "position": { "dx": 38.11, "dy": 166.71 },
+        "text": "www.yourweb.com",
+        "fontFamily": "Poppins", "fontSize": 9.18, "fontWeight": 4
+      }
+    ]
+  }
+}

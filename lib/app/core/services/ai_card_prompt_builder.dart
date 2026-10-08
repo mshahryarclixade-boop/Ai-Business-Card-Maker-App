@@ -1,4 +1,4 @@
-
+import '../../modules/profile_setup/model/user_profile_data.dart';
 import '../../modules/profile/model/profile_model.dart';
 
 enum ReferenceKind {
@@ -47,6 +47,16 @@ class CardDetails {
     location: p.location,
     links: p.socialLinks,
   );
+
+  /// Built from the details entered in the profile setup screens.
+  factory CardDetails.fromUserProfile(UserProfileData d) => CardDetails(
+    name: d.fullName,
+    jobTitle: d.designation,
+    company: d.companyName,
+    phone: d.phone,
+    email: d.email,
+    website: d.website,
+  );
 }
 
 class AiCardPromptBuilder {
@@ -61,6 +71,8 @@ class AiCardPromptBuilder {
     required CardSide side,
     String userPrompt = '',
     CardDetails? details, // pass null when auto-fill is OFF
+    bool hasLogo = false, // a logo image is sent as the second image
+    bool removeSampleBranding = false, // template's sample logo must go
   }) {
     final isFront = side == CardSide.front;
     final user = _clean(userPrompt, max: maxUserPromptLength);
@@ -109,6 +121,18 @@ class AiCardPromptBuilder {
     }
     b.writeln();
 
+    // ------------------------------------------------------------ logo image
+    if (hasLogo) {
+      b.writeln('LOGO IMAGE:');
+      b.writeln(
+        '* The second image supplied is the company logo. Place it in the '
+            'logo area of the card, scaled to fit and exactly as given — do '
+            'not redraw, restyle, recolor, crop or add to it. Replace any '
+            'sample logo on the reference with it.',
+      );
+      b.writeln();
+    }
+
     // ---------------------------------------------------------- card text
     if (hasDetails) {
       b.writeln('CARD DETAILS:');
@@ -152,6 +176,13 @@ class AiCardPromptBuilder {
             'listed for it, remove that line and its icon — never invent a '
             'detail and never leave placeholder text.',
       );
+      if (removeSampleBranding && !hasLogo) {
+        b.writeln(
+          '* The reference contains a sample logo / brand mark that belongs '
+              'to a placeholder company. Remove it and leave that area '
+              'clean — never keep or invent a logo.',
+        );
+      }
       b.writeln(
         '* Keep the icon that goes with each detail (phone, e-mail, web, '
             'location, social).',
@@ -196,7 +227,10 @@ class AiCardPromptBuilder {
           'a safe margin of about 5% from the edges.',
     );
     b.writeln(
-      '* Keep any QR code or logo area as a clean placeholder — do not '
+      hasLogo
+          ? '* Keep any QR code area as a clean placeholder — do not invent a '
+          'scannable code. Use only the supplied logo.'
+          : '* Keep any QR code or logo area as a clean placeholder — do not '
           'invent a logo or a scannable code.',
     );
     b.writeln(

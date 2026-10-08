@@ -4,10 +4,12 @@ import 'dart:ui' as ui;
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // NEW (copy to clipboard)
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -23,10 +25,6 @@ enum _ScanMode { card, qr }
 
 enum _CardOrientation { landscape, portrait }
 
-/// Full-screen "Scan" flow: a live camera preview with a guide frame for
-/// photographing a business card (OCR'd on-device) or reading a QR code
-/// (vCard / MECARD / plain text). On a successful scan it hands the
-/// extracted fields to [AddContactView] to review, correct, and save.
 class ScanCardView extends StatefulWidget {
   const ScanCardView({super.key});
 
@@ -50,6 +48,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
   bool _qrHandled = false;
   bool _isSwitching = false;
   String? _cameraError;
+  String? _scannedLink; // NEW: web link found in the QR, shown on screen
 
   @override
   void initState() {
@@ -126,6 +125,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
         setState(() {
           _mode = mode;
           _qrHandled = false;
+          _scannedLink = null; // NEW
           _isFlashOn = false;
           _cameraController = null;
           _cameraInitFuture = null;
@@ -150,6 +150,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
         final oldQr = _qrController;
         setState(() {
           _mode = mode;
+          _scannedLink = null; // NEW
           _isFlashOn = false;
           _qrController = null;
         });
@@ -220,7 +221,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
         } else if (!_qrHandled) {
           _qrHandled = true;
           _qrController?.stop();
-          _goToCreateContact(_scannerService.parseQrPayload(raw));
+          await _handleQrPayload(raw);
         }
       }
     } catch (e, stackTrace) {
@@ -321,7 +322,71 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
 
     _qrHandled = true;
     _qrController?.stop();
-    _goToCreateContact(_scannerService.parseQrPayload(raw));
+    _handleQrPayload(raw);
+  }
+
+  // Returns a web Uri if the QR text is just a web link, else null.
+  Uri? _asWebUri(String raw) {
+    final text = raw.trim();
+    if (text.isEmpty || RegExp(r'\s').hasMatch(text)) return null;
+
+    final lower = text.toLowerCase();
+    if (lower.startsWith('http://') || lower.startsWith('https://')) {
+      final uri = Uri.tryParse(text);
+      return (uri != null && uri.host.isNotEmpty) ? uri : null;
+    }
+    if (lower.startsWith('www.')) {
+      return Uri.tryParse('https://$text');
+    }
+    return null;
+  }
+
+  // CHANGED: web link -> show it on screen (no auto open), else contact flow.
+  Future<void> _handleQrPayload(String raw) async {
+    final uri = _asWebUri(raw);
+    if (uri == null) {
+      _goToCreateContact(_scannerService.parseQrPayload(raw));
+      return;
+    }
+    if (!mounted) return;
+    setState(() => _scannedLink = uri.toString());
+  }
+
+  // NEW: user tapped "Open" on the link card.
+  Future<void> _openScannedLink() async {
+    final link = _scannedLink;
+    if (link == null) return;
+    try {
+      final ok = await launchUrl(
+        Uri.parse(link),
+        mode: LaunchMode.externalApplication,
+      );
+      if (!ok) _showError('Could not open this link.');
+    } catch (e) {
+      debugPrint('Could not open QR link: $e');
+      _showError('Could not open this link.');
+    }
+  }
+
+  // NEW: user tapped "Copy" on the link card.
+  Future<void> _copyScannedLink() async {
+    final link = _scannedLink;
+    if (link == null) return;
+    await Clipboard.setData(ClipboardData(text: link));
+    _showError('Link copied');
+  }
+
+  // NEW: user closed the link card -> scan again.
+  Future<void> _dismissScannedLink() async {
+    setState(() {
+      _scannedLink = null;
+      _qrHandled = false;
+    });
+    try {
+      await _qrController?.start();
+    } catch (e) {
+      debugPrint('Could not restart QR scanner: $e');
+    }
   }
 
   Future<String> _persistImage(String tempPath) async {
@@ -374,7 +439,8 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: ScanBottomControls(
-                onGalleryTap: _pickFromGallery,
+                // CHANGED: gallery picking is disabled on the QR side.
+                onGalleryTap: _mode == _ScanMode.qr ? () {} : _pickFromGallery,
                 onCaptureTap: _captureCard,
                 onFlashTap: _toggleFlash,
                 isFlashOn: _isFlashOn,
@@ -421,7 +487,106 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
           child: Container(color: Colors.black.withOpacity(0.25)),
         ),
         Center(child: _buildOverlayContent()),
+        // NEW: link card shown after a web QR is scanned
+        if (_scannedLink != null)
+          Positioned(
+            left: 16,
+            right: 16,
+            bottom: 16,
+            child: _buildLinkCard(_scannedLink!),
+          ),
       ],
+    );
+  }
+
+  // NEW
+  Widget _buildLinkCard(String link) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 12, 8, 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.link_rounded, size: 20, color: AppColors.primary),
+              const SizedBox(width: 8),
+              const Expanded(
+                child: Text(
+                  'Website link',
+                  style: TextStyle(
+                    fontFamily: AppTextStyles.fontFamily,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black54,
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: _dismissScannedLink,
+                icon: const Icon(Icons.close_rounded, size: 20),
+                color: Colors.black54,
+                visualDensity: VisualDensity.compact,
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8, bottom: 14),
+            child: Text(
+              link,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: AppTextStyles.fontFamily,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _copyScannedLink,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      side: const BorderSide(color: AppColors.primary),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Copy'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _openScannedLink,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Open'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

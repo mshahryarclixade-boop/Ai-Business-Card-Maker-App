@@ -11,7 +11,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../profile_setup/service/profile_store.dart'; // NEW
 import '../model/profile_model.dart';
+import '../service/profile_repository.dart'; // NEW
 
 class ProfileController extends GetxController {
   ProfileModel profile = ProfileModel();
@@ -23,17 +25,11 @@ class ProfileController extends GetxController {
   final RxBool isSaving = false.obs;
   final RxBool showSuccess = false.obs;
 
-  /// Bumped every time [profile] is written to (save/clear/load), so
-  /// widgets that read [profile]'s plain (non-Rx) fields — like the
-  /// saved-profile card — can watch this to know when to rebuild,
-  /// since `profile` itself isn't an Rx object.
   final RxInt profileVersion = 0.obs;
 
-  // NOTE: cardKey ab controller mein nahi hai. Har ProfileView apni
-  // GlobalKey rakhta hai aur capture/share/download ke waqt pass karta hai.
   final RxBool isProcessingCard = false.obs;
 
-  // controls the "⋮" popup (Edit / Share / Download) on the saved-profile card.
+  // controls the "⋮" popup (Share / Download) on the saved-profile card.
   final RxBool showCardMenu = false.obs;
 
   // Personal Details
@@ -64,15 +60,17 @@ class ProfileController extends GetxController {
   void onInit() {
     super.onInit();
     loadProfile();
+
+    // NEW: whenever the setup screens save new details, reload them here.
+    ever(ProfileStore.to.profile, (_) => loadProfile());
   }
 
-  /// Loads the saved profile (if any) from local storage and syncs it
-  /// into the text controllers / image state so the UI reflects it.
+  /// Loads the profile the user entered in the setup screens (via
+  /// [ProfileRepository]) and syncs it into the text controllers / image
+  /// state so the UI reflects it.
   void loadProfile() {
-    final saved = _box.read(_storageKey);
-    if (saved != null) {
-      profile = ProfileModel.fromJson(Map<String, dynamic>.from(saved));
-    }
+    // CHANGED: data now comes from ProfileStore (through the repository).
+    profile = ProfileRepository.getSavedProfile() ?? ProfileModel();
 
     firstNameController.text = profile.firstName;
     lastNameController.text = profile.lastName;
@@ -105,8 +103,8 @@ class ProfileController extends GetxController {
         ? File(profile.coverImagePath!)
         : null;
 
-    hasProfile.value = profile.firstName.trim().isNotEmpty &&
-        profile.lastName.trim().isNotEmpty;
+    // CHANGED: the setup flow only asks for a full name, so first name is enough.
+    hasProfile.value = profile.firstName.trim().isNotEmpty;
 
     profileVersion.value++;
   }

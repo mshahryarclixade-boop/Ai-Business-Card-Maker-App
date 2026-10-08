@@ -1,0 +1,74 @@
+{
+  "id": "travel_05",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_05_front.png",
+    "elements": [
+      {
+        "id": "f_company", "type": "text", "field": "company",
+        "position": { "dx": 51.5, "dy": 54.4 },
+        "text": "TRAVEL COMPANY",
+        "fontFamily": "Barlow Condensed", "fontSize": 27.54, "fontWeight": 2,
+        "color": 4294967295
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_05_back.png",
+    "elements": [
+      {
+        "id": "b_icon_phone", "type": "image",
+        "position": { "dx": 85.21, "dy": 91.59 },
+        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_05_icon_phone.png",
+        "width": 16.39, "height": 16.39
+      },
+      {
+        "id": "b_icon_email", "type": "image",
+        "position": { "dx": 83.37, "dy": 119.39 },
+        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_05_icon_email.png",
+        "width": 19.41, "height": 12.98
+      },
+      {
+        "id": "b_icon_web", "type": "image",
+        "position": { "dx": 83.37, "dy": 143.91 },
+        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_05_icon_web.png",
+        "width": 17.7, "height": 17.7
+      },
+      {
+        "id": "b_name", "type": "text", "field": "name",
+        "position": { "dx": 88.28, "dy": 21.6 },
+        "text": "John Smith",
+        "fontFamily": "Barlow Condensed", "fontSize": 33.44, "fontWeight": 2,
+        "color": 4278271843
+      },
+      {
+        "id": "b_title", "type": "text", "field": "title",
+        "position": { "dx": 87.9, "dy": 61.7 },
+        "text": "Travel Consultant",
+        "fontFamily": "Open Sans", "fontSize": 14.46, "fontWeight": 3,
+        "color": 4278271843
+      },
+      {
+        "id": "b_phone", "type": "text", "field": "phone",
+        "position": { "dx": 113.0, "dy": 89.1 },
+        "text": "+8754987985",
+        "fontFamily": "Open Sans", "fontSize": 16.93, "fontWeight": 3,
+        "color": 4278271843
+      },
+      {
+        "id": "b_email", "type": "text", "field": "email",
+        "position": { "dx": 113.0, "dy": 116.98 },
+        "text": "JisanDesigner@gmail.com",
+        "fontFamily": "Open Sans", "fontSize": 9.81, "fontWeight": 3,
+        "color": 4278271843
+      },
+      {
+        "id": "b_website", "type": "text", "field": "website",
+        "position": { "dx": 113.0, "dy": 144.5 },
+        "text": "WWW.JisanDesigner.com",
+        "fontFamily": "Open Sans", "fontSize": 10.4, "fontWeight": 3,
+        "color": 4278271843
+      }
+    ]
+  }
+}

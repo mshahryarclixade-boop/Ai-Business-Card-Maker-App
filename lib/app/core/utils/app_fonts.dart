@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Central place to turn a font-family *name* (as picked from the Fonts
-/// tab) into an actual TextStyle. "SF Pro" isn't on Google Fonts, so it
-/// falls back to the platform default; every other name is fetched live
-/// from Google Fonts. Wrapped in try/catch so a typo'd/unknown family
-/// never crashes the canvas — it just falls back silently.
 class AppFonts {
   AppFonts._();
 
@@ -13,6 +8,7 @@ class AppFonts {
       String fontFamily, {
         double? fontSize,
         FontWeight? fontWeight,
+        FontStyle? fontStyle,
         Color? color,
         double? height,
       }) {
@@ -22,6 +18,7 @@ class AppFonts {
         // platform default on Android
         fontSize: fontSize,
         fontWeight: fontWeight,
+        fontStyle: fontStyle,
         color: color,
         height: height,
       );
@@ -32,6 +29,7 @@ class AppFonts {
         fontFamily,
         fontSize: fontSize,
         fontWeight: fontWeight,
+        fontStyle: fontStyle,
         color: color,
         height: height,
       );
@@ -40,6 +38,7 @@ class AppFonts {
       return TextStyle(
         fontSize: fontSize,
         fontWeight: fontWeight,
+        fontStyle: fontStyle,
         color: color,
         height: height,
       );

@@ -10,7 +10,6 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../paywall/view/paywall_view.dart';
 import '../controller/profile_controller.dart';
 import '../model/profile_model.dart';
-import 'create_profile_view.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -20,7 +19,6 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
-
   final GlobalKey _cardKey = GlobalKey();
   late final ProfileController controller;
 
@@ -82,6 +80,27 @@ class _EmptyProfile extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: GestureDetector(
+                    onTap: () => Get.back(),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.arrow_back,
+                        size: 20,
+                        color:Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+
                 const Center(
                   child: Text(
                     'Profile',
@@ -93,6 +112,7 @@ class _EmptyProfile extends StatelessWidget {
                     ),
                   ),
                 ),
+
                 Align(
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
@@ -179,37 +199,6 @@ class _EmptyProfile extends StatelessWidget {
                     color: Color(0xFF68686A),
                   ),
                 ),
-
-                const SizedBox(height: 20),
-
-                SizedBox(
-                  height: 40,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Get.to(
-                            () => const CreateProfileView(),
-                        transition: Transition.rightToLeft,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                    ),
-                    child: const Text(
-                      'Create Profile',
-                      style: TextStyle(
-                        fontFamily: AppTextStyles.fontFamily,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -239,14 +228,9 @@ class _SavedProfile extends StatelessWidget {
     final controller = Get.find<ProfileController>();
 
     return Obx(() {
-      // profile ke fields plain (non-Rx) hain, is liye profileVersion
-      // ko read karna zaroori hai taake save/edit ke baad yeh rebuild ho.
       controller.profileVersion.value;
 
       return SingleChildScrollView(
-        // horizontal/top padding removed from here — the header now
-        // carries its own padding (below) so it matches every other
-        // screen's header exactly. Only bottom spacing stays global.
         padding: const EdgeInsets.only(bottom: 30),
         child: Column(
           children: [
@@ -257,6 +241,27 @@ class _SavedProfile extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: () => Get.back(),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          alignment: Alignment.center,
+                          child: const Icon(
+                            Icons.arrow_back,
+                            size: 18,
+                            color: AppColors.titleDark,
+                          ),
+                        ),
+                      ),
+                    ),
+
                     const Center(
                       child: Text(
                         'Profile',
@@ -268,6 +273,7 @@ class _SavedProfile extends StatelessWidget {
                         ),
                       ),
                     ),
+
                     Align(
                       alignment: Alignment.centerRight,
                       child: Container(
@@ -299,7 +305,6 @@ class _SavedProfile extends StatelessWidget {
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    // ⬇️ Only this part is captured for Share / Download.
                     RepaintBoundary(
                       key: cardKey,
                       child: SizedBox(
@@ -352,8 +357,9 @@ class _SavedProfile extends StatelessWidget {
 
                             Positioned(
                               top: _CardSpec.avatarTop,
-                              left:
-                              (_CardSpec.cardWidth - _CardSpec.avatarSize) / 2,
+                              left: (_CardSpec.cardWidth -
+                                  _CardSpec.avatarSize) /
+                                  2,
                               child: Obx(
                                     () => Container(
                                   width: _CardSpec.avatarSize,
@@ -361,8 +367,10 @@ class _SavedProfile extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: AppColors.primary,
-                                    border:
-                                    Border.all(color: Colors.white, width: 3),
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 3,
+                                    ),
                                     boxShadow: const [
                                       BoxShadow(
                                         color: Color(0x1A000000),
@@ -390,7 +398,9 @@ class _SavedProfile extends StatelessWidget {
                             ),
 
                             Positioned(
-                              top: _CardSpec.avatarTop + _CardSpec.avatarSize + 12,
+                              top: _CardSpec.avatarTop +
+                                  _CardSpec.avatarSize +
+                                  12,
                               left: 24,
                               right: 24,
                               bottom: 64,
@@ -436,7 +446,8 @@ class _SavedProfile extends StatelessWidget {
                                   const SizedBox(height: 18),
 
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
                                         child: Column(
@@ -451,8 +462,8 @@ class _SavedProfile extends StatelessWidget {
                                               icon: Icons.phone_outlined,
                                               text: controller.profile.phone,
                                             ),
-                                            if (controller
-                                                .profile.socialLinks.isNotEmpty)
+                                            if (controller.profile.socialLinks
+                                                .isNotEmpty)
                                               _ProfileInfoRow(
                                                 icon: Icons.link_rounded,
                                                 text: controller
@@ -460,8 +471,10 @@ class _SavedProfile extends StatelessWidget {
                                               )
                                             else
                                               _ProfileInfoRow(
-                                                icon: Icons.location_on_outlined,
-                                                text: controller.profile.location,
+                                                icon: Icons
+                                                    .location_on_outlined,
+                                                text: controller
+                                                    .profile.location,
                                               ),
                                           ],
                                         ),
@@ -473,14 +486,16 @@ class _SavedProfile extends StatelessWidget {
                                         padding: const EdgeInsets.all(4),
                                         child: QrImageView(
                                           data: _SavedProfile._vCardData(
-                                              controller.profile),
+                                            controller.profile,
+                                          ),
                                           version: QrVersions.auto,
                                           gapless: true,
                                           eyeStyle: const QrEyeStyle(
                                             eyeShape: QrEyeShape.square,
                                             color: Color(0xFF1E1E24),
                                           ),
-                                          dataModuleStyle: const QrDataModuleStyle(
+                                          dataModuleStyle:
+                                          const QrDataModuleStyle(
                                             dataModuleShape:
                                             QrDataModuleShape.square,
                                             color: Color(0xFF1E1E24),
@@ -497,9 +512,6 @@ class _SavedProfile extends StatelessWidget {
                       ),
                     ),
 
-                    // "⋮" menu button — overlaps the card visually, but sits
-                    // OUTSIDE the RepaintBoundary above, so it's excluded
-                    // from the shared/downloaded image.
                     Positioned(
                       top: 1,
                       right: 0,
@@ -517,83 +529,6 @@ class _SavedProfile extends StatelessWidget {
                       ),
                     ),
 
-                    // ⬅️ Edit + Create Card buttons — overlapping the
-                    // bottom of the card, still OUTSIDE the RepaintBoundary
-                    // so the exported image stays clean (no buttons in the
-                    // downloaded/shared PNG).
-                    Positioned(
-                      bottom: 20,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: SizedBox(
-                          width: 278,
-                          height: 40,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Get.to(
-                                          () => const CreateProfileView(),
-                                      transition: Transition.rightToLeft,
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primary,
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'Edit',
-                                    style: TextStyle(
-                                      fontFamily: AppTextStyles.fontFamily,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: () {
-                                    Get.to(
-                                          () => const CreateProfileView(),
-                                      transition: Transition.rightToLeft,
-                                      arguments: const {'blank': true},
-                                    );
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.primary,
-                                    side: const BorderSide(
-                                      color: AppColors.primary,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'Create Card',
-                                    style: TextStyle(
-                                      fontFamily: AppTextStyles.fontFamily,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // Loading overlay while capturing the card image — no
-                    // longer extends over the (now overlapping) buttons area.
                     Obx(
                           () => controller.isProcessingCard.value
                           ? Positioned(
@@ -720,25 +655,13 @@ class _CardMenuPopup extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _CardMenuItem(
-                  icon: Icons.edit_outlined,
-                  label: 'Edit',
-                  onTap: () {
-                    controller.closeCardMenu();
-                    Get.to(
-                          () => const CreateProfileView(),
-                      transition: Transition.rightToLeft,
-                    );
-                  },
-                  highlighted: true,
-                ),
-                const SizedBox(height: 8),
-                _CardMenuItem(
                   icon: Icons.ios_share_rounded,
                   label: 'Share',
                   onTap: () {
                     controller.closeCardMenu();
                     controller.shareCard(cardKey);
                   },
+                  highlighted: true,
                 ),
                 const SizedBox(height: 8),
                 _CardMenuItem(
@@ -796,7 +719,8 @@ class _CardMenuItem extends StatelessWidget {
                 fontFamily: AppTextStyles.fontFamily,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: highlighted ? Colors.white : const Color(0xFF1E1E24),
+                color:
+                highlighted ? Colors.white : const Color(0xFF1E1E24),
               ),
             ),
           ],
@@ -854,9 +778,7 @@ class _SuccessOverlay extends StatelessWidget {
                         size: 34,
                       ),
                     ),
-
                     const SizedBox(height: 14),
-
                     const Text(
                       'Profile Saved',
                       style: TextStyle(
@@ -866,9 +788,7 @@ class _SuccessOverlay extends StatelessWidget {
                         color: Color(0xFF1E1E24),
                       ),
                     ),
-
                     const SizedBox(height: 5),
-
                     const Text(
                       'Your profile has been saved successfully.',
                       textAlign: TextAlign.center,

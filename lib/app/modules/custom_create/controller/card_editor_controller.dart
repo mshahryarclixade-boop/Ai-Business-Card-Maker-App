@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -8,8 +8,10 @@ import 'package:path_provider/path_provider.dart';
 import '../../../core/services/recent_designs_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../qr_code_generator/view/qr_code_screen.dart';
+import '../../template/model/template_live_data.dart';
 import '../model/card_element_model.dart';
 import 'card_editor_symbols_controller_ext.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class CardTool {
   static const String none = '';
@@ -96,6 +98,9 @@ class CardEditorController extends GetxController {
   final RxInt currentSide = 0.obs; // 0 = front, 1 = back
   final List<_SideData> _sides = [_SideData(), _SideData()];
   bool _backInitialized = false;
+  // QR placeholder position from the template JSON ("qrSlot").
+  Rect? _qrSlot;
+  int _qrSlotSide = 1;
 
   List<CardElement>? _preDragSnapshot;
 
@@ -381,24 +386,46 @@ class CardEditorController extends GetxController {
     selectedElementId.value = el.id;
   }
 
-  Future<void> addGeneratedQrToCanvas(File file) async {
-    final saved = await _persistFile(file);
-
+  /// Adds a bundled asset image (e.g. a template logo) to the current side.
+  void addAssetImage(
+      String assetPath, {
+        double width = 60,
+        double height = 60,
+        Offset? position,
+      }) {
     _pushUndo();
 
     final size = orientation.value.canvasSize;
 
-    final el = CardElement.image(
+    final el = CardElement.assetImage(
       id: _newId,
-      position: Offset(
-        size.width / 2 - 45,
-        size.height / 2 - 45,
-      ),
-      file: saved,
+      position: position ??
+          Offset(size.width / 2 - width / 2, size.height / 2 - height / 2),
+      asset: assetPath,
+      width: width,
+      height: height,
     );
 
     elements.add(el);
     selectedElementId.value = el.id;
+  }
+
+  /// Resizes the selected image keeping its aspect ratio.
+  void resizeSelectedImageBy(double delta) {
+    final el = selectedElement;
+    if (el == null || el.type != CardElementType.image) return;
+
+    final ratio = el.height / el.width;
+    final newWidth = (el.width + delta).clamp(20.0, 300.0);
+
+    el.width = newWidth;
+    el.height = newWidth * ratio;
+    elements.refresh();
+  }
+
+  Future<void> addGeneratedQrToCanvas(File file) async {
+    final saved = await _persistFile(file);
+    _addQrImage(saved);
   }
 
   /// "Generate QR Code" under the QR tool.
@@ -510,6 +537,23 @@ class CardEditorController extends GetxController {
     elements.refresh();
   }
 
+  /// DEV: set an exact font size on the selected text.
+  void setSelectedFontSize(double size) {
+    final el = selectedElement;
+    if (el == null || el.type != CardElementType.text) return;
+
+    el.fontSize = size.clamp(6.0, 120.0);
+    elements.refresh();
+  }
+
+  /// DEV: nudge the selected text's font size up or down.
+  void nudgeSelectedFontSize(double delta) {
+    final el = selectedElement;
+    if (el == null || el.type != CardElementType.text) return;
+
+    setSelectedFontSize(el.fontSize + delta);
+  }
+
   /// Call once, right when the user opens the style panel for an element.
   void beginStyleEdit() {
     _pushUndo();
@@ -546,6 +590,41 @@ class CardEditorController extends GetxController {
 
     elements.removeWhere((e) => e.id == id);
     selectedElementId.value = null;
+  }
+
+  /// Moves the selected element to the other side (front <-> back),
+  /// keeping its position and size.
+  void moveSelectedToOtherSide() {
+    final el = selectedElement;
+    if (el == null) return;
+
+    final fromSide = currentSide.value;
+    final toSide = 1 - fromSide;
+
+    // Take it off the current side FIRST, so that if the back is created
+    // as a copy of the front below, the element is not duplicated.
+    elements.removeWhere((e) => e.id == el.id);
+    selectedElementId.value = null;
+
+    if (fromSide == 0) ensureBackInitialized();
+
+    _sides[toSide].elements.add(el);
+
+    // Undo history of both sides would now point at a different layout,
+    // so reset it to avoid the element reappearing on both sides.
+    _undoStack.clear();
+    _redoStack.clear();
+    _sides[toSide].undo = [];
+    _sides[toSide].redo = [];
+    _syncFlags();
+
+    Get.snackbar(
+      toSide == 1 ? 'Moved to Back' : 'Moved to Front',
+      'Switch sides to see it.',
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(15),
+      duration: const Duration(seconds: 2),
+    );
   }
 
   // ---------------------------------------------------------------------
@@ -642,6 +721,80 @@ class CardEditorController extends GetxController {
     _backInitialized = backAsset != null;
     currentSide.value = 0;
     _showSide(_sides[0]);
+  }
+
+  /// Loads a full template (texts, logo, fonts, positions) from JSON.
+  /// The user's info (name, phone, email, ...) is filled into the texts that
+  /// have a "field" key; empty fields are left out. Pass [fieldValues] to
+  /// override the values (defaults to the saved profile).
+  /// Backgrounds are already on screen, so if this fails the user still
+  /// sees the plain template instead of a blank editor.
+  Future<void> loadFromTemplateJson(
+      String jsonAssetPath, {
+        Map<String, String>? fieldValues,
+      }) async {
+    try {
+      final raw = await rootBundle.loadString(jsonAssetPath);
+      final data = jsonDecode(raw) as Map<String, dynamic>;
+      final values = fieldValues ?? TemplateData.currentProfileValues();
+
+      orientation.value =
+          CardOrientation.values.byName(data['orientation'] as String);
+
+      _sides[0] = _templateSide(data['front'] as Map<String, dynamic>, values);
+      _sides[1] = _templateSide(data['back'] as Map<String, dynamic>, values);
+      _backInitialized = true;
+
+      final qr = data['qrSlot'] as Map<String, dynamic>?;
+      if (qr != null) {
+        final s = (qr['size'] as num).toDouble();
+        _qrSlot = Rect.fromLTWH(
+          (qr['dx'] as num).toDouble(),
+          (qr['dy'] as num).toDouble(),
+          s,
+          s,
+        );
+        _qrSlotSide = (qr['side'] as num?)?.toInt() ?? 1;
+      }
+
+      currentSide.value = 0;
+      _showSide(_sides[0]);
+    } catch (e, st) {
+      debugPrint('TEMPLATE JSON load failed ($jsonAssetPath): $e');
+      debugPrint('$st');
+    }
+  }
+
+  _SideData _templateSide(Map<String, dynamic> d, Map<String, String> values) {
+    final els = (d['elements'] as List<dynamic>? ?? const [])
+        .map((e) => CardElement.fromJson(e as Map<String, dynamic>))
+        .toList();
+    return _SideData(
+      elements: TemplateData.fillElements(els, values),
+      backgroundTemplate: d['background'] as String?,
+    );
+  }
+
+  /// Adds a QR image. Uses the template's QR slot when we're on that side.
+  void _addQrImage(File saved) {
+    _pushUndo();
+
+    final canvas = orientation.value.canvasSize;
+    final slot =
+    (_qrSlot != null && currentSide.value == _qrSlotSide) ? _qrSlot : null;
+    final w = slot?.width ?? 90.0;
+
+    final el = CardElement.image(
+      id: _newId,
+      position:
+      slot?.topLeft ?? Offset(canvas.width / 2 - 45, canvas.height / 2 - 45),
+      file: saved,
+      width: w,
+      height: w,
+    );
+
+    elements.add(el);
+    selectedElementId.value = el.id;
   }
 
   // ---------------------------------------------------------------------
@@ -749,6 +902,28 @@ class CardEditorController extends GetxController {
       ..._sideToJson(_sides[0]),
       'back': _sideToJson(_sides[1]),
     };
+  }
+
+  /// DEV ONLY: builds the template JSON (both sides) from what is on screen.
+  String buildTemplateJson(String templateId) {
+    ensureBackInitialized();
+    _stashLiveSide();
+
+    Map<String, dynamic> side(_SideData s) => {
+      'background': s.backgroundTemplate,
+      'elements': s.elements.map((e) {
+        final m = e.toJson();
+        m.removeWhere((k, v) => v == null); // keep the JSON short
+        return m;
+      }).toList(),
+    };
+
+    return const JsonEncoder.withIndent('  ').convert({
+      'id': templateId,
+      'orientation': orientation.value.name,
+      'front': side(_sides[0]),
+      'back': side(_sides[1]),
+    });
   }
 
   Future<void> save(GlobalKey repaintKey) async {

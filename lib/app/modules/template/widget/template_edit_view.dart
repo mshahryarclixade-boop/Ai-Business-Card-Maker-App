@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../model/template_item.dart';
+// ignore: unused_import
 import '../widget/template_preview_card.dart';
 
 /// Pushed as its own route (no bottom nav) — this is where the actual
@@ -69,23 +70,44 @@ class TemplateEditView extends StatelessWidget {
           ),
         ],
       ),
+
+      // ---------------- TEMPORARY ASSET TEST (remove after checking) ----------------
       body: SafeArea(
-        child: item == null
-            ? const Center(
-          child: Text(
-            'No template selected',
-            style: TextStyle(
-              fontFamily: AppTextStyles.fontFamily,
-              fontSize: 14,
-              color: AppColors.pillLabelGrey,
-            ),
-          ),
-        )
-            : SingleChildScrollView(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-          child: TemplatePreviewCard(item: item),
+          child: Column(
+            children: [
+              Image.asset('assets/images/empty_templates/travel/horizontal/travel_01_front.png'),
+              const SizedBox(height: 12),
+              Image.asset('assets/images/empty_templates/travel/horizontal/travel_01_back.png'),
+              const SizedBox(height: 12),
+              Image.asset(
+                'assets/images/template_logos/travel/horizontal/travel_01_logo.png',
+                height: 80,
+              ),
+            ],
+          ),
         ),
       ),
+
+      // ---------------- ORIGINAL BODY (restore after the test) ----------------
+      // body: SafeArea(
+      //   child: item == null
+      //       ? const Center(
+      //           child: Text(
+      //             'No template selected',
+      //             style: TextStyle(
+      //               fontFamily: AppTextStyles.fontFamily,
+      //               fontSize: 14,
+      //               color: AppColors.pillLabelGrey,
+      //             ),
+      //           ),
+      //         )
+      //       : SingleChildScrollView(
+      //           padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+      //           child: TemplatePreviewCard(item: item),
+      //         ),
+      // ),
     );
   }
 }

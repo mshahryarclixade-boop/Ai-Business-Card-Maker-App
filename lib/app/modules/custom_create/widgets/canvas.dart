@@ -89,6 +89,7 @@ class CanvasElementWidget extends StatelessWidget {
       final isSelected = !controller.isCapturing.value &&
           controller.selectedElementId.value == element.id;
       final canvasSize = controller.orientation.value.canvasSize;
+      final onFront = controller.currentSide.value == 0;
 
       return Positioned(
         left: element.position.dx - _pad,
@@ -103,7 +104,10 @@ class CanvasElementWidget extends StatelessWidget {
               child: GestureDetector(
                 onTap: () => controller.selectElement(element.id),
                 onDoubleTap: element.type == CardElementType.text
-                    ? () => _editTextContent(context)
+                    ? () {
+                  controller.selectElement(element.id); // pehle isay select karo
+                  _editTextContent(context);
+                }
                     : null,
                 onPanStart: (_) => controller.startDrag(element.id),
                 onPanUpdate: (details) {
@@ -156,8 +160,41 @@ class CanvasElementWidget extends StatelessWidget {
                 ),
               ),
 
-            // Resize handle for stickers
-            if (isSelected && _isIconSticker)
+            // Move to the other side (front <-> back)
+            if (isSelected)
+              Positioned(
+                top: 0,
+                left: 0,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: controller.moveSelectedToOtherSide,
+                  child: SizedBox(
+                    width: _hit,
+                    height: _hit,
+                    child: Center(
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        decoration: const BoxDecoration(
+                          color: Colors.orange,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          onFront
+                              ? Icons.flip_to_back_rounded
+                              : Icons.flip_to_front_rounded,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+            // Resize handle for stickers and images
+            if (isSelected &&
+                (_isIconSticker || element.type == CardElementType.image))
               Positioned(
                 bottom: 0,
                 right: 0,
@@ -165,7 +202,11 @@ class CanvasElementWidget extends StatelessWidget {
                   behavior: HitTestBehavior.opaque,
                   onPanUpdate: (details) {
                     final delta = (details.delta.dx + details.delta.dy) / 2;
-                    controller.resizeSelectedStickerBy(delta);
+                    if (element.type == CardElementType.image) {
+                      controller.resizeSelectedImageBy(delta);
+                    } else {
+                      controller.resizeSelectedStickerBy(delta);
+                    }
                   },
                   child: SizedBox(
                     width: _hit,
@@ -216,10 +257,20 @@ class CanvasElementWidget extends StatelessWidget {
             fontSize: element.fontSize,
             fontWeight: element.fontWeight,
             color: element.color,
+            fontStyle: element.italic ? FontStyle.italic : FontStyle.normal,
           ),
         );
 
       case CardElementType.image:
+      // Bundled asset image (template logo)
+        if (element.imageAsset != null) {
+          return Image.asset(
+            element.imageAsset!,
+            width: element.width,
+            height: element.height,
+            fit: BoxFit.contain,
+          );
+        }
         if (element.imageFile == null) {
           return const SizedBox(width: 60, height: 60);
         }
