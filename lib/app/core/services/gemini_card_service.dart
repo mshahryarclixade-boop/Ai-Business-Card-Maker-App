@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 /// Error with a message that is safe to show to the user.
@@ -24,14 +23,6 @@ class GeminiCardService {
   final FirebaseFunctions _functions =
   FirebaseFunctions.instanceFor(region: _region);
 
-  /// The functions require a signed-in user (anonymous is fine).
-  Future<void> _ensureSignedIn() async {
-    final auth = FirebaseAuth.instance;
-    if (auth.currentUser == null) {
-      await auth.signInAnonymously();
-    }
-  }
-
   Future<Uint8List> generateCard({
     required String prompt,
     required Uint8List referenceBytes,
@@ -44,8 +35,6 @@ class GeminiCardService {
         'logo=${logoBytes?.length ?? 0}B prompt=${prompt.length} chars');
 
     try {
-      await _ensureSignedIn();
-
       final callable = _functions.httpsCallable(
         'generateCard',
         options: HttpsCallableOptions(timeout: const Duration(seconds: 180)),
@@ -107,8 +96,6 @@ class GeminiCardService {
         'image=${imageBytes.length}B prompt=${prompt.length} chars');
 
     try {
-      await _ensureSignedIn();
-
       final callable = _functions.httpsCallable(
         'generateLayoutJson',
         options: HttpsCallableOptions(timeout: const Duration(seconds: 120)),

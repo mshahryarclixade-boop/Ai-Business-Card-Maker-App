@@ -18,8 +18,8 @@ void main() async {
   );
 
   await FirebaseAppCheck.instance.activate(
-    androidProvider: AndroidProvider.debug,   // for debug build (android)
-    appleProvider: AppleProvider.debug,       // (iOS)
+    providerAndroid: const AndroidPlayIntegrityProvider(),
+    providerApple: const AppleAppAttestWithDeviceCheckFallbackProvider(),
   );
 
   await GetStorage.init();
