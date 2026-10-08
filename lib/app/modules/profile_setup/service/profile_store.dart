@@ -6,12 +6,9 @@ import 'package:get_storage/get_storage.dart';
 
 import '../model/user_profile_data.dart';
 
-/// Single source of truth for the data entered in the two setup screens.
-/// Read it anywhere with: ProfileStore.to.profile.value
 class ProfileStore extends GetxService {
   static const _key = 'user_profile_data';
 
-  /// Created on first use, so main.dart doesn't need to change.
   static ProfileStore get to => Get.isRegistered<ProfileStore>()
       ? Get.find<ProfileStore>()
       : Get.put(ProfileStore(), permanent: true);

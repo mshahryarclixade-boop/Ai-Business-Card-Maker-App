@@ -14,10 +14,8 @@ class LabeledField extends StatelessWidget {
   final int maxLines;
   final FocusNode? focusNode;
 
-  /// When true, draws the field with the same red outline used for a
-  /// validation error even though no [validator] has failed yet — used to
-  /// flag a field a business-card scan couldn't fill in. Has no effect
-  /// unless explicitly passed, so every existing caller is unaffected.
+  final TextCapitalization textCapitalization;
+
   final bool forceErrorBorder;
 
   const LabeledField({
@@ -31,6 +29,7 @@ class LabeledField extends StatelessWidget {
     this.textInputAction = TextInputAction.next,
     this.maxLines = 1,
     this.focusNode,
+    this.textCapitalization = TextCapitalization.none,
     this.forceErrorBorder = false,
   });
 
@@ -60,6 +59,7 @@ class LabeledField extends StatelessWidget {
           keyboardType: keyboardType,
           validator: validator,
           textInputAction: textInputAction,
+          textCapitalization: textCapitalization,
           maxLines: maxLines,
           style: const TextStyle(
             fontFamily: AppTextStyles.fontFamily,

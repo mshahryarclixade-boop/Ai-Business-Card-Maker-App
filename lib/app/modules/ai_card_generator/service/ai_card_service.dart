@@ -5,19 +5,14 @@ import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 
-import '../../../core/services/ai_card_layout_mapper.dart';
 import '../../../core/services/ai_card_prompt_builder.dart';
+import '../../../core/services/editable_card_builder.dart';
 import '../../../core/services/gemini_card_service.dart';
 import '../../custom_create/model/card_element_model.dart';
 import '../../profile/model/profile_model.dart';
 import '../model/generated_card.dart';
 
 const Map<String, String> kReadyTemplateAssets = {
-  // 'h_1': 'assets/images/templates/spa_care/horizontal/spa_care_01_front.png',
-  // 'h_2': 'assets/images/templates/spa_care/horizontal/spa_care_02_front.png',
-  // 'h_3': 'assets/images/templates/travel/horizontal/travel_01_front.png',
-  // 'h_4': 'assets/images/templates/real_estate/horizontal/real_estate_01_front.png',
-
   // Example:
   'ai_test': 'assets/images/ai_business_card_template.jpg',
   'ai_test2': 'assets/images/ai_business_card_template2.jpg',
@@ -151,8 +146,9 @@ class AiCardService {
     // ---------------------------------------------------------------
     // EDITABLE VERSION (text-free background + texts/icons as elements)
     //
-    // Never fails the generation: if this step breaks for a side, that
-    // side simply stays a flat image, exactly like before.
+    // Never fails the generation: if this step breaks for a side, or the
+    // background still shows text after a retry, that side simply stays a
+    // flat image, exactly like before.
     // ---------------------------------------------------------------
     final editable = await Future.wait([
       _buildEditableSide(fullBytes: frontBytes, side: 'front'),
@@ -172,54 +168,41 @@ class AiCardService {
   /// Takes the FINISHED card image of one side and produces:
   ///  * a text-free background image (saved to a temp file), and
   ///  * the texts/icons as CardElement JSON, placed for the editor canvas.
-  /// Returns null if anything goes wrong.
+  /// The work (including the "is the background really clean?" check) is
+  /// done by [EditableCardBuilder]. Returns null if the side must stay flat.
   Future<_EditableSide?> _buildEditableSide({
     required Uint8List fullBytes,
     required String side,
   }) async {
+    final result = await EditableCardBuilder.build(
+      gemini: GeminiCardService(),
+      card: fullBytes,
+      canvasSize: CardOrientation.landscape.canvasSize,
+      label: side,
+    );
+
+    if (result == null) {
+      debugPrint('AI CARD SERVICE: editable $side not available, flat image');
+      return null;
+    }
+
     try {
-      final service = GeminiCardService();
-
-      final backgroundFuture = service.generateCard(
-        prompt: AiCardPromptBuilder.buildTextFreeBackground(),
-        referenceBytes: fullBytes,
-        referenceMime: 'image/png',
-      );
-
-      final layoutFuture = service.generateLayoutJson(
-        prompt: AiCardPromptBuilder.buildLayoutPrompt(
-          fonts: kSampleFontFamilies,
-        ),
-        imageBytes: fullBytes,
-        imageMime: 'image/png',
-      );
-
-      final (backgroundBytes, layoutJson) =
-      await (backgroundFuture, layoutFuture).wait;
-
-      final elements = await AiCardLayoutMapper.toElementsJson(
-        layoutJson: layoutJson,
-        imageBytes: fullBytes,
-        canvasSize: CardOrientation.landscape.canvasSize,
-      );
-
       final backgroundPath = await _saveToTempFile(
-        backgroundBytes,
+        result.background,
         side: '${side}_bg',
       );
 
       debugPrint(
         'AI CARD SERVICE: editable $side ready '
-            '(elements=${elements.length}, bg=$backgroundPath)',
+            '(elements=${result.elements.length}, bg=$backgroundPath)',
       );
 
       return _EditableSide(
         backgroundPath: backgroundPath,
-        elements: elements,
+        elements: result.elements,
       );
     } catch (e, st) {
-      debugPrint('AI CARD SERVICE: editable $side failed, using flat image');
-      debugPrint('error: $e');
+      debugPrint('AI CARD SERVICE: saving $side background failed: $e');
       debugPrint('stack: $st');
       return null;
     }
@@ -248,13 +231,6 @@ class AiCardService {
     return file.path;
   }
 
-  /// Loads the ONE complete reference image.
-  ///
-  /// Priority:
-  /// 1. Uploaded image
-  /// 2. Selected ready template
-  ///
-  /// The reference image is NOT cropped here.
   Future<_Reference?> _loadReference({
     File? referenceImage,
     String? templateId,
