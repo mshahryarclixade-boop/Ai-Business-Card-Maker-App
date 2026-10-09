@@ -75,40 +75,49 @@ class _ProgressRows extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final personal = controller.personalDone.value;
-    final company = controller.companyDone.value;
-    final hasCompany = controller.hasCompanyDetails;
+    // IMPORTANT: this Obx must live INSIDE this widget. The values below are
+    // read here, so GetX can only track them here. The Obx in the parent
+    // reads only `status`, so without this one the rows would never update.
+    return Obx(() {
+      final personal = controller.personalDone.value;
+      final company = controller.companyDone.value;
+      final creating = controller.creatingDone.value;
+      final hasCompany = controller.hasCompanyDetails;
 
-    // The row that is currently loading. Rows after it wait (faded),
-    // rows before it are done (tick).
-    final companyActive = personal && hasCompany && !company;
-    final creatingActive = personal && (company || !hasCompany);
+      // Only ONE row loads at a time. Rows before it have a tick,
+      // rows after it wait with an empty circle.
+      final personalActive = !personal;
+      final companyActive = personal && hasCompany && !company;
+      final creatingActive = personal && (company || !hasCompany) && !creating;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _StepRow(
-          text: 'Your Personal details added',
-          done: personal,
-          active: !personal,
-        ),
-        if (hasCompany) ...[
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _StepRow(
+            text: 'Your Personal details added',
+            done: personal,
+            active: personalActive,
+          ),
+          if (hasCompany) ...[
+            const SizedBox(height: 22),
+            _StepRow(
+              text: 'Your Company details added',
+              done: company,
+              active: companyActive,
+            ),
+          ],
           const SizedBox(height: 22),
           _StepRow(
-            text: 'Your Company details added',
-            done: company,
-            active: companyActive,
+            text: creating
+                ? 'Your first design is ready'
+                : 'Creating your first design...',
+            done: creating,
+            active: creatingActive,
+            highlight: true,
           ),
         ],
-        const SizedBox(height: 22),
-        _StepRow(
-          text: 'Creating your first design...',
-          done: false,
-          active: creatingActive,
-          highlight: true,
-        ),
-      ],
-    );
+      );
+    });
   }
 }
 
@@ -136,6 +145,7 @@ class _StepRow extends StatelessWidget {
       child: FirstCardStatusRow(
         text: text,
         done: done,
+        active: active,
         highlight: highlight,
       ),
     );
@@ -149,49 +159,51 @@ class _FailureBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          controller.errorMessage.value,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            height: 1.3,
-            color: AppColors.splashTextPrimary,
-          ),
-        ),
-        const SizedBox(height: 4),
-        const Text(
-          'Your details are saved.',
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: AppColors.splashTextSecondary,
-          ),
-        ),
-        const SizedBox(height: 20),
-        ProfilePrimaryButton(
-          label: 'Try Again',
-          showArrow: false,
-          onTap: controller.tryAgain,
-        ),
-        const SizedBox(height: 8),
-        TextButton(
-          onPressed: controller.useFreeTemplate,
-          child: const Text(
-            'Use a Free Template',
-            style: TextStyle(
+    return Obx(
+          () => Column(
+        children: [
+          Text(
+            controller.errorMessage.value,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
               fontFamily: 'Inter',
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppColors.profileStepActive,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              height: 1.3,
+              color: AppColors.splashTextPrimary,
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 4),
+          const Text(
+            'Your details are saved.',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: AppColors.splashTextSecondary,
+            ),
+          ),
+          const SizedBox(height: 20),
+          ProfilePrimaryButton(
+            label: 'Try Again',
+            showArrow: false,
+            onTap: controller.tryAgain,
+          ),
+          const SizedBox(height: 8),
+          TextButton(
+            onPressed: controller.useFreeTemplate,
+            child: const Text(
+              'Use a Free Template',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppColors.profileStepActive,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

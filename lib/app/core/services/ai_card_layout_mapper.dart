@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -7,19 +8,13 @@ import 'package:flutter/material.dart';
 
 import '../../modules/custom_create/model/card_element_model.dart';
 
-/// Converts the layout JSON Gemini returns for a finished card into a list
-/// of [CardElement] JSON maps (the same shape CardEditorController saves
-/// in `designData['elements']`), placed on the editor canvas.
 class AiCardLayoutMapper {
   AiCardLayoutMapper._();
 
   static const double _fontSizeFactor = 0.9;
 
-  /// The text box is nudged up by this fraction of the font size.
   static const double _textTopNudge = 0.12;
 
-  /// The canvas draws each element inside a 4px padded container, so the
-  /// stored position has to be 4px up/left of the visible glyphs.
   static const double _elementPad = 4;
 
   static const int _maxElements = 30;
@@ -28,6 +23,7 @@ class AiCardLayoutMapper {
     required String layoutJson,
     required Uint8List imageBytes,
     required Size canvasSize,
+    String? logoFilePath,
   }) async {
     final decoded = jsonDecode(_stripFences(layoutJson));
     if (decoded is! Map) {
@@ -64,9 +60,9 @@ class AiCardLayoutMapper {
         if (raw is! Map) continue;
 
         final text = raw['text']?.toString().trim() ?? '';
-        final x = _num(raw['x']);
-        final y = _num(raw['y']);
-        final h = _num(raw['h']);
+        final x = unit(raw['x']);
+        final y = unit(raw['y']);
+        final h = unit(raw['h']);
         if (text.isEmpty || x == null || y == null || h == null) continue;
 
         final fontSize = (h * img.height * scale * _fontSizeFactor)
@@ -108,9 +104,9 @@ class AiCardLayoutMapper {
         if (raw is! Map) continue;
 
         final icon = _iconFor(raw['name']?.toString());
-        final x = _num(raw['x']);
-        final y = _num(raw['y']);
-        final h = _num(raw['h']);
+        final x = unit(raw['x']);
+        final y = unit(raw['y']);
+        final h = unit(raw['h']);
         if (icon == null || x == null || y == null || h == null) continue;
 
         final size =
@@ -134,10 +130,38 @@ class AiCardLayoutMapper {
       }
     }
 
+    // -------------------------------------------------------------- logo
+    // The user's real logo file replaces the AI-drawn one.
+    final logo = decoded['logo'];
+    if (logoFilePath != null && logo is Map && result.length < _maxElements) {
+      final x = unit(logo['x']);
+      final y = unit(logo['y']);
+      final w = unit(logo['w']);
+      final h = unit(logo['h']);
+      if (x != null && y != null && w != null && h != null && w > 0 && h > 0) {
+        final p = toCanvas(x, y);
+        final el = CardElement.image(
+          id: 'ai_${stamp}_${result.length}',
+          position: clampPos(p),
+          file: File(logoFilePath),
+          width: (w * img.width * scale).clamp(20.0, 300.0).toDouble(),
+          height: (h * img.height * scale).clamp(20.0, 300.0).toDouble(),
+        );
+        result.add(el.toJson());
+      }
+    }
+
     return result;
   }
 
   // ---------------------------------------------------------------- helpers
+
+  /// The AI sometimes answers on a 0-1000 scale instead of 0-1.
+  static double? unit(dynamic v) {
+    final n = _num(v);
+    if (n == null) return null;
+    return n > 1 ? n / 1000.0 : n;
+  }
 
   static IconData? _iconFor(String? name) {
     switch (name?.toLowerCase().trim()) {

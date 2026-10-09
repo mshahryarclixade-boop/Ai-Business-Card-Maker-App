@@ -13,8 +13,18 @@ enum FirstCardStatus { generating, failed }
 class FirstCardController extends GetxController {
   final RxBool personalDone = false.obs;
   final RxBool companyDone = false.obs;
+
+  /// Becomes true only when the card is really generated.
+  final RxBool creatingDone = false.obs;
+
   final Rx<FirstCardStatus> status = FirstCardStatus.generating.obs;
   final RxString errorMessage = ''.obs;
+
+  /// How long each tick row stays loading before its tick appears.
+  static const Duration _stepDelay = Duration(milliseconds: 1500);
+
+  /// Pause on the last tick before moving to the next screen.
+  static const Duration _finishDelay = Duration(milliseconds: 900);
 
   bool _running = false;
 
@@ -40,21 +50,34 @@ class FirstCardController extends GetxController {
     _running = true;
     status.value = FirstCardStatus.generating;
     errorMessage.value = '';
+    creatingDone.value = false;
 
     try {
-      // The details are already saved, so these two steps are quick checks.
+      // Card generation starts right away and runs while the ticks play.
+      final cardsFuture = _generateCards(data);
+      // Marks the error as handled for now; it is still thrown below
+      // when we await the future.
+      cardsFuture.ignore();
+
+      // Tick 1, then tick 2, one after the other.
       if (!personalDone.value) {
-        await Future.delayed(const Duration(milliseconds: 700));
+        await Future.delayed(_stepDelay);
         personalDone.value = true;
       }
       if (hasCompanyDetails && !companyDone.value) {
-        await Future.delayed(const Duration(milliseconds: 700));
+        await Future.delayed(_stepDelay);
         companyDone.value = true;
       }
 
-      final cards = await _generateCards(data);
+      // Tick 3 only when the card is really ready.
+      final cards = await cardsFuture;
 
       if (isClosed) return; // user left the screen while generating
+      creatingDone.value = true;
+
+      await Future.delayed(_finishDelay);
+
+      if (isClosed) return;
       Get.offNamed(Routes.FIRST_CARD_READY, arguments: cards);
     } on GeminiException catch (e, st) {
       debugPrint('FirstCard GeminiException: ${e.message}');

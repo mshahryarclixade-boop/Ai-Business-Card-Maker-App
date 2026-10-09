@@ -71,39 +71,53 @@ class _FirstCardLoadingVideoState extends State<FirstCardLoadingVideo> {
   }
 }
 
-/// Check circle when [done], spinner while still working.
+/// One status row. It has three looks:
+///  * [done]            -> check circle
+///  * [active] (not done) -> spinner (this row is loading right now)
+///  * neither           -> empty circle (waiting for its turn)
 class FirstCardStatusRow extends StatelessWidget {
   const FirstCardStatusRow({
     super.key,
     required this.text,
     required this.done,
+    this.active = true,
     this.highlight = false,
   });
 
   final String text;
   final bool done;
 
+  /// True only for the row that is loading right now.
+  final bool active;
+
   /// Purple text, used for the row that is still in progress.
   final bool highlight;
 
   @override
   Widget build(BuildContext context) {
+    final Widget leading;
+    if (done) {
+      leading = const Icon(
+        Icons.check_circle,
+        size: 23,
+        color: AppColors.firstCardCheck,
+      );
+    } else if (active) {
+      leading = const CircularProgressIndicator(
+        strokeWidth: 3,
+        color: AppColors.firstCardCheck,
+      );
+    } else {
+      leading = Icon(
+        Icons.radio_button_unchecked,
+        size: 23,
+        color: AppColors.firstCardCheck.withOpacity(0.5),
+      );
+    }
+
     return Row(
       children: [
-        SizedBox(
-          width: 23,
-          height: 23,
-          child: done
-              ? const Icon(
-            Icons.check_circle,
-            size: 23,
-            color: AppColors.firstCardCheck,
-          )
-              : const CircularProgressIndicator(
-            strokeWidth: 3,
-            color: AppColors.firstCardCheck,
-          ),
-        ),
+        SizedBox(width: 23, height: 23, child: leading),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
@@ -114,7 +128,9 @@ class FirstCardStatusRow extends StatelessWidget {
               fontWeight: FontWeight.w400,
               height: 1.2,
               letterSpacing: 0,
-              color: highlight ? AppColors.firstCardCheck : Colors.black,
+              color: highlight && !done
+                  ? AppColors.firstCardCheck
+                  : Colors.black,
             ),
           ),
         ),

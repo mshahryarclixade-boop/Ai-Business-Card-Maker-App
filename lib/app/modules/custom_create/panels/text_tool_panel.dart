@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../core/utils/app_fonts.dart';
 import '../../../core/theme/app_colors.dart';
@@ -341,46 +342,194 @@ class SizeListPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 160,
-      decoration: BoxDecoration(
-        color: const Color(0xFFFAFAFC),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        itemCount: kSampleFontSizes.length,
-        itemBuilder: (_, i) {
-          final size = kSampleFontSizes[i];
-          final selected = size == current;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Type an exact size (the list below works exactly as before).
+        FontSizeInput(controller: controller, current: current),
+        const SizedBox(height: 8),
+        Container(
+          height: 160,
+          decoration: BoxDecoration(
+            color: const Color(0xFFFAFAFC),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            itemCount: kSampleFontSizes.length,
+            itemBuilder: (_, i) {
+              final size = kSampleFontSizes[i];
+              final selected = size == current;
 
-          return ListTile(
-            dense: true,
-            title: Text(
-              '${size.toStringAsFixed(0)}pt',
-              style: TextStyle(
+              return ListTile(
+                dense: true,
+                title: Text(
+                  '${size.toStringAsFixed(0)}pt',
+                  style: TextStyle(
+                    fontFamily: AppTextStyles.fontFamily,
+                    fontSize: 13,
+                    fontWeight:
+                    selected ? FontWeight.w700 : FontWeight.w400,
+                    color: selected
+                        ? AppColors.primary
+                        : const Color(0xFF1E1E24),
+                  ),
+                ),
+                trailing: selected
+                    ? const Icon(
+                  Icons.check_rounded,
+                  size: 16,
+                  color: AppColors.primary,
+                )
+                    : null,
+                onTap: () {
+                  // Close the keyboard so the field shows the picked size.
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  controller.beginStyleEdit();
+                  controller.updateSelectedText(fontSize: size);
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Number field to type the font size directly. Applies live while typing
+/// (6 - 120), and snaps back to the real size when the field loses focus.
+class FontSizeInput extends StatefulWidget {
+  final CardEditorController controller;
+  final double? current;
+
+  const FontSizeInput({
+    super.key,
+    required this.controller,
+    required this.current,
+  });
+
+  @override
+  State<FontSizeInput> createState() => _FontSizeInputState();
+}
+
+class _FontSizeInputState extends State<FontSizeInput> {
+  static const double _min = 6;
+  static const double _max = 120;
+
+  late final TextEditingController _text;
+  late final FocusNode _focus;
+
+  String get _currentLabel => (widget.current ?? 16).toStringAsFixed(0);
+
+  @override
+  void initState() {
+    super.initState();
+    _text = TextEditingController(text: _currentLabel);
+    _focus = FocusNode()..addListener(_onFocusChange);
+  }
+
+  @override
+  void didUpdateWidget(covariant FontSizeInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Keep the field in sync when the size changes from the list.
+    if (!_focus.hasFocus && _text.text != _currentLabel) {
+      _text.text = _currentLabel;
+    }
+  }
+
+  void _onFocusChange() {
+    if (_focus.hasFocus) {
+      // One undo step for the whole typing session.
+      widget.controller.beginStyleEdit();
+      _text.selection =
+          TextSelection(baseOffset: 0, extentOffset: _text.text.length);
+    } else {
+      _commit();
+    }
+  }
+
+  void _onChanged(String value) {
+    final v = double.tryParse(value);
+    if (v == null || v < _min || v > _max) return; // wait for a valid size
+    widget.controller.updateSelectedText(fontSize: v);
+  }
+
+  /// Clamp whatever is typed and show the final size.
+  void _commit() {
+    final v = double.tryParse(_text.text);
+    if (v != null) {
+      widget.controller.updateSelectedText(fontSize: v.clamp(_min, _max));
+    }
+    _text.text = _currentLabel;
+  }
+
+  @override
+  void dispose() {
+    _focus.removeListener(_onFocusChange);
+    _focus.dispose();
+    _text.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 40,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5F5F8),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.primary.withOpacity(0.5)),
+      ),
+      child: Row(
+        children: [
+          const Text(
+            'Type size',
+            style: TextStyle(
+              fontFamily: AppTextStyles.fontFamily,
+              fontSize: 11.5,
+              color: Color(0xFF9A9AA2),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: TextField(
+              controller: _text,
+              focusNode: _focus,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(3),
+              ],
+              onChanged: _onChanged,
+              onSubmitted: (_) => _focus.unfocus(),
+              textAlign: TextAlign.end,
+              style: const TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
                 fontSize: 13,
-                fontWeight:
-                selected ? FontWeight.w700 : FontWeight.w400,
-                color: selected
-                    ? AppColors.primary
-                    : const Color(0xFF1E1E24),
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1E1E24),
+              ),
+              decoration: const InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
               ),
             ),
-            trailing: selected
-                ? const Icon(
-              Icons.check_rounded,
-              size: 16,
-              color: AppColors.primary,
-            )
-                : null,
-            onTap: () {
-              controller.beginStyleEdit();
-              controller.updateSelectedText(fontSize: size);
-            },
-          );
-        },
+          ),
+          const SizedBox(width: 4),
+          const Text(
+            'pt',
+            style: TextStyle(
+              fontFamily: AppTextStyles.fontFamily,
+              fontSize: 12,
+              color: Color(0xFF9A9AA2),
+            ),
+          ),
+        ],
       ),
     );
   }

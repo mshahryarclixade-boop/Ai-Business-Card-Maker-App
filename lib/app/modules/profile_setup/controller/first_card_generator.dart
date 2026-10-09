@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../../core/services/ai_card_layout_mapper.dart';
 import '../../../core/services/ai_card_prompt_builder.dart';
+import '../../../core/services/editable_card_builder.dart';
 import '../../../core/services/gemini_card_service.dart';
 import '../../../core/services/recent_designs_service.dart';
 import '../../custom_create/model/card_element_model.dart';
@@ -45,11 +46,20 @@ class FirstCardGenerator {
     final logo = data.hasLogo ? data.logoBytes : null;
     final logoMime = logo == null ? 'image/png' : _mimeOf(logo);
 
+    final docs = await getApplicationDocumentsDirectory();
+    String? logoPath;
+    if (logo != null) {
+      final f = File(
+          '${docs.path}/ai_logo_${DateTime.now().microsecondsSinceEpoch}.png');
+      await f.writeAsBytes(logo, flush: true);
+      logoPath = f.path;
+    }
+
     final sides = await Future.wait([
-      _buildSide(
-          CardSide.front, template, templateMime, details, logo, logoMime),
-      _buildSide(
-          CardSide.back, template, templateMime, details, logo, logoMime),
+      _buildSide(CardSide.front, template, templateMime, details, logo,
+          logoMime, logoPath),
+      _buildSide(CardSide.back, template, templateMime, details, logo,
+          logoMime, logoPath),
     ]);
     final front = sides[0];
     final back = sides[1];
@@ -88,6 +98,7 @@ class FirstCardGenerator {
       CardDetails details,
       Uint8List? logo,
       String logoMime,
+      String? logoPath,
       ) async {
     final prompt = AiCardPromptBuilder.build(
       kind: ReferenceKind.template,
@@ -114,37 +125,30 @@ class FirstCardGenerator {
     }
 
     // The editable version is a bonus. If it fails, the flat image is kept.
-    try {
-      final results = await Future.wait<Object>([
-        _gemini.generateCard(
-          prompt: AiCardPromptBuilder.buildTextFreeBackground(),
-          referenceBytes: card,
-          referenceMime: 'image/png',
-        ),
-        _gemini.generateLayoutJson(
-          prompt: AiCardPromptBuilder.buildLayoutPrompt(
-            fonts: kSampleFontFamilies,
-          ),
-          imageBytes: card,
-          imageMime: 'image/png',
-        ),
-      ]);
+    final editable = await EditableCardBuilder.build(
+      gemini: _gemini,
+      card: card,
+      canvasSize: CardOrientation.landscape.canvasSize,
+      label: side.name,
+      knownTexts: side == CardSide.front
+          ? [
+        details.name,
+        details.jobTitle,
+        details.company,
+        details.phone,
+        details.email,
+        details.website,
+      ]
+          : [details.company, details.website],
+      logoFilePath: logoPath,
+    );
+    if (editable == null) return _Side(card);
 
-      final elements = await AiCardLayoutMapper.toElementsJson(
-        layoutJson: results[1] as String,
-        imageBytes: card,
-        canvasSize: canvasSize,
-      );
-      return _Side(
-        card,
-        background: results[0] as Uint8List,
-        elements: elements,
-      );
-    } catch (e, st) {
-      debugPrint('Editable step failed (${side.name}, flat image kept): $e');
-      debugPrintStack(stackTrace: st);
-      return _Side(card);
-    }
+    return _Side(
+      card,
+      background: editable.background,
+      elements: editable.elements,
+    );
   }
 
   static String _mimeOf(Uint8List b) {

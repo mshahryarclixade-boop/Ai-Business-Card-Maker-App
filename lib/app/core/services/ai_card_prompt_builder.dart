@@ -2,20 +2,14 @@ import '../../modules/profile_setup/model/user_profile_data.dart';
 import '../../modules/profile/model/profile_model.dart';
 
 enum ReferenceKind {
-  /// One of the ready templates — the AI edits it directly.
   template,
-
-  /// An image the user uploaded — the AI uses it as inspiration.
   upload,
 }
-
-/// Which side of the card this prompt is for.
 enum CardSide {
   front,
   back,
 }
 
-/// The exact values that must appear on the card.
 class CardDetails {
   final String name;
   final String jobTitle;
@@ -66,6 +60,17 @@ class AiCardPromptBuilder {
   static const int maxUserPromptLength = 200;
   static const int _maxFieldLength = 120;
 
+  /// Standard business card: 3.5 x 2 inches = 7:4 ratio.
+  /// 1050 x 600 px is that size at 300 DPI.
+  static const String _canvasRule =
+      'OUTPUT SIZE (strict): a horizontal image that is exactly a standard '
+      'business card, 3.5 x 2 inches, which is a 7:4 aspect ratio '
+      '(1050 x 600 px). The card artwork must fill the ENTIRE image edge to '
+      'edge, with no empty margin, no border, no padding and no background '
+      'around it. Never draw a smaller card inside a larger canvas. Ignore '
+      'the size, margins and aspect ratio of the reference image and of any '
+      'logo image; always output 7:4.';
+
   static String build({
     required ReferenceKind kind,
     required CardSide side,
@@ -89,6 +94,12 @@ class AiCardPromptBuilder {
           '${isFront ? '' : '— a companion piece to a matching front, using the '
           'same colors, typography and logo style, just simpler.'}',
     );
+    b.writeln();
+
+    // ------------------------------------------------------------- size
+    // Repeated near the top on purpose: models give the start of a prompt
+    // more weight, and this is the rule they break most often.
+    b.writeln(_canvasRule);
     b.writeln();
 
     // ------------------------------------------------------ reference image
@@ -217,10 +228,10 @@ class AiCardPromptBuilder {
             'alignment, spacing and sharpness.',
       );
     }
+    b.writeln('* $_canvasRule');
     b.writeln(
-      '* Horizontal card, 7:4 ratio (3.5 x 2 in), filling the whole image '
-          'edge to edge. Flat, straight-on view: no mockup, no perspective, no '
-          'hands, no table, no drop shadow around the card.',
+      '* Flat, straight-on view: no mockup, no perspective, no hands, no '
+          'table, no drop shadow around the card.',
     );
     b.writeln(
       '* All text must be sharp, correctly spelled, easy to read and inside '
@@ -239,8 +250,8 @@ class AiCardPromptBuilder {
     );
     b.writeln('* Return the image only, without any explanation.');
     b.writeln(
-      '* Priority if rules conflict: 1) USER INSTRUCTIONS, 2) CARD '
-          'DETAILS, 3) REFERENCE IMAGE.',
+      '* Priority if rules conflict: 1) OUTPUT SIZE, 2) USER INSTRUCTIONS, '
+          '3) CARD DETAILS, 4) REFERENCE IMAGE.',
     );
 
     return b.toString().trim();
@@ -254,6 +265,8 @@ class AiCardPromptBuilder {
     final b = StringBuffer();
 
     b.writeln('You are an expert image editor.');
+    b.writeln();
+    b.writeln(_canvasRule);
     b.writeln();
     b.writeln(
       'The image is a finished business card. Return the SAME card with '
@@ -276,7 +289,9 @@ class AiCardPromptBuilder {
       '* Do not add any new text, icon, logo, watermark or border.',
     );
     b.writeln(
-      '* Keep the exact same size, ratio and framing, edge to edge.',
+      '* Keep the exact same framing as the input image: do not zoom, '
+          'crop, shrink or add margins. The result must match the input '
+          'size and fill the whole image edge to edge (7:4).',
     );
     b.writeln('* Return the image only, without any explanation.');
 
@@ -345,6 +360,154 @@ class AiCardPromptBuilder {
     return b.toString().trim();
   }
 
+  // ---- Editable first-card prompts (separate from the two above) ----
+
+  static String buildEditableErasePrompt({
+    List<String> knownTexts = const [],
+    bool eraseLogo = false,
+  }) {
+    final b = StringBuffer();
+
+    b.writeln('You are an expert image editor.');
+    b.writeln();
+    b.writeln(_canvasRule);
+    b.writeln();
+    b.writeln(
+      'The image is a finished business card. Return the SAME card with '
+          'every piece of text and every small contact icon (phone, e-mail, '
+          'web, location, social media) erased.',
+    );
+    b.writeln();
+    b.writeln('DEFINITIONS:');
+    b.writeln('* A LOGO is only a graphic emblem, symbol or picture.');
+    b.writeln(
+      '* Every word or number, in any size, font or style, is TEXT and '
+          'must be erased: person name, job title, company name, tagline, '
+          'phone, e-mail, website, address. This includes big, bold or '
+          'decorative text and text placed next to a logo.',
+    );
+    if (knownTexts.isNotEmpty) {
+      b.writeln();
+      b.writeln('These exact texts are on the card and must all be erased:');
+      for (final t in knownTexts) {
+        b.writeln('* $t');
+      }
+    }
+    b.writeln();
+    b.writeln('RULES:');
+    b.writeln(
+      '* Keep everything else exactly as it is: background colors, '
+          'gradients, shapes, lines, patterns, photos and illustrations.',
+    );
+    if (eraseLogo) {
+      b.writeln(
+        '* Also erase the logo graphic, so that area becomes plain '
+            'background.',
+      );
+    } else {
+      b.writeln(
+        '* Keep the logo graphic (the emblem or symbol only, never words) '
+            'and QR code areas.',
+      );
+    }
+    b.writeln(
+      '* Fill every erased area naturally with the surrounding background '
+          '(same color, gradient or texture) so no trace, ghosting or blur '
+          'is left.',
+    );
+    b.writeln('* Do not add any new text, icon, logo, watermark or border.');
+    b.writeln(
+      '* Keep the exact same framing as the input image: do not zoom, '
+          'crop, shrink or add margins. The result must match the input '
+          'size and fill the whole image edge to edge (7:4).',
+    );
+    b.writeln('* Return the image only, without any explanation.');
+
+    return b.toString().trim();
+  }
+
+  static String buildEditableLayoutPrompt({
+    required List<String> fonts,
+    List<String> expected = const [],
+  }) {
+    final b = StringBuffer();
+
+    b.writeln(
+      'You are analysing a finished business-card image. List every piece '
+          'of text and every small contact icon on it, and the position of '
+          'the logo, so the card can be rebuilt as editable elements.',
+    );
+    b.writeln();
+    b.writeln(
+      'Return ONLY a JSON object (no markdown, no explanation) in exactly '
+          'this shape:',
+    );
+    b.writeln('{');
+    b.writeln(
+      '  "texts": [ {"text": "...", "x": 0.0, "y": 0.0, "h": 0.0, '
+          '"color": "#RRGGBB", "weight": 400, "font": "..."} ],',
+    );
+    b.writeln(
+      '  "icons": [ {"name": "phone", "x": 0.0, "y": 0.0, "h": 0.0, '
+          '"color": "#RRGGBB"} ],',
+    );
+    b.writeln('  "logo": {"x": 0.0, "y": 0.0, "w": 0.0, "h": 0.0} or null');
+    b.writeln('}');
+    b.writeln();
+    b.writeln('RULES:');
+    b.writeln(
+      '* x and y are the top-left corner of the item\'s tight bounding '
+          'box. w and h are the width and height of that box. EVERY number '
+          'is a decimal fraction between 0 and 1 (never pixels, never a '
+          '0-1000 scale): x and w of the full image WIDTH, y and h of the '
+          'full image HEIGHT. The top-left corner of the image is (0, 0).',
+    );
+    b.writeln(
+      '* One entry per LINE of text. Never merge two lines into one entry.',
+    );
+    b.writeln('* Copy each text exactly as printed, character for character.');
+    b.writeln('* color is the visible color of that text or icon.');
+    b.writeln(
+      '* weight is 400 (regular), 500 (medium), 600 (semi-bold) or 700 (bold).',
+    );
+    b.writeln(
+      '* font is the closest match from this list: ${fonts.join(', ')}. '
+          'Use "${fonts.first}" if unsure.',
+    );
+    b.writeln(
+      '* icons: only small contact icons that sit next to a detail. name '
+          'must be one of: phone, email, web, location, social.',
+    );
+    b.writeln(
+      '* A LOGO is only a graphic emblem, symbol or picture. Never list '
+          'it in texts. Put its box in "logo" (null if there is none).',
+    );
+    b.writeln(
+      '* EVERY word or number is TEXT and must be listed in texts, even '
+          'if it is big, bold, decorative or next to a logo: person name, '
+          'job title, company name, tagline, phone, e-mail, website, '
+          'address.',
+    );
+    b.writeln('* Do not list illustrations, shapes or QR codes.');
+    if (expected.isNotEmpty) {
+      b.writeln(
+        '* These texts are known to be printed on this card. Find each '
+            'one on the image and list it with its exact position (use the '
+            'exact spelling below). Skip a text only if it really is not '
+            'visible:',
+      );
+      for (final t in expected) {
+        b.writeln('  - $t');
+      }
+    }
+    b.writeln(
+      '* If there is nothing to list, return '
+          '{"texts": [], "icons": [], "logo": null}.',
+    );
+
+    return b.toString().trim();
+  }
+
   static List<String> _detailLines(CardDetails d, CardSide side) {
     final lines = <String>[];
 
@@ -372,8 +535,6 @@ class AiCardPromptBuilder {
     return lines;
   }
 
-  /// Removes control characters, collapses whitespace, strips the prompt
-  /// delimiters and caps the length. User text is untrusted input.
   static String _clean(String input, {required int max}) {
     var s = input
         .replaceAll(RegExp(r'[\u0000-\u001F\u007F]'), ' ')

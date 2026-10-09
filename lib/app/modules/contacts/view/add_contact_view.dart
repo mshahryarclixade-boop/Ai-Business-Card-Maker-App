@@ -464,6 +464,7 @@ class _AddContactViewState extends State<AddContactView> {
                           hint: 'First Name',
                           controller: _firstName,
                           focusNode: _firstNameFocus,
+                          textCapitalization: TextCapitalization.sentences,
                           forceErrorBorder: _isFromScan &&
                               widget.scannedData!.isMissingName &&
                               _firstName.text.trim().isEmpty,
@@ -478,6 +479,7 @@ class _AddContactViewState extends State<AddContactView> {
                           label: 'Last Name',
                           hint: 'Last Name',
                           controller: _lastName,
+                          textCapitalization: TextCapitalization.sentences,
                         ),
                       ),
                     ],
@@ -489,6 +491,7 @@ class _AddContactViewState extends State<AddContactView> {
                     controller: _companyName,
                     icon: Icons.apartment_outlined,
                     focusNode: _companyNameFocus,
+                    textCapitalization: TextCapitalization.sentences,
                     forceErrorBorder: _isFromScan &&
                         widget.scannedData!.isMissingCompany &&
                         _companyName.text.trim().isEmpty,
@@ -501,6 +504,7 @@ class _AddContactViewState extends State<AddContactView> {
                     hint: 'Job Title',
                     controller: _jobTitle,
                     icon: Icons.badge_outlined,
+                    textCapitalization: TextCapitalization.sentences,
                   ),
                 ],
               ),
@@ -558,6 +562,7 @@ class _AddContactViewState extends State<AddContactView> {
                     controller: _notes,
                     hint: 'Met at Dubai Expo, follow up next week.',
                     maxLines: 3,
+                    textCapitalization: TextCapitalization.sentences,
                   ),
                   if (_customLinks.isNotEmpty) ...[
                     const SizedBox(height: 12),
@@ -632,6 +637,7 @@ class _AddContactViewState extends State<AddContactView> {
                       hint: 'Company location, city',
                       controller: _companyAddress,
                       icon: Icons.location_on_outlined,
+                      textCapitalization: TextCapitalization.sentences,
                     ),
                   ],
                 ],
