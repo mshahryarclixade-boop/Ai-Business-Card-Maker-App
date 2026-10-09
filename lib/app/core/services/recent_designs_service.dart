@@ -134,14 +134,6 @@ class RecentDesignsService extends GetxService {
     await _persist();
   }
 
-  /// Copies a generated card's temp front/back images into permanent
-  /// storage and adds it to the list as an AI-generated design.
-  ///
-  /// If the editable version was built (text-free background + elements),
-  /// it is stored as `designData` in the same format CardEditorController
-  /// uses, so the card reopens in the editor with every text/icon editable.
-  /// A side without editable data falls back to its full image as a flat
-  /// background (same as before).
   Future<void> saveAiCard({
     required String frontTempPath,
     required String backTempPath,

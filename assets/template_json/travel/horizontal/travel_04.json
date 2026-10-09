@@ -1,26 +1,140 @@
 {
-  "id": "travel_04",
+  "id": "horizontal_travel_04",
   "orientation": "landscape",
   "front": {
     "background": "assets/images/empty_templates/travel/horizontal/travel_04_front.png",
     "elements": [
       {
-        "id": "f_logo", "type": "image",
-        "position": { "dx": 130.11, "dy": 102.19 },
-        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_04_logo.png",
-        "width": 122.79, "height": 122.2
+        "id": "travel_04_f_company",
+        "type": "text",
+        "position": {
+          "dx": 68.4,
+          "dy": 13.7
+        },
+        "rotation": 0,
+        "text": "DEPART",
+        "fontFamily": "Inter",
+        "fontSize": 14.2,
+        "color": 4280560937,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
       },
       {
-        "id": "f_line1", "type": "text", "field": "tagline",
-        "position": { "dx": 128.2, "dy": 34.47 },
-        "text": "How many moons",
-        "fontFamily": "Inter", "fontSize": 19.67, "fontWeight": 6
+        "id": "travel_04_f_tagline",
+        "type": "text",
+        "position": {
+          "dx": 68.4,
+          "dy": 35.8
+        },
+        "rotation": 0,
+        "text": "TRAVEL & TOURISM",
+        "fontFamily": "Inter",
+        "fontSize": 7.6,
+        "color": 4280560937,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "tagline",
+        "italic": false
       },
       {
-        "id": "f_line2", "type": "text", "field": "tagline2",
-        "position": { "dx": 128.2, "dy": 56.76 },
-        "text": "do you know?",
-        "fontFamily": "Inter", "fontSize": 19.67, "fontWeight": 6
+        "id": "travel_04_f_name",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 79.3
+        },
+        "rotation": 0,
+        "text": "Alex Morgan",
+        "fontFamily": "Inter",
+        "fontSize": 21.2,
+        "color": 4280560937,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "travel_04_f_title",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 109.4
+        },
+        "rotation": 0,
+        "text": "Travel Consultant",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4280560937,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "travel_04_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 153.4
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4280560937,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "travel_04_f_email",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 173.9
+        },
+        "rotation": 0,
+        "text": "alex@example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4280560937,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
       }
     ]
   },
@@ -28,52 +142,70 @@
     "background": "assets/images/empty_templates/travel/horizontal/travel_04_back.png",
     "elements": [
       {
-        "id": "b_hello", "type": "text",
-        "position": { "dx": 29.0, "dy": 28.35 },
-        "text": "HELLO!",
-        "fontFamily": "Inter", "fontSize": 29.24, "fontWeight": 6
+        "id": "travel_04_b_company",
+        "type": "text",
+        "position": {
+          "dx": 35.4,
+          "dy": 105.9
+        },
+        "rotation": 0,
+        "text": "DEPART",
+        "fontFamily": "Inter",
+        "fontSize": 24.6,
+        "color": 4280560937,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
       },
       {
-        "id": "b_email", "type": "text", "field": "email",
-        "position": { "dx": 28.98, "dy": 97.34 },
-        "text": "wsmith@agency.com",
-        "fontFamily": "Inter", "fontSize": 10.49, "fontWeight": 3
+        "id": "travel_04_b_tagline",
+        "type": "text",
+        "position": {
+          "dx": 35.4,
+          "dy": 138.1
+        },
+        "rotation": 0,
+        "text": "TRAVEL & TOURISM",
+        "fontFamily": "Inter",
+        "fontSize": 7.6,
+        "color": 4280560937,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "tagline",
+        "italic": false
       },
       {
-        "id": "b_phone", "type": "text", "field": "phone",
-        "position": { "dx": 28.98, "dy": 149.91 },
-        "text": "626 66 71 60",
-        "fontFamily": "Inter", "fontSize": 15.74, "fontWeight": 6
-      },
-      {
-        "id": "b_name", "type": "text", "field": "name",
-        "position": { "dx": 186.33, "dy": 31.74 },
-        "text": "Wendy Smith",
-        "fontFamily": "Inter", "fontSize": 15.74, "fontWeight": 6
-      },
-      {
-        "id": "b_title", "type": "text", "field": "title",
-        "position": { "dx": 186.33, "dy": 50.8 },
-        "text": "Travel agent",
-        "fontFamily": "Inter", "fontSize": 11.8, "fontWeight": 3
-      },
-      {
-        "id": "b_address1", "type": "text", "field": "address1",
-        "position": { "dx": 186.68, "dy": 100.39 },
-        "text": "6801 Hollywood Blvd,",
-        "fontFamily": "Inter", "fontSize": 10.49, "fontWeight": 3
-      },
-      {
-        "id": "b_address2", "type": "text", "field": "address2",
-        "position": { "dx": 186.68, "dy": 111.05 },
-        "text": "CA 90028, EE. UU.",
-        "fontFamily": "Inter", "fontSize": 10.49, "fontWeight": 3
-      },
-      {
-        "id": "b_social", "type": "text", "field": "social",
-        "position": { "dx": 186.33, "dy": 153.58 },
-        "text": "@agency_official",
-        "fontFamily": "Inter", "fontSize": 10.49, "fontWeight": 3
+        "id": "travel_04_b_website",
+        "type": "text",
+        "position": {
+          "dx": 35.4,
+          "dy": 158.7
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 10.7,
+        "color": 4280560937,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
       }
     ]
   }

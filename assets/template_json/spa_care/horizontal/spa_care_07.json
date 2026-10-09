@@ -1,0 +1,168 @@
+{
+  "id": "horizontal_spa_care_07",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_07_front.png",
+    "elements": [
+      {
+        "id": "spa_care_07_f_company",
+        "type": "text",
+        "position": {
+          "dx": 65.3,
+          "dy": 3.7
+        },
+        "rotation": 0,
+        "text": "MUSE BEAUTY",
+        "fontFamily": "Inter",
+        "fontSize": 16.4,
+        "color": 4294964458,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_07_f_name",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 80.0
+        },
+        "rotation": 0,
+        "text": "Mia Collins",
+        "fontFamily": "Inter",
+        "fontSize": 20.5,
+        "color": 4284493636,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "spa_care_07_f_title",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 110.7
+        },
+        "rotation": 0,
+        "text": "Makeup Artist",
+        "fontFamily": "Inter",
+        "fontSize": 11.5,
+        "color": 4284493636,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "spa_care_07_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 151.9
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4284493636,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "spa_care_07_f_email",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 172.3
+        },
+        "rotation": 0,
+        "text": "mia@example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4284493636,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_07_back.png",
+    "elements": [
+      {
+        "id": "spa_care_07_b_company",
+        "type": "text",
+        "position": {
+          "dx": 176.9,
+          "dy": 106.2
+        },
+        "rotation": 0,
+        "text": "MUSE BEAUTY",
+        "fontFamily": "Inter",
+        "fontSize": 17.8,
+        "color": 4294964458,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_07_b_website",
+        "type": "text",
+        "position": {
+          "dx": 191.2,
+          "dy": 173.1
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 10.5,
+        "color": 4294964458,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
+      }
+    ]
+  }
+}

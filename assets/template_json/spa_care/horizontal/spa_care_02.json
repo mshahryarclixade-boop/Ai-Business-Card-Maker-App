@@ -1,0 +1,168 @@
+{
+  "id": "horizontal_spa_care_02",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_02_front.png",
+    "elements": [
+      {
+        "id": "spa_care_02_f_company",
+        "type": "text",
+        "position": {
+          "dx": 66.8,
+          "dy": 21.3
+        },
+        "rotation": 0,
+        "text": "AURA SKIN",
+        "fontFamily": "Inter",
+        "fontSize": 16.1,
+        "color": 4286600530,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_02_f_name",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 78.6
+        },
+        "rotation": 0,
+        "text": "Emma Parker",
+        "fontFamily": "Merriweather",
+        "fontSize": 21.6,
+        "color": 4286600530,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "spa_care_02_f_title",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 110.7
+        },
+        "rotation": 0,
+        "text": "Aesthetician",
+        "fontFamily": "Inter",
+        "fontSize": 11.5,
+        "color": 4286600530,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "spa_care_02_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 148.7
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4286600530,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "spa_care_02_f_email",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 169.2
+        },
+        "rotation": 0,
+        "text": "emma@example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4286600530,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_02_back.png",
+    "elements": [
+      {
+        "id": "spa_care_02_b_company",
+        "type": "text",
+        "position": {
+          "dx": 172.3,
+          "dy": 77.3
+        },
+        "rotation": 0,
+        "text": "AURA SKIN",
+        "fontFamily": "Merriweather",
+        "fontSize": 19.7,
+        "color": 4286600530,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_02_b_website",
+        "type": "text",
+        "position": {
+          "dx": 172.3,
+          "dy": 171.5
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 10.5,
+        "color": 4286600530,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
+      }
+    ]
+  }
+}

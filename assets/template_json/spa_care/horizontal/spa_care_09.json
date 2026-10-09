@@ -1,0 +1,168 @@
+{
+  "id": "horizontal_spa_care_09",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_09_front.png",
+    "elements": [
+      {
+        "id": "spa_care_09_f_company",
+        "type": "text",
+        "position": {
+          "dx": 70.0,
+          "dy": 33.9
+        },
+        "rotation": 0,
+        "text": "BLOOM CLINIC",
+        "fontFamily": "Inter",
+        "fontSize": 16.1,
+        "color": 4280499808,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_09_f_name",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 93.0
+        },
+        "rotation": 0,
+        "text": "Ella Mitchell",
+        "fontFamily": "Inter",
+        "fontSize": 20.1,
+        "color": 4280499808,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "spa_care_09_f_title",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 123.3
+        },
+        "rotation": 0,
+        "text": "Clinic Manager",
+        "fontFamily": "Inter",
+        "fontSize": 11.5,
+        "color": 4280499808,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "spa_care_09_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 153.4
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4280499808,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "spa_care_09_f_email",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 173.9
+        },
+        "rotation": 0,
+        "text": "ella@example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4280499808,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_09_back.png",
+    "elements": [
+      {
+        "id": "spa_care_09_b_company",
+        "type": "text",
+        "position": {
+          "dx": 164.4,
+          "dy": 79.8
+        },
+        "rotation": 0,
+        "text": "BLOOM CLINIC",
+        "fontFamily": "Inter",
+        "fontSize": 22.3,
+        "color": 4280499808,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_09_b_website",
+        "type": "text",
+        "position": {
+          "dx": 23.6,
+          "dy": 176.9
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 9.8,
+        "color": 4294967295,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
+      }
+    ]
+  }
+}

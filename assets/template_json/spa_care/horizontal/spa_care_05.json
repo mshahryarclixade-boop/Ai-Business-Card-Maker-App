@@ -1,0 +1,168 @@
+{
+  "id": "horizontal_spa_care_05",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_05_front.png",
+    "elements": [
+      {
+        "id": "spa_care_05_f_company",
+        "type": "text",
+        "position": {
+          "dx": 71.6,
+          "dy": 20.7
+        },
+        "rotation": 0,
+        "text": "VITAL CARE",
+        "fontFamily": "Inter",
+        "fontSize": 16.7,
+        "color": 4278747014,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_05_f_name",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 87.1
+        },
+        "rotation": 0,
+        "text": "Amelia Clark",
+        "fontFamily": "Inter",
+        "fontSize": 19.7,
+        "color": 4280702298,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "spa_care_05_f_title",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 117.0
+        },
+        "rotation": 0,
+        "text": "Clinic Manager",
+        "fontFamily": "Inter",
+        "fontSize": 11.5,
+        "color": 4280702298,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "spa_care_05_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 151.9
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4280702298,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "spa_care_05_f_email",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 172.3
+        },
+        "rotation": 0,
+        "text": "amelia@example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4280702298,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_05_back.png",
+    "elements": [
+      {
+        "id": "spa_care_05_b_company",
+        "type": "text",
+        "position": {
+          "dx": 139.2,
+          "dy": 64.4
+        },
+        "rotation": 0,
+        "text": "VITAL CARE",
+        "fontFamily": "Inter",
+        "fontSize": 23.6,
+        "color": 4294967295,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_05_b_website",
+        "type": "text",
+        "position": {
+          "dx": 139.2,
+          "dy": 174.0
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.2,
+        "color": 4294967295,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
+      }
+    ]
+  }
+}

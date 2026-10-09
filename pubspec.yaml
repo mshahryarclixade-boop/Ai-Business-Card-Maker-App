@@ -57,14 +57,10 @@ flutter:
     - assets/icons/social/
     - assets/icons/bottom_nav_icons/
     - assets/images/templates/travel/horizontal/
-    - assets/images/templates/travel/vertical/
     - assets/images/templates/spa_care/horizontal/
-    - assets/images/templates/spa_care/vertical/
-    - assets/images/templates/sports_games/horizontal/
-    - assets/images/templates/sports_games/vertical/
-    - assets/images/templates/real_estate/horizontal/
-    - assets/images/templates/real_estate/vertical/
     - assets/images/empty_templates/travel/horizontal/
+    - assets/images/empty_templates/spa_care/horizontal/
     - assets/images/template_logos/travel/horizontal/
     - assets/template_json/travel/horizontal/
+    - assets/template_json/spa_care/horizontal/
     - assets/videos/
