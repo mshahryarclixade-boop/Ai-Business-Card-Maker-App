@@ -23,10 +23,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -61,9 +58,17 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDvzerbKgUH9s64gxbmnRrDo1wlb5e4KKA',
-    appId: '1:680754775838:android:03d937ee636b0e28852b0f',
+    appId: '1:680754775838:android:dd62dbf0540c802d852b0f',
     messagingSenderId: '680754775838',
     projectId: 'ai-business-card-e1cde',
     storageBucket: 'ai-business-card-e1cde.firebasestorage.app',
+  );
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyAocUD-2ECMyYtFXHmpv4nZoAjZopoMaRc',
+    appId: '1:680754775838:ios:35898e0f215f95e8852b0f',
+    messagingSenderId: '680754775838',
+    projectId: 'ai-business-card-e1cde',
+    storageBucket: 'ai-business-card-e1cde.firebasestorage.app',
+    iosBundleId: 'com.business.card.scanner.reader.maker',
   );
 }

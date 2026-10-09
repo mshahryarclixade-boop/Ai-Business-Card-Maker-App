@@ -1,4 +1,4 @@
-package com.example.ai_business_card_maker;
+package com.business.card.scanner.reader.maker;
 
 import io.flutter.embedding.android.FlutterActivity;
 
