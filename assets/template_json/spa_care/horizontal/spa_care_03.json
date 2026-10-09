@@ -1,0 +1,168 @@
+{
+  "id": "horizontal_spa_care_03",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_03_front.png",
+    "elements": [
+      {
+        "id": "spa_care_03_f_company",
+        "type": "text",
+        "position": {
+          "dx": 27.5,
+          "dy": 19.1
+        },
+        "rotation": 0,
+        "text": "ELAN SALON",
+        "fontFamily": "Merriweather",
+        "fontSize": 16.5,
+        "color": 4291406704,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_03_f_name",
+        "type": "text",
+        "position": {
+          "dx": 27.5,
+          "dy": 78.9
+        },
+        "rotation": 0,
+        "text": "Isabella Rose",
+        "fontFamily": "Inter",
+        "fontSize": 20.0,
+        "color": 4294044120,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "spa_care_03_f_title",
+        "type": "text",
+        "position": {
+          "dx": 27.5,
+          "dy": 109.2
+        },
+        "rotation": 0,
+        "text": "Hair Stylist",
+        "fontFamily": "Inter",
+        "fontSize": 11.5,
+        "color": 4294044120,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "spa_care_03_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 27.5,
+          "dy": 151.9
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4294044120,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "spa_care_03_f_email",
+        "type": "text",
+        "position": {
+          "dx": 27.5,
+          "dy": 172.3
+        },
+        "rotation": 0,
+        "text": "isabella@example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4294044120,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_03_back.png",
+    "elements": [
+      {
+        "id": "spa_care_03_b_company",
+        "type": "text",
+        "position": {
+          "dx": 67.8,
+          "dy": 105.1
+        },
+        "rotation": 0,
+        "text": "ELAN SALON",
+        "fontFamily": "Merriweather",
+        "fontSize": 28.3,
+        "color": 4291406704,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_03_b_website",
+        "type": "text",
+        "position": {
+          "dx": 116.6,
+          "dy": 156.9
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.0,
+        "color": 4291406704,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
+      }
+    ]
+  }
+}

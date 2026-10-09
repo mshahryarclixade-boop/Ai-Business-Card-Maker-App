@@ -1,26 +1,140 @@
 {
-  "id": "travel_07",
+  "id": "horizontal_travel_07",
   "orientation": "landscape",
   "front": {
     "background": "assets/images/empty_templates/travel/horizontal/travel_07_front.png",
     "elements": [
       {
-        "id": "f_logo", "type": "image",
-        "position": { "dx": 127.59, "dy": 70.24 },
-        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_07_logo.png",
-        "width": 70.6, "height": 34.2
+        "id": "travel_07_f_company",
+        "type": "text",
+        "position": {
+          "dx": 70.0,
+          "dy": 12.1
+        },
+        "rotation": 0,
+        "text": "SUMMIT",
+        "fontFamily": "Inter",
+        "fontSize": 14.2,
+        "color": 4281615686,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
       },
       {
-        "id": "f_company", "type": "text", "field": "company",
-        "position": { "dx": 97.03, "dy": 105.19 },
-        "text": "Travel Solutions",
-        "fontFamily": "Poppins", "fontSize": 16.94, "fontWeight": 5
+        "id": "travel_07_f_tagline",
+        "type": "text",
+        "position": {
+          "dx": 70.0,
+          "dy": 34.2
+        },
+        "rotation": 0,
+        "text": "TRAVEL & TOURISM",
+        "fontFamily": "Inter",
+        "fontSize": 7.6,
+        "color": 4281615686,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "tagline",
+        "italic": false
       },
       {
-        "id": "f_slogan", "type": "text", "field": "slogan",
-        "position": { "dx": 120.32, "dy": 124.51 },
-        "text": "YOUR SLOGAN HERE",
-        "fontFamily": "Poppins", "fontSize": 7.68, "fontWeight": 4
+        "id": "travel_07_f_name",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 76.6
+        },
+        "rotation": 0,
+        "text": "Alex Morgan",
+        "fontFamily": "Merriweather",
+        "fontSize": 22.0,
+        "color": 4281615686,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "travel_07_f_title",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 109.1
+        },
+        "rotation": 0,
+        "text": "Travel Consultant",
+        "fontFamily": "Inter",
+        "fontSize": 11.6,
+        "color": 4281615686,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "travel_07_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 151.9
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4281615686,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "travel_07_f_email",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 172.3
+        },
+        "rotation": 0,
+        "text": "alex@example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4281615686,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
       }
     ]
   },
@@ -28,28 +142,70 @@
     "background": "assets/images/empty_templates/travel/horizontal/travel_07_back.png",
     "elements": [
       {
-        "id": "b_headline", "type": "text",
-        "position": { "dx": 81.19, "dy": 22.94 },
-        "text": "Book an adventure!",
-        "fontFamily": "Poppins", "fontSize": 16.94, "fontWeight": 5
+        "id": "travel_07_b_company",
+        "type": "text",
+        "position": {
+          "dx": 205.4,
+          "dy": 55.7
+        },
+        "rotation": 0,
+        "text": "SUMMIT",
+        "fontFamily": "Inter",
+        "fontSize": 16.3,
+        "color": 4294374379,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
       },
       {
-        "id": "b_website", "type": "text", "field": "website",
-        "position": { "dx": 83.1, "dy": 57.9 },
-        "text": "www.travelsolutions.com",
-        "fontFamily": "Poppins", "fontSize": 13.05, "fontWeight": 4
+        "id": "travel_07_b_tagline",
+        "type": "text",
+        "position": {
+          "dx": 205.4,
+          "dy": 79.9
+        },
+        "rotation": 0,
+        "text": "TRAVEL & TOURISM",
+        "fontFamily": "Inter",
+        "fontSize": 7.6,
+        "color": 4294374379,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "tagline",
+        "italic": false
       },
       {
-        "id": "b_email", "type": "text", "field": "email",
-        "position": { "dx": 79.51, "dy": 84.79 },
-        "text": "travelsolutions@mail.com",
-        "fontFamily": "Poppins", "fontSize": 13.05, "fontWeight": 4
-      },
-      {
-        "id": "b_phone", "type": "text", "field": "phone",
-        "position": { "dx": 113.14, "dy": 113.47 },
-        "text": "+00 123 456 789",
-        "fontFamily": "Poppins", "fontSize": 13.05, "fontWeight": 4
+        "id": "travel_07_b_website",
+        "type": "text",
+        "position": {
+          "dx": 205.4,
+          "dy": 183.1
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 9.9,
+        "color": 4294374379,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
       }
     ]
   }

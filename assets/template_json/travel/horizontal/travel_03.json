@@ -1,28 +1,140 @@
 {
-  "id": "travel_03",
+  "id": "horizontal_travel_03",
   "orientation": "landscape",
   "front": {
     "background": "assets/images/empty_templates/travel/horizontal/travel_03_front.png",
     "elements": [
       {
-        "id": "f_logo", "type": "image",
-        "position": { "dx": 100.42, "dy": 49.76 },
-        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_03_logo.png",
-        "width": 123.26, "height": 76.06
+        "id": "travel_03_f_company",
+        "type": "text",
+        "position": {
+          "dx": 62.1,
+          "dy": 13.7
+        },
+        "rotation": 0,
+        "text": "ROAM",
+        "fontFamily": "Inter",
+        "fontSize": 14.2,
+        "color": 4279713591,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
       },
       {
-        "id": "f_company", "type": "text", "field": "company",
-        "position": { "dx": 111.58, "dy": 137.15 },
-        "text": "COMPANY NAME",
-        "fontFamily": "Roboto", "fontSize": 13.19, "fontWeight": 3,
-        "color": 4294967295
+        "id": "travel_03_f_tagline",
+        "type": "text",
+        "position": {
+          "dx": 62.1,
+          "dy": 35.8
+        },
+        "rotation": 0,
+        "text": "TRAVEL & TOURISM",
+        "fontFamily": "Inter",
+        "fontSize": 7.6,
+        "color": 4279713591,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "tagline",
+        "italic": false
       },
       {
-        "id": "f_tagline", "type": "text", "field": "tagline",
-        "position": { "dx": 121.55, "dy": 153.55 },
-        "text": "Tagline Here",
-        "fontFamily": "Roboto", "fontSize": 9.53, "fontWeight": 3,
-        "color": 4294413854
+        "id": "travel_03_f_name",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 78.5
+        },
+        "rotation": 0,
+        "text": "Alex Morgan",
+        "fontFamily": "Inter",
+        "fontSize": 22.0,
+        "color": 4279713591,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "travel_03_f_title",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 108.9
+        },
+        "rotation": 0,
+        "text": "Travel Consultant",
+        "fontFamily": "Inter",
+        "fontSize": 11.8,
+        "color": 4279713591,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "travel_03_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 151.9
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4279713591,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "travel_03_f_email",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 172.3
+        },
+        "rotation": 0,
+        "text": "alex@example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4279713591,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
       }
     ]
   },
@@ -30,87 +142,70 @@
     "background": "assets/images/empty_templates/travel/horizontal/travel_03_back.png",
     "elements": [
       {
-        "id": "b_logo", "type": "image",
-        "position": { "dx": 227.62, "dy": 57.63 },
-        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_03_logo_back.png",
-        "width": 104.9, "height": 64.26
+        "id": "travel_03_b_company",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 47.5
+        },
+        "rotation": 0,
+        "text": "ROAM",
+        "fontFamily": "Inter",
+        "fontSize": 26.4,
+        "color": 4279713591,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
       },
       {
-        "id": "b_company", "type": "text", "field": "company",
-        "position": { "dx": 238.87, "dy": 133.7 },
-        "text": "COMPANY NAME",
-        "fontFamily": "Roboto", "fontSize": 10.64, "fontWeight": 3,
-        "color": 4294967295
+        "id": "travel_03_b_tagline",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 81.5
+        },
+        "rotation": 0,
+        "text": "TRAVEL & TOURISM",
+        "fontFamily": "Inter",
+        "fontSize": 7.6,
+        "color": 4279713591,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "tagline",
+        "italic": false
       },
       {
-        "id": "b_tagline", "type": "text", "field": "tagline",
-        "position": { "dx": 246.89, "dy": 146.92 },
-        "text": "Tagline Here",
-        "fontFamily": "Roboto", "fontSize": 7.68, "fontWeight": 3,
-        "color": 4282466370
-      },
-      {
-        "id": "b_name", "type": "text", "field": "name",
-        "position": { "dx": 14.35, "dy": 20.06 },
-        "text": "Micheal Smith",
-        "fontFamily": "Roboto", "fontSize": 14.77, "fontWeight": 3,
-        "color": 4294413854
-      },
-      {
-        "id": "b_title", "type": "text", "field": "title",
-        "position": { "dx": 14.35, "dy": 37.87 },
-        "text": "Project Manager",
-        "fontFamily": "Roboto", "fontSize": 10.33, "fontWeight": 3,
-        "color": 4282466370
-      },
-      {
-        "id": "b_phone", "type": "text", "field": "phone",
-        "position": { "dx": 40.27, "dy": 85.42 },
-        "text": "+00 1234 567 8900",
-        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
-        "color": 4282466370
-      },
-      {
-        "id": "b_phone2", "type": "text", "field": "phone2",
-        "position": { "dx": 40.27, "dy": 96.57 },
-        "text": "+00 1234 567 8900",
-        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
-        "color": 4282466370
-      },
-      {
-        "id": "b_email", "type": "text", "field": "email",
-        "position": { "dx": 40.27, "dy": 113.46 },
-        "text": "yourmailadress@domain.com",
-        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
-        "color": 4282466370
-      },
-      {
-        "id": "b_email2", "type": "text", "field": "email2",
-        "position": { "dx": 40.27, "dy": 124.61 },
-        "text": "secondmail@domain.com",
-        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
-        "color": 4282466370
-      },
-      {
-        "id": "b_address1", "type": "text", "field": "address1",
-        "position": { "dx": 40.27, "dy": 151.93 },
-        "text": "Street, 234 Lorem Ipsum,",
-        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
-        "color": 4282466370
-      },
-      {
-        "id": "b_address2", "type": "text", "field": "address2",
-        "position": { "dx": 40.27, "dy": 163.08 },
-        "text": "Big Vallejo, California, 00917",
-        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
-        "color": 4282466370
-      },
-      {
-        "id": "b_web", "type": "text", "field": "website",
-        "position": { "dx": 40.18, "dy": 176.78 },
-        "text": "www.yourwebsite.com",
-        "fontFamily": "Roboto", "fontSize": 9.73, "fontWeight": 3,
-        "color": 4282466370
+        "id": "travel_03_b_website",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 175.5
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4279713591,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
       }
     ]
   }

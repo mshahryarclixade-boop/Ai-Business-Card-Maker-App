@@ -1,34 +1,140 @@
 {
-  "id": "travel_01",
+  "id": "horizontal_travel_01",
   "orientation": "landscape",
-  "qrSlot": { "side": 1, "dx": 245.0, "dy": 135.9, "size": 40.3 },
   "front": {
     "background": "assets/images/empty_templates/travel/horizontal/travel_01_front.png",
     "elements": [
       {
-        "id": "f_logo", "type": "image",
-        "position": { "dx": 150.5, "dy": 75.5 },
-        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_01_logo.png",
-        "width": 31.5, "height": 31.5
+        "id": "travel_01_f_company",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 12.1
+        },
+        "rotation": 0,
+        "text": "SKYWAY",
+        "fontFamily": "Inter",
+        "fontSize": 14.2,
+        "color": 4280771797,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
       },
       {
-        "id": "f_company", "type": "text", "field": "company",
-        "position": { "dx": 118.78, "dy": 106.41 },
-        "text": "COMPANY LOGO",
-        "fontFamily": "Inter", "fontSize": 10.49, "fontWeight": 8
+        "id": "travel_01_f_tagline",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 34.2
+        },
+        "rotation": 0,
+        "text": "TRAVEL & TOURISM",
+        "fontFamily": "Inter",
+        "fontSize": 7.6,
+        "color": 4280771797,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "tagline",
+        "italic": false
       },
       {
-        "id": "f_slogan", "type": "text", "field": "slogan",
-        "position": { "dx": 135.83, "dy": 120.15 },
-        "text": "SLOGAN GOES HERE",
-        "fontFamily": "Inter", "fontSize": 5.17, "fontWeight": 3
+        "id": "travel_01_f_name",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 71.8
+        },
+        "rotation": 0,
+        "text": "Alex Morgan",
+        "fontFamily": "Inter",
+        "fontSize": 20.8,
+        "color": 4279577162,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
       },
       {
-        "id": "f_tagline", "type": "text", "field": "tagline",
-        "position": { "dx": 115.79, "dy": 160.57 },
-        "text": "Graphic Design . Web Design",
-        "fontFamily": "Inter", "fontSize": 7.87, "fontWeight": 3,
-        "color": 4294967295
+        "id": "travel_01_f_title",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 103.1
+        },
+        "rotation": 0,
+        "text": "Travel Consultant",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4279577162,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "travel_01_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 148.0
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Noto Sans Mono",
+        "fontSize": 10.9,
+        "color": 4279577162,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "travel_01_f_email",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 168.5
+        },
+        "rotation": 0,
+        "text": "alex@example.com",
+        "fontFamily": "Noto Sans Mono",
+        "fontSize": 10.9,
+        "color": 4279577162,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
       }
     ]
   },
@@ -36,70 +142,70 @@
     "background": "assets/images/empty_templates/travel/horizontal/travel_01_back.png",
     "elements": [
       {
-        "id": "b_logo", "type": "image",
-        "position": { "dx": 249.4, "dy": 29.0 },
-        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_01_logo.png",
-        "width": 31.5, "height": 31.5
+        "id": "travel_01_b_company",
+        "type": "text",
+        "position": {
+          "dx": 24.3,
+          "dy": 60.7
+        },
+        "rotation": 0,
+        "text": "SKYWAY",
+        "fontFamily": "Inter",
+        "fontSize": 32.3,
+        "color": 4294967295,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
       },
       {
-        "id": "b_name", "type": "text", "field": "name",
-        "position": { "dx": 63.71, "dy": 27.34 },
-        "text": "MICHAEL JOHNS",
-        "fontFamily": "Inter", "fontSize": 14.36, "fontWeight": 6
+        "id": "travel_01_b_tagline",
+        "type": "text",
+        "position": {
+          "dx": 25.9,
+          "dy": 106.0
+        },
+        "rotation": 0,
+        "text": "TRAVEL & TOURISM",
+        "fontFamily": "Inter",
+        "fontSize": 9.9,
+        "color": 4294967295,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "tagline",
+        "italic": false
       },
       {
-        "id": "b_title", "type": "text", "field": "title",
-        "position": { "dx": 63.71, "dy": 46.23 },
-        "text": "Solution Manager",
-        "fontFamily": "Inter", "fontSize": 9.14, "fontWeight": 2
-      },
-      {
-        "id": "b_phone", "type": "text", "field": "phone",
-        "position": { "dx": 49.77, "dy": 80.39 },
-        "text": "+000 1234 6789",
-        "fontFamily": "Inter", "fontSize": 8.55, "fontWeight": 3
-      },
-      {
-        "id": "b_phone2", "type": "text", "field": "phone2",
-        "position": { "dx": 49.77, "dy": 90.89 },
-        "text": "+000 9876 5432",
-        "fontFamily": "Inter", "fontSize": 8.55, "fontWeight": 3
-      },
-      {
-        "id": "b_email", "type": "text", "field": "email",
-        "position": { "dx": 49.77, "dy": 114.26 },
-        "text": "urname@email.com",
-        "fontFamily": "Inter", "fontSize": 8.55, "fontWeight": 3
-      },
-      {
-        "id": "b_website", "type": "text", "field": "website",
-        "position": { "dx": 49.77, "dy": 124.76 },
-        "text": "urwebsitename.com",
-        "fontFamily": "Inter", "fontSize": 8.55, "fontWeight": 3
-      },
-      {
-        "id": "b_address1", "type": "text", "field": "address1",
-        "position": { "dx": 49.77, "dy": 148.09 },
-        "text": "Street Address Here",
-        "fontFamily": "Inter", "fontSize": 8.55, "fontWeight": 3
-      },
-      {
-        "id": "b_address2", "type": "text", "field": "address2",
-        "position": { "dx": 49.77, "dy": 158.59 },
-        "text": "Street Address Here",
-        "fontFamily": "Inter", "fontSize": 8.55, "fontWeight": 3
-      },
-      {
-        "id": "b_company", "type": "text", "field": "company",
-        "position": { "dx": 225.84, "dy": 59.91 },
-        "text": "COMPANY LOGO",
-        "fontFamily": "Inter", "fontSize": 10.49, "fontWeight": 8
-      },
-      {
-        "id": "b_slogan", "type": "text", "field": "slogan",
-        "position": { "dx": 227.89, "dy": 73.69 },
-        "text": "SLOGAN GOES HERE",
-        "fontFamily": "Inter", "fontSize": 5.17, "fontWeight": 3
+        "id": "travel_01_b_website",
+        "type": "text",
+        "position": {
+          "dx": 25.9,
+          "dy": 178.6
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4294967295,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
       }
     ]
   }

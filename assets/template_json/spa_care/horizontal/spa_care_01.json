@@ -1,0 +1,168 @@
+{
+  "id": "horizontal_spa_care_01",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_01_front.png",
+    "elements": [
+      {
+        "id": "spa_care_01_f_company",
+        "type": "text",
+        "position": {
+          "dx": 73.1,
+          "dy": 18.9
+        },
+        "rotation": 0,
+        "text": "VERDANT SPA",
+        "fontFamily": "Inter",
+        "fontSize": 15.3,
+        "color": 4282999374,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_01_f_name",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 87.1
+        },
+        "rotation": 0,
+        "text": "Olivia Bennett",
+        "fontFamily": "Inter",
+        "fontSize": 19.7,
+        "color": 4282999374,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "spa_care_01_f_title",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 117.0
+        },
+        "rotation": 0,
+        "text": "Spa Therapist",
+        "fontFamily": "Inter",
+        "fontSize": 11.5,
+        "color": 4282999374,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "spa_care_01_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 151.9
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4282999374,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "spa_care_01_f_email",
+        "type": "text",
+        "position": {
+          "dx": 21.2,
+          "dy": 172.3
+        },
+        "rotation": 0,
+        "text": "olivia@example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4282999374,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_01_back.png",
+    "elements": [
+      {
+        "id": "spa_care_01_b_company",
+        "type": "text",
+        "position": {
+          "dx": 159.7,
+          "dy": 110.6
+        },
+        "rotation": 0,
+        "text": "VERDANT SPA",
+        "fontFamily": "Merriweather",
+        "fontSize": 19.5,
+        "color": 4282999374,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_01_b_website",
+        "type": "text",
+        "position": {
+          "dx": 178.0,
+          "dy": 172.6
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.0,
+        "color": 4282999374,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
+      }
+    ]
+  }
+}

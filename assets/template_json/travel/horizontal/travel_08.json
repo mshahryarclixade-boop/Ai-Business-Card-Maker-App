@@ -1,0 +1,212 @@
+{
+  "id": "horizontal_travel_08",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_08_front.png",
+    "elements": [
+      {
+        "id": "travel_08_f_company",
+        "type": "text",
+        "position": {
+          "dx": 8.9,
+          "dy": 105.5
+        },
+        "rotation": 0,
+        "text": "TIDELINE",
+        "fontFamily": "Inter",
+        "fontSize": 10.4,
+        "color": 4294967295,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "travel_08_f_tagline",
+        "type": "text",
+        "position": {
+          "dx": 10.9,
+          "dy": 132.3
+        },
+        "rotation": 0,
+        "text": "TRAVEL & TOURISM",
+        "fontFamily": "Inter",
+        "fontSize": 7.1,
+        "color": 4294967295,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "tagline",
+        "italic": false
+      },
+      {
+        "id": "travel_08_f_name",
+        "type": "text",
+        "position": {
+          "dx": 117.2,
+          "dy": 46.8
+        },
+        "rotation": 0,
+        "text": "Alex Morgan",
+        "fontFamily": "Inter",
+        "fontSize": 19.0,
+        "color": 4279385938,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "travel_08_f_title",
+        "type": "text",
+        "position": {
+          "dx": 117.2,
+          "dy": 77.9
+        },
+        "rotation": 0,
+        "text": "Travel Consultant",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4278744968,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "travel_08_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 117.2,
+          "dy": 144.0
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4279385938,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "travel_08_f_email",
+        "type": "text",
+        "position": {
+          "dx": 117.2,
+          "dy": 164.5
+        },
+        "rotation": 0,
+        "text": "alex@example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4279385938,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/travel/horizontal/travel_08_back.png",
+    "elements": [
+      {
+        "id": "travel_08_b_company",
+        "type": "text",
+        "position": {
+          "dx": 126.6,
+          "dy": 95.7
+        },
+        "rotation": 0,
+        "text": "TIDELINE",
+        "fontFamily": "Inter",
+        "fontSize": 20.5,
+        "color": 4294967295,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "travel_08_b_tagline",
+        "type": "text",
+        "position": {
+          "dx": 161.2,
+          "dy": 124.0
+        },
+        "rotation": 0,
+        "text": "TRAVEL & TOURISM",
+        "fontFamily": "Inter",
+        "fontSize": 7.6,
+        "color": 4294967295,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "tagline",
+        "italic": false
+      },
+      {
+        "id": "travel_08_b_website",
+        "type": "text",
+        "position": {
+          "dx": 147.2,
+          "dy": 178.7
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.2,
+        "color": 4294967295,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
+      }
+    ]
+  }
+}

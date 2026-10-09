@@ -30,6 +30,13 @@ class MyCardSection extends StatelessWidget {
       final liveData = home.previewData.value;
       final applying = home.applying.value;
 
+      // The live template preview must use the SAME aspect ratio as the editor
+      // canvas. Forcing 7:4 on a canvas with another ratio made the preview
+      // scale up and crop the top and bottom of the card.
+      final canvas = liveData?.orientation.canvasSize;
+      final previewAspect =
+      canvas == null ? 7 / 4 : canvas.width / canvas.height;
+
       void editCard() => Get.to(
             () => CardEditorView(design: design),
         transition: Transition.rightToLeft,
@@ -64,17 +71,26 @@ class MyCardSection extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: AspectRatio(
-                  aspectRatio: 7 / 4,
+                  aspectRatio: liveData != null ? previewAspect : 7 / 4,
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
                       if (preview == null)
                         Image.file(design.file, fit: BoxFit.cover)
                       else if (liveData != null)
-                        TemplateLivePreview(
-                          side: liveData.front,
-                          orientation: liveData.orientation,
-                          repaintKey: home.frontCaptureKey,
+                      // Draw the template at its real canvas size (exactly as
+                      // in the editor) and scale the whole thing down to fit.
+                        FittedBox(
+                          fit: BoxFit.contain,
+                          child: SizedBox(
+                            width: canvas!.width,
+                            height: canvas.height,
+                            child: TemplateLivePreview(
+                              side: liveData.front,
+                              orientation: liveData.orientation,
+                              repaintKey: home.frontCaptureKey,
+                            ),
+                          ),
                         )
                       else
                         Image.asset(preview.frontImagePath, fit: BoxFit.cover),

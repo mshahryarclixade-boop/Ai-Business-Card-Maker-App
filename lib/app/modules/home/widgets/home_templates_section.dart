@@ -7,8 +7,6 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../template/model/template_item.dart';
 import '../controller/home_controller.dart';
 
-/// Horizontally scrollable free templates. Tapping one previews it on the
-/// card above; nothing is saved until Apply Template.
 class HomeTemplatesSection extends GetView<HomeController> {
   const HomeTemplatesSection({super.key});
 

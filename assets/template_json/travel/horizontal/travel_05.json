@@ -1,15 +1,140 @@
 {
-  "id": "travel_05",
+  "id": "horizontal_travel_05",
   "orientation": "landscape",
   "front": {
     "background": "assets/images/empty_templates/travel/horizontal/travel_05_front.png",
     "elements": [
       {
-        "id": "f_company", "type": "text", "field": "company",
-        "position": { "dx": 51.5, "dy": 54.4 },
-        "text": "TRAVEL COMPANY",
-        "fontFamily": "Barlow Condensed", "fontSize": 27.54, "fontWeight": 2,
-        "color": 4294967295
+        "id": "travel_05_f_company",
+        "type": "text",
+        "position": {
+          "dx": 63.7,
+          "dy": 10.4
+        },
+        "rotation": 0,
+        "text": "VISTA",
+        "fontFamily": "Merriweather",
+        "fontSize": 15.7,
+        "color": 4279582549,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "travel_05_f_tagline",
+        "type": "text",
+        "position": {
+          "dx": 63.7,
+          "dy": 34.2
+        },
+        "rotation": 0,
+        "text": "TRAVEL & TOURISM",
+        "fontFamily": "Inter",
+        "fontSize": 7.6,
+        "color": 4279582549,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "tagline",
+        "italic": false
+      },
+      {
+        "id": "travel_05_f_name",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 75.1
+        },
+        "rotation": 0,
+        "text": "Alex Morgan",
+        "fontFamily": "Merriweather",
+        "fontSize": 22.0,
+        "color": 4279582549,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "travel_05_f_title",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 109.2
+        },
+        "rotation": 0,
+        "text": "Travel Consultant",
+        "fontFamily": "Inter",
+        "fontSize": 11.5,
+        "color": 4279582549,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "travel_05_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 151.9
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4279582549,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "travel_05_f_email",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 172.3
+        },
+        "rotation": 0,
+        "text": "alex@example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4279582549,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
       }
     ]
   },
@@ -17,57 +142,70 @@
     "background": "assets/images/empty_templates/travel/horizontal/travel_05_back.png",
     "elements": [
       {
-        "id": "b_icon_phone", "type": "image",
-        "position": { "dx": 85.21, "dy": 91.59 },
-        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_05_icon_phone.png",
-        "width": 16.39, "height": 16.39
+        "id": "travel_05_b_company",
+        "type": "text",
+        "position": {
+          "dx": 170.7,
+          "dy": 56.9
+        },
+        "rotation": 0,
+        "text": "VISTA",
+        "fontFamily": "Merriweather",
+        "fontSize": 21.3,
+        "color": 4279582549,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
       },
       {
-        "id": "b_icon_email", "type": "image",
-        "position": { "dx": 83.37, "dy": 119.39 },
-        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_05_icon_email.png",
-        "width": 19.41, "height": 12.98
+        "id": "travel_05_b_tagline",
+        "type": "text",
+        "position": {
+          "dx": 170.7,
+          "dy": 86.2
+        },
+        "rotation": 0,
+        "text": "TRAVEL & TOURISM",
+        "fontFamily": "Inter",
+        "fontSize": 7.6,
+        "color": 4279582549,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "tagline",
+        "italic": false
       },
       {
-        "id": "b_icon_web", "type": "image",
-        "position": { "dx": 83.37, "dy": 143.91 },
-        "imageAsset": "assets/images/template_logos/travel/horizontal/travel_05_icon_web.png",
-        "width": 17.7, "height": 17.7
-      },
-      {
-        "id": "b_name", "type": "text", "field": "name",
-        "position": { "dx": 88.28, "dy": 21.6 },
-        "text": "John Smith",
-        "fontFamily": "Barlow Condensed", "fontSize": 33.44, "fontWeight": 2,
-        "color": 4278271843
-      },
-      {
-        "id": "b_title", "type": "text", "field": "title",
-        "position": { "dx": 87.9, "dy": 61.7 },
-        "text": "Travel Consultant",
-        "fontFamily": "Open Sans", "fontSize": 14.46, "fontWeight": 3,
-        "color": 4278271843
-      },
-      {
-        "id": "b_phone", "type": "text", "field": "phone",
-        "position": { "dx": 113.0, "dy": 89.1 },
-        "text": "+8754987985",
-        "fontFamily": "Open Sans", "fontSize": 16.93, "fontWeight": 3,
-        "color": 4278271843
-      },
-      {
-        "id": "b_email", "type": "text", "field": "email",
-        "position": { "dx": 113.0, "dy": 116.98 },
-        "text": "JisanDesigner@gmail.com",
-        "fontFamily": "Open Sans", "fontSize": 9.81, "fontWeight": 3,
-        "color": 4278271843
-      },
-      {
-        "id": "b_website", "type": "text", "field": "website",
-        "position": { "dx": 113.0, "dy": 144.5 },
-        "text": "WWW.JisanDesigner.com",
-        "fontFamily": "Open Sans", "fontSize": 10.4, "fontWeight": 3,
-        "color": 4278271843
+        "id": "travel_05_b_website",
+        "type": "text",
+        "position": {
+          "dx": 170.7,
+          "dy": 171.1
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 10.9,
+        "color": 4279582549,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
       }
     ]
   }

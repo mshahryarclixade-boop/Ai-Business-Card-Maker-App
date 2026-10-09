@@ -1,0 +1,168 @@
+{
+  "id": "horizontal_spa_care_08",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_08_front.png",
+    "elements": [
+      {
+        "id": "spa_care_08_f_company",
+        "type": "text",
+        "position": {
+          "dx": 101.5,
+          "dy": 21.7
+        },
+        "rotation": 0,
+        "text": "PURE LEAF",
+        "fontFamily": "Inter",
+        "fontSize": 17.3,
+        "color": 4284639805,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_08_f_name",
+        "type": "text",
+        "position": {
+          "dx": 101.5,
+          "dy": 90.9
+        },
+        "rotation": 0,
+        "text": "Ava Brooks",
+        "fontFamily": "Inter",
+        "fontSize": 19.0,
+        "color": 4284639805,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "spa_care_08_f_title",
+        "type": "text",
+        "position": {
+          "dx": 101.5,
+          "dy": 121.3
+        },
+        "rotation": 0,
+        "text": "Skincare Consultant",
+        "fontFamily": "Inter",
+        "fontSize": 10.4,
+        "color": 4284639805,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "spa_care_08_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 101.5,
+          "dy": 154.0
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Inter",
+        "fontSize": 10.7,
+        "color": 4284639805,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "spa_care_08_f_email",
+        "type": "text",
+        "position": {
+          "dx": 101.5,
+          "dy": 174.5
+        },
+        "rotation": 0,
+        "text": "ava@example.com",
+        "fontFamily": "Inter",
+        "fontSize": 10.7,
+        "color": 4284639805,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_08_back.png",
+    "elements": [
+      {
+        "id": "spa_care_08_b_company",
+        "type": "text",
+        "position": {
+          "dx": 73.0,
+          "dy": 112.8
+        },
+        "rotation": 0,
+        "text": "PURE LEAF",
+        "fontFamily": "Merriweather",
+        "fontSize": 26.8,
+        "color": 4284639805,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_08_b_website",
+        "type": "text",
+        "position": {
+          "dx": 116.6,
+          "dy": 156.9
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.0,
+        "color": 4284639805,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
+      }
+    ]
+  }
+}

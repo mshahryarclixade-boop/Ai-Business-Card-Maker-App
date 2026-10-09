@@ -1,0 +1,168 @@
+{
+  "id": "horizontal_spa_care_04",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_04_front.png",
+    "elements": [
+      {
+        "id": "spa_care_04_f_company",
+        "type": "text",
+        "position": {
+          "dx": 68.4,
+          "dy": 23.0
+        },
+        "rotation": 0,
+        "text": "TERRA WELLNESS",
+        "fontFamily": "Inter",
+        "fontSize": 14.3,
+        "color": 4286860091,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_04_f_name",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 79.0
+        },
+        "rotation": 0,
+        "text": "Sofia Morgan",
+        "fontFamily": "Merriweather",
+        "fontSize": 21.2,
+        "color": 4286860091,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "spa_care_04_f_title",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 110.7
+        },
+        "rotation": 0,
+        "text": "Wellness Consultant",
+        "fontFamily": "Inter",
+        "fontSize": 11.5,
+        "color": 4286860091,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "spa_care_04_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 148.7
+        },
+        "rotation": 0,
+        "text": "+1 202 555 0147",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4286860091,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "spa_care_04_f_email",
+        "type": "text",
+        "position": {
+          "dx": 19.6,
+          "dy": 169.2
+        },
+        "rotation": 0,
+        "text": "sofia@example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.3,
+        "color": 4286860091,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/spa_care/horizontal/spa_care_04_back.png",
+    "elements": [
+      {
+        "id": "spa_care_04_b_company",
+        "type": "text",
+        "position": {
+          "dx": 163.4,
+          "dy": 107.3
+        },
+        "rotation": 0,
+        "text": "TERRA WELLNESS",
+        "fontFamily": "Inter",
+        "fontSize": 16.7,
+        "color": 4286860091,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "spa_care_04_b_website",
+        "type": "text",
+        "position": {
+          "dx": 171.7,
+          "dy": 175.8
+        },
+        "rotation": 0,
+        "text": "www.example.com",
+        "fontFamily": "Inter",
+        "fontSize": 11.0,
+        "color": 4286860091,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4280163876,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
+      }
+    ]
+  }
+}
