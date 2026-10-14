@@ -7,6 +7,7 @@ import '../modules/profile_setup/view/personal_details_view.dart';
 import '../modules/recent designs/view/my_cards_view.dart';
 import '../modules/splash/view/splash_view.dart';
 import '../modules/template/widget/template_edit_view.dart';
+import '../modules/paywall/view/paywall_view.dart';
 import 'app_routes.dart';
 import '../modules/profile_setup/view/first_card_generating_view.dart';
 import '../modules/profile_setup/view/first_card_ready_view.dart';
@@ -26,5 +27,6 @@ class AppPages {
     GetPage(name: Routes.BUSINESS_DETAILS, page: () => const BusinessDetailsView(),),
     GetPage(name: Routes.FIRST_CARD, page: () => const FirstCardGeneratingView(),),
     GetPage(name: Routes.FIRST_CARD_READY, page: () => const FirstCardReadyView(),),
+    GetPage(name: Routes.PAYWALL, page: () => const PaywallView()),
   ];
 }

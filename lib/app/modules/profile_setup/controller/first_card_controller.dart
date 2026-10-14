@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import '../../../core/services/gemini_card_service.dart';
@@ -75,6 +77,8 @@ class FirstCardController extends GetxController {
       if (isClosed) return; // user left the screen while generating
       creatingDone.value = true;
 
+      FirebaseAnalytics.instance.logEvent(name: 'first_card_generated');
+
       await Future.delayed(_finishDelay);
 
       if (isClosed) return;
@@ -82,11 +86,17 @@ class FirstCardController extends GetxController {
     } on GeminiException catch (e, st) {
       debugPrint('FirstCard GeminiException: ${e.message}');
       debugPrintStack(stackTrace: st);
+      FirebaseCrashlytics.instance
+          .recordError(e, st, reason: 'first card gemini error');
+      FirebaseAnalytics.instance.logEvent(name: 'first_card_failed');
       errorMessage.value = e.message;
       status.value = FirstCardStatus.failed;
     } catch (e, st) {
       debugPrint('FirstCard ERROR: $e');
       debugPrintStack(stackTrace: st);
+      FirebaseCrashlytics.instance
+          .recordError(e, st, reason: 'first card unknown error');
+      FirebaseAnalytics.instance.logEvent(name: 'first_card_failed');
       // Debug builds show the real error on screen. Release builds show
       // the friendly message.
       errorMessage.value = kDebugMode
@@ -98,9 +108,13 @@ class FirstCardController extends GetxController {
     }
   }
 
-  void tryAgain() => start();
+  void tryAgain() {
+    FirebaseAnalytics.instance.logEvent(name: 'first_card_retry');
+    start();
+  }
 
   void useFreeTemplate() {
+    FirebaseAnalytics.instance.logEvent(name: 'first_card_use_template');
     // TODO: point this at the templates screen if it has its own route.
     Get.offAllNamed(Routes.MAIN);
   }

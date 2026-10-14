@@ -2,6 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/services/remote_config_service.dart';
+import '../models/paywall_config_model.dart';
+import 'paywall_actions.dart';
 import 'paywall_view_2.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -14,6 +17,7 @@ class PaywallView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cfg = RemoteConfigService().paywallConfig;
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -38,14 +42,14 @@ class PaywallView extends StatelessWidget {
                     child: Stack(
                       children: [
                         const _ArtworkCards(),
-                        _CloseButton(),
-                        const _Headline(),
-                        const _Subtitle(),
-                        const _FeatureCard(),
-                        const _YearlyProCard(),
-                        const _TrialButton(),
-                        const _TrialInfoTexts(),
-                        const _Footer(),
+                        if (cfg.showCloseButton) _CloseButton(),
+                        _Headline(cfg),
+                        _Subtitle(cfg),
+                        _FeatureCard(cfg),
+                        _YearlyProCard(cfg),
+                        _TrialButton(cfg),
+                        if (cfg.trialEnabled) _TrialInfoTexts(cfg),
+                        _Footer(cfg),
                       ],
                     ),
                   ),
@@ -84,7 +88,7 @@ class _CloseButton extends StatelessWidget {
       top: 16,
       right: 24,
       child: GestureDetector(
-        onTap: () => Get.back(),
+        onTap: () => PaywallActions.exit(),
         child: Container(
           width: 26,
           height: 26,
@@ -213,18 +217,19 @@ class _ArtworkImageCard extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _Headline extends StatelessWidget {
-  const _Headline();
+  const _Headline(this.cfg);
+  final PaywallConfig cfg;
 
   @override
   Widget build(BuildContext context) {
-    return const Positioned(
+    return Positioned(
       top: 180,
       left: (393 - 215) / 2,
       width: 215,
       height: 60,
       child: Text.rich(
         TextSpan(
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: AppTextStyles.fontFamily,
             fontSize: 26,
             height: 1.0,
@@ -232,12 +237,12 @@ class _Headline extends StatelessWidget {
           ),
           children: [
             TextSpan(
-              text: 'Start creating\n',
-              style: TextStyle(color: AppColors.titleDark),
+              text: '${cfg.s1TitleLine1}\n',
+              style: const TextStyle(color: AppColors.titleDark),
             ),
             TextSpan(
-              text: 'for free',
-              style: TextStyle(color: AppColors.primary),
+              text: cfg.s1TitleLine2,
+              style: const TextStyle(color: AppColors.primary),
             ),
           ],
         ),
@@ -252,18 +257,19 @@ class _Headline extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _Subtitle extends StatelessWidget {
-  const _Subtitle();
+  const _Subtitle(this.cfg);
+  final PaywallConfig cfg;
 
   @override
   Widget build(BuildContext context) {
-    return const Positioned(
+    return Positioned(
       top: 244,
       left: 46.5,
       width: 300,
       child: Text(
-        'Unlock everything with Pro',
+        cfg.s1Subtitle,
         textAlign: TextAlign.center,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: AppTextStyles.fontFamily,
           fontSize: 14,
           fontWeight: FontWeight.w400,
@@ -279,7 +285,17 @@ class _Subtitle extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _FeatureCard extends StatelessWidget {
-  const _FeatureCard();
+  const _FeatureCard(this.cfg);
+  final PaywallConfig cfg;
+
+  static IconData _icon(String key) => switch (key) {
+    'ai' => Icons.auto_awesome,
+    'scan' => Icons.document_scanner_outlined,
+    'templates' => Icons.layers_outlined,
+    'qr' => Icons.qr_code_scanner_rounded,
+    'bg' => Icons.auto_fix_high_rounded,
+    _ => Icons.check_circle_outline_rounded,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -301,29 +317,11 @@ class _FeatureCard extends StatelessWidget {
             ),
           ],
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _FeatureRow(
-              icon: Icons.auto_awesome,
-              text: 'Unlimited AI Card Generation',
-            ),
-            _FeatureRow(
-              icon: Icons.document_scanner_outlined,
-              text: 'Scan Unlimited Cards',
-            ),
-            _FeatureRow(
-              icon: Icons.layers_outlined,
-              text: '50+ Premium Templates',
-            ),
-            _FeatureRow(
-              icon: Icons.qr_code_scanner_rounded,
-              text: 'Scan any QR Code',
-            ),
-            _FeatureRow(
-              icon: Icons.auto_fix_high_rounded,
-              text: 'Remove Background',
-            ),
+            for (final f in cfg.s1Features)
+              _FeatureRow(icon: _icon(f.icon), text: f.text),
           ],
         ),
       ),
@@ -372,7 +370,8 @@ class _FeatureRow extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _YearlyProCard extends StatelessWidget {
-  const _YearlyProCard();
+  const _YearlyProCard(this.cfg);
+  final PaywallConfig cfg;
 
   @override
   Widget build(BuildContext context) {
@@ -412,9 +411,9 @@ class _YearlyProCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Yearly Pro',
-                    style: TextStyle(
+                  Text(
+                    cfg.s1PlanTitle,
+                    style: const TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -430,9 +429,9 @@ class _YearlyProCard extends StatelessWidget {
                       color: const Color(0xFF7658E8),
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: const Text(
-                      'Save 70%',
-                      style: TextStyle(
+                    child: Text(
+                      cfg.s1SaveBadge,
+                      style: const TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
@@ -445,9 +444,9 @@ class _YearlyProCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text(
-                    '\$29.99',
-                    style: TextStyle(
+                  Text(
+                    cfg.yearly.price,
+                    style: const TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 28,
                       height: 1,
@@ -459,7 +458,7 @@ class _YearlyProCard extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 2),
                     child: Text(
-                      '/year',
+                      cfg.yearly.period,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 12,
@@ -469,36 +468,38 @@ class _YearlyProCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const Text(
-                'Just \$2.49/month, billed annually',
-                style: TextStyle(
+              Text(
+                cfg.s1PriceNote,
+                style: const TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
                   fontSize: 12,
                   color: AppColors.textSubtitle,
                 ),
               ),
-              const Divider(height: 1, color: Color(0xFFDCD9E9)),
-              Row(
-                children: const [
-                  Icon(
-                    Icons.card_giftcard_outlined,
-                    size: 18,
-                    color: AppColors.primary,
-                  ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      '3 days completely free, no charge today',
-                      style: TextStyle(
-                        fontFamily: AppTextStyles.fontFamily,
-                        fontSize: 12,
-                        height: 1.2,
-                        color: AppColors.textSubtitle,
+              if (cfg.trialEnabled) ...[
+                const Divider(height: 1, color: Color(0xFFDCD9E9)),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.card_giftcard_outlined,
+                      size: 18,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        cfg.trialBenefitText,
+                        style: const TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 12,
+                          height: 1.2,
+                          color: AppColors.textSubtitle,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ],
           ),
         ),
@@ -514,7 +515,8 @@ class _YearlyProCard extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _TrialButton extends StatelessWidget {
-  const _TrialButton();
+  const _TrialButton(this.cfg);
+  final PaywallConfig cfg;
 
   @override
   Widget build(BuildContext context) {
@@ -540,8 +542,13 @@ class _TrialButton extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: () {
+              if (!cfg.showPlansScreen) {
+                PaywallActions.buyYearly(context);
+                return;
+              }
               Get.to(
                 () => const PaywallView2(),
+                arguments: Get.arguments,
                 transition: Transition.rightToLeft,
               );
             },
@@ -563,12 +570,16 @@ class _TrialButton extends StatelessWidget {
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.auto_awesome, size: 18, color: Colors.white),
-                      SizedBox(width: 10),
+                    children: [
+                      const Icon(
+                        Icons.auto_awesome,
+                        size: 18,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 10),
                       Text(
-                        'Start 3-Day Free Trial',
-                        style: TextStyle(
+                        cfg.trialButtonLabel,
+                        style: const TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
@@ -592,30 +603,31 @@ class _TrialButton extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _TrialInfoTexts extends StatelessWidget {
-  const _TrialInfoTexts();
+  const _TrialInfoTexts(this.cfg);
+  final PaywallConfig cfg;
 
   @override
   Widget build(BuildContext context) {
-    return const Positioned(
+    return Positioned(
       top: 738,
       left: 24,
       width: 345,
       child: Column(
         children: [
           Text(
-            'No payment today, \$29.99/year after trial',
+            cfg.trialInfoLine1,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 11,
               color: AppColors.textSubtitle,
             ),
           ),
-          SizedBox(height: 3),
+          const SizedBox(height: 3),
           Text(
-            'Cancel anytime before trial ends',
+            cfg.trialInfoLine2,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 11,
               color: AppColors.textSubtitle,
@@ -632,22 +644,26 @@ class _TrialInfoTexts extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _Footer extends StatelessWidget {
-  const _Footer();
+  const _Footer(this.cfg);
+  final PaywallConfig cfg;
 
   @override
   Widget build(BuildContext context) {
-    return const Positioned(
+    return Positioned(
       top: 790,
       left: 24,
       width: 345,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _FooterLink(text: 'Restore Purchase'),
-          _FooterDot(),
-          _FooterLink(text: 'Term Of Use'),
-          _FooterDot(),
-          _FooterLink(text: 'Privacy Policy'),
+          GestureDetector(
+            onTap: () => PaywallActions.restore(context),
+            child: _FooterLink(text: cfg.restoreLabel),
+          ),
+          const _FooterDot(),
+          _FooterLink(text: cfg.termsLabel),
+          const _FooterDot(),
+          _FooterLink(text: cfg.privacyLabel),
         ],
       ),
     );

@@ -14,63 +14,20 @@ class AiCardPreviewView extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<AiCardController>();
     return PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-          controller.resetPrompt();
-          Get.until((route) => route.isFirst); // Home
-        },
-    child: Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        controller.resetPrompt();
+        Get.until((route) => route.isFirst); // Home
+      },
+      child: Scaffold(
         backgroundColor: AppColors.background,
-        elevation: 0,
-        centerTitle: true,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16),
-          child: Container(
-            width: 36,
-            height: 36,
-            decoration: const BoxDecoration(
-              color: AppColors.cardWhite,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Obx(
-                  () => IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                icon: controller.isSharing.value
-                    ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.titleDark,
-                  ),
-                )
-                    : const Icon(Icons.ios_share,
-                    size: 18, color: AppColors.titleDark),
-                onPressed: (controller.isSharing.value ||
-                    controller.generatedCard.value == null)
-                    ? null
-                    : () => controller.shareCard(),
-              ),
-            ),
-          ),
-        ),
-        title: const Text(
-          'Preview',
-          style: TextStyle(
-            fontFamily: AppTextStyles.fontFamily,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: AppColors.titleDark,
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
+        appBar: AppBar(
+          backgroundColor: AppColors.background,
+          elevation: 0,
+          centerTitle: true,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 16),
             child: Container(
               width: 36,
               height: 36,
@@ -79,114 +36,161 @@ class AiCardPreviewView extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
-              child: const FaIcon(
-                FontAwesomeIcons.crown,
-                size: 18,
-                color: Color(0xFFF5A623),
+              child: Obx(
+                () => IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  icon: controller.isSharing.value
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.titleDark,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.ios_share,
+                          size: 18,
+                          color: AppColors.titleDark,
+                        ),
+                  onPressed:
+                      (controller.isSharing.value ||
+                          controller.generatedCard.value == null)
+                      ? null
+                      : () => controller.shareCard(),
+                ),
               ),
             ),
           ),
-        ],
-      ),
-      body: SafeArea(
-        child: Obx(() {
-          if (controller.isGenerating.value) {
-            return const _GeneratingState();
-          }
+          title: const Text(
+            'Preview',
+            style: TextStyle(
+              fontFamily: AppTextStyles.fontFamily,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.titleDark,
+            ),
+          ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: const BoxDecoration(
+                  color: AppColors.cardWhite,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: const FaIcon(
+                  FontAwesomeIcons.crown,
+                  size: 18,
+                  color: Color(0xFFF5A623),
+                ),
+              ),
+            ),
+          ],
+        ),
+        body: SafeArea(
+          child: Obx(() {
+            if (controller.isGenerating.value) {
+              return const _GeneratingState();
+            }
 
-          final card = controller.generatedCard.value;
+            final card = controller.generatedCard.value;
 
-          // Generation failed and there is nothing to show: show the error
-          // with a retry button instead of a blank screen.
-          if (card == null) {
-            return _ErrorState(
-              message: controller.errorMessage.value,
-              onRetry: controller.regenerate,
-            );
-          }
+            // Generation failed and there is nothing to show: show the error
+            // with a retry button instead of a blank screen.
+            if (card == null) {
+              return _ErrorState(
+                message: controller.errorMessage.value,
+                onRetry: controller.regenerate,
+              );
+            }
 
-          return Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
+            return Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(1),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9.5,
+                            child: _CardImage(path: card.frontImagePath),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(1),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9.5,
+                            child: _CardImage(path: card.backImagePath),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                   child: Column(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(1),
-                        child: AspectRatio(
-                          aspectRatio: 16 / 9.5,
-                          child: _CardImage(path: card.frontImagePath),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: Obx(
+                          () => ElevatedButton(
+                            onPressed: controller.isSaving.value
+                                ? null
+                                : () => controller.saveCardToGallery(),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: controller.isSaving.value
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text('Download'),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(1),
-                        child: AspectRatio(
-                          aspectRatio: 16 / 9.5,
-                          child: _CardImage(path: card.backImagePath),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: OutlinedButton(
+                          onPressed: controller.regenerate,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.primary,
+                            side: const BorderSide(color: AppColors.primary),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text('Regenerate'),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: Obx(
-                            () => ElevatedButton(
-                          onPressed: controller.isSaving.value
-                              ? null
-                              : () => controller.saveCardToGallery(),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          child: controller.isSaving.value
-                              ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                              : const Text('Download'),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: OutlinedButton(
-                        onPressed: controller.regenerate,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                          side: const BorderSide(color: AppColors.primary),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: const Text('Regenerate'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        }),
+              ],
+            );
+          }),
+        ),
       ),
-    ),
     );
   }
 }
@@ -209,18 +213,10 @@ class _CardImage extends StatelessWidget {
     }
 
     if (isAsset) {
-      return Image.asset(
-        path,
-        fit: BoxFit.cover,
-        errorBuilder: errorBox,
-      );
+      return Image.asset(path, fit: BoxFit.cover, errorBuilder: errorBox);
     }
 
-    return Image.file(
-      File(path),
-      fit: BoxFit.cover,
-      errorBuilder: errorBox,
-    );
+    return Image.file(File(path), fit: BoxFit.cover, errorBuilder: errorBox);
   }
 }
 

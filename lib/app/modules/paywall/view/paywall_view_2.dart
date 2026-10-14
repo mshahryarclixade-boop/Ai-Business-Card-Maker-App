@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import '../../../core/services/remote_config_service.dart';
+import '../models/paywall_config_model.dart';
+import 'paywall_actions.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -7,11 +9,22 @@ import '../../../core/theme/app_text_styles.dart';
 const double _kDesignWidth = 393;
 const double _kDesignHeight = 860;
 
-class PaywallView2 extends StatelessWidget {
+class PaywallView2 extends StatefulWidget {
   const PaywallView2({super.key});
 
   @override
+  State<PaywallView2> createState() => _PaywallView2State();
+}
+
+class _PaywallView2State extends State<PaywallView2> {
+  /// `monthly` or `yearly` — the plan Continue purchases.
+  String _selected = 'yearly';
+
+  @override
   Widget build(BuildContext context) {
+    final cfg = RemoteConfigService().paywallConfig;
+    // A hidden monthly plan can't stay selected.
+    final selected = cfg.monthly.visible ? _selected : 'yearly';
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -33,17 +46,21 @@ class PaywallView2 extends StatelessWidget {
                   child: SizedBox(
                     width: _kDesignWidth,
                     height: _kDesignHeight,
-                    child: const Stack(
+                    child: Stack(
                       children: [
-                        _Artwork(),
-                        _CloseButton(),
-                        _Headline(),
-                        _Subtitle(),
-                        _FeaturePills(),
-                        _PlanCardsRow(),
-                        _ContinueButton(),
-                        _CommitmentText(),
-                        _Footer(),
+                        const _Artwork(),
+                        if (cfg.showCloseButton) const _CloseButton(),
+                        _Headline(cfg),
+                        _Subtitle(cfg),
+                        _FeaturePills(cfg),
+                        _PlanCardsRow(
+                          cfg,
+                          selected: selected,
+                          onSelect: (plan) => setState(() => _selected = plan),
+                        ),
+                        _ContinueButton(cfg, selected: selected),
+                        _CommitmentText(cfg),
+                        _Footer(cfg),
                       ],
                     ),
                   ),
@@ -82,7 +99,7 @@ class _CloseButton extends StatelessWidget {
       top: 16,
       right: 24,
       child: GestureDetector(
-        onTap: () => Get.back(),
+        onTap: () => PaywallActions.exit(pops: 2),
         child: Container(
           width: 26,
           height: 26,
@@ -212,18 +229,19 @@ class _IconBadge extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _Headline extends StatelessWidget {
-  const _Headline();
+  const _Headline(this.cfg);
+  final PaywallConfig cfg;
 
   @override
   Widget build(BuildContext context) {
-    return const Positioned(
+    return Positioned(
       top: 225,
       left: (393 - 320) / 2,
       width: 320,
       child: Text(
-        'Unlock Pro & keep creating',
+        cfg.s2Title,
         textAlign: TextAlign.center,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: AppTextStyles.fontFamily,
           fontSize: 26,
           height: 1.15,
@@ -240,18 +258,19 @@ class _Headline extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _Subtitle extends StatelessWidget {
-  const _Subtitle();
+  const _Subtitle(this.cfg);
+  final PaywallConfig cfg;
 
   @override
   Widget build(BuildContext context) {
-    return const Positioned(
+    return Positioned(
       top: 290,
       left: 46.5,
       width: 300,
       child: Text(
-        'Get unlimited access to every feature',
+        cfg.s2Subtitle,
         textAlign: TextAlign.center,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: AppTextStyles.fontFamily,
           fontSize: 14,
           fontWeight: FontWeight.w400,
@@ -267,21 +286,26 @@ class _Subtitle extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _FeaturePills extends StatelessWidget {
-  const _FeaturePills();
+  const _FeaturePills(this.cfg);
+  final PaywallConfig cfg;
 
   @override
   Widget build(BuildContext context) {
-    return const Positioned(
+    final items = cfg.s2Features;
+    return Positioned(
       top: 330,
       left: 24,
       width: 345,
       child: Column(
         children: [
-          _PillRow(left: 'Unlimited AI Card', right: 'Unlimited Scan'),
-          SizedBox(height: 10),
-          _PillRow(left: '50+ Templates', right: 'No watermark'),
-          SizedBox(height: 10),
-          _PillRow(left: 'QR Generator', right: 'BG Remover'),
+          // Two pills per row.
+          for (var i = 0; i < items.length; i += 2) ...[
+            if (i > 0) const SizedBox(height: 10),
+            _PillRow(
+              left: items[i],
+              right: i + 1 < items.length ? items[i + 1] : null,
+            ),
+          ],
         ],
       ),
     );
@@ -290,17 +314,19 @@ class _FeaturePills extends StatelessWidget {
 
 class _PillRow extends StatelessWidget {
   final String left;
-  final String right;
+  final String? right;
 
-  const _PillRow({required this.left, required this.right});
+  const _PillRow({required this.left, this.right});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         _PillBadge(text: left),
-        const SizedBox(width: 10),
-        _PillBadge(text: right),
+        if (right != null) ...[
+          const SizedBox(width: 10),
+          _PillBadge(text: right!),
+        ],
       ],
     );
   }
@@ -366,11 +392,20 @@ const Color _kSaveGreen = Color(0xFF2AA96B);
 const Color _kSaveGreenBg = Color(0xFFE3F6EC);
 
 class _PlanCardsRow extends StatelessWidget {
-  const _PlanCardsRow();
+  const _PlanCardsRow(
+    this.cfg, {
+    required this.selected,
+    required this.onSelect,
+  });
+  final PaywallConfig cfg;
+  final String selected;
+  final ValueChanged<String> onSelect;
 
   @override
   Widget build(BuildContext context) {
-    return const Positioned(
+    // The yearly plan is the only purchasable one, so it always stays.
+    final showMonthly = cfg.monthly.visible;
+    return Positioned(
       top: 490,
       left: 24,
       width: 345,
@@ -378,9 +413,23 @@ class _PlanCardsRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: _MonthlyCard()),
-          SizedBox(width: 10),
-          Expanded(child: _YearlyCard()),
+          if (showMonthly) ...[
+            Expanded(
+              child: _MonthlyCard(
+                cfg.monthly,
+                selected: selected == 'monthly',
+                onTap: () => onSelect('monthly'),
+              ),
+            ),
+            const SizedBox(width: 10),
+          ],
+          Expanded(
+            child: _YearlyCard(
+              cfg.yearly,
+              selected: selected == 'yearly',
+              onTap: () => onSelect('yearly'),
+            ),
+          ),
         ],
       ),
     );
@@ -388,114 +437,26 @@ class _PlanCardsRow extends StatelessWidget {
 }
 
 class _MonthlyCard extends StatelessWidget {
-  const _MonthlyCard();
+  const _MonthlyCard(this.plan, {required this.selected, required this.onTap});
+  final PaywallPlan plan;
+  final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 168,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFFE0E0E0),
-          width: 2.94,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Monthly',
-                style: TextStyle(
-                  fontFamily: AppTextStyles.fontFamily,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.titleDark,
-                ),
-              ),
-              Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0xFFE0E0E0),
-                    width: 2.2,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 22),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: const [
-              Text(
-                '\$6.99',
-                style: TextStyle(
-                  fontFamily: AppTextStyles.fontFamily,
-                  fontSize: 24,
-                  height: 1,
-                  letterSpacing: -0.3,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '/month',
-            style: TextStyle(
-              fontFamily: AppTextStyles.fontFamily,
-              fontSize: 12,
-              height: 1,
-              color: Colors.grey.shade500,
-            ),
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            'Full access to all Pro features',
-            style: TextStyle(
-              fontFamily: AppTextStyles.fontFamily,
-              fontSize: 12,
-              height: 1.3,
-              fontWeight: FontWeight.w400,
-              color: AppColors.textSubtitle,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _YearlyCard extends StatelessWidget {
-  const _YearlyCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 168,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFAA96FA), Color(0xFFABA6F9)],
-        ),
-      ),
-      padding: const EdgeInsets.all(2.94),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        height: 168,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(9.5),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected ? AppColors.primary : const Color(0xFFE0E0E0),
+            width: 2.94,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -503,114 +464,228 @@ class _YearlyCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    'Most Popular',
-                    style: TextStyle(
-                      fontFamily: AppTextStyles.fontFamily,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.1,
-                      color: Colors.white,
-                    ),
+                Text(
+                  plan.title,
+                  style: const TextStyle(
+                    fontFamily: AppTextStyles.fontFamily,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.titleDark,
                   ),
                 ),
-                Container(
-                  width: 22,
-                  height: 22,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  alignment: Alignment.center,
-                  child: const Icon(Icons.check, size: 13, color: Colors.white),
-                ),
+                _SelectDot(selected: selected, size: 20),
               ],
             ),
-            const SizedBox(height: 10),
-            const Text(
-              'Yearly',
-              style: TextStyle(
-                fontFamily: AppTextStyles.fontFamily,
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: AppColors.titleDark,
-              ),
-            ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 22),
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                const Text(
-                  '\$29.99',
-                  style: TextStyle(
+                Text(
+                  plan.price,
+                  style: const TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
-                    fontSize: 22,
+                    fontSize: 24,
                     height: 1,
                     letterSpacing: -0.3,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 2),
-                  child: Text(
-                    '/year',
-                    style: TextStyle(
-                      fontFamily: AppTextStyles.fontFamily,
-                      fontSize: 11,
-                      height: 1,
-                      color: Colors.grey.shade500,
-                    ),
+                    color: Colors.black,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 4),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '\$83.88/year',
-                  style: TextStyle(
-                    fontFamily: AppTextStyles.fontFamily,
-                    fontSize: 11,
-                    color: Colors.grey.shade400,
-                    decoration: TextDecoration.lineThrough,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 7,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _kSaveGreenBg,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: const Text(
-                    'Save 70%',
-                    style: TextStyle(
-                      fontFamily: AppTextStyles.fontFamily,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: _kSaveGreen,
-                    ),
-                  ),
-                ),
-              ],
+            Text(
+              plan.period,
+              style: TextStyle(
+                fontFamily: AppTextStyles.fontFamily,
+                fontSize: 12,
+                height: 1,
+                color: Colors.grey.shade500,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              plan.description,
+              style: const TextStyle(
+                fontFamily: AppTextStyles.fontFamily,
+                fontSize: 12,
+                height: 1.3,
+                fontWeight: FontWeight.w400,
+                color: AppColors.textSubtitle,
+              ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Radio-style indicator: filled with a check when the plan is selected.
+class _SelectDot extends StatelessWidget {
+  const _SelectDot({required this.selected, required this.size});
+  final bool selected;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: selected ? AppColors.primary : null,
+        border: selected
+            ? null
+            : Border.all(color: const Color(0xFFE0E0E0), width: 2.2),
+      ),
+      alignment: Alignment.center,
+      child: selected
+          ? Icon(Icons.check, size: size * 0.6, color: Colors.white)
+          : null,
+    );
+  }
+}
+
+class _YearlyCard extends StatelessWidget {
+  const _YearlyCard(this.plan, {required this.selected, required this.onTap});
+  final PaywallPlan plan;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
+        height: 168,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: selected ? null : const Color(0xFFE0E0E0),
+          gradient: selected
+              ? const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFFAA96FA), Color(0xFFABA6F9)],
+                )
+              : null,
+        ),
+        padding: const EdgeInsets.all(2.94),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(9.5),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      plan.badge,
+                      style: const TextStyle(
+                        fontFamily: AppTextStyles.fontFamily,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.1,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  _SelectDot(selected: selected, size: 22),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                plan.title,
+                style: const TextStyle(
+                  fontFamily: AppTextStyles.fontFamily,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.titleDark,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    plan.price,
+                    style: const TextStyle(
+                      fontFamily: AppTextStyles.fontFamily,
+                      fontSize: 22,
+                      height: 1,
+                      letterSpacing: -0.3,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 2),
+                    child: Text(
+                      plan.period,
+                      style: TextStyle(
+                        fontFamily: AppTextStyles.fontFamily,
+                        fontSize: 11,
+                        height: 1,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (plan.originalPrice.isNotEmpty)
+                    Text(
+                      plan.originalPrice,
+                      style: TextStyle(
+                        fontFamily: AppTextStyles.fontFamily,
+                        fontSize: 11,
+                        color: Colors.grey.shade400,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                  const SizedBox(height: 6),
+                  if (plan.saveBadge.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _kSaveGreenBg,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text(
+                        plan.saveBadge,
+                        style: const TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: _kSaveGreen,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -622,7 +697,9 @@ class _YearlyCard extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _ContinueButton extends StatelessWidget {
-  const _ContinueButton();
+  const _ContinueButton(this.cfg, {required this.selected});
+  final PaywallConfig cfg;
+  final String selected;
 
   @override
   Widget build(BuildContext context) {
@@ -647,7 +724,9 @@ class _ContinueButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
-            onTap: () {},
+            onTap: () => selected == 'monthly'
+                ? PaywallActions.buyMonthly(context, pops: 2)
+                : PaywallActions.buyYearly(context, pops: 2),
             child: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -659,12 +738,16 @@ class _ContinueButton extends StatelessWidget {
               child: Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.auto_awesome, size: 18, color: Colors.white),
-                    SizedBox(width: 10),
+                  children: [
+                    const Icon(
+                      Icons.auto_awesome,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 10),
                     Text(
-                      'Continue',
-                      style: TextStyle(
+                      cfg.s2ButtonLabel,
+                      style: const TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
@@ -687,18 +770,19 @@ class _ContinueButton extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _CommitmentText extends StatelessWidget {
-  const _CommitmentText();
+  const _CommitmentText(this.cfg);
+  final PaywallConfig cfg;
 
   @override
   Widget build(BuildContext context) {
-    return const Positioned(
+    return Positioned(
       top: 750,
       left: 24,
       width: 345,
       child: Text(
-        'No commitment, cancel anytime',
+        cfg.s2CommitmentText,
         textAlign: TextAlign.center,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: AppTextStyles.fontFamily,
           fontSize: 12,
           color: AppColors.textSubtitle,
@@ -713,22 +797,26 @@ class _CommitmentText extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _Footer extends StatelessWidget {
-  const _Footer();
+  const _Footer(this.cfg);
+  final PaywallConfig cfg;
 
   @override
   Widget build(BuildContext context) {
-    return const Positioned(
+    return Positioned(
       top: 790,
       left: 24,
       width: 345,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _FooterLink(text: 'Restore Purchase'),
-          _FooterDot(),
-          _FooterLink(text: 'Term Of Use'),
-          _FooterDot(),
-          _FooterLink(text: 'Privacy Policy'),
+          GestureDetector(
+            onTap: () => PaywallActions.restore(context, pops: 2),
+            child: _FooterLink(text: cfg.restoreLabel),
+          ),
+          const _FooterDot(),
+          _FooterLink(text: cfg.termsLabel),
+          const _FooterDot(),
+          _FooterLink(text: cfg.privacyLabel),
         ],
       ),
     );

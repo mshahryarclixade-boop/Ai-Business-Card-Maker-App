@@ -49,6 +49,7 @@ class AppColors {
   );
 
   // Brand
+  static const Color accent = Color(0xFF583DD0); // paywall / dialog buttons
   static const Color primary = Color(0xFF5858B5); // circle / progress fill
   static const Color primaryDark = Color(0xFF2E2B65);
   // headline text

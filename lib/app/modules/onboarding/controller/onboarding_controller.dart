@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -25,6 +26,7 @@ class OnboardingController extends GetxController {
       );
     } else {
       _markSeen();
+      FirebaseAnalytics.instance.logEvent(name: 'onboarding_completed');
       Get.offAllNamed(Routes.PERSONAL_DETAILS);
     }
   }
@@ -32,6 +34,10 @@ class OnboardingController extends GetxController {
   /// "I'll do it later": go straight to Home.
   void skip() {
     _markSeen();
+    FirebaseAnalytics.instance.logEvent(
+      name: 'onboarding_skipped',
+      parameters: {'page': currentPage.value},
+    );
     Get.offAllNamed(Routes.MAIN);
   }
 

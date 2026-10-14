@@ -1,4 +1,3 @@
-
 class GeneratedCard {
   final String frontImagePath;
   final String backImagePath;

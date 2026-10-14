@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -82,7 +83,15 @@ class ProfileSetupController extends GetxController {
       dialCode: dialCode.value,
       phoneNumber: phoneController.text.trim(),
     );
+
+    FirebaseAnalytics.instance.logEvent(name: 'profile_saved');
+
     Get.toNamed(Routes.BUSINESS_DETAILS);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

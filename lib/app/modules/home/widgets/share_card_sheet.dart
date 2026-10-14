@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:get/get.dart';
@@ -13,6 +15,16 @@ import '../../profile_setup/service/profile_store.dart';
 import '../../qr_code_generator/view/qr_code_screen.dart';
 
 const String kCardPageUrl = 'https://ai-business-card-e1cde.web.app/card.html';
+
+void _snack(String title, String message) {
+  Get.snackbar(
+    title,
+    message,
+    snackPosition: SnackPosition.BOTTOM,
+    margin: const EdgeInsets.all(15),
+  );
+}
+
 /// The four options shown when the user taps Share Card.
 void showShareCardSheet(File cardImage) {
   Get.bottomSheet(
@@ -51,7 +63,7 @@ class _ShareCardSheet extends StatelessWidget {
     try {
       final data = ProfileStore.to.profile.value;
       if (data.fullName.trim().isEmpty) {
-        Get.snackbar('No details yet', 'Add your details first to share a link.');
+        _snack('No details yet', 'Add your details first to share a link.');
         return;
       }
       final link = _buildCardLink(data);
@@ -62,16 +74,30 @@ class _ShareCardSheet extends StatelessWidget {
           subject: '${data.fullName.trim()} - Digital Business Card',
         ),
       );
-    } catch (_) {
-      Get.snackbar('Could not share', 'Please try again.');
+      FirebaseAnalytics.instance.logEvent(
+        name: 'card_shared',
+        parameters: {'method': 'link'},
+      );
+    } catch (e, st) {
+      FirebaseCrashlytics.instance.recordError(e, st, reason: 'share link');
+      _snack('Could not share', 'Please try again.');
     }
   }
 
   Future<void> _shareImage() async {
     Get.back();
-    await SharePlus.instance.share(
-      ShareParams(files: [XFile(cardImage.path)]),
-    );
+    try {
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(cardImage.path)]),
+      );
+      FirebaseAnalytics.instance.logEvent(
+        name: 'card_shared',
+        parameters: {'method': 'image'},
+      );
+    } catch (e, st) {
+      FirebaseCrashlytics.instance.recordError(e, st, reason: 'share image');
+      _snack('Could not share', 'Please try again.');
+    }
   }
 
   Future<void> _saveToGallery() async {
@@ -79,14 +105,17 @@ class _ShareCardSheet extends StatelessWidget {
     try {
       if (!await Gal.hasAccess()) {
         if (!await Gal.requestAccess()) {
-          Get.snackbar('Permission needed', 'Allow photo access to save.');
+          _snack('Permission needed', 'Allow photo access to save.');
           return;
         }
       }
       await Gal.putImage(cardImage.path);
-      Get.snackbar('Saved', 'Your card was saved to the gallery.');
-    } catch (_) {
-      Get.snackbar('Could not save', 'Please try again.');
+      FirebaseAnalytics.instance.logEvent(name: 'card_saved_to_gallery');
+      _snack('Saved', 'Your card was saved to the gallery.');
+    } catch (e, st) {
+      FirebaseCrashlytics.instance
+          .recordError(e, st, reason: 'save card to gallery');
+      _snack('Could not save', 'Please try again.');
     }
   }
 
@@ -94,9 +123,10 @@ class _ShareCardSheet extends StatelessWidget {
     Get.back();
     final profile = loadSavedQrProfile();
     if (profile == null) {
-      Get.snackbar('No details yet', 'Add your details first to show a QR code.');
+      _snack('No details yet', 'Add your details first to show a QR code.');
       return;
     }
+    FirebaseAnalytics.instance.logEvent(name: 'qr_shown');
     Get.to(
           () => QrPreviewScreen(profile: profile, qrOnly: true),
       transition: Transition.rightToLeft,

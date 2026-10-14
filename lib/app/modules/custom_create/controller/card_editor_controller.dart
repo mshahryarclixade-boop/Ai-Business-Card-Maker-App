@@ -12,6 +12,9 @@ import '../../template/model/template_live_data.dart';
 import '../model/card_element_model.dart';
 import 'card_editor_symbols_controller_ext.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import '../../../core/services/app_review_service.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class CardTool {
   static const String none = '';
@@ -38,9 +41,9 @@ class _SideData {
     this.backgroundTemplate,
     List<List<CardElement>>? undo,
     List<List<CardElement>>? redo,
-  })  : elements = elements ?? [],
-        undo = undo ?? [],
-        redo = redo ?? [];
+  }) : elements = elements ?? [],
+       undo = undo ?? [],
+       redo = redo ?? [];
 }
 
 enum ColorPickerTarget { background, text, element }
@@ -68,8 +71,7 @@ class CardEditorController extends GetxController {
   final RxString expandedStylePanel = ''.obs;
   final RxBool textStyleBarOpen = false.obs;
 
-  final Rx<ColorPickerTarget?> colorPickerTarget =
-  Rx<ColorPickerTarget?>(null);
+  final Rx<ColorPickerTarget?> colorPickerTarget = Rx<ColorPickerTarget?>(null);
 
   final RxList<Color> savedBackgroundColors = <Color>[
     const Color(0xFFEC4899),
@@ -98,6 +100,7 @@ class CardEditorController extends GetxController {
   final RxInt currentSide = 0.obs; // 0 = front, 1 = back
   final List<_SideData> _sides = [_SideData(), _SideData()];
   bool _backInitialized = false;
+
   // QR placeholder position from the template JSON ("qrSlot").
   Rect? _qrSlot;
   int _qrSlotSide = 1;
@@ -170,8 +173,7 @@ class CardEditorController extends GetxController {
   }
 
   void toggleStylePanel(String panel) {
-    expandedStylePanel.value =
-    expandedStylePanel.value == panel ? '' : panel;
+    expandedStylePanel.value = expandedStylePanel.value == panel ? '' : panel;
   }
 
   /// Opens the font/size/color style bar for "Edit Text".
@@ -179,8 +181,9 @@ class CardEditorController extends GetxController {
     var el = selectedElement;
 
     if (el == null || el.type != CardElementType.text) {
-      final textElements =
-      elements.where((e) => e.type == CardElementType.text).toList();
+      final textElements = elements
+          .where((e) => e.type == CardElementType.text)
+          .toList();
 
       if (textElements.isEmpty) {
         Get.snackbar(
@@ -218,8 +221,7 @@ class CardEditorController extends GetxController {
   void closeColorPicker() => colorPickerTarget.value = null;
 
   void addSavedBackgroundColor(Color color) {
-    if (!savedBackgroundColors
-        .any((c) => c.toARGB32() == color.toARGB32())) {
+    if (!savedBackgroundColors.any((c) => c.toARGB32() == color.toARGB32())) {
       savedBackgroundColors.add(color);
     }
   }
@@ -259,10 +261,7 @@ class CardEditorController extends GetxController {
 
     final el = CardElement.text(
       id: _newId,
-      position: Offset(
-        size.width / 2 - 60,
-        size.height / 2 - 14,
-      ),
+      position: Offset(size.width / 2 - 60, size.height / 2 - 14),
     );
 
     elements.add(el);
@@ -278,10 +277,7 @@ class CardEditorController extends GetxController {
 
     final el = CardElement.symbol(
       id: _newId,
-      position: Offset(
-        size.width / 2 - 18,
-        size.height / 2 - 18,
-      ),
+      position: Offset(size.width / 2 - 18, size.height / 2 - 18),
       symbol: symbol,
     );
 
@@ -329,10 +325,7 @@ class CardEditorController extends GetxController {
           activeControlsWidgetColor: AppColors.primary,
           lockAspectRatio: false,
         ),
-        IOSUiSettings(
-          title: 'Crop Photo',
-          aspectRatioLockEnabled: false,
-        ),
+        IOSUiSettings(title: 'Crop Photo', aspectRatioLockEnabled: false),
       ],
     );
 
@@ -346,10 +339,7 @@ class CardEditorController extends GetxController {
 
     final el = CardElement.image(
       id: _newId,
-      position: Offset(
-        size.width / 2 - 45,
-        size.height / 2 - 45,
-      ),
+      position: Offset(size.width / 2 - 45, size.height / 2 - 45),
       file: saved,
     );
 
@@ -375,10 +365,7 @@ class CardEditorController extends GetxController {
 
     final el = CardElement.image(
       id: _newId,
-      position: Offset(
-        size.width / 2 - 45,
-        size.height / 2 - 45,
-      ),
+      position: Offset(size.width / 2 - 45, size.height / 2 - 45),
       file: saved,
     );
 
@@ -388,18 +375,19 @@ class CardEditorController extends GetxController {
 
   /// Adds a bundled asset image (e.g. a template logo) to the current side.
   void addAssetImage(
-      String assetPath, {
-        double width = 60,
-        double height = 60,
-        Offset? position,
-      }) {
+    String assetPath, {
+    double width = 60,
+    double height = 60,
+    Offset? position,
+  }) {
     _pushUndo();
 
     final size = orientation.value.canvasSize;
 
     final el = CardElement.assetImage(
       id: _newId,
-      position: position ??
+      position:
+          position ??
           Offset(size.width / 2 - width / 2, size.height / 2 - height / 2),
       asset: assetPath,
       width: width,
@@ -431,7 +419,7 @@ class CardEditorController extends GetxController {
   /// "Generate QR Code" under the QR tool.
   Future<void> generateQrCode() async {
     final File? file = await Get.to<File>(
-          () => const CustomQrCodeScreen(forCardInsertion: true),
+      () => const CustomQrCodeScreen(forCardInsertion: true),
     );
 
     if (file == null) return; // user cancelled the form
@@ -444,10 +432,7 @@ class CardEditorController extends GetxController {
 
     final el = CardElement.image(
       id: _newId,
-      position: Offset(
-        size.width / 2 - 45,
-        size.height / 2 - 45,
-      ),
+      position: Offset(size.width / 2 - 45, size.height / 2 - 45),
       file: saved,
     );
 
@@ -664,8 +649,10 @@ class CardEditorController extends GetxController {
   // ---------------------------------------------------------------------
 
   void loadFromDesign(RecentDesign design) {
-    debugPrint('EDITOR loadFromDesign: id=${design.id}, '
-        'isAi=${design.isAiGenerated}, hasData=${design.designData != null}');
+    debugPrint(
+      'EDITOR loadFromDesign: id=${design.id}, '
+      'isAi=${design.isAiGenerated}, hasData=${design.designData != null}',
+    );
 
     final data = design.designData;
     if (data == null) {
@@ -675,8 +662,9 @@ class CardEditorController extends GetxController {
 
     debugPrint('EDITOR designData keys: ${data.keys.toList()}');
 
-    orientation.value =
-        CardOrientation.values.byName(data['orientation'] as String);
+    orientation.value = CardOrientation.values.byName(
+      data['orientation'] as String,
+    );
 
     _sides[0] = _sideFromJson(data, label: 'front');
     final backJson = data['back'] as Map<String, dynamic>?;
@@ -692,15 +680,17 @@ class CardEditorController extends GetxController {
     currentSide.value = 0;
     _showSide(_sides[0]);
 
-    debugPrint('EDITOR loaded: on-screen elements=${elements.length}, '
-        'bgImage=${backgroundImage.value?.path}');
+    debugPrint(
+      'EDITOR loaded: on-screen elements=${elements.length}, '
+      'bgImage=${backgroundImage.value?.path}',
+    );
   }
 
   void loadFromImage(
-      File imageFile, {
-        CardOrientation orientation = CardOrientation.landscape,
-        File? backImageFile,
-      }) {
+    File imageFile, {
+    CardOrientation orientation = CardOrientation.landscape,
+    File? backImageFile,
+  }) {
     this.orientation.value = orientation;
     _sides[0] = _SideData(backgroundImage: imageFile);
     _sides[1] = _SideData(backgroundImage: backImageFile);
@@ -723,23 +713,18 @@ class CardEditorController extends GetxController {
     _showSide(_sides[0]);
   }
 
-  /// Loads a full template (texts, logo, fonts, positions) from JSON.
-  /// The user's info (name, phone, email, ...) is filled into the texts that
-  /// have a "field" key; empty fields are left out. Pass [fieldValues] to
-  /// override the values (defaults to the saved profile).
-  /// Backgrounds are already on screen, so if this fails the user still
-  /// sees the plain template instead of a blank editor.
   Future<void> loadFromTemplateJson(
-      String jsonAssetPath, {
-        Map<String, String>? fieldValues,
-      }) async {
+    String jsonAssetPath, {
+    Map<String, String>? fieldValues,
+  }) async {
     try {
       final raw = await rootBundle.loadString(jsonAssetPath);
       final data = jsonDecode(raw) as Map<String, dynamic>;
       final values = fieldValues ?? TemplateData.currentProfileValues();
 
-      orientation.value =
-          CardOrientation.values.byName(data['orientation'] as String);
+      orientation.value = CardOrientation.values.byName(
+        data['orientation'] as String,
+      );
 
       _sides[0] = _templateSide(data['front'] as Map<String, dynamic>, values);
       _sides[1] = _templateSide(data['back'] as Map<String, dynamic>, values);
@@ -760,6 +745,7 @@ class CardEditorController extends GetxController {
       currentSide.value = 0;
       _showSide(_sides[0]);
     } catch (e, st) {
+      FirebaseCrashlytics.instance.recordError(e, st, reason: 'template json load');
       debugPrint('TEMPLATE JSON load failed ($jsonAssetPath): $e');
       debugPrint('$st');
     }
@@ -780,14 +766,16 @@ class CardEditorController extends GetxController {
     _pushUndo();
 
     final canvas = orientation.value.canvasSize;
-    final slot =
-    (_qrSlot != null && currentSide.value == _qrSlotSide) ? _qrSlot : null;
+    final slot = (_qrSlot != null && currentSide.value == _qrSlotSide)
+        ? _qrSlot
+        : null;
     final w = slot?.width ?? 90.0;
 
     final el = CardElement.image(
       id: _newId,
       position:
-      slot?.topLeft ?? Offset(canvas.width / 2 - 45, canvas.height / 2 - 45),
+          slot?.topLeft ??
+          Offset(canvas.width / 2 - 45, canvas.height / 2 - 45),
       file: saved,
       width: w,
       height: w,
@@ -866,9 +854,11 @@ class CardEditorController extends GetxController {
     final path = d['backgroundImagePath'] as String?;
     final file = path != null ? File(path) : null;
 
-    debugPrint('EDITOR side[$label]: bgPath=$path, '
-        'bgExists=${file?.existsSync()}, '
-        'rawElements=${(d['elements'] as List?)?.length}');
+    debugPrint(
+      'EDITOR side[$label]: bgPath=$path, '
+      'bgExists=${file?.existsSync()}, '
+      'rawElements=${(d['elements'] as List?)?.length}',
+    );
 
     final parsed = <CardElement>[];
     final raw = (d['elements'] as List<dynamic>? ?? const []);
@@ -892,8 +882,6 @@ class CardEditorController extends GetxController {
     );
   }
 
-  /// Front keeps the OLD top-level keys, so old designs (and anything else
-  /// reading designData) keep working. The back lives under 'back'.
   Map<String, dynamic> buildDesignData() {
     ensureBackInitialized();
     _stashLiveSide();
@@ -927,11 +915,12 @@ class CardEditorController extends GetxController {
   }
 
   Future<void> save(GlobalKey repaintKey) async {
-    if (isSaving.value) return; // guard against double-tap
+    if (isSaving.value) return;
     isSaving.value = true;
 
     try {
       await saveToRecentDesigns(repaintKey);
+      FirebaseAnalytics.instance.logEvent(name: 'card_saved');
 
       Get.snackbar(
         'Saved',
@@ -939,6 +928,9 @@ class CardEditorController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
+
+      // Request a native review after the save succeeds.
+      await AppReviewService.requestNativeReview();
 
       Get.back(
         result: {
@@ -948,6 +940,17 @@ class CardEditorController extends GetxController {
           'backgroundTemplate': backgroundTemplate.value,
           'elements': elements.toList(),
         },
+      );
+    } catch (e, st) {
+      FirebaseCrashlytics.instance.recordError(e, st, reason: 'card editor save');
+      debugPrint('CARD SAVE ERROR: $e');
+      debugPrint('$st');
+
+      Get.snackbar(
+        'Could not save',
+        'Something went wrong while saving your card.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(15),
       );
     } finally {
       isSaving.value = false;

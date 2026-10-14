@@ -8,6 +8,8 @@ list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_windows
   firebase_app_check
   firebase_core
+  firebase_remote_config
+  flutter_udid
   gal
   permission_handler_windows
   share_plus
@@ -15,6 +17,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+  flutter_local_notifications_windows
   jni
 )
 

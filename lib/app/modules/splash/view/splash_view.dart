@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../../core/services/remote_config_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../routes/app_routes.dart';
 import '../../onboarding/controller/onboarding_controller.dart';
+import '../../paywall/controller/subscription_controller.dart';
+import '../../paywall/view/paywall_screen.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -26,22 +29,45 @@ class _SplashViewState extends State<SplashView>
       duration: const Duration(milliseconds: 3000),
     );
 
-    _progress = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _progress = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _controller.forward();
 
-
     _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        // Onboarding is only shown the first time. After that the flag is
-        // true and we go straight to the app.
-        final seen =
-            GetStorage().read<bool>(OnboardingController.seenKey) ?? false;
-        Get.offAllNamed(seen ? Routes.MAIN : Routes.ONBOARDING);
-      }
+      if (status == AnimationStatus.completed) _route();
     });
+  }
+
+  /// First launch: onboarding. Afterwards: home for subscribers, and the
+  /// paywall for everyone else while Remote Config has it enabled.
+  Future<void> _route() async {
+    final seen = GetStorage().read<bool>(OnboardingController.seenKey) ?? false;
+    if (!seen) {
+      Get.offAllNamed(Routes.ONBOARDING);
+      return;
+    }
+    // Wait (bounded) for the store's real answer; falls back to the cached
+    // state if it's slow or offline.
+    try {
+      await Get.find<SubscriptionController>().awaitSync().timeout(
+        const Duration(seconds: 4),
+      );
+    } catch (_) {}
+    if (!mounted) return;
+    final paywall = RemoteConfigService().paywallConfig;
+    if (Get.find<SubscriptionController>().isPro ||
+        !paywall.enabled ||
+        !paywall.showOnLaunch) {
+      Get.offAllNamed(Routes.MAIN);
+    } else {
+      Get.offAllNamed(
+        Routes.PAYWALL,
+        arguments: const PaywallArgs(source: 'launch', isLaunch: true),
+      );
+    }
   }
 
   @override

@@ -15,20 +15,26 @@ class QrGeneratorService {
   /// [borderFraction] is the border width as a share of [size]
   /// (0.08 = 8% on every side).
   Future<Uint8List> generatePngBytes(
-      QrProfileData profile, {
-        double size = 1024,
-        double borderFraction = 0.08,
-        ui.Color foregroundColor = const ui.Color(0xFF000000),
-        ui.Color backgroundColor = const ui.Color(0xFFFFFFFF),
-      }) async {
+    QrProfileData profile, {
+    double size = 1024,
+    double borderFraction = 0.08,
+    ui.Color foregroundColor = const ui.Color(0xFF000000),
+    ui.Color backgroundColor = const ui.Color(0xFFFFFFFF),
+  }) async {
     final data = payloadFor(profile);
 
     final painter = QrPainter(
       data: data,
       version: QrVersions.auto,
       gapless: true,
-      color: foregroundColor,
-      emptyColor: backgroundColor,
+      eyeStyle: QrEyeStyle(
+        eyeShape: QrEyeShape.square,
+        color: foregroundColor,
+      ),
+      dataModuleStyle: QrDataModuleStyle(
+        dataModuleShape: QrDataModuleShape.square,
+        color: foregroundColor,
+      ),
       errorCorrectionLevel: QrErrorCorrectLevel.M,
     );
 
@@ -38,7 +44,7 @@ class QrGeneratorService {
     final recorder = ui.PictureRecorder();
     final canvas = ui.Canvas(recorder);
 
-    // White background for the whole image (this becomes the border).
+    // Background for the whole image (this becomes the border).
     canvas.drawRect(
       ui.Rect.fromLTWH(0, 0, size, size),
       ui.Paint()..color = backgroundColor,

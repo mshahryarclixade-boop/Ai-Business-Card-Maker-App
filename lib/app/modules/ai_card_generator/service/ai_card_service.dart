@@ -39,16 +39,14 @@ class AiCardService {
     if (reference == null) {
       debugPrint(
         'AI CARD SERVICE: no reference resolved '
-            '(referenceImage=$referenceImage, templateId=$templateId)',
+        '(referenceImage=$referenceImage, templateId=$templateId)',
       );
       throw const GeminiException(
         'Choose a template or upload an image first.',
       );
     }
 
-    final details = profile == null
-        ? null
-        : CardDetails.fromProfile(profile);
+    final details = profile == null ? null : CardDetails.fromProfile(profile);
 
     // ---------------------------------------------------------------
     // FRONT PROMPT
@@ -74,18 +72,14 @@ class AiCardService {
     if (kDebugMode) {
       debugPrint(
         '--- AI CARD REFERENCE ---\n'
-            'kind: ${reference.kind}\n'
-            'mime: ${reference.mime}\n'
-            'bytes: ${reference.bytes.length}',
+        'kind: ${reference.kind}\n'
+        'mime: ${reference.mime}\n'
+        'bytes: ${reference.bytes.length}',
       );
 
-      debugPrint(
-        '--- AI CARD PROMPT (front) ---\n$frontPrompt',
-      );
+      debugPrint('--- AI CARD PROMPT (front) ---\n$frontPrompt');
 
-      debugPrint(
-        '--- AI CARD PROMPT (back) ---\n$backPrompt',
-      );
+      debugPrint('--- AI CARD PROMPT (back) ---\n$backPrompt');
     }
 
     // ---------------------------------------------------------------
@@ -115,7 +109,7 @@ class AiCardService {
 
       debugPrint(
         'AI CARD SERVICE: generateCard calls returned '
-            '(front=${frontBytes.length} bytes, back=${backBytes.length} bytes)',
+        '(front=${frontBytes.length} bytes, back=${backBytes.length} bytes)',
       );
     } catch (e, st) {
       debugPrint('========== GEMINI CALL FAILED ==========');
@@ -128,19 +122,13 @@ class AiCardService {
     // ---------------------------------------------------------------
     // SAVE BOTH GENERATED SIDES SEPARATELY
     // ---------------------------------------------------------------
-    final frontPath = await _saveToTempFile(
-      frontBytes,
-      side: 'front',
-    );
+    final frontPath = await _saveToTempFile(frontBytes, side: 'front');
 
-    final backPath = await _saveToTempFile(
-      backBytes,
-      side: 'back',
-    );
+    final backPath = await _saveToTempFile(backBytes, side: 'back');
 
     debugPrint(
       'AI CARD SERVICE: saved files '
-          '(front=$frontPath, back=$backPath)',
+      '(front=$frontPath, back=$backPath)',
     );
 
     // ---------------------------------------------------------------
@@ -194,7 +182,7 @@ class AiCardService {
 
       debugPrint(
         'AI CARD SERVICE: editable $side ready '
-            '(elements=${result.elements.length}, bg=$backgroundPath)',
+        '(elements=${result.elements.length}, bg=$backgroundPath)',
       );
 
       return _EditableSide(
@@ -214,19 +202,16 @@ class AiCardService {
   ///   frontImagePath
   ///   backImagePath
   Future<String> _saveToTempFile(
-      Uint8List bytes, {
-        required String side,
-      }) async {
+    Uint8List bytes, {
+    required String side,
+  }) async {
     final dir = await getTemporaryDirectory();
 
     final file = File(
       '${dir.path}/ai_card_${side}_${DateTime.now().millisecondsSinceEpoch}.png',
     );
 
-    await file.writeAsBytes(
-      bytes,
-      flush: true,
-    );
+    await file.writeAsBytes(bytes, flush: true);
 
     return file.path;
   }
@@ -243,7 +228,7 @@ class AiCardService {
 
       debugPrint(
         'AI CARD SERVICE: using UPLOADED image '
-            '(${referenceImage.path}, ${bytes.length} bytes)',
+        '(${referenceImage.path}, ${bytes.length} bytes)',
       );
 
       return _Reference(
@@ -257,7 +242,8 @@ class AiCardService {
     // READY TEMPLATE
     // ---------------------------------------------------------------
     if (templateId != null && templateId.isNotEmpty) {
-      final asset = kReadyTemplateAssets[templateId] ??
+      final asset =
+          kReadyTemplateAssets[templateId] ??
           (templateId.contains('/') || templateId.contains('.')
               ? templateId
               : null);
@@ -265,7 +251,7 @@ class AiCardService {
       if (asset == null) {
         debugPrint(
           'AI CARD SERVICE: templateId "$templateId" did not resolve '
-              'to any known asset',
+          'to any known asset',
         );
         return null;
       }
@@ -275,7 +261,7 @@ class AiCardService {
 
         debugPrint(
           'AI CARD SERVICE: using TEMPLATE image '
-              '($asset, ${data.lengthInBytes} bytes)',
+          '($asset, ${data.lengthInBytes} bytes)',
         );
 
         return _Reference(
@@ -330,8 +316,5 @@ class _EditableSide {
   final String backgroundPath;
   final List<Map<String, dynamic>> elements;
 
-  const _EditableSide({
-    required this.backgroundPath,
-    required this.elements,
-  });
+  const _EditableSide({required this.backgroundPath, required this.elements});
 }

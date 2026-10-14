@@ -4,7 +4,8 @@ String buildVCard(QrProfileData profile) {
   final buffer = StringBuffer()
     ..writeln('BEGIN:VCARD')
     ..writeln('VERSION:3.0')
-    ..writeln('FN:${_escape(profile.fullName)}');
+    ..writeln('FN:${_escape(profile.fullName)}')
+    ..writeln('N:;${_escape(profile.fullName)};;;');
 
   if (profile.companyName.isNotEmpty) {
     buffer.writeln('ORG:${_escape(profile.companyName)}');

@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -56,16 +58,21 @@ class BusinessDetailsController extends GetxController {
     logoNotFound.value = false;
     FocusManager.instance.primaryFocus?.unfocus();
 
-    final file = await _picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1024,
-      imageQuality: 90,
-    );
-    if (file == null) return;
+    try {
+      final file = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        imageQuality: 90,
+      );
+      if (file == null) return;
 
-    logoBytes.value = await file.readAsBytes();
-    logoName.value = file.name;
-    _logoFromWebsite = false;
+      logoBytes.value = await file.readAsBytes();
+      logoName.value = file.name;
+      _logoFromWebsite = false;
+    } catch (e, st) {
+      FirebaseCrashlytics.instance
+          .recordError(e, st, reason: 'pick logo from gallery');
+    }
   }
 
   void onWebsiteChanged(String _) => logoNotFound.value = false;
@@ -82,7 +89,14 @@ class BusinessDetailsController extends GetxController {
     // A logo found for the previous URL must not stay attached to a new one.
     if (_logoFromWebsite) _clearLogo();
 
-    final result = await LogoFinder.find(url);
+    dynamic result;
+    try {
+      result = await LogoFinder.find(url);
+    } catch (e, st) {
+      FirebaseCrashlytics.instance
+          .recordError(e, st, reason: 'logo finder failed');
+      result = null;
+    }
 
     // The user changed the URL while we were fetching; a newer lookup owns the state.
     if (url != _lastLookup) return;
@@ -90,6 +104,7 @@ class BusinessDetailsController extends GetxController {
     isFetching.value = false;
     if (result == null) {
       logoNotFound.value = true;
+      FirebaseAnalytics.instance.logEvent(name: 'logo_not_found');
       return;
     }
     logoBytes.value = result.bytes;
@@ -129,6 +144,14 @@ class BusinessDetailsController extends GetxController {
       website: website,
       logoBytes: logoBytes.value,
       logoName: logoName.value,
+    );
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'business_details_saved',
+      parameters: {
+        'has_logo': logoBytes.value != null ? 1 : 0,
+        'has_website': website.isNotEmpty ? 1 : 0,
+      },
     );
 
     Get.offAllNamed(Routes.FIRST_CARD);

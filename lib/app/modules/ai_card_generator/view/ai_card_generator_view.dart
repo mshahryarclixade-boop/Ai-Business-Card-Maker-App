@@ -18,11 +18,7 @@ class AiCardGeneratorView extends StatelessWidget {
 
   final File? initialImage;
 
-  const AiCardGeneratorView({
-    super.key,
-    this.initialPrompt,
-    this.initialImage,
-  });
+  const AiCardGeneratorView({super.key, this.initialPrompt, this.initialImage});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +54,7 @@ class AiCardGeneratorView extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   Get.to(
-                        () => const PaywallView(),
+                    () => const PaywallView(),
                     transition: Transition.rightToLeft,
                   );
                 },
@@ -129,12 +125,12 @@ class AiCardGeneratorView extends StatelessWidget {
                           child: FittedBox(
                             fit: BoxFit.contain,
                             child: Obx(
-                                  () => Switch(
+                              () => Switch(
                                 value: controller.autoFillProfile.value,
                                 onChanged: controller.toggleAutoFill,
                                 activeColor: AppColors.primary,
                                 materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
+                                    MaterialTapTargetSize.shrinkWrap,
                               ),
                             ),
                           ),
@@ -166,27 +162,29 @@ class AiCardGeneratorView extends StatelessWidget {
                   height: 40,
                   child: Obx(() {
                     final isBusy = controller.isGenerating.value;
-                    final hasImage = controller.referenceImage.value != null ||
+                    final hasImage =
+                        controller.referenceImage.value != null ||
                         controller.selectedTemplateId.value.isNotEmpty;
 
                     return ElevatedButton.icon(
                       onPressed: (isBusy || !hasImage)
                           ? null
                           : () async {
-                        if (!controller.canGenerate) {
-                          // Surfaces the validation snackbar.
-                          controller.generate();
-                          return;
-                        }
+                              if (!controller.canGenerate) {
+                                // Surfaces the validation snackbar.
+                                controller.generate();
+                                return;
+                              }
 
-                        // Shows the No Internet dialog and stops here
-                        final online = await Get.find<ConnectivityService>()
-                            .ensureInternet();
-                        if (!online) return;
+                              // Shows the No Internet dialog and stops here
+                              final online =
+                                  await Get.find<ConnectivityService>()
+                                      .ensureInternet();
+                              if (!online) return;
 
-                        Get.to(() => const AiCardPreviewView());
-                        controller.generate();
-                      },
+                              Get.to(() => const AiCardPreviewView());
+                              controller.generate();
+                            },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
@@ -201,13 +199,13 @@ class AiCardGeneratorView extends StatelessWidget {
                       ),
                       icon: isBusy
                           ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
                           : const Icon(Icons.auto_awesome, size: 18),
                       label: Text(
                         isBusy ? 'Generating…' : 'Generate Card',
@@ -312,89 +310,88 @@ class _ReferenceImagePicker extends StatelessWidget {
             alignment: Alignment.center,
             child: image == null
                 ? Column(
-              children: [
-                Image.asset(
-                  'assets/icons/add_image.png',
-                  width: 30,
-                  height: 30,
-                  fit: BoxFit.contain,
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Upload reference image',
-                  style: TextStyle(
-                    fontFamily: AppTextStyles.fontFamily,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.titleDark,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'AI will use this as inspiration',
-                  style: TextStyle(
-                    fontFamily: AppTextStyles.fontFamily,
-                    fontSize: 12,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Supported formats JPEG, JPG, PNG, HEIC and TIFF',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: AppTextStyles.fontFamily,
-                    fontSize: 11,
-                    color: Colors.grey.shade500,
-                  ),
-                ),
-                Text(
-                  'Max file size 50 MB',
-                  style: TextStyle(
-                    fontFamily: AppTextStyles.fontFamily,
-                    fontSize: 11,
-                    color: Colors.grey.shade500,
-                  ),
-                ),
-              ],
-            )
-
-            /// UPLOAD IMAGE BOX FIT
+                    children: [
+                      Image.asset(
+                        'assets/icons/add_image.png',
+                        width: 30,
+                        height: 30,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Upload reference image',
+                        style: TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.titleDark,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'AI will use this as inspiration',
+                        style: TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Supported formats JPEG, JPG, PNG, HEIC and TIFF',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 11,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                      Text(
+                        'Max file size 50 MB',
+                        style: TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 11,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                    ],
+                  )
+                /// UPLOAD IMAGE BOX FIT
                 : Stack(
-              alignment: Alignment.topRight,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.file(
-                    image,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: GestureDetector(
-                    onTap: controller.clearReferenceImage,
-                    child: Container(
-                      width: 26,
-                      height: 26,
-                      decoration: const BoxDecoration(
-                        color: Colors.black54,
-                        shape: BoxShape.circle,
+                    alignment: Alignment.topRight,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.file(
+                          image,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.close,
-                        size: 16,
-                        color: Colors.white,
+                      Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: GestureDetector(
+                          onTap: controller.clearReferenceImage,
+                          child: Container(
+                            width: 26,
+                            height: 26,
+                            decoration: const BoxDecoration(
+                              color: Colors.black54,
+                              shape: BoxShape.circle,
+                            ),
+                            alignment: Alignment.center,
+                            child: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ),
-              ],
-            ),
           ),
         ),
       );
@@ -435,7 +432,7 @@ class _ReadyTemplateRow extends StatelessWidget {
               return GestureDetector(
                 onTap: () => controller.selectReadyTemplate(id),
                 child: Obx(
-                      () => Container(
+                  () => Container(
                     width: itemWidth,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(1),
@@ -488,10 +485,7 @@ class _PromptField extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFFCDCDCD),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFFCDCDCD), width: 1),
       ),
       child: TextField(
         controller: controller.promptController,
@@ -513,10 +507,7 @@ class _PromptField extends StatelessWidget {
           ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.all(14),
-          counterStyle: TextStyle(
-            fontSize: 11,
-            color: Colors.grey.shade500,
-          ),
+          counterStyle: TextStyle(fontSize: 11, color: Colors.grey.shade500),
         ),
       ),
     );

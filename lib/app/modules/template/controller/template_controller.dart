@@ -1,11 +1,12 @@
 import 'dart:convert';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
-import '../../../routes/app_routes.dart';
 import '../../custom_create/view/card_editor_view.dart';
 import '../../profile/model/profile_model.dart';
 import '../../profile/service/profile_repository.dart';
@@ -15,8 +16,9 @@ class TemplateController extends GetxController {
   // 0 = Horizontal, 1 = Vertical, 2 = Saved
   final RxInt tabIndex = 0.obs;
 
-  // 'All' = no category restriction, otherwise must match TemplateItem.category
+  // 'All' = no category restriction
   final RxString selectedFilter = 'All'.obs;
+
   final List<String> filters = const [
     'All',
     'Travel',
@@ -26,51 +28,61 @@ class TemplateController extends GetxController {
   ];
 
   final List<String> popularTags = const [
-    'Travel', 'Spa', 'Events', 'Sports',
-    'Games', 'Fitness', 'Care', 'Real Estate',
+    'Travel',
+    'Spa',
+    'Events',
+    'Sports',
+    'Games',
+    'Fitness',
+    'Care',
+    'Real Estate',
   ];
 
   final TextEditingController searchController = TextEditingController();
-  final FocusNode searchFocusNode = FocusNode();
-  final RxBool isSearching = false.obs;
 
+  final FocusNode searchFocusNode = FocusNode();
+
+  final RxBool isSearching = false.obs;
   final RxSet<String> savedIds = <String>{}.obs;
 
   final GetStorage _box = GetStorage();
+
   static const String _savedIdsStorageKey = 'saved_template_ids';
 
-  // Tapped template — when set, shows the detail view instead of the grid.
+  // Selected template
   final Rx<TemplateItem?> selectedTemplate = Rx<TemplateItem?>(null);
 
-  // No-op for now — preview images still have text baked in.
   final RxBool autoFillProfile = false.obs;
   final Rx<ProfileModel?> autoFillProfileData = Rx<ProfileModel?>(null);
 
-  // Filled from the asset manifest (see _loadTemplatesFromAssets).
   final RxList<TemplateItem> allTemplates = <TemplateItem>[].obs;
+
   final RxBool isLoading = true.obs;
 
-  // e.g.
-  // assets/images/templates/travel/horizontal/travel_01_front.png
   static final RegExp _frontRegex = RegExp(
     r'^assets/images/templates/([^/]+)/(horizontal|vertical)/(.+)_front\.(png|jpe?g|webp)$',
   );
 
-  String _slugOf(String category) => category
-      .toLowerCase()
-      .replaceAll(' & ', '_')
-      .replaceAll(' ', '_');
+  String _slugOf(String category) =>
+      category.toLowerCase().replaceAll(' & ', '_').replaceAll(' ', '_');
 
-  /// Loads previously-saved (hearted) template ids from disk.
+  /// Loads previously saved template IDs from disk.
   void _loadSavedIdsFromDisk() {
     final raw = _box.read<String>(_savedIdsStorageKey);
+
     if (raw == null) return;
 
     try {
       final List<dynamic> list = jsonDecode(raw) as List<dynamic>;
       savedIds.assignAll(list.map((e) => e as String));
-    } catch (e) {
-      debugPrint('Failed to load saved template ids: $e');
+    } catch (e, st) {
+      debugPrint('Failed to load saved template IDs: $e');
+
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'load saved template ids',
+      );
     }
   }
 
@@ -78,66 +90,88 @@ class TemplateController extends GetxController {
     await _box.write(_savedIdsStorageKey, jsonEncode(savedIds.toList()));
   }
 
-  /// Scans the asset manifest, so only images that actually exist
-  /// become cards. No fixed 1..3 range anymore — a category can have
-  /// 1 image or 20, and each shows exactly what is on disk.
+  /// Loads available templates from the asset manifest.
   Future<void> _loadTemplatesFromAssets() async {
     try {
       final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+
       final assets = manifest.listAssets().toSet();
 
-      final categories = filters.where((f) => f != 'All').toList();
-      final slugToCategory = {for (final c in categories) _slugOf(c): c};
+      final categories = filters
+          .where((category) => category != 'All')
+          .toList();
+
+      final slugToCategory = {
+        for (final category in categories) _slugOf(category): category,
+      };
 
       final entries = <(TemplateItem, int)>[];
 
       for (final path in assets) {
-        final m = _frontRegex.firstMatch(path);
-        if (m == null) continue;
+        final match = _frontRegex.firstMatch(path);
 
-        final slug = m.group(1)!;
+        if (match == null) continue;
+
+        final slug = match.group(1)!;
         final category = slugToCategory[slug];
-        if (category == null) continue; // folder not in filters list
 
-        final orientationFolder = m.group(2)!;
-        final fileId = m.group(3)!; // e.g. travel_01
-        final ext = m.group(4)!;
+        if (category == null) continue;
+
+        final orientationFolder = match.group(2)!;
+        final fileId = match.group(3)!;
+        final ext = match.group(4)!;
+
         final number = int.tryParse(fileId.split('_').last) ?? 0;
 
         final backPath =
             'assets/images/templates/$slug/$orientationFolder/${fileId}_back.$ext';
 
         entries.add((
-        TemplateItem(
-          id: '${orientationFolder}_$fileId',
-          name: '$category Template $number',
-          category: category,
-          orientation: orientationFolder == 'vertical'
-              ? TemplateOrientation.vertical
-              : TemplateOrientation.horizontal,
-          frontImagePath: path,
-          // if a back image is missing, fall back to the front one
-          backImagePath: assets.contains(backPath) ? backPath : path,
-          isPremium: number % 3 == 0,
-        ),
-        number,
+          TemplateItem(
+            id: '${orientationFolder}_$fileId',
+            name: '$category Template $number',
+            category: category,
+            orientation: orientationFolder == 'vertical'
+                ? TemplateOrientation.vertical
+                : TemplateOrientation.horizontal,
+            frontImagePath: path,
+            backImagePath: assets.contains(backPath) ? backPath : path,
+            isPremium: number % 3 == 0,
+          ),
+          number,
         ));
       }
 
-      // stable order: category (as in filters) -> orientation -> number
+      // Sort by category, orientation, and template number.
       entries.sort((a, b) {
-        final c = categories
+        final categoryComparison = categories
             .indexOf(a.$1.category)
             .compareTo(categories.indexOf(b.$1.category));
-        if (c != 0) return c;
-        final o = a.$1.orientation.index.compareTo(b.$1.orientation.index);
-        if (o != 0) return o;
+
+        if (categoryComparison != 0) {
+          return categoryComparison;
+        }
+
+        final orientationComparison = a.$1.orientation.index.compareTo(
+          b.$1.orientation.index,
+        );
+
+        if (orientationComparison != 0) {
+          return orientationComparison;
+        }
+
         return a.$2.compareTo(b.$2);
       });
 
-      allTemplates.assignAll(entries.map((e) => e.$1));
-    } catch (e) {
+      allTemplates.assignAll(entries.map((entry) => entry.$1));
+    } catch (e, st) {
       debugPrint('Failed to load templates: $e');
+
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'load templates from assets',
+      );
     } finally {
       isLoading.value = false;
     }
@@ -145,25 +179,36 @@ class TemplateController extends GetxController {
 
   List<TemplateItem> get _baseListForTab {
     if (tabIndex.value == 2) {
-      return allTemplates.where((t) => savedIds.contains(t.id)).toList();
+      return allTemplates
+          .where((template) => savedIds.contains(template.id))
+          .toList();
     }
+
     final wantVertical = tabIndex.value == 1;
+
     return allTemplates
-        .where((t) => (t.orientation == TemplateOrientation.vertical) == wantVertical)
+        .where(
+          (template) =>
+              (template.orientation == TemplateOrientation.vertical) ==
+              wantVertical,
+        )
         .toList();
   }
 
-  /// Tab + category + search filters applied together on one flat list.
+  /// Applies tab, category, and search filters.
   List<TemplateItem> get currentList {
     var list = _baseListForTab;
 
     if (selectedFilter.value != 'All') {
-      list = list.where((t) => t.category == selectedFilter.value).toList();
+      list = list
+          .where((template) => template.category == selectedFilter.value)
+          .toList();
     }
 
     final query = searchController.text.trim().toLowerCase();
+
     if (query.isNotEmpty) {
-      list = list.where((t) => t.matchesQuery(query)).toList();
+      list = list.where((template) => template.matchesQuery(query)).toList();
     }
 
     return list;
@@ -171,16 +216,23 @@ class TemplateController extends GetxController {
 
   bool get isVerticalGrid => tabIndex.value == 1;
 
-  void changeTab(int index) => tabIndex.value = index;
+  void changeTab(int index) {
+    tabIndex.value = index;
+  }
 
-  void selectFilter(String filter) => selectedFilter.value = filter;
+  void selectFilter(String filter) {
+    selectedFilter.value = filter;
+  }
 
   void toggleSaved(String id) {
     if (savedIds.contains(id)) {
       savedIds.remove(id);
     } else {
       savedIds.add(id);
+
+      FirebaseAnalytics.instance.logEvent(name: 'template_saved');
     }
+
     _persistSavedIds();
   }
 
@@ -200,6 +252,14 @@ class TemplateController extends GetxController {
 
   void openTemplate(TemplateItem item) {
     selectedTemplate.value = item;
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'template_opened',
+      parameters: {
+        'category': item.category,
+        'orientation': item.orientation.name,
+      },
+    );
   }
 
   void closeTemplateDetail() {
@@ -209,6 +269,7 @@ class TemplateController extends GetxController {
   void toggleAutoFill(bool value) {
     if (value) {
       final profile = ProfileRepository.getSavedProfile();
+
       if (profile == null) {
         Get.snackbar(
           'No saved profile',
@@ -216,25 +277,37 @@ class TemplateController extends GetxController {
           snackPosition: SnackPosition.BOTTOM,
           margin: const EdgeInsets.all(15),
         );
+
         return;
       }
+
       autoFillProfileData.value = profile;
     } else {
       autoFillProfileData.value = null;
     }
+
     autoFillProfile.value = value;
   }
 
   void onEditTemplateTap() {
     final item = selectedTemplate.value;
+
     if (item == null) return;
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'template_edit_started',
+      parameters: {'category': item.category},
+    );
+
     Get.to(() => CardEditorView(template: item));
   }
 
   @override
   void onInit() {
     super.onInit();
+
     searchFocusNode.addListener(onSearchFocusChanged);
+
     _loadSavedIdsFromDisk();
     _loadTemplatesFromAssets();
   }
@@ -244,6 +317,7 @@ class TemplateController extends GetxController {
     searchFocusNode.removeListener(onSearchFocusChanged);
     searchFocusNode.dispose();
     searchController.dispose();
+
     super.onClose();
   }
 }

@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gal/gal.dart';
@@ -11,9 +13,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../profile_setup/service/profile_store.dart'; // NEW
+import '../../../core/services/remote_config_service.dart';
+import '../../paywall/services/credits_gate.dart';
+import '../../profile_setup/service/profile_store.dart';
 import '../model/profile_model.dart';
-import '../service/profile_repository.dart'; // NEW
+import '../service/profile_repository.dart';
 
 class ProfileController extends GetxController {
   ProfileModel profile = ProfileModel();
@@ -92,14 +96,16 @@ class ProfileController extends GetxController {
       socialLinkControllers.add(TextEditingController(text: link));
     }
 
-    frontImage.value = (profile.frontImagePath != null &&
-        profile.frontImagePath!.isNotEmpty &&
-        File(profile.frontImagePath!).existsSync())
+    frontImage.value =
+        (profile.frontImagePath != null &&
+            profile.frontImagePath!.isNotEmpty &&
+            File(profile.frontImagePath!).existsSync())
         ? File(profile.frontImagePath!)
         : null;
-    coverImage.value = (profile.coverImagePath != null &&
-        profile.coverImagePath!.isNotEmpty &&
-        File(profile.coverImagePath!).existsSync())
+    coverImage.value =
+        (profile.coverImagePath != null &&
+            profile.coverImagePath!.isNotEmpty &&
+            File(profile.coverImagePath!).existsSync())
         ? File(profile.coverImagePath!)
         : null;
 
@@ -141,26 +147,42 @@ class ProfileController extends GetxController {
   }
 
   Future<void> pickFrontImage() async {
-    final XFile? picked = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-      maxWidth: 800,
-    );
-    if (picked != null) {
-      final permanentPath = await _persistImage(File(picked.path), 'front');
-      frontImage.value = File(permanentPath);
+    try {
+      final XFile? picked = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 85,
+        maxWidth: 800,
+      );
+      if (picked != null) {
+        final permanentPath = await _persistImage(File(picked.path), 'front');
+        frontImage.value = File(permanentPath);
+      }
+    } catch (e, st) {
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'pick profile front image',
+      );
     }
   }
 
   Future<void> pickCoverImage() async {
-    final XFile? picked = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-      maxWidth: 1200,
-    );
-    if (picked != null) {
-      final permanentPath = await _persistImage(File(picked.path), 'cover');
-      coverImage.value = File(permanentPath);
+    try {
+      final XFile? picked = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 85,
+        maxWidth: 1200,
+      );
+      if (picked != null) {
+        final permanentPath = await _persistImage(File(picked.path), 'cover');
+        coverImage.value = File(permanentPath);
+      }
+    } catch (e, st) {
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'pick profile cover image',
+      );
     }
   }
 
@@ -206,7 +228,10 @@ class ProfileController extends GetxController {
 
     _box.write(_storageKey, profile.toJson());
 
-    hasProfile.value = profile.firstName.trim().isNotEmpty &&
+    FirebaseAnalytics.instance.logEvent(name: 'profile_updated');
+
+    hasProfile.value =
+        profile.firstName.trim().isNotEmpty &&
         profile.lastName.trim().isNotEmpty;
 
     // Bump so anything watching profileVersion (e.g. the saved-profile
@@ -259,18 +284,28 @@ class ProfileController extends GetxController {
       await WidgetsBinding.instance.endOfFrame;
 
       final boundary =
-      key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+          key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
       if (boundary == null) return null;
 
       final image = await boundary.toImage(pixelRatio: 3.0);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       return byteData?.buffer.asUint8List();
-    } catch (e) {
+    } catch (e, st) {
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'capture profile card image',
+      );
       return null;
     }
   }
 
   Future<void> shareCard(GlobalKey key) async {
+    if (isProcessingCard.value) return;
+    final exportCost = RemoteConfigService().creditCosts.export;
+    if (!await CreditGate.canUse(cost: exportCost, source: 'profile_export')) {
+      return;
+    }
     isProcessingCard.value = true;
     final bytes = await _captureCardImage(key);
     isProcessingCard.value = false;
@@ -285,19 +320,42 @@ class ProfileController extends GetxController {
       return;
     }
 
-    final dir = await getTemporaryDirectory();
-    final file = File(
-      '${dir.path}/business_card_${DateTime.now().millisecondsSinceEpoch}.png',
-    );
-    await file.writeAsBytes(bytes);
+    try {
+      final dir = await getTemporaryDirectory();
+      final file = File(
+        '${dir.path}/business_card_${DateTime.now().millisecondsSinceEpoch}.png',
+      );
+      await file.writeAsBytes(bytes);
 
-    await Share.shareXFiles(
-      [XFile(file.path)],
-      text: 'Check out my business card!',
-    );
+      await Share.shareXFiles([
+        XFile(file.path),
+      ], text: 'Check out my business card!');
+      await CreditGate.spend(cost: exportCost, source: 'profile_export');
+      FirebaseAnalytics.instance.logEvent(
+        name: 'card_shared',
+        parameters: {'method': 'profile_card'},
+      );
+    } catch (e, st) {
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'share profile card',
+      );
+      Get.snackbar(
+        'Error',
+        'Could not share the card. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(15),
+      );
+    }
   }
 
   Future<void> downloadCard(GlobalKey key) async {
+    if (isProcessingCard.value) return;
+    final exportCost = RemoteConfigService().creditCosts.export;
+    if (!await CreditGate.canUse(cost: exportCost, source: 'profile_export')) {
+      return;
+    }
     isProcessingCard.value = true;
     final bytes = await _captureCardImage(key);
     isProcessingCard.value = false;
@@ -317,13 +375,20 @@ class ProfileController extends GetxController {
         bytes,
         name: 'business_card_${DateTime.now().millisecondsSinceEpoch}',
       );
+      await CreditGate.spend(cost: exportCost, source: 'profile_export');
+      FirebaseAnalytics.instance.logEvent(name: 'card_downloaded');
       Get.snackbar(
         'Downloaded',
         'Card saved to your photo gallery.',
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
-    } catch (e) {
+    } catch (e, st) {
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'download profile card',
+      );
       Get.snackbar(
         'Error',
         'Could not save to gallery. Please check photo permissions.',

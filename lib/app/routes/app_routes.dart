@@ -10,4 +10,5 @@ abstract class Routes {
   static const BUSINESS_DETAILS = '/business-details';
   static const FIRST_CARD = '/first-card';
   static const FIRST_CARD_READY = '/first-card-ready';
+  static const PAYWALL = '/paywall';
 }

@@ -1,13 +1,21 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import '../../../core/services/connectivity_service.dart';
 import '../../../core/services/gemini_card_service.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../core/services/recent_designs_service.dart';
+import '../../../routes/app_routes.dart';
 import '../../custom_create/view/card_editor_view.dart';
+import '../../../core/services/remote_config_service.dart';
+import '../../paywall/controller/subscription_controller.dart';
+import '../../paywall/services/credits_gate.dart';
+import '../../paywall/view/paywall_screen.dart';
 import '../../profile_setup/controller/first_card_generator.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../../template/controller/template_controller.dart';
@@ -31,6 +39,7 @@ class HomeController extends GetxController {
   final GlobalKey backCaptureKey = GlobalKey();
 
   int _tapSeq = 0;
+  Worker? _proWorker;
 
   final FirstCardGenerator _generator = FirstCardGenerator();
 
@@ -45,6 +54,19 @@ class HomeController extends GetxController {
 
     // Home is the first screen where the No Internet dialog is allowed
     Get.find<ConnectivityService>().startMonitoring();
+
+    // Home is the first screen where we ask for notification permission.
+    NotificationService().requestPermissionAndSubscribe();
+
+    // Realtime: if the subscription lapses/is refunded while the app is
+    // open, send the user back to the paywall.
+    _proWorker = ever<bool>(Get.find<SubscriptionController>().isUserPro, (
+      pro,
+    ) {
+      if (!pro && Get.currentRoute == Routes.MAIN) {
+        openPaywall(source: 'subscription_lapsed');
+      }
+    });
 
     // TEMP: testing only — uncomment to preview the rate dialog on Home.
     // showRateAppDialog(
@@ -76,6 +98,11 @@ class HomeController extends GetxController {
 
     previewData.value = live;
     previewTemplate.value = item;
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'template_previewed',
+      parameters: {'category': item.category},
+    );
   }
 
   void cancelPreview() {
@@ -90,11 +117,16 @@ class HomeController extends GetxController {
     final item = previewTemplate.value;
     if (item == null || applying.value) return;
 
+    FirebaseAnalytics.instance.logEvent(
+      name: 'template_edit_started',
+      parameters: {'category': item.category},
+    );
+
     final service = Get.find<RecentDesignsService>();
     final before = service.designs.isEmpty ? null : service.designs.first.id;
 
     await Get.to(
-          () => CardEditorView(template: item),
+      () => CardEditorView(template: item),
       transition: Transition.rightToLeft,
     );
 
@@ -139,11 +171,32 @@ class HomeController extends GetxController {
       _tapSeq++;
       previewTemplate.value = null;
       previewData.value = null;
-      Get.snackbar('Template applied', 'Your card was updated.');
+
+      FirebaseAnalytics.instance.logEvent(
+        name: 'template_applied',
+        parameters: {'category': item.category, 'method': 'live'},
+      );
+
+      Get.snackbar(
+        'Template applied',
+        'Your card was updated.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(15),
+      );
     } catch (e, st) {
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'apply live template',
+      );
       debugPrint('Apply live template error: $e');
       debugPrintStack(stackTrace: st);
-      Get.snackbar('Could not apply template', 'Please try again.');
+      Get.snackbar(
+        'Could not apply template',
+        'Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(15),
+      );
     } finally {
       applying.value = false;
     }
@@ -153,6 +206,12 @@ class HomeController extends GetxController {
   Future<void> _applyWithAi(TemplateItem item) async {
     if (!await Get.find<ConnectivityService>().ensureInternet()) return;
 
+    // Plan limit: no-op unless Remote Config `credits_enabled` is on.
+    final aiCardCost = RemoteConfigService().creditCosts.aiCard;
+    if (!await CreditGate.canUse(cost: aiCardCost, source: 'template_ai')) {
+      return;
+    }
+
     applying.value = true;
     try {
       await _generator.generate(
@@ -160,17 +219,46 @@ class HomeController extends GetxController {
         templateAssetPath: item.frontImagePath,
         title: item.name,
       );
+      // Charged only now that the card was actually generated.
+      await CreditGate.spend(cost: aiCardCost, source: 'template_ai');
       previewTemplate.value = null;
       previewData.value = null;
-      Get.snackbar('Template applied', 'Your card was updated.');
+
+      FirebaseAnalytics.instance.logEvent(
+        name: 'template_applied',
+        parameters: {'category': item.category, 'method': 'ai'},
+      );
+
+      Get.snackbar(
+        'Template applied',
+        'Your card was updated.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(15),
+      );
     } on GeminiException catch (e, st) {
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'apply template (gemini)',
+      );
       debugPrint('Apply template failed: ${e.message}');
       debugPrintStack(stackTrace: st);
-      Get.snackbar('Could not apply template', e.message);
+      Get.snackbar(
+        'Could not apply template',
+        e.message,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(15),
+      );
     } catch (e, st) {
+      FirebaseCrashlytics.instance.recordError(e, st, reason: 'apply template');
       debugPrint('Apply template error: $e');
       debugPrintStack(stackTrace: st);
-      Get.snackbar('Could not apply template', 'Please try again.');
+      Get.snackbar(
+        'Could not apply template',
+        'Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(15),
+      );
     } finally {
       applying.value = false;
     }
@@ -178,7 +266,7 @@ class HomeController extends GetxController {
 
   Future<Uint8List?> _capture(GlobalKey key, {double pixelRatio = 3}) async {
     final boundary =
-    key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+        key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
     if (boundary == null) return null;
 
     final image = await boundary.toImage(pixelRatio: pixelRatio);
@@ -213,6 +301,7 @@ class HomeController extends GetxController {
 
   @override
   void onClose() {
+    _proWorker?.dispose();
     promptController.dispose();
     super.onClose();
   }
