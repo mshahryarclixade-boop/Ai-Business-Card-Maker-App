@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
+import 'symbol_asset_items.dart';
+
 enum CardOrientation { portrait, landscape }
 
 extension CardOrientationSize on CardOrientation {
@@ -297,10 +299,9 @@ class CardElement {
       CardImageMask.values.byName(json['imageMask'] as String? ?? 'none'),
       symbol: json['symbol'] as String? ?? '',
       iconData: json['iconCodePoint'] != null
-          ? IconData(
+          ? stickerIconFor(
         json['iconCodePoint'] as int,
-        fontFamily: json['iconFontFamily'] as String?,
-        fontPackage: json['iconFontPackage'] as String?,
+        json['iconFontFamily'] as String?,
       )
           : null,
       iconAsset: json['iconAsset'] as String?,

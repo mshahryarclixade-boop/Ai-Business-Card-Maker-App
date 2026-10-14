@@ -34,17 +34,8 @@ extension CardEditorSymbolsX on CardEditorController {
 
   // --------------------------------------------------------------- Stickers
   /// Material icon ya Font Awesome icon dono ko plain IconData mein badalta hai.
-  IconData? _toIconData(IconAssetItem item) {
-    final material = item.iconData;
-    if (material != null) return material;
-    final fa = item.faIconData;
-    if (fa == null) return null;
-    return IconData(
-      fa.codePoint,
-      fontFamily: fa.fontFamily,
-      fontPackage: fa.fontPackage,
-    );
-  }
+  IconData? _toIconData(IconAssetItem item) =>
+      item.iconData ?? item.faIconData?.data;
 
   void _addSticker(IconAssetItem item, double size) {
     final icon = _toIconData(item);

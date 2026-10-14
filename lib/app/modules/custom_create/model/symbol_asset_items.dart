@@ -50,3 +50,27 @@ const List<IconAssetItem> kGeneralIcons = [
   IconAssetItem(id: 'star', label: 'Star', iconData: Icons.star_rounded),
   IconAssetItem(id: 'briefcase', label: 'Work', iconData: Icons.work_rounded),
 ];
+
+/// Every icon a sticker can hold. Saved designs are restored by looking the
+/// icon up here, because building IconData at runtime breaks icon tree shaking
+/// in release builds. Add any new sticker icon to this list too.
+final List<IconData> kAllStickerIcons = [
+  for (final item in [...kSocialIcons, ...kArrowStyles, ...kGeneralIcons])
+    item.faIconData?.data ?? item.iconData!,
+  // Icons placed by the AI layout mapper.
+  Icons.phone,
+  Icons.email,
+  Icons.language,
+  Icons.location_on,
+  Icons.link,
+];
+
+/// Finds the const IconData matching a saved code point / font family.
+IconData? stickerIconFor(int codePoint, String? fontFamily) {
+  for (final icon in kAllStickerIcons) {
+    if (icon.codePoint == codePoint && icon.fontFamily == fontFamily) {
+      return icon;
+    }
+  }
+  return null;
+}
