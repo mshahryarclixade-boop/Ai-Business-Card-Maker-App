@@ -7,11 +7,11 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/services/connectivity_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../paywall/view/paywall_view.dart';
 import '../../profile/widgets/dashed_border.dart';
 import '../controller/ai_card_controller.dart';
 import '../service/ai_card_service.dart';
 import 'ai_card_preview_view.dart';
+import '../../paywall/view/paywall_screen.dart';
 
 class AiCardGeneratorView extends StatelessWidget {
   final String? initialPrompt;
@@ -53,10 +53,7 @@ class AiCardGeneratorView extends StatelessWidget {
               padding: const EdgeInsets.only(right: 16),
               child: GestureDetector(
                 onTap: () {
-                  Get.to(
-                    () => const PaywallView(),
-                    transition: Transition.rightToLeft,
-                  );
+                  openPaywall(source: 'ai_card_generator', plans: true);
                 },
                 child: Container(
                   width: 36,

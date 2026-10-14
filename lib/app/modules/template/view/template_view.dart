@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../paywall/view/paywall_view.dart';
 import '../controller/template_controller.dart';
 import '../model/template_item.dart';
 import '../widget/orientation_and_filters.dart';
@@ -13,6 +12,7 @@ import '../widget/popular_tags_view.dart';
 import '../widget/search_bar_widget.dart';
 import '../widget/template_card.dart';
 import '../widget/template_preview_card.dart';
+import '../../paywall/view/paywall_screen.dart';
 
 class TemplateView extends GetView<TemplateController> {
   const TemplateView({super.key});
@@ -68,10 +68,7 @@ class _TemplateListing extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
                     onTap: () {
-                      Get.to(
-                            () => const PaywallView(),
-                        transition: Transition.rightToLeft,
-                      );
+                      openPaywall(source: 'templates', plans: true);
                     },
                     child: Container(
                       width: 36,

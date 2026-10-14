@@ -24,16 +24,16 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<key>NSCameraUsageDescription</key>
-	<string>The camera is used to scan business cards and QR codes.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Choose photos from your library for your logo, profile picture and card backgrounds.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Your finished business cards are saved to your photo library.</string>
-	<key>NSContactsUsageDescription</key>
-	<string>Contacts access lets you save scanned cards to your contacts and add details from them.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>The camera is used to scan business cards and QR codes.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Contacts access lets you save scanned cards to your contacts and add details from them.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Your finished business cards are saved to your photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Choose photos from your library for your logo, profile picture and card backgrounds.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -65,6 +65,8 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -72,7 +74,6 @@
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 </dict>
 </plist>

@@ -4,11 +4,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../widgets/home_templates_section.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../paywall/view/paywall_view.dart';
 import '../../qr_code_generator/view/qr_code_screen.dart';
 import '../../settings/view/settings_view.dart';
 import '../controller/home_controller.dart';
 import '../widgets/my_card_section.dart';
+import '../../paywall/view/paywall_screen.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -52,10 +52,7 @@ class HomeView extends GetView<HomeController> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                Get.to(
-                                      () => const PaywallView(),
-                                  transition: Transition.rightToLeft,
-                                );
+                                openPaywall(source: 'home', plans: true);
                               },
                               child: Container(
                                 width: 36,

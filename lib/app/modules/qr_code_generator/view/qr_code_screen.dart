@@ -10,13 +10,13 @@ import 'package:path_provider/path_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/add_link_sheet.dart';
-import '../../paywall/view/paywall_view.dart';
 import '../../profile/model/profile_model.dart';
 import '../../profile/service/profile_repository.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../service/qr_generator_service.dart';
 import '../model/qr_profile_data.dart';
 import 'qr_preview_screen.dart';
+import '../../paywall/view/paywall_screen.dart';
 
 class CustomQrCodeScreen extends StatefulWidget {
   final bool forCardInsertion;
@@ -277,10 +277,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
               padding: const EdgeInsets.only(right: 16),
               child: GestureDetector(
                 onTap: () {
-                  Get.to(
-                        () => const PaywallView(),
-                    transition: Transition.rightToLeft,
-                  );
+                  openPaywall(source: 'qr_code', plans: true);
                 },
                 child: Container(
                   width: 36,

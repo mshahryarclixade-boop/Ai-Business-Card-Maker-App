@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
 import 'app/core/services/connectivity_service.dart';
 import 'app/core/services/recent_designs_service.dart';
 import 'app/modules/profile/controller/profile_controller.dart';
@@ -24,9 +22,7 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await FirebaseAppCheck.instance.activate(
     providerAndroid: const AndroidPlayIntegrityProvider(),
@@ -34,8 +30,9 @@ void main() async {
   );
 
   // Crashlytics: collect only in release builds.
-  await FirebaseCrashlytics.instance
-      .setCrashlyticsCollectionEnabled(!kDebugMode);
+  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+    !kDebugMode,
+  );
 
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
@@ -54,8 +51,14 @@ void main() async {
     onTimeout: () {},
   );
   await RevenueCatHelper().initPlatformState();
-  // Hydrates the credit balance (Firestore) in the background.
-  UserCreditsManager().initUser().catchError((Object _) {});
+  // Before SubscriptionController: its first status check may grant a plan
+  // pool, and a new user's free-tier record written after that would
+  // overwrite it. Bounded so a slow network never stalls launch (initUser
+  // keeps a local guess and reconciles later).
+  await UserCreditsManager()
+      .initUser()
+      .timeout(const Duration(seconds: 5), onTimeout: () {})
+      .catchError((Object _) {});
   Get.put(SubscriptionController(), permanent: true);
   Get.put(CreditsController(), permanent: true);
   Get.put(ConnectivityService(), permanent: true);

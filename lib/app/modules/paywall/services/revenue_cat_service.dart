@@ -31,21 +31,22 @@ abstract class InAppCallback {
 /// the keys once the RevenueCat project exists; until then init is skipped
 /// and every call below returns the free-tier answer.
 class RevenueCatHelper {
-  static const String entitlementIdentifier =
-      'business card entitlement premium';
+  // RevenueCat → Product catalog → Entitlements → Identifier (exact).
+  static const String entitlementIdentifier = 'premium';
 
   // RevenueCat dashboard → Project settings → API keys (public SDK keys —
   // safe to ship in the app).
   static const String _androidApiKey = 'goog_xiEfHIkDYUzClzHSZbXSvDvpRGe';
   static const String _iosApiKey = 'appl_dKKGxMhhuRCulFBVJsUjqZQulYA';
 
-  // Google Play product ids.
-  static const _androidWeeklyProductId = 'aivoice_weekly';
+  // Google Play product ids. (Weekly isn't sold on the paywall yet; its id
+  // follows the same naming for when it is.)
+  static const _androidWeeklyProductId = 'business_card_weekly';
   static const _androidMonthlyProductId = 'business_card_monthly';
   static const _androidYearlyProductId = 'business_card_yearly';
 
   // App Store product ids.
-  static const _iosWeeklyProductId = 'aivoice_weekly';
+  static const _iosWeeklyProductId = 'business_card_weekly';
   static const _iosMonthlyProductId = 'business_card_monthly';
   static const _iosYearlyProductId = 'business_card_yearly';
 
@@ -57,7 +58,7 @@ class RevenueCatHelper {
       Platform.isIOS ? _iosYearlyProductId : _androidYearlyProductId;
 
   /// [storeId] without a Google Play base plan: RevenueCat names Play
-  /// subscriptions `subscriptionId:basePlanId` (`aivoice_weekly:weekly`),
+  /// subscriptions `subscriptionId:basePlanId` (`business_card_yearly:yearly`),
   /// App Store ones just the product id. Compare product ids through this.
   static String productIdOf(String storeId) => storeId.split(':').first;
 
@@ -95,7 +96,7 @@ class RevenueCatHelper {
     }
 
     try {
-      await Purchases.setLogLevel(LogLevel.debug);
+      await Purchases.setLogLevel(kDebugMode ? LogLevel.debug : LogLevel.warn);
       await Purchases.configure(PurchasesConfiguration(apiKey));
       _configured = true;
       await setupPurchaseListener();
@@ -144,7 +145,7 @@ class RevenueCatHelper {
           '✅ Purchase succeeded — product=${product.identifier}',
           name: 'RevenueCatHelper',
         );
-        if (context.mounted) callback.onPurchaseSuccess(context);
+        callback.onPurchaseSuccess(context);
       } else {
         // Paid, but the entitlement isn't attached to this product in the
         // dashboard — Pro can't unlock, so report it rather than hang.
@@ -153,9 +154,7 @@ class RevenueCatHelper {
           'active — product=${product.identifier}',
           name: 'RevenueCatHelper',
         );
-        if (context.mounted) {
-          callback.onPurchaseFailure(context, PurchasesErrorCode.unknownError);
-        }
+        callback.onPurchaseFailure(context, PurchasesErrorCode.unknownError);
       }
     } on PlatformException catch (e) {
       final errorCode = PurchasesErrorHelper.getErrorCode(e);
@@ -171,21 +170,17 @@ class RevenueCatHelper {
           name: 'RevenueCatHelper',
         );
       }
-      if (context.mounted) {
-        if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
-          callback.onPurchaseCancelled(context);
-        } else {
-          callback.onPurchaseFailure(context, errorCode);
-        }
+      if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
+        callback.onPurchaseCancelled(context);
+      } else {
+        callback.onPurchaseFailure(context, errorCode);
       }
     } catch (e) {
       log(
         '❌ Purchase failed (non-platform) — product=${product.identifier}: $e',
         name: 'RevenueCatHelper',
       );
-      if (context.mounted) {
-        callback.onPurchaseFailure(context, PurchasesErrorCode.unknownError);
-      }
+      callback.onPurchaseFailure(context, PurchasesErrorCode.unknownError);
     }
   }
 
@@ -324,7 +319,6 @@ class RevenueCatHelper {
             : 'Restore found no active "$entitlementIdentifier" entitlement',
         name: 'RevenueCatHelper',
       );
-      if (!context.mounted) return;
       if (isActive) {
         callback.onPurchasedRestored(context);
       } else {
@@ -332,10 +326,10 @@ class RevenueCatHelper {
       }
     } on PlatformException catch (e) {
       log('Restore failed: ${e.message}', name: 'RevenueCatHelper');
-      if (context.mounted) callback.onPurchaseRestoreFailed(context);
+      callback.onPurchaseRestoreFailed(context);
     } catch (e) {
       log('Unexpected restore error: $e', name: 'RevenueCatHelper');
-      if (context.mounted) callback.onPurchaseRestoreFailed(context);
+      callback.onPurchaseRestoreFailed(context);
     }
   }
 
@@ -388,7 +382,29 @@ class RevenueCatHelper {
   /// last-assigned date along with the balance it applies to, instead of
   /// looking like "never assigned" and re-granting a full pool on top of an
   /// already-correct balance.
+  ///
+  /// Runs one at a time (see [_assignQueue]): at launch the status check
+  /// and the listener both get here, and two overlapping runs would both
+  /// see "not assigned yet" and refill twice — the second one wiping
+  /// whatever was spent in between, and possibly the pre-Pro snapshot.
   Future<void> _checkAndAssignCredits(
+    String productId,
+    String? latestPurchaseDate,
+    PeriodType periodType,
+  ) {
+    final run = _assignQueue.then(
+      (_) => _assignIfDue(productId, latestPurchaseDate, periodType),
+    );
+    _assignQueue = run.catchError((Object e) {
+      log('credit assignment failed: $e', name: 'RevenueCatHelper');
+    });
+    return run;
+  }
+
+  /// Shared by every RevenueCatHelper instance.
+  static Future<void> _assignQueue = Future.value();
+
+  Future<void> _assignIfDue(
     String productId,
     String? latestPurchaseDate,
     PeriodType periodType,

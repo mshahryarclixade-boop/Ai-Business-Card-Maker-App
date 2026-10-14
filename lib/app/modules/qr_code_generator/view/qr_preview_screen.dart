@@ -15,11 +15,11 @@ import '../../../core/services/recent_designs_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../custom_create/view/card_editor_view.dart';
-import '../../paywall/view/paywall_view.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../model/qr_code_builder.dart';
 import '../model/qr_profile_data.dart';
 import '../service/qr_generator_service.dart';
+import '../../paywall/view/paywall_screen.dart';
 
 const String _kQrFormKey = 'qr_form_data';
 
@@ -164,10 +164,7 @@ class QrPreviewScreen extends StatelessWidget {
             padding: const EdgeInsets.only(right: 16),
             child: GestureDetector(
               onTap: () {
-                Get.to(
-                      () => const PaywallView(),
-                  transition: Transition.rightToLeft,
-                );
+                openPaywall(source: 'qr_preview', plans: true);
               },
               child: Container(
                 width: 36,

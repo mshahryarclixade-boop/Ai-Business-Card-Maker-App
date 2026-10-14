@@ -37,6 +37,22 @@ class SubscriptionController extends GetxController {
     _fetchProducts();
     _seedFromCache();
     _syncTask = syncProStatus();
+    _lifecycle = AppLifecycleListener(onResume: _syncOnResume);
+  }
+
+  @override
+  void onClose() {
+    _lifecycle?.dispose();
+    super.onClose();
+  }
+
+  AppLifecycleListener? _lifecycle;
+  Future<void>? _resumeSync;
+
+  /// Back from the background: re-checked, so a renewal, a trial turning
+  /// paid or a lapse that happened meanwhile applies without a relaunch.
+  void _syncOnResume() {
+    _resumeSync ??= syncProStatus().whenComplete(() => _resumeSync = null);
   }
 
   Future<void> _seedFromCache() async {
@@ -69,7 +85,16 @@ class SubscriptionController extends GetxController {
     if (!isPro) unawaited(_downgradeIfLapsed());
   }
 
-  Future<void> _downgradeIfLapsed() async {
+  Future<void>? _downgrading;
+
+  /// One at a time: at launch the status check and the listener can both
+  /// report a lapse at once, and a second downgrade running alongside the
+  /// first would restore the already-cleared pre-Pro snapshot (0) over the
+  /// free credits the first one just gave back.
+  Future<void> _downgradeIfLapsed() =>
+      _downgrading ??= _downgrade().whenComplete(() => _downgrading = null);
+
+  Future<void> _downgrade() async {
     if (!await UserCreditsManager().isPro()) return;
 
     await UserCreditsManager().downgradeToFree();

@@ -1,13 +1,21 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+
+import '../controller/subscription_controller.dart';
+import '../services/revenue_cat_service.dart';
+
 /// Paywall copy and display settings, delivered as one JSON parameter
 /// (`paywall_config`) in Firebase Remote Config.
 ///
 /// Parsing is tolerant: the remote JSON is merged over [defaultJson], so a
 /// missing, empty or malformed value (or a partial override) always yields a
-/// complete config identical to the paywall as it shipped. Prices here are
-/// display text only — purchases still go through RevenueCat.
+/// complete config identical to the paywall as it shipped. Prices come from
+/// the store once its products load (the user's own currency, matching the
+/// purchase sheet); the prices here are only shown until then.
 class PaywallConfig {
   PaywallConfig._(this._m);
 
@@ -162,8 +170,8 @@ class PaywallConfig {
   String get s1TitleLine2 => _s1['title_line2'] as String;
   String get s1Subtitle => _s1['subtitle'] as String;
   String get s1PlanTitle => _s1['plan_title'] as String;
-  String get s1SaveBadge => _s1['save_badge'] as String;
-  String get s1PriceNote => _s1['price_note'] as String;
+  String get s1SaveBadge => _withSavePercent(_s1['save_badge'] as String);
+  String get s1PriceNote => _withPerMonth(_s1['price_note'] as String);
 
   /// Each feature has an `icon` key (ai, scan, templates, qr, bg) and `text`.
   List<PaywallFeature> get s1Features {
@@ -199,8 +207,58 @@ class PaywallConfig {
   }
 
   // --- Plans ---
-  PaywallPlan get monthly => PaywallPlan(_plans['monthly'] as Map);
-  PaywallPlan get yearly => PaywallPlan(_plans['yearly'] as Map);
+  PaywallPlan get monthly =>
+      PaywallPlan(_plans['monthly'] as Map, product: _monthlyProduct);
+
+  PaywallPlan get yearly {
+    final p = _plans['yearly'] as Map;
+    final m = _monthlyProduct;
+    return PaywallPlan(
+      p,
+      product: _yearlyProduct,
+      savePercent: _savePercent,
+      storeOriginalPrice: m == null
+          ? null
+          : '${_money(m.price * 12, m.currencyCode)}${p['period']}',
+    );
+  }
+
+  // --- Store prices ---
+  static StoreProduct? _product(String id) =>
+      Get.isRegistered<SubscriptionController>()
+      ? Get.find<SubscriptionController>().productFor(id)
+      : null;
+
+  StoreProduct? get _monthlyProduct =>
+      _product(RevenueCatHelper.monthlyProductId);
+  StoreProduct? get _yearlyProduct =>
+      _product(RevenueCatHelper.yearlyProductId);
+
+  /// Yearly's saving over twelve months of monthly; null until both store
+  /// prices are known.
+  int? get _savePercent {
+    final m = _monthlyProduct, y = _yearlyProduct;
+    if (m == null || y == null || m.price <= 0) return null;
+    return ((1 - y.price / (m.price * 12)) * 100).round();
+  }
+
+  static String _money(double value, String currencyCode) =>
+      NumberFormat.simpleCurrency(name: currencyCode).format(value);
+
+  /// "Save 70%" with the saving the store prices really give.
+  String _withSavePercent(String text) =>
+      PaywallPlan._withPercent(text, _savePercent);
+
+  /// "Just $2.49/month, billed annually" with yearly's real price per
+  /// month in the store's currency.
+  String _withPerMonth(String text) {
+    final y = _yearlyProduct;
+    if (y == null) return text;
+    return text.replaceFirst(
+      RegExp(r'[$€£¥₹]\s?\d+(?:[.,]\d+)?'),
+      _money(y.price / 12, y.currencyCode),
+    );
+  }
 
   // --- Footer ---
   String get restoreLabel => _footer['restore'] as String;
@@ -215,15 +273,35 @@ class PaywallFeature {
 }
 
 class PaywallPlan {
-  const PaywallPlan(this._p);
+  const PaywallPlan(
+    this._p, {
+    this.product,
+    this.savePercent,
+    this.storeOriginalPrice,
+  });
   final Map _p;
+
+  /// The store's product, once loaded — its price wins over the text.
+  final StoreProduct? product;
+  final int? savePercent;
+  final String? storeOriginalPrice;
 
   bool get visible => _p['visible'] as bool;
   String get title => _p['title'] as String;
-  String get price => _p['price'] as String;
+  String get price => product?.priceString ?? _p['price'] as String;
   String get period => _p['period'] as String;
   String get description => (_p['description'] ?? '') as String;
   String get badge => (_p['badge'] ?? '') as String;
-  String get originalPrice => (_p['original_price'] ?? '') as String;
-  String get saveBadge => (_p['save_badge'] ?? '') as String;
+  String get originalPrice {
+    final text = (_p['original_price'] ?? '') as String;
+    return text.isEmpty ? text : storeOriginalPrice ?? text;
+  }
+
+  String get saveBadge =>
+      _withPercent((_p['save_badge'] ?? '') as String, savePercent);
+
+  /// [text]'s first "70%" replaced by [percent], when known.
+  static String _withPercent(String text, int? percent) => percent == null
+      ? text
+      : text.replaceFirst(RegExp(r'\d+\s?%'), '$percent%');
 }

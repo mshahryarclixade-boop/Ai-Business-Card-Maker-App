@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../paywall/view/paywall_view.dart';
+import '../../paywall/view/paywall_screen.dart';
 
 class RemoveBgAppBar extends StatelessWidget
     implements PreferredSizeWidget {
@@ -50,10 +50,7 @@ class RemoveBgAppBar extends StatelessWidget
           padding: const EdgeInsets.only(right: 16),
           child: GestureDetector(
             onTap: () {
-              Get.to(
-                    () => const PaywallView(),
-                transition: Transition.rightToLeft,
-              );
+              openPaywall(source: 'remove_bg', plans: true);
             },
             child: Container(
               width: 36,

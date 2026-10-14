@@ -25,8 +25,11 @@ class ContactExportService {
 
   static Future<void> saveToDevice(ContactModel c) async {
     try {
-      final granted =
-      await fc.FlutterContacts.requestPermission(readonly: false);
+      final status = await fc.FlutterContacts.permissions.request(
+        fc.PermissionType.readWrite,
+      );
+      final granted = status == fc.PermissionStatus.granted ||
+          status == fc.PermissionStatus.limited;
       if (!granted) {
         _snack('Permission needed',
             'Allow contacts access to save this contact.');
@@ -41,38 +44,46 @@ class ContactExportService {
 
       final contact = fc.Contact(
         name: fc.Name(first: first, last: c.lastName.trim()),
-        photo: photo?.$1,
-        phones: _clean([c.phone]).map((p) => fc.Phone(p)).toList(),
+        photo: photo == null ? null : fc.Photo(fullSize: photo.$1),
+        phones: _clean([c.phone]).map((p) => fc.Phone(number: p)).toList(),
         emails: [
-          ..._clean([c.email]).map((e) => fc.Email(e)),
-          ..._clean([c.companyEmail])
-              .map((e) => fc.Email(e, label: fc.EmailLabel.work)),
+          ..._clean([c.email]).map((e) => fc.Email(address: e)),
+          ..._clean([c.companyEmail]).map(
+            (e) => fc.Email(
+              address: e,
+              label: const fc.Label(fc.EmailLabel.work),
+            ),
+          ),
         ],
         organizations: (c.companyName.trim().isNotEmpty ||
             c.jobTitle.trim().isNotEmpty)
             ? [
           fc.Organization(
-            company: c.companyName.trim(),
-            title: c.jobTitle.trim(),
+            name: c.companyName.trim(),
+            jobTitle: c.jobTitle.trim(),
           ),
         ]
             : [],
-        websites: _urls(c).map((u) => fc.Website(u)).toList(),
+        websites: _urls(c).map((u) => fc.Website(url: u)).toList(),
         addresses: _clean([c.companyAddress])
-            .map((a) => fc.Address(a, label: fc.AddressLabel.work))
+            .map(
+              (a) => fc.Address(
+                formatted: a,
+                label: const fc.Label(fc.AddressLabel.work),
+              ),
+            )
             .toList(),
-        notes: _clean([c.notes]).map((n) => fc.Note(n)).toList(),
+        notes: _clean([c.notes]).map((n) => fc.Note(note: n)).toList(),
       );
 
       // Save every detail (incl. photo) straight into the address book.
-      final saved = await fc.FlutterContacts.insertContact(contact);
+      final savedId = await fc.FlutterContacts.create(contact);
 
       _snack('Saved', 'Contact saved to your phone.');
 
       // Then open the saved contact in the phone's own Contacts app.
-      // (Use openExternalEdit instead if you want it to open in edit mode.)
       try {
-        await fc.FlutterContacts.openExternalView(saved.id);
+        await fc.FlutterContacts.native.showViewer(savedId);
       } catch (e) {
         debugPrint('CONTACT OPEN VIEW failed: $e');
       }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../../core/services/analytics_service.dart';
 import '../../../core/services/remote_config_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../routes/app_routes.dart';
@@ -63,6 +64,7 @@ class _SplashViewState extends State<SplashView>
         !paywall.showOnLaunch) {
       Get.offAllNamed(Routes.MAIN);
     } else {
+      AnalyticsService.logPaywallShown('launch');
       Get.offAllNamed(
         Routes.PAYWALL,
         arguments: const PaywallArgs(source: 'launch', isLaunch: true),

@@ -27,6 +27,10 @@ class AppPages {
     GetPage(name: Routes.BUSINESS_DETAILS, page: () => const BusinessDetailsView(),),
     GetPage(name: Routes.FIRST_CARD, page: () => const FirstCardGeneratingView(),),
     GetPage(name: Routes.FIRST_CARD_READY, page: () => const FirstCardReadyView(),),
-    GetPage(name: Routes.PAYWALL, page: () => const PaywallView()),
+    GetPage(
+      name: Routes.PAYWALL,
+      page: () => const PaywallView(),
+      transition: Transition.rightToLeft,
+    ),
   ];
 }

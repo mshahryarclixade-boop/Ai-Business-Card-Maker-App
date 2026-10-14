@@ -1,5 +1,14 @@
 import 'dart:convert';
 
+/// A Remote Config number, also when the console stores it as a string
+/// ("50"); anything else is [fallback] — so one malformed value doesn't
+/// reset the whole object to its defaults.
+int _intValue(dynamic value, int fallback) {
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value.trim()) ?? fallback;
+  return fallback;
+}
+
 /// Credit pool granted per plan tier. `-1` means unlimited.
 class CreditPools {
   const CreditPools({
@@ -27,8 +36,7 @@ class CreditPools {
 
   factory CreditPools.fromJson(Map<String, dynamic> json) {
     const d = CreditPools();
-    int pick(String key, int fallback) =>
-        (json[key] as num?)?.toInt() ?? fallback;
+    int pick(String key, int fallback) => _intValue(json[key], fallback);
     return CreditPools(
       free: pick('free', d.free),
       trial: pick('trial', d.trial),
@@ -58,8 +66,8 @@ class CreditCosts {
   factory CreditCosts.fromJson(Map<String, dynamic> json) {
     const d = CreditCosts();
     return CreditCosts(
-      aiCard: (json['ai_card'] as num?)?.toInt() ?? d.aiCard,
-      export: (json['export'] as num?)?.toInt() ?? d.export,
+      aiCard: _intValue(json['ai_card'], d.aiCard),
+      export: _intValue(json['export'], d.export),
     );
   }
 

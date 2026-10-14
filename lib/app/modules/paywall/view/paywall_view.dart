@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/services/remote_config_service.dart';
+import '../../../core/utils/legal_links.dart';
+import '../controller/subscription_controller.dart';
 import '../models/paywall_config_model.dart';
 import 'paywall_actions.dart';
 import 'paywall_view_2.dart';
@@ -16,7 +18,13 @@ class PaywallView extends StatelessWidget {
   const PaywallView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => Obx(() {
+    // Rebuilt once the store products (real prices) load.
+    Get.find<SubscriptionController>().products.length;
+    return _build(context);
+  });
+
+  Widget _build(BuildContext context) {
     final cfg = RemoteConfigService().paywallConfig;
     return Scaffold(
       body: Container(
@@ -568,25 +576,27 @@ class _TrialButton extends StatelessWidget {
                 // linear-gradient(0deg, rgba(0,0,0,.2), rgba(0,0,0,.2)) -> flat overlay.
                 Container(color: Colors.black.withOpacity(0.2)),
                 Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.auto_awesome,
-                        size: 18,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        cfg.trialButtonLabel,
-                        style: const TextStyle(
-                          fontFamily: AppTextStyles.fontFamily,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                  child: PaywallBusy(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.auto_awesome,
+                          size: 18,
                           color: Colors.white,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 10),
+                        Text(
+                          cfg.trialButtonLabel,
+                          style: const TextStyle(
+                            fontFamily: AppTextStyles.fontFamily,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -661,9 +671,15 @@ class _Footer extends StatelessWidget {
             child: _FooterLink(text: cfg.restoreLabel),
           ),
           const _FooterDot(),
-          _FooterLink(text: cfg.termsLabel),
+          GestureDetector(
+            onTap: LegalLinks.openTermsOfUse,
+            child: _FooterLink(text: cfg.termsLabel),
+          ),
           const _FooterDot(),
-          _FooterLink(text: cfg.privacyLabel),
+          GestureDetector(
+            onTap: LegalLinks.openPrivacyPolicy,
+            child: _FooterLink(text: cfg.privacyLabel),
+          ),
         ],
       ),
     );

@@ -6,6 +6,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/utils/legal_links.dart';
+import '../../paywall/controller/subscription_controller.dart';
+import '../../paywall/view/paywall_screen.dart';
 import '../../recent designs/view/my_cards_view.dart';
 
 class SettingsView extends StatelessWidget {
@@ -85,10 +88,7 @@ class SettingsView extends StatelessWidget {
                         ),
                         const SizedBox(height: 7),
 
-                        const _SettingsTile(
-                          icon: Icons.star,
-                          title: 'Rate Us',
-                        ),
+                        const _SettingsTile(icon: Icons.star, title: 'Rate Us'),
                         const SizedBox(height: 7),
 
                         const _SettingsTile(
@@ -100,18 +100,22 @@ class SettingsView extends StatelessWidget {
                         const _SettingsTile(
                           icon: Icons.assignment_rounded,
                           title: 'Privacy Policy',
+                          onTap: LegalLinks.openPrivacyPolicy,
                         ),
                         const SizedBox(height: 7),
 
                         const _SettingsTile(
                           icon: Icons.description_rounded,
                           title: 'Terms and Conditions',
+                          onTap: LegalLinks.openTermsOfUse,
                         ),
                         const SizedBox(height: 7),
 
-                        const _SettingsTile(
+                        _SettingsTile(
                           icon: Icons.refresh_rounded,
                           title: 'Restore Purchase',
+                          onTap: () => Get.find<SubscriptionController>()
+                              .restorePurchase(context, source: 'settings'),
                         ),
 
                         const SizedBox(height: 7),
@@ -148,6 +152,14 @@ class _ProBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The whole banner (incl. "Get Pro") opens the plans paywall.
+    return GestureDetector(
+      onTap: () => openPaywall(source: 'settings', plans: true),
+      child: _banner(),
+    );
+  }
+
+  Widget _banner() {
     return Container(
       width: double.infinity,
       height: 140,
@@ -398,11 +410,7 @@ class _SettingsTile extends StatelessWidget {
   final String title;
   final VoidCallback? onTap;
 
-  const _SettingsTile({
-    required this.icon,
-    required this.title,
-    this.onTap,
-  });
+  const _SettingsTile({required this.icon, required this.title, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -415,20 +423,13 @@ class _SettingsTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: const Color(0xFFDCDCE0),
-            width: 1,
-          ),
+          border: Border.all(color: const Color(0xFFDCDCE0), width: 1),
         ),
         child: Row(
           children: [
             SizedBox(
               width: 25,
-              child: Icon(
-                icon,
-                size: 17,
-                color: AppColors.primary,
-              ),
+              child: Icon(icon, size: 17, color: AppColors.primary),
             ),
             const SizedBox(width: 6),
             Text(

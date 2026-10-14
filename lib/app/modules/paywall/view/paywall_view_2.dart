@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../core/services/remote_config_service.dart';
+import '../../../core/utils/legal_links.dart';
+import '../controller/subscription_controller.dart';
 import '../models/paywall_config_model.dart';
 import 'paywall_actions.dart';
 
@@ -10,7 +13,11 @@ const double _kDesignWidth = 393;
 const double _kDesignHeight = 860;
 
 class PaywallView2 extends StatefulWidget {
-  const PaywallView2({super.key});
+  const PaywallView2({super.key, this.pops = 2});
+
+  /// Screens closed on leaving: 2 when opened from the first paywall
+  /// screen (both close), 1 when opened directly.
+  final int pops;
 
   @override
   State<PaywallView2> createState() => _PaywallView2State();
@@ -21,7 +28,13 @@ class _PaywallView2State extends State<PaywallView2> {
   String _selected = 'yearly';
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => Obx(() {
+    // Rebuilt once the store products (real prices) load.
+    Get.find<SubscriptionController>().products.length;
+    return _build(context);
+  });
+
+  Widget _build(BuildContext context) {
     final cfg = RemoteConfigService().paywallConfig;
     // A hidden monthly plan can't stay selected.
     final selected = cfg.monthly.visible ? _selected : 'yearly';
@@ -49,7 +62,7 @@ class _PaywallView2State extends State<PaywallView2> {
                     child: Stack(
                       children: [
                         const _Artwork(),
-                        if (cfg.showCloseButton) const _CloseButton(),
+                        if (cfg.showCloseButton) _CloseButton(pops: widget.pops),
                         _Headline(cfg),
                         _Subtitle(cfg),
                         _FeaturePills(cfg),
@@ -58,9 +71,9 @@ class _PaywallView2State extends State<PaywallView2> {
                           selected: selected,
                           onSelect: (plan) => setState(() => _selected = plan),
                         ),
-                        _ContinueButton(cfg, selected: selected),
+                        _ContinueButton(cfg, selected: selected, pops: widget.pops),
                         _CommitmentText(cfg),
-                        _Footer(cfg),
+                        _Footer(cfg, pops: widget.pops),
                       ],
                     ),
                   ),
@@ -91,7 +104,8 @@ const LinearGradient _kBackgroundGradient = LinearGradient(
 // -----------------------------------------------------------------------------
 
 class _CloseButton extends StatelessWidget {
-  const _CloseButton();
+  const _CloseButton({required this.pops});
+  final int pops;
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +113,7 @@ class _CloseButton extends StatelessWidget {
       top: 16,
       right: 24,
       child: GestureDetector(
-        onTap: () => PaywallActions.exit(pops: 2),
+        onTap: () => PaywallActions.exit(pops: pops),
         child: Container(
           width: 26,
           height: 26,
@@ -697,9 +711,14 @@ class _YearlyCard extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _ContinueButton extends StatelessWidget {
-  const _ContinueButton(this.cfg, {required this.selected});
+  const _ContinueButton(
+    this.cfg, {
+    required this.selected,
+    required this.pops,
+  });
   final PaywallConfig cfg;
   final String selected;
+  final int pops;
 
   @override
   Widget build(BuildContext context) {
@@ -725,8 +744,8 @@ class _ContinueButton extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: () => selected == 'monthly'
-                ? PaywallActions.buyMonthly(context, pops: 2)
-                : PaywallActions.buyYearly(context, pops: 2),
+                ? PaywallActions.buyMonthly(context, pops: pops)
+                : PaywallActions.buyYearly(context, pops: pops),
             child: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -736,25 +755,27 @@ class _ContinueButton extends StatelessWidget {
                 ),
               ),
               child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.auto_awesome,
-                      size: 18,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      cfg.s2ButtonLabel,
-                      style: const TextStyle(
-                        fontFamily: AppTextStyles.fontFamily,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
+                child: PaywallBusy(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.auto_awesome,
+                        size: 18,
                         color: Colors.white,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 10),
+                      Text(
+                        cfg.s2ButtonLabel,
+                        style: const TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -797,8 +818,9 @@ class _CommitmentText extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _Footer extends StatelessWidget {
-  const _Footer(this.cfg);
+  const _Footer(this.cfg, {required this.pops});
   final PaywallConfig cfg;
+  final int pops;
 
   @override
   Widget build(BuildContext context) {
@@ -810,13 +832,19 @@ class _Footer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GestureDetector(
-            onTap: () => PaywallActions.restore(context, pops: 2),
+            onTap: () => PaywallActions.restore(context, pops: pops),
             child: _FooterLink(text: cfg.restoreLabel),
           ),
           const _FooterDot(),
-          _FooterLink(text: cfg.termsLabel),
+          GestureDetector(
+            onTap: LegalLinks.openTermsOfUse,
+            child: _FooterLink(text: cfg.termsLabel),
+          ),
           const _FooterDot(),
-          _FooterLink(text: cfg.privacyLabel),
+          GestureDetector(
+            onTap: LegalLinks.openPrivacyPolicy,
+            child: _FooterLink(text: cfg.privacyLabel),
+          ),
         ],
       ),
     );

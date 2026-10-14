@@ -7,9 +7,9 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../paywall/view/paywall_view.dart';
 import '../controller/profile_controller.dart';
 import '../model/profile_model.dart';
+import '../../paywall/view/paywall_screen.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -117,10 +117,7 @@ class _EmptyProfile extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
                     onTap: () {
-                      Get.to(
-                            () => const PaywallView(),
-                        transition: Transition.rightToLeft,
-                      );
+                      openPaywall(source: 'profile', plans: true);
                     },
                     child: Container(
                       width: 36,

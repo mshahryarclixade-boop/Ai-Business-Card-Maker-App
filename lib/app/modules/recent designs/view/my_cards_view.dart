@@ -8,13 +8,13 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/services/recent_designs_service.dart';
 import '../../ai_card_generator/view/ai_card_generator_view.dart';
-import '../../paywall/view/paywall_view.dart';
 import '../../../routes/app_routes.dart';
 import '../widgets/empty_state.dart';
 import '../controller/my_cards_controller.dart';
 import '../widgets/pill_tab_selector.dart';
 import '../../home/widgets/recent_design_card.dart';
 import 'card_detail_view.dart';
+import '../../paywall/view/paywall_screen.dart';
 
 /// SETTINGS > MY CARDS > MY CARDS
 
@@ -62,10 +62,7 @@ class MyCardsView extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
                       onTap: () {
-                        Get.to(
-                              () => const PaywallView(),
-                          transition: Transition.rightToLeft,
-                        );
+                        openPaywall(source: 'my_cards', plans: true);
                       },
                       child: Container(
                         width: 36,

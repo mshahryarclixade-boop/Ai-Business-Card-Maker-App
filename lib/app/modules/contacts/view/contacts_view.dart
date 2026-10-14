@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../paywall/view/paywall_view.dart';
 import '../../scan card and qr/view/scan_card_view.dart';
 import '../controller/contacts_controller.dart';
 import 'add_contact_view.dart';
@@ -13,6 +12,7 @@ import '../widgets/contacts_empty_state.dart';
 import '../widgets/contacts_list.dart';
 import '../widgets/no_results_state.dart';
 import '../widgets/contacts_fab.dart';
+import '../../paywall/view/paywall_screen.dart';
 
 class ContactsView extends StatefulWidget {
   const ContactsView({super.key});
@@ -167,10 +167,7 @@ class _ContactsViewState extends State<ContactsView> {
               alignment: Alignment.centerRight,
               child: GestureDetector(
                 onTap: () {
-                  Get.to(
-                        () => const PaywallView(),
-                    transition: Transition.rightToLeft,
-                  );
+                  openPaywall(source: 'contacts', plans: true);
                 },
                 child: Container(
                   width: 36,

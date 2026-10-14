@@ -24,7 +24,7 @@ dependencies:
   gal: ^2.3.3            # writes bytes straight into the system photo gallery
   get_storage: ^2.1.1     # persist profile data locally
   shared_preferences: ^2.2.3
-  flutter_contacts: ^1.1.9+2
+  flutter_contacts: ^2.6.0
   mobile_scanner: ^7.4.2
   camera: ^0.11.2+1
   google_mlkit_text_recognition: ^0.15.0
@@ -38,6 +38,7 @@ dependencies:
   country_code_picker: ^3.4.1
   video_player: ^2.11.1
   url_launcher: ^6.3.1
+  intl: ^0.20.2           # paywall: store prices in the store's currency
   cloud_firestore: ^6.10.0
   cloud_functions: ^6.5.0
   purchases_flutter: ^10.15.2
