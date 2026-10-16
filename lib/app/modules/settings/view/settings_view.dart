@@ -111,14 +111,14 @@ class SettingsView extends StatelessWidget {
                         ),
                         const SizedBox(height: 7),
 
-                        _SettingsTile(
-                          icon: Icons.refresh_rounded,
-                          title: 'Restore Purchase',
-                          onTap: () => Get.find<SubscriptionController>()
-                              .restorePurchase(context, source: 'settings'),
-                        ),
+                        // _SettingsTile(
+                        //   icon: Icons.refresh_rounded,
+                        //   title: 'Restore Purchase',
+                        //   onTap: () => Get.find<SubscriptionController>()
+                        //       .restorePurchase(context, source: 'settings'),
+                        // ),
 
-                        const SizedBox(height: 7),
+                        // const SizedBox(height: 7),
 
                         // Version text.
                         const Text(

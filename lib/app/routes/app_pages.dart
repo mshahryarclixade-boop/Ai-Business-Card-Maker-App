@@ -1,3 +1,4 @@
+import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:get/get.dart';
 
 import '../modules/main_nav/view/main_nav_view.dart';
@@ -20,17 +21,29 @@ class AppPages {
   static final routes = [
     GetPage(name: Routes.SPLASH, page: () => const SplashView()),
     GetPage(name: Routes.ONBOARDING, page: () => const OnboardingViewV2()),
-    GetPage(name: Routes.PERSONAL_DETAILS, page: () => const PersonalDetailsView(),),
+    GetPage(
+      name: Routes.PERSONAL_DETAILS,
+      page: () => const PersonalDetailsView(),
+    ),
     GetPage(name: Routes.MAIN, page: () => const MainNavView()),
     GetPage(name: Routes.TEMPLATE_EDIT, page: () => const TemplateEditView()),
     GetPage(name: Routes.MY_CARDS, page: () => const MyCardsView()),
-    GetPage(name: Routes.BUSINESS_DETAILS, page: () => const BusinessDetailsView(),),
-    GetPage(name: Routes.FIRST_CARD, page: () => const FirstCardGeneratingView(),),
-    GetPage(name: Routes.FIRST_CARD_READY, page: () => const FirstCardReadyView(),),
+    GetPage(
+      name: Routes.BUSINESS_DETAILS,
+      page: () => const BusinessDetailsView(),
+    ),
+    GetPage(
+      name: Routes.FIRST_CARD,
+      page: () => const FirstCardGeneratingView(),
+    ),
+    GetPage(
+      name: Routes.FIRST_CARD_READY,
+      page: () => const FirstCardReadyView(),
+    ),
+    // Paywall shows no personal data, so Clarity records it unmasked.
     GetPage(
       name: Routes.PAYWALL,
-      page: () => const PaywallView(),
-      transition: Transition.rightToLeft,
+      page: () => const ClarityUnmask(child: PaywallView()),
     ),
   ];
 }

@@ -50,6 +50,8 @@ dependencies:
   flutter_udid: ^4.1.6
   flutter_local_notifications: ^22.3.2
   internet_connection_checker_plus: ^3.1.2
+  clarity_flutter: ^1.10.1
+  package_info_plus: ^9.0.1
 
 dev_dependencies:
   flutter_test:
@@ -76,3 +78,4 @@ flutter:
     - assets/template_json/spa_care/horizontal/
     - assets/template_json/first_card/
     - assets/videos/
+    - assets/images/toolkit/

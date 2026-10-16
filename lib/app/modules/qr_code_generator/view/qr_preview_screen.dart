@@ -13,6 +13,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../../core/services/recent_designs_service.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/share_origin.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../custom_create/view/card_editor_view.dart';
 import '../../profile_setup/service/profile_store.dart';
@@ -120,6 +121,7 @@ class QrPreviewScreen extends StatelessWidget {
           files: [XFile(file.path)],
           text: 'Scan this QR code to save my contact.',
           subject: '${profile.fullName} - Contact QR Code',
+          sharePositionOrigin: shareOrigin(),
         ),
       );
     } catch (_) {

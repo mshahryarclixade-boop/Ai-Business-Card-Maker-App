@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../widgets/ai_toolkit_section.dart';
 import '../widgets/home_templates_section.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -96,6 +97,8 @@ class HomeView extends GetView<HomeController> {
 
                           const MyCardSection(),
                           const HomeTemplatesSection(),
+                          const SizedBox(height: 18),
+                          const AiToolkitSection(),
                           const SizedBox(height: 90),
                         ],
                       ),

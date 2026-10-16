@@ -1,4 +1,6 @@
 import 'dart:ui';
+
+import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -65,8 +67,18 @@ void main() async {
   Get.put(ProfileController(), permanent: true);
   await Get.putAsync(() => RecentDesignsService().init());
 
-  runApp(const MyApp());
+  // Clarity wraps the app only; it starts after every service above is up.
+  // No custom user id is set, so sessions use Clarity's random anonymous id.
+  runApp(
+    ClarityWidget(
+      clarityConfig: ClarityConfig(projectId: _clarityProjectId),
+      app: const MyApp(),
+    ),
+  );
 }
+
+/// Microsoft Clarity project id (not a secret).
+const _clarityProjectId = 'yxjxedb90f';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -78,6 +90,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
+      // Cards, contacts and scans are personal data: mask the whole app in
+      // Clarity recordings. Individual screens opt out with ClarityUnmask.
+      builder: (context, child) =>
+          ClarityMask(child: child ?? const SizedBox.shrink()),
       // Analytics: logs screen views automatically.
       navigatorObservers: [
         FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),

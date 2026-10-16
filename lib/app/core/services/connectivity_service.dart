@@ -54,8 +54,9 @@ class ConnectivityService extends GetxService {
     if (results.every((r) => r == ConnectivityResult.none)) return false;
 
     try {
-      final lookup = await InternetAddress.lookup('google.com')
-          .timeout(const Duration(seconds: 4));
+      final lookup = await InternetAddress.lookup(
+        'google.com',
+      ).timeout(const Duration(seconds: 4));
       return lookup.isNotEmpty && lookup.first.rawAddress.isNotEmpty;
     } catch (_) {
       return false;

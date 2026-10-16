@@ -297,7 +297,12 @@ class _CardEditorViewState extends State<CardEditorView> {
                       return const SizedBox.shrink();
                   }
                 }),
-                BottomToolbar(controller: controller),
+                Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.sizeOf(context).shortestSide >= 600 ? 28 : 0,
+                  ),
+                  child: BottomToolbar(controller: controller),
+                ),
               ],
             ),
 

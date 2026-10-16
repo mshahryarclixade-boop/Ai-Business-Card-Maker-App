@@ -26,7 +26,7 @@ class FirstCardReadyView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Your First Card\nis ready',
+                      'Your First Card is ready',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 36,

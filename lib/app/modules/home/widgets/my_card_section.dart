@@ -12,6 +12,12 @@ import '../../template/widget/template_live_preview.dart';
 import '../controller/home_controller.dart';
 import 'share_card_sheet.dart';
 
+double _designAspect(RecentDesign design) {
+  final o = design.designData?['orientation'] as String?;
+  if (o == null) return 7 / 4; // AI / legacy cards: keep old behavior
+  final size = CardOrientation.values.byName(o).canvasSize;
+  return size.width / size.height;
+}
 /// Welcome message, the user's current card and its main actions.
 class MyCardSection extends StatelessWidget {
   const MyCardSection({super.key});
@@ -71,7 +77,9 @@ class MyCardSection extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: AspectRatio(
-                  aspectRatio: liveData != null ? previewAspect : 7 / 4,
+                  aspectRatio: liveData != null
+                      ? previewAspect
+                      : (preview == null ? _designAspect(design) : 7 / 4),
                   child: Stack(
                     fit: StackFit.expand,
                     children: [

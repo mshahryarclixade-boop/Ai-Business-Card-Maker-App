@@ -41,7 +41,7 @@ class HomeTemplatesSection extends GetView<HomeController> {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 150,
+            height: 140,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: list.length,
@@ -56,7 +56,7 @@ class HomeTemplatesSection extends GetView<HomeController> {
                     duration: const Duration(milliseconds: 150),
                     width: 215,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(2),
                       border: Border.all(
                         color: isSelected
                             ? AppColors.primary
@@ -65,7 +65,7 @@ class HomeTemplatesSection extends GetView<HomeController> {
                       ),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(2),
                       child: Image.asset(
                         item.frontImagePath,
                         fit: BoxFit.cover,
@@ -76,7 +76,7 @@ class HomeTemplatesSection extends GetView<HomeController> {
               },
             ),
           ),
-          const SizedBox(height: 16),
+          // const SizedBox(height: 16),
         ],
       );
     });

@@ -6,10 +6,14 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
 /// Shows [child] over a blurred, dimmed backdrop.
-Future<T?> showBlurredDialog<T>(BuildContext context, Widget child) {
+Future<T?> showBlurredDialog<T>(
+  BuildContext context,
+  Widget child, {
+  bool barrierDismissible = true,
+}) {
   return showGeneralDialog<T>(
     context: context,
-    barrierDismissible: true,
+    barrierDismissible: barrierDismissible,
     barrierLabel: 'dialog',
     barrierColor: Colors.black45,
     transitionDuration: const Duration(milliseconds: 180),

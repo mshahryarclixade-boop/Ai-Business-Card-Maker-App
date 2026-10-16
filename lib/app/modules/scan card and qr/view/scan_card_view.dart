@@ -234,7 +234,6 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
   }
 
   /// Reads a QR code from a still image.
-  /// around it: ML Kit
   Future<String?> _readQrFromImage(String path) async {
     final analyzer = MobileScannerController(
       autoStart: false,
