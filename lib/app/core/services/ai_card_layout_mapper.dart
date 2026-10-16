@@ -70,13 +70,15 @@ class AiCardLayoutMapper {
             .toDouble();
 
         final p = toCanvas(x, y);
-        final pos = clampPos(Offset(
+        final pos = clampPos(
+          Offset(
           p.dx - _elementPad,
           p.dy - _elementPad - fontSize * _textTopNudge,
-        ));
+          ),
+        );
 
-        final weightIndex =
-        (((_num(raw['weight']) ?? 400) / 100).round() - 1).clamp(0, 8);
+        final weightIndex = (((_num(raw['weight']) ?? 400) / 100).round() - 1)
+            .clamp(0, 8);
 
         final font = raw['font']?.toString() ?? '';
 
@@ -109,14 +111,10 @@ class AiCardLayoutMapper {
         final h = unit(raw['h']);
         if (icon == null || x == null || y == null || h == null) continue;
 
-        final size =
-        (h * img.height * scale).clamp(10.0, 60.0).toDouble();
+        final size = (h * img.height * scale).clamp(10.0, 60.0).toDouble();
 
         final p = toCanvas(x, y);
-        final pos = clampPos(Offset(
-          p.dx - _elementPad,
-          p.dy - _elementPad,
-        ));
+        final pos = clampPos(Offset(p.dx - _elementPad, p.dy - _elementPad));
 
         final el = CardElement.sticker(
           id: 'ai_${stamp}_${result.length}',

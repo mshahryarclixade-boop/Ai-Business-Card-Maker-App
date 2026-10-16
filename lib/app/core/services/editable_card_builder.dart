@@ -133,8 +133,10 @@ class EditableCardBuilder {
     if (m == null) return const [];
 
     final out = <EraseBox>[];
-    final printedNorm =
-    printed?.map(_norm).where((s) => s.length >= 3).toList();
+    final printedNorm = printed
+        ?.map(_norm)
+        .where((s) => s.length >= 3)
+        .toList();
 
     final icons = m['icons'];
     if (icons is List) {
@@ -159,7 +161,9 @@ class EditableCardBuilder {
         if (printedNorm != null) {
           final n = _norm(text);
           if (n.length < 3) continue;
-          if (!printedNorm.any((p) => p == n || p.contains(n) || n.contains(p))) {
+          if (!printedNorm.any(
+            (p) => p == n || p.contains(n) || n.contains(p),
+          )) {
             continue;
           }
         }
@@ -209,8 +213,9 @@ class EditableCardBuilder {
   }) async {
     if (expected.isEmpty) return layoutJson;
 
-    final foundNorm =
-    _texts(layoutJson).map(_norm).where((s) => s.length >= 3).toList();
+    final foundNorm = _texts(
+      layoutJson,
+    ).map(_norm).where((s) => s.length >= 3).toList();
 
     final missing = expected.where((e) {
       final n = _norm(e);
@@ -272,9 +277,8 @@ class EditableCardBuilder {
     }
   }
 
-  static String _norm(String s) => s
-      .toLowerCase()
-      .replaceAll(RegExp(r'[\s\p{P}\p{S}]', unicode: true), '');
+  static String _norm(String s) =>
+      s.toLowerCase().replaceAll(RegExp(r'[\s\p{P}\p{S}]', unicode: true), '');
 
   static Map<String, dynamic>? _decode(String raw) {
     var t = raw.trim();

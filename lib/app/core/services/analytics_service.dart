@@ -42,7 +42,10 @@ abstract final class AnalyticsService {
   static void logPaywallRestored({
     required bool restored,
     required String source,
-  }) => _log('paywall_restored', {'restored': restored ? 1 : 0, 'source': source});
+  }) => _log('paywall_restored', {
+    'restored': restored ? 1 : 0,
+    'source': source,
+  });
 
   static void logPaywallRestoreFailed(String source) =>
       _log('paywall_restore_failed', {'source': source});

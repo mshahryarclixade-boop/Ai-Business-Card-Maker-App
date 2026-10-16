@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 
 import '../../modules/paywall/models/credit_config_model.dart';
 import '../../modules/paywall/models/paywall_config_model.dart';
@@ -19,11 +21,23 @@ class RemoteConfigService {
 
   static const _paywallConfigKey = 'paywall_config';
 
+  // One JSON parameter per platform: android_version_config /
+  // ios_version_config.
+  static String get _versionConfigKey =>
+      Platform.isIOS ? 'ios_version_config' : 'android_version_config';
+
   FirebaseRemoteConfig? _rc;
 
   // Parsed-config cache: re-parse only when the raw JSON changes.
   String? _paywallRaw;
   PaywallConfig? _paywallConfig;
+
+  Future<void>? _fetch;
+
+  /// Completes when the startup fetch+activate has finished (or failed), so
+  /// callers can read fresh values. [init] itself may be cut short by the
+  /// caller's timeout while this fetch keeps running.
+  Future<void> whenFetched() => _fetch ?? Future<void>.value();
 
   Future<void> init() async {
     try {
@@ -31,7 +45,10 @@ class RemoteConfigService {
       await rc.setConfigSettings(
         RemoteConfigSettings(
           fetchTimeout: const Duration(seconds: 8),
-          minimumFetchInterval: const Duration(hours: 1),
+          // Debug builds refetch every launch so Console changes show up.
+          minimumFetchInterval: kDebugMode
+              ? Duration.zero
+              : const Duration(hours: 1),
         ),
       );
       await rc.setDefaults({
@@ -39,15 +56,31 @@ class RemoteConfigService {
         _creditPoolsKey: '',
         _creditCostsKey: '',
         _paywallConfigKey: jsonEncode(PaywallConfig.defaultJson),
+        'android_version_config': '',
+        'ios_version_config': '',
       });
       _rc = rc;
-      await rc.fetchAndActivate();
+      final fetch = rc.fetchAndActivate();
+      _fetch = fetch.then((_) {}, onError: (_) {});
+      await fetch;
     } catch (e) {
       log(
         'Remote Config init failed, using defaults: $e',
         name: 'RemoteConfigService',
       );
     }
+  }
+
+  /// Raw JSON of this platform's version config ('' when not delivered).
+  String get versionConfigRaw => _rc?.getString(_versionConfigKey) ?? '';
+
+  /// Fetch status and where the version config came from (remote / default)
+  /// — for the debug log only.
+  String get versionDebugInfo {
+    final rc = _rc;
+    if (rc == null) return 'remote config not initialised';
+    return 'fetchStatus=${rc.lastFetchStatus.name} '
+        '$_versionConfigKey=${rc.getValue(_versionConfigKey).source.name}';
   }
 
   /// Master switch: while false, the credit gate lets everything through.

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../../core/utils/share_origin.dart';
 import '../../qr_code_generator/view/qr_preview_screen.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -72,6 +73,7 @@ class _ShareCardSheet extends StatelessWidget {
         ShareParams(
           text: 'Here is my digital business card:\n$link',
           subject: '${data.fullName.trim()} - Digital Business Card',
+          sharePositionOrigin: shareOrigin(),
         ),
       );
       FirebaseAnalytics.instance.logEvent(
@@ -88,7 +90,10 @@ class _ShareCardSheet extends StatelessWidget {
     Get.back();
     try {
       await SharePlus.instance.share(
-        ShareParams(files: [XFile(cardImage.path)]),
+        ShareParams(
+          files: [XFile(cardImage.path)],
+          sharePositionOrigin: shareOrigin(),
+        ),
       );
       FirebaseAnalytics.instance.logEvent(
         name: 'card_shared',

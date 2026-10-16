@@ -108,20 +108,13 @@ class AppColors {
   static const LinearGradient topBarGradient = LinearGradient(
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
-    colors: [
-      topBarGradientStart,
-      topBarGradientEnd,
-    ],
-    stops: [
-      0.1939,
-      0.8533,
-    ],
+    colors: [topBarGradientStart, topBarGradientEnd],
+    stops: [0.1939, 0.8533],
   );
 
   static const Color customCreateBg = Color(0xFFF3F3FA);
 
-  static Color customCreateBorder =
-  const Color(0xFF444494).withOpacity(0.4);
+  static Color customCreateBorder = const Color(0xFF444494).withOpacity(0.4);
 
   static const Color bottomNavBg = Color(0xFFFFFFFF);
   static const Color bottomNavActiveBg = Color(0xFFEDEBFB);

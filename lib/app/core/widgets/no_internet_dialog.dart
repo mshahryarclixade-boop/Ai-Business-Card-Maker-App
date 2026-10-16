@@ -68,8 +68,7 @@ class _NoInternetDialogState extends State<NoInternetDialog> {
         child: Material(
           color: Colors.transparent,
           child: Padding(
-            padding:
-            const EdgeInsets.symmetric(horizontal: _kDialogSideMargin),
+            padding: const EdgeInsets.symmetric(horizontal: _kDialogSideMargin),
             child: Container(
               // 332 wide (shrinks only if the screen is narrower).
               width: _kDialogWidth,
@@ -140,12 +139,12 @@ class _NoInternetDialogState extends State<NoInternetDialog> {
                             backgroundColor: const Color(0xFFF3F3F3),
                             foregroundColor: Colors.black87,
                             elevation: 0,
-                            padding:
-                            const EdgeInsets.symmetric(horizontal: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             minimumSize: Size.zero,
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.circular(_kButtonRadius),
+                              borderRadius: BorderRadius.circular(
+                                _kButtonRadius,
+                              ),
                             ),
                           ),
                           child: const Text(
@@ -169,12 +168,12 @@ class _NoInternetDialogState extends State<NoInternetDialog> {
                             disabledBackgroundColor: AppColors.primary,
                             foregroundColor: Colors.white,
                             elevation: 0,
-                            padding:
-                            const EdgeInsets.symmetric(horizontal: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             minimumSize: Size.zero,
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.circular(_kButtonRadius),
+                              borderRadius: BorderRadius.circular(
+                                _kButtonRadius,
+                              ),
                             ),
                           ),
                           child: _retrying

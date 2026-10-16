@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../core/services/analytics_service.dart';
+import '../../../core/services/app_update_service.dart';
 import '../../../core/services/remote_config_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../routes/app_routes.dart';
@@ -42,9 +43,26 @@ class _SplashViewState extends State<SplashView>
     });
   }
 
+  /// Force-update check first; then the normal routing below. An optional
+  /// update prompt is shown on top of wherever the user lands.
+  Future<void> _route() async {
+    final update = await AppUpdateService.check();
+    if (!mounted) return;
+    if (update == UpdateType.forced) {
+      // Stay on the splash behind a non-dismissible dialog: the app is
+      // unusable until the user updates.
+      await AppUpdateService.showUpdateDialog(forced: true);
+      return;
+    }
+    await _navigate();
+    if (update == UpdateType.optional) {
+      AppUpdateService.showUpdateDialog(forced: false);
+    }
+  }
+
   /// First launch: onboarding. Afterwards: home for subscribers, and the
   /// paywall for everyone else while Remote Config has it enabled.
-  Future<void> _route() async {
+  Future<void> _navigate() async {
     final seen = GetStorage().read<bool>(OnboardingController.seenKey) ?? false;
     if (!seen) {
       Get.offAllNamed(Routes.ONBOARDING);

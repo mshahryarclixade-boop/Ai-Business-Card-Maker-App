@@ -18,22 +18,22 @@ class OnboardingController extends GetxController {
     currentPage.value = index;
   }
 
-  void next() {
+  Future<void> next() async {
     if (currentPage.value < totalPages - 1) {
       pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     } else {
-      _markSeen();
+      await _markSeen();
       FirebaseAnalytics.instance.logEvent(name: 'onboarding_completed');
       Get.offAllNamed(Routes.PERSONAL_DETAILS);
     }
   }
 
   /// "I'll do it later": go straight to Home.
-  void skip() {
-    _markSeen();
+  Future<void> skip() async {
+    await _markSeen();
     FirebaseAnalytics.instance.logEvent(
       name: 'onboarding_skipped',
       parameters: {'page': currentPage.value},
@@ -41,15 +41,10 @@ class OnboardingController extends GetxController {
     Get.offAllNamed(Routes.MAIN);
   }
 
-  @override
-  void onReady() {
-    super.onReady();
-    // Shown once: mark as seen as soon as the user sees it.
-    _markSeen();
-  }
-
-  /// Remembers that onboarding was seen, so it is never shown again.
-  void _markSeen() => GetStorage().write(seenKey, true);
+  /// Remembers that onboarding was completed (finished or skipped). Only
+  /// called from [next] and [skip]: merely viewing onboarding, pressing Back
+  /// or closing the app leaves it incomplete, so it is shown again.
+  Future<void> _markSeen() => GetStorage().write(seenKey, true);
 
   @override
   void onClose() {

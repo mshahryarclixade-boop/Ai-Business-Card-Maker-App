@@ -45,6 +45,7 @@ const double _kBarHeight = 62;
 
 // Width of the whole bar.
 const double _kBarWidth = 280;
+const double _kBarWidthTablet = 340;
 
 // Minimum gap kept between the indicator and neighbouring tabs.
 const double _kIndicatorSideGap = -6;
@@ -61,8 +62,10 @@ class MainBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = MediaQuery.sizeOf(context).shortestSide >= 600;
+
     return SizedBox(
-      width: _kBarWidth,
+      width: isTablet ? _kBarWidthTablet : _kBarWidth,
       height: _kBarHeight,
       child: _Pill(
         currentIndex: currentIndex,
@@ -105,8 +108,7 @@ class _Pill extends StatelessWidget {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final tabWidth =
-              constraints.maxWidth / mainNavItems.length;
+          final tabWidth = constraints.maxWidth / mainNavItems.length;
 
           final indicatorW = math.min(
             _kIndicatorW,
@@ -114,8 +116,7 @@ class _Pill extends StatelessWidget {
           );
 
           final indicatorLeft =
-              (tabWidth * currentIndex) +
-                  (tabWidth - indicatorW) / 2;
+              (tabWidth * currentIndex) + (tabWidth - indicatorW) / 2;
 
           return Stack(
             clipBehavior: Clip.none,
@@ -131,7 +132,6 @@ class _Pill extends StatelessWidget {
                   child: _ActiveIndicator(),
                 ),
               ),
-
               Row(
                 children: List.generate(
                   mainNavItems.length,
@@ -209,9 +209,8 @@ class _NavItemContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive
-        ? AppColors.bottomselcted
-        : AppColors.bottomNavInactive;
+    final color =
+    isActive ? AppColors.bottomselcted : AppColors.bottomNavInactive;
 
     // Scan icon is larger than Home and Contacts.
     final double iconSize = item.label == 'Scan' ? 22 : 16;
@@ -292,9 +291,7 @@ class _OutsideOnlyClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(
-      covariant CustomClipper<Path> oldClipper,
-      ) {
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
     return false;
   }
 }

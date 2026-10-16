@@ -24,7 +24,7 @@ dependencies:
   gal: ^2.3.3            # writes bytes straight into the system photo gallery
   get_storage: ^2.1.1     # persist profile data locally
   shared_preferences: ^2.2.3
-  flutter_contacts: ^2.6.0
+  flutter_contacts: ^2.1.0
   mobile_scanner: ^7.4.2
   camera: ^0.11.2+1
   google_mlkit_text_recognition: ^0.15.0
@@ -50,6 +50,8 @@ dependencies:
   flutter_udid: ^4.1.6
   flutter_local_notifications: ^22.3.2
   internet_connection_checker_plus: ^3.1.2
+  clarity_flutter: ^1.10.1
+  package_info_plus: ^9.0.1
 
 dev_dependencies:
   flutter_test:
@@ -74,3 +76,4 @@ flutter:
     - assets/template_json/travel/horizontal/
     - assets/template_json/spa_care/horizontal/
     - assets/videos/
+    - assets/images/toolkit/

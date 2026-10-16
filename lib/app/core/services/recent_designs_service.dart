@@ -88,9 +88,11 @@ class RecentDesignsService extends GetxService {
     final List<dynamic> list = jsonDecode(raw) as List<dynamic>;
     final loaded = list
         .map((e) => RecentDesign.fromJson(e as Map<String, dynamic>))
-        .where((d) =>
+        .where(
+          (d) =>
     d.file.existsSync() &&
-        (d.backPath == null || d.backFile!.existsSync()))
+              (d.backPath == null || d.backFile!.existsSync()),
+        )
         .toList();
     loaded.sort((a, b) => b.savedAt.compareTo(a.savedAt));
     designs.assignAll(loaded);
@@ -172,8 +174,7 @@ class RecentDesignsService extends GetxService {
       Map<String, dynamic> side(
           String background,
           List<Map<String, dynamic>> elements,
-          ) =>
-          {
+      ) => {
             'backgroundColor': 0xFFFFFFFF,
             'backgroundImagePath': background,
             'backgroundTemplate': null,

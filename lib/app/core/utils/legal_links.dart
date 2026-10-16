@@ -8,9 +8,11 @@ import 'package:url_launcher/url_launcher.dart';
 abstract final class LegalLinks {
   static const privacyPolicy = 'https://clixade.com/privacy-policy';
   static const termsOfUse = 'https://clixade.com/terms-and-conditions';
+  static const contactUs = 'https://clixade.com/contact-us';
 
   static Future<void> openPrivacyPolicy() => _open(privacyPolicy);
   static Future<void> openTermsOfUse() => _open(termsOfUse);
+  static Future<void> openContactUs() => _open(contactUs);
 
   static Future<void> _open(String url) async {
     try {

@@ -20,8 +20,9 @@ class GeminiException implements Exception {
 class GeminiCardService {
   static const String _region = 'us-central1';
 
-  final FirebaseFunctions _functions =
-  FirebaseFunctions.instanceFor(region: _region);
+  final FirebaseFunctions _functions = FirebaseFunctions.instanceFor(
+    region: _region,
+  );
 
   Future<Uint8List> generateCard({
     required String prompt,
@@ -30,9 +31,11 @@ class GeminiCardService {
     Uint8List? logoBytes,
     String logoMime = 'image/png',
   }) async {
-    debugPrint('GeminiCardService.generateCard: '
+    debugPrint(
+      'GeminiCardService.generateCard: '
         'reference=${referenceBytes.length}B '
-        'logo=${logoBytes?.length ?? 0}B prompt=${prompt.length} chars');
+      'logo=${logoBytes?.length ?? 0}B prompt=${prompt.length} chars',
+    );
 
     try {
       final callable = _functions.httpsCallable(
@@ -40,13 +43,15 @@ class GeminiCardService {
         options: HttpsCallableOptions(timeout: const Duration(seconds: 180)),
       );
 
-      final result = await callable.call(<String, dynamic>{
+      final result = await callable
+          .call(<String, dynamic>{
         'prompt': prompt,
         'referenceBase64': base64Encode(referenceBytes),
         'referenceMime': referenceMime,
         if (logoBytes != null) 'logoBase64': base64Encode(logoBytes),
         if (logoBytes != null) 'logoMime': logoMime,
-      }).timeout(const Duration(seconds: 190));
+          })
+          .timeout(const Duration(seconds: 190));
 
       final data = result.data;
       final b64 = data is Map ? data['imageBase64'] : null;
@@ -92,8 +97,10 @@ class GeminiCardService {
     required Uint8List imageBytes,
     required String imageMime,
   }) async {
-    debugPrint('GeminiCardService.generateLayoutJson: '
-        'image=${imageBytes.length}B prompt=${prompt.length} chars');
+    debugPrint(
+      'GeminiCardService.generateLayoutJson: '
+      'image=${imageBytes.length}B prompt=${prompt.length} chars',
+    );
 
     try {
       final callable = _functions.httpsCallable(
@@ -101,11 +108,13 @@ class GeminiCardService {
         options: HttpsCallableOptions(timeout: const Duration(seconds: 120)),
       );
 
-      final result = await callable.call(<String, dynamic>{
+      final result = await callable
+          .call(<String, dynamic>{
         'prompt': prompt,
         'imageBase64': base64Encode(imageBytes),
         'imageMime': imageMime,
-      }).timeout(const Duration(seconds: 130));
+          })
+          .timeout(const Duration(seconds: 130));
 
       final data = result.data;
       final text = data is Map ? data['json'] : null;

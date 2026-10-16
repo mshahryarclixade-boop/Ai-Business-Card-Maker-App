@@ -52,7 +52,11 @@ class _Arrow extends StatelessWidget {
   final bool enabled;
   final VoidCallback onTap;
 
-  const _Arrow({required this.icon, required this.enabled, required this.onTap});
+  const _Arrow({
+    required this.icon,
+    required this.enabled,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

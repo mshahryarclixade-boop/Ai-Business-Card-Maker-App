@@ -22,11 +22,7 @@ Future<void> showRateAppDialog({
   int initialRating = 4,
 }) async {
   await Get.dialog<void>(
-    RateAppDialog(
-      onYes: onYes,
-      onNo: onNo,
-      initialRating: initialRating,
-    ),
+    RateAppDialog(onYes: onYes, onNo: onNo, initialRating: initialRating),
     barrierDismissible: false,
     useSafeArea: false, // lets the blur cover the status bar too
   );
@@ -90,7 +86,12 @@ class _RateAppDialogState extends State<RateAppDialog> {
                 padding: const EdgeInsets.only(top: _badgeSize / 2),
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(20, _badgeSize / 2 + 18, 20, 20),
+                  padding: const EdgeInsets.fromLTRB(
+                    20,
+                    _badgeSize / 2 + 18,
+                    20,
+                    20,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
@@ -116,7 +117,9 @@ class _RateAppDialogState extends State<RateAppDialog> {
                             behavior: HitTestBehavior.opaque,
                             onTap: () => setState(() => _rating = i + 1),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
                               child: Icon(
                                 Icons.star_rounded,
                                 size: 46,

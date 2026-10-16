@@ -34,7 +34,7 @@ class PersonalDetailsView extends GetView<ProfileSetupController> {
                       const ProfileStepHeader(step: 1),
                       const SizedBox(height: 24),
                       const Text(
-                        'Let’s start with\nyou',
+                        'Let’s start with you',
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 40,

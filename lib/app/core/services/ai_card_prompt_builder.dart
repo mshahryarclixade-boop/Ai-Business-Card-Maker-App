@@ -1,14 +1,9 @@
 import '../../modules/profile_setup/model/user_profile_data.dart';
 import '../../modules/profile/model/profile_model.dart';
 
-enum ReferenceKind {
-  template,
-  upload,
-}
-enum CardSide {
-  front,
-  back,
-}
+enum ReferenceKind { template, upload }
+
+enum CardSide { front, back }
 
 class CardDetails {
   final String name;
@@ -285,9 +280,7 @@ class AiCardPromptBuilder {
           '(same color, gradient or texture) so no trace, ghosting or blur '
           'is left.',
     );
-    b.writeln(
-      '* Do not add any new text, icon, logo, watermark or border.',
-    );
+    b.writeln('* Do not add any new text, icon, logo, watermark or border.');
     b.writeln(
       '* Keep the exact same framing as the input image: do not zoom, '
           'crop, shrink or add margins. The result must match the input '
@@ -334,9 +327,7 @@ class AiCardPromptBuilder {
     b.writeln(
       '* One entry per LINE of text. Never merge two lines into one entry.',
     );
-    b.writeln(
-      '* Copy each text exactly as printed, character for character.',
-    );
+    b.writeln('* Copy each text exactly as printed, character for character.');
     b.writeln('* color is the visible color of that text or icon.');
     b.writeln(
       '* weight is 400 (regular), 500 (medium), 600 (semi-bold) or 700 (bold).',

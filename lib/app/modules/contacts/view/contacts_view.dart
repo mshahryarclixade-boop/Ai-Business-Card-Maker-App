@@ -274,8 +274,15 @@ class _AddOptionsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = MediaQuery.sizeOf(context).shortestSide >= 600;
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+
+    // Phone: unchanged (32). Tablet: extra space so the sheet clears
+    // the bottom nav / system area.
+    final bottomPadding = isTablet ? 32.0 + 5 + bottomInset : 32.0;
+
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+      padding: EdgeInsets.fromLTRB(20, 20, 20, bottomPadding),
       decoration: const BoxDecoration(
         color: AppColors.cardWhite,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
