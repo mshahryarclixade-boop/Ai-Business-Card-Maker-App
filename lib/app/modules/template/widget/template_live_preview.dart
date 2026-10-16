@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../../core/utils/app_fonts.dart';
@@ -31,7 +33,9 @@ class TemplateCardCanvas extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           image: DecorationImage(
-            image: AssetImage(side.background),
+            image: side.isFileBackground
+                ? FileImage(File(side.background))
+                : AssetImage(side.background),
             fit: BoxFit.cover,
           ),
         ),

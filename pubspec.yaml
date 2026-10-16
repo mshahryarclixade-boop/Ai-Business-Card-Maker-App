@@ -70,7 +70,9 @@ flutter:
     - assets/images/templates/spa_care/horizontal/
     - assets/images/empty_templates/travel/horizontal/
     - assets/images/empty_templates/spa_care/horizontal/
+    - assets/images/empty_templates/first_card/
     - assets/images/template_logos/travel/horizontal/
     - assets/template_json/travel/horizontal/
     - assets/template_json/spa_care/horizontal/
+    - assets/template_json/first_card/
     - assets/videos/

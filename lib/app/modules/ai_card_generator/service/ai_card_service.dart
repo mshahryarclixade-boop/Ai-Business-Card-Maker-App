@@ -3,13 +3,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode;
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:path_provider/path_provider.dart';
 
 import '../../../core/services/ai_card_prompt_builder.dart';
-import '../../../core/services/editable_card_builder.dart';
+import '../../../core/services/ai_frame_card_builder.dart';
 import '../../../core/services/gemini_card_service.dart';
-import '../../custom_create/model/card_element_model.dart';
 import '../../profile/model/profile_model.dart';
+import '../../profile_setup/service/profile_store.dart';
 import '../model/generated_card.dart';
 
 const Map<String, String> kReadyTemplateAssets = {
@@ -46,174 +45,36 @@ class AiCardService {
       );
     }
 
-    final details = profile == null ? null : CardDetails.fromProfile(profile);
+    // The card's text: the auto-filled profile, else the details from
+    // onboarding. The prompt and reference image only set the style.
+    final onboarding = ProfileStore.to.profile.value;
+    final details = profile != null
+        ? CardDetails.fromProfile(profile)
+        : CardDetails.fromUserProfile(onboarding);
 
-    // ---------------------------------------------------------------
-    // FRONT PROMPT
-    // ---------------------------------------------------------------
-    final frontPrompt = AiCardPromptBuilder.build(
-      kind: reference.kind,
-      side: CardSide.front,
-      userPrompt: prompt,
-      details: details,
-    );
-
-    // ---------------------------------------------------------------
-    // BACK PROMPT
-    // ---------------------------------------------------------------
-    final backPrompt = AiCardPromptBuilder.build(
-      kind: reference.kind,
-      side: CardSide.back,
-      userPrompt: prompt,
-      details: details,
-    );
-
-    // Prints the exact prompts sent to Gemini in debug builds.
     if (kDebugMode) {
       debugPrint(
-        '--- AI CARD REFERENCE ---\n'
-        'kind: ${reference.kind}\n'
-        'mime: ${reference.mime}\n'
-        'bytes: ${reference.bytes.length}',
+        '--- AI CARD (frames) --- kind: ${reference.kind}, '
+        'mime: ${reference.mime}, bytes: ${reference.bytes.length}, '
+        'prompt: "$prompt"',
       );
-
-      debugPrint('--- AI CARD PROMPT (front) ---\n$frontPrompt');
-
-      debugPrint('--- AI CARD PROMPT (back) ---\n$backPrompt');
     }
 
-    // ---------------------------------------------------------------
-    // GENERATE FRONT + BACK
-    // ---------------------------------------------------------------
-    final service = GeminiCardService();
-
-    Uint8List frontBytes;
-    Uint8List backBytes;
-
-    try {
-      final results = await Future.wait([
-        service.generateCard(
-          prompt: frontPrompt,
-          referenceBytes: reference.bytes,
-          referenceMime: reference.mime,
-        ),
-        service.generateCard(
-          prompt: backPrompt,
-          referenceBytes: reference.bytes,
-          referenceMime: reference.mime,
-        ),
-      ]);
-
-      frontBytes = results[0];
-      backBytes = results[1];
-
-      debugPrint(
-        'AI CARD SERVICE: generateCard calls returned '
-        '(front=${frontBytes.length} bytes, back=${backBytes.length} bytes)',
-      );
-    } catch (e, st) {
-      debugPrint('========== GEMINI CALL FAILED ==========');
-      debugPrint('error: $e');
-      debugPrint('stack: $st');
-      debugPrint('=========================================');
-      rethrow;
-    }
-
-    // ---------------------------------------------------------------
-    // SAVE BOTH GENERATED SIDES SEPARATELY
-    // ---------------------------------------------------------------
-    final frontPath = await _saveToTempFile(frontBytes, side: 'front');
-
-    final backPath = await _saveToTempFile(backBytes, side: 'back');
-
-    debugPrint(
-      'AI CARD SERVICE: saved files '
-      '(front=$frontPath, back=$backPath)',
+    // Two Gemini calls (front and back frames); the details are laid on
+    // them and the card is saved to My Cards — see AiFrameCardBuilder.
+    final design = await AiFrameCardBuilder.create(
+      style: reference.bytes,
+      styleMime: reference.mime,
+      kind: reference.kind,
+      details: details,
+      userPrompt: prompt,
+      logo: onboarding.hasLogo ? onboarding.logoBytes : null,
     );
-
-    // ---------------------------------------------------------------
-    // EDITABLE VERSION (text-free background + texts/icons as elements)
-    //
-    // Never fails the generation: if this step breaks for a side, or the
-    // background still shows text after a retry, that side simply stays a
-    // flat image, exactly like before.
-    // ---------------------------------------------------------------
-    final editable = await Future.wait([
-      _buildEditableSide(fullBytes: frontBytes, side: 'front'),
-      _buildEditableSide(fullBytes: backBytes, side: 'back'),
-    ]);
 
     return GeneratedCard(
-      frontImagePath: frontPath,
-      backImagePath: backPath,
-      frontBackgroundPath: editable[0]?.backgroundPath,
-      frontElements: editable[0]?.elements,
-      backBackgroundPath: editable[1]?.backgroundPath,
-      backElements: editable[1]?.elements,
+      frontImagePath: design.path,
+      backImagePath: design.backPath ?? design.path,
     );
-  }
-
-  /// Takes the FINISHED card image of one side and produces:
-  ///  * a text-free background image (saved to a temp file), and
-  ///  * the texts/icons as CardElement JSON, placed for the editor canvas.
-  /// The work (including the "is the background really clean?" check) is
-  /// done by [EditableCardBuilder]. Returns null if the side must stay flat.
-  Future<_EditableSide?> _buildEditableSide({
-    required Uint8List fullBytes,
-    required String side,
-  }) async {
-    final result = await EditableCardBuilder.build(
-      gemini: GeminiCardService(),
-      card: fullBytes,
-      canvasSize: CardOrientation.landscape.canvasSize,
-      label: side,
-    );
-
-    if (result == null) {
-      debugPrint('AI CARD SERVICE: editable $side not available, flat image');
-      return null;
-    }
-
-    try {
-      final backgroundPath = await _saveToTempFile(
-        result.background,
-        side: '${side}_bg',
-      );
-
-      debugPrint(
-        'AI CARD SERVICE: editable $side ready '
-        '(elements=${result.elements.length}, bg=$backgroundPath)',
-      );
-
-      return _EditableSide(
-        backgroundPath: backgroundPath,
-        elements: result.elements,
-      );
-    } catch (e, st) {
-      debugPrint('AI CARD SERVICE: saving $side background failed: $e');
-      debugPrint('stack: $st');
-      return null;
-    }
-  }
-
-  /// Gemini returns raw image bytes.
-  ///
-  /// We save front and back separately because the UI expects:
-  ///   frontImagePath
-  ///   backImagePath
-  Future<String> _saveToTempFile(
-    Uint8List bytes, {
-    required String side,
-  }) async {
-    final dir = await getTemporaryDirectory();
-
-    final file = File(
-      '${dir.path}/ai_card_${side}_${DateTime.now().millisecondsSinceEpoch}.png',
-    );
-
-    await file.writeAsBytes(bytes, flush: true);
-
-    return file.path;
   }
 
   Future<_Reference?> _loadReference({
@@ -312,9 +173,3 @@ class _Reference {
   });
 }
 
-class _EditableSide {
-  final String backgroundPath;
-  final List<Map<String, dynamic>> elements;
-
-  const _EditableSide({required this.backgroundPath, required this.elements});
-}

@@ -1,0 +1,312 @@
+{
+  "id": "first_card",
+  "orientation": "landscape",
+  "front": {
+    "background": "assets/images/empty_templates/first_card/first_card.jpg",
+    "elements": [
+      {
+        "id": "fc_f_logo",
+        "type": "image",
+        "position": {
+          "dx": 10,
+          "dy": 18
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 34,
+        "height": 34,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4279505963,
+        "opacity": 1.0,
+        "field": "logo",
+        "italic": false
+      },
+      {
+        "id": "fc_f_name",
+        "type": "text",
+        "position": {
+          "dx": 10,
+          "dy": 56
+        },
+        "rotation": 0,
+        "text": "Alex Carter",
+        "fontFamily": "Poppins",
+        "fontSize": 19,
+        "color": 4279505963,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4279505963,
+        "opacity": 1.0,
+        "field": "name",
+        "italic": false
+      },
+      {
+        "id": "fc_f_title",
+        "type": "text",
+        "position": {
+          "dx": 10,
+          "dy": 82
+        },
+        "rotation": 0,
+        "text": "Product Designer",
+        "fontFamily": "Poppins",
+        "fontSize": 11,
+        "color": 4283058810,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4283058810,
+        "opacity": 1.0,
+        "field": "title",
+        "italic": false
+      },
+      {
+        "id": "fc_f_phone_icon",
+        "type": "symbol",
+        "position": {
+          "dx": 11,
+          "dy": 121
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4284170208,
+        "fontWeight": 3,
+        "width": 11,
+        "height": 11,
+        "imageMask": "none",
+        "symbol": "",
+        "iconCodePoint": 61210,
+        "iconFontFamily": "MaterialIcons",
+        "iconFontPackage": null,
+        "tintColor": 4284170208,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "fc_f_phone",
+        "type": "text",
+        "position": {
+          "dx": 27,
+          "dy": 118.5
+        },
+        "rotation": 0,
+        "text": "+1 415 555 0199",
+        "fontFamily": "Poppins",
+        "fontSize": 9.5,
+        "color": 4281545564,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4281545564,
+        "opacity": 1.0,
+        "field": "phone",
+        "italic": false
+      },
+      {
+        "id": "fc_f_email_icon",
+        "type": "symbol",
+        "position": {
+          "dx": 11,
+          "dy": 139
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4284170208,
+        "fontWeight": 3,
+        "width": 11,
+        "height": 11,
+        "imageMask": "none",
+        "symbol": "",
+        "iconCodePoint": 63643,
+        "iconFontFamily": "MaterialIcons",
+        "iconFontPackage": null,
+        "tintColor": 4284170208,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
+      },
+      {
+        "id": "fc_f_email",
+        "type": "text",
+        "position": {
+          "dx": 27,
+          "dy": 136.5
+        },
+        "rotation": 0,
+        "text": "alex@arcdesign.co",
+        "fontFamily": "Poppins",
+        "fontSize": 9.5,
+        "color": 4281545564,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4281545564,
+        "opacity": 1.0,
+        "field": "email",
+        "italic": false
+      },
+      {
+        "id": "fc_f_web_icon",
+        "type": "symbol",
+        "position": {
+          "dx": 11,
+          "dy": 157
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4284170208,
+        "fontWeight": 3,
+        "width": 11,
+        "height": 11,
+        "imageMask": "none",
+        "symbol": "",
+        "iconCodePoint": 61775,
+        "iconFontFamily": "MaterialIcons",
+        "iconFontPackage": null,
+        "tintColor": 4284170208,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
+      },
+      {
+        "id": "fc_f_website",
+        "type": "text",
+        "position": {
+          "dx": 27,
+          "dy": 154.5
+        },
+        "rotation": 0,
+        "text": "arcdesign.co",
+        "fontFamily": "Poppins",
+        "fontSize": 9.5,
+        "color": 4281545564,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4281545564,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
+      }
+    ]
+  },
+  "back": {
+    "background": "assets/images/empty_templates/first_card/first_card.jpg",
+    "elements": [
+      {
+        "id": "fc_b_logo",
+        "type": "image",
+        "position": {
+          "dx": 149,
+          "dy": 44
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 42,
+        "height": 42,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4279505963,
+        "opacity": 1.0,
+        "field": "logo",
+        "italic": false
+      },
+      {
+        "id": "fc_b_company",
+        "type": "text",
+        "position": {
+          "dx": 120,
+          "dy": 92
+        },
+        "rotation": 0,
+        "text": "Arc Design",
+        "fontFamily": "Poppins",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 6,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4279505963,
+        "opacity": 1.0,
+        "field": "company",
+        "italic": false
+      },
+      {
+        "id": "fc_b_web_icon",
+        "type": "symbol",
+        "position": {
+          "dx": 120,
+          "dy": 129
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4284170208,
+        "fontWeight": 3,
+        "width": 11,
+        "height": 11,
+        "imageMask": "none",
+        "symbol": "",
+        "iconCodePoint": 61775,
+        "iconFontFamily": "MaterialIcons",
+        "iconFontPackage": null,
+        "tintColor": 4284170208,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
+      },
+      {
+        "id": "fc_b_website",
+        "type": "text",
+        "position": {
+          "dx": 136,
+          "dy": 126.5
+        },
+        "rotation": 0,
+        "text": "arcdesign.co",
+        "fontFamily": "Poppins",
+        "fontSize": 9.5,
+        "color": 4281545564,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4281545564,
+        "opacity": 1.0,
+        "field": "website",
+        "italic": false
+      }
+    ]
+  }
+}

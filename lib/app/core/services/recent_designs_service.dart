@@ -107,6 +107,7 @@ class RecentDesignsService extends GetxService {
         required Map<String, dynamic> designData,
         String title = '',
         bool isPremium = false,
+        bool isAiGenerated = false,
       }) async {
     final dir = await getApplicationDocumentsDirectory();
     final id = DateTime.now().microsecondsSinceEpoch.toString();
@@ -128,74 +129,7 @@ class RecentDesignsService extends GetxService {
         savedAt: DateTime.now(),
         isPremium: isPremium,
         title: title,
-        designData: designData,
-      ),
-    );
-    await _persist();
-  }
-
-  Future<void> saveAiCard({
-    required String frontTempPath,
-    required String backTempPath,
-    String? frontBackgroundTempPath,
-    String? backBackgroundTempPath,
-    List<Map<String, dynamic>>? frontElements,
-    List<Map<String, dynamic>>? backElements,
-    String title = '',
-  }) async {
-    final dir = await getApplicationDocumentsDirectory();
-    final id = DateTime.now().microsecondsSinceEpoch.toString();
-    final frontPath = '${dir.path}/ai_card_front_$id.png';
-    final backPath = '${dir.path}/ai_card_back_$id.png';
-
-    await File(frontTempPath).copy(frontPath);
-    await File(backTempPath).copy(backPath);
-
-    final hasFront = frontBackgroundTempPath != null && frontElements != null;
-    final hasBack = backBackgroundTempPath != null && backElements != null;
-
-    Map<String, dynamic>? designData;
-
-    if (hasFront || hasBack) {
-      String frontBackground = frontPath;
-      if (hasFront) {
-        frontBackground = '${dir.path}/ai_card_front_bg_$id.png';
-        await File(frontBackgroundTempPath).copy(frontBackground);
-      }
-
-      String backBackground = backPath;
-      if (hasBack) {
-        backBackground = '${dir.path}/ai_card_back_bg_$id.png';
-        await File(backBackgroundTempPath).copy(backBackground);
-      }
-
-      Map<String, dynamic> side(
-          String background,
-          List<Map<String, dynamic>> elements,
-          ) =>
-          {
-            'backgroundColor': 0xFFFFFFFF,
-            'backgroundImagePath': background,
-            'backgroundTemplate': null,
-            'elements': elements,
-          };
-
-      designData = {
-        'orientation': CardOrientation.landscape.name,
-        ...side(frontBackground, hasFront ? frontElements : const []),
-        'back': side(backBackground, hasBack ? backElements : const []),
-      };
-    }
-
-    designs.insert(
-      0,
-      RecentDesign(
-        id: id,
-        path: frontPath,
-        backPath: backPath,
-        savedAt: DateTime.now(),
-        title: title,
-        isAiGenerated: true,
+        isAiGenerated: isAiGenerated,
         designData: designData,
       ),
     );

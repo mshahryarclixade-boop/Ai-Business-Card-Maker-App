@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 
 import '../../custom_create/model/card_element_model.dart';
 import '../../profile_setup/service/profile_store.dart';
@@ -13,6 +13,9 @@ class TemplateSideData {
   final List<CardElement> elements;
 
   const TemplateSideData({required this.background, required this.elements});
+
+  /// [background] is a file on disk (an AI frame), not a bundled asset.
+  bool get isFileBackground => background.startsWith('/');
 }
 
 /// A template read from assets/template_json/... (empty background PNGs +
@@ -40,8 +43,29 @@ class TemplateData {
 
   /// Returns null if the template has no JSON / empty backgrounds yet,
   /// so the caller can fall back to the old AI flow.
-  static Future<TemplateData?> load(TemplateItem item) async {
-    final path = jsonPathFor(item);
+  static Future<TemplateData?> load(TemplateItem item) =>
+      loadPath(jsonPathFor(item), fallbackId: item.id);
+
+  /// Every landscape layout JSON bundled under assets/template_json/ —
+  /// the layouts AI cards are built on (see AiFrameCardBuilder).
+  static Future<List<String>> landscapeLayoutPaths() async {
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    return manifest
+        .listAssets()
+        .where(
+          (a) =>
+              a.startsWith('assets/template_json/') &&
+              a.contains('/horizontal/') &&
+              a.endsWith('.json'),
+        )
+        .toList();
+  }
+
+  /// [load] for a layout JSON by its asset path.
+  static Future<TemplateData?> loadPath(
+    String path, {
+    String fallbackId = '',
+  }) async {
     if (_cache.containsKey(path)) return _cache[path];
 
     TemplateData? result;
@@ -57,7 +81,7 @@ class TemplateData {
       await rootBundle.load(back.background);
 
       result = TemplateData._(
-        id: (m['id'] as String?) ?? item.id,
+        id: (m['id'] as String?) ?? fallbackId,
         orientation:
         CardOrientation.values.byName(m['orientation'] as String),
         front: front,
@@ -109,7 +133,12 @@ class TemplateData {
     for (final e in els) {
       final key = e.field;
       if (e.type != CardElementType.text || key == null) {
-        out.add(e.copyWith());
+        // An icon that goes with a detail (phone, email, …) goes with it.
+        final empty =
+            key != null &&
+            values.containsKey(key) &&
+            values[key]!.trim().isEmpty;
+        if (!empty) out.add(e.copyWith());
         continue;
       }
 
@@ -139,13 +168,25 @@ class TemplateData {
     ),
   );
 
+  /// A copy with other sides — e.g. an AI frame as the background and
+  /// adjusted elements.
+  TemplateData withSides({
+    required TemplateSideData front,
+    required TemplateSideData back,
+  }) => TemplateData._(
+    id: id,
+    orientation: orientation,
+    front: front,
+    back: back,
+  );
+
   /// Same format as CardEditorController.buildDesignData(), so the saved card
   /// reopens in the editor with everything editable.
   Map<String, dynamic> toDesignData() {
     Map<String, dynamic> side(TemplateSideData s) => {
       'backgroundColor': 0xFFFFFFFF,
-      'backgroundImagePath': null,
-      'backgroundTemplate': s.background,
+      'backgroundImagePath': s.isFileBackground ? s.background : null,
+      'backgroundTemplate': s.isFileBackground ? null : s.background,
       'elements': s.elements.map((e) => e.toJson()).toList(),
     };
 

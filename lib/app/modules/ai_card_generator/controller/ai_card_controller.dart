@@ -45,9 +45,6 @@ class AiCardController extends GetxController {
 
   final ImagePicker _picker = ImagePicker();
 
-  final RecentDesignsService _recentDesignsService =
-      Get.find<RecentDesignsService>();
-
   void applyInitialPrompt(String? prompt) {
     final text = (prompt ?? '').trim();
     if (text.isEmpty || _appliedInitialPrompt == text) return;
@@ -204,35 +201,9 @@ class AiCardController extends GetxController {
 
       await FirebaseAnalytics.instance.logEvent(name: 'card_generated');
 
+      // Already saved to My Cards (editable) by AiFrameCardBuilder.
       debugPrint('front: ${generatedCard.value?.frontImagePath}');
       debugPrint('back: ${generatedCard.value?.backImagePath}');
-      debugPrint(
-        'editable: front=${generatedCard.value?.hasEditableFront} '
-        'back=${generatedCard.value?.hasEditableBack}',
-      );
-
-      // Save the generated card to My Cards.
-      try {
-        final card = generatedCard.value!;
-
-        await _recentDesignsService.saveAiCard(
-          frontTempPath: card.frontImagePath,
-          backTempPath: card.backImagePath,
-          frontBackgroundTempPath: card.frontBackgroundPath,
-          backBackgroundTempPath: card.backBackgroundPath,
-          frontElements: card.frontElements,
-          backElements: card.backElements,
-        );
-      } catch (e, st) {
-        FirebaseCrashlytics.instance.recordError(
-          e,
-          st,
-          reason: 'AI card save to My Cards list',
-        );
-
-        debugPrint('AI CARD: failed to save to My Cards list: $e');
-        debugPrint('$st');
-      }
 
       // Request a native review after successful generation.
       // Android may decide not to display the dialog.

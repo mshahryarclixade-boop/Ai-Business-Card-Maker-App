@@ -63,6 +63,10 @@ final List<IconData> kAllStickerIcons = [
   Icons.language,
   Icons.location_on,
   Icons.link,
+  // Icons of the first card's layout (assets/template_json/first_card).
+  Icons.call_outlined,
+  Icons.mail_outline_rounded,
+  Icons.language_outlined,
 ];
 
 /// Finds the const IconData matching a saved code point / font family.

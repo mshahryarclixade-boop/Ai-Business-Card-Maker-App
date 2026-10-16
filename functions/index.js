@@ -6,7 +6,6 @@ initializeApp();
 
 // Model names (verify before deploy).
 const CARD_MODEL = "gemini-3.1-flash-lite-image";
-const LAYOUT_MODEL = "gemini-3.1-flash-lite-image";
 
 const OPTIONS = {
   region: "us-central1",
@@ -63,34 +62,6 @@ exports.generateCard = onCall(OPTIONS, async (request) => {
     const img = outParts.find((p) => p.inlineData && p.inlineData.data);
     if (!img) throw new HttpsError("internal", "No image returned.");
     return { imageBase64: img.inlineData.data };
-  } catch (e) {
-    throw wrapGeminiError(e);
-  }
-});
-
-// generateLayoutJson: { prompt, imageBase64, imageMime }
-// returns { json } (string)
-exports.generateLayoutJson = onCall(OPTIONS, async (request) => {
-  const d = request.data || {};
-  const prompt = requireString(d.prompt, "prompt");
-  const imgB64 = requireString(d.imageBase64, "imageBase64");
-  const imgMime = requireString(d.imageMime, "imageMime");
-
-  // Image model has no JSON mode, so ask for JSON only and strip fences.
-  const fullPrompt = `${prompt}\n\nReturn ONLY valid JSON. No markdown, no code fences, no explanation.`;
-
-  try {
-    const ai = getClient();
-    const res = await ai.models.generateContent({
-      model: LAYOUT_MODEL,
-      contents: [{ role: "user", parts: [{ text: fullPrompt }, inlinePart(imgB64, imgMime)] }],
-      config: { responseModalities: ["TEXT", "IMAGE"], temperature: 0.1 },
-    });
-    const outParts = res?.candidates?.[0]?.content?.parts || [];
-    let text = outParts.filter((p) => typeof p.text === "string").map((p) => p.text).join("").trim();
-    text = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
-    if (!text) throw new HttpsError("internal", "Empty response.");
-    return { json: text };
   } catch (e) {
     throw wrapGeminiError(e);
   }

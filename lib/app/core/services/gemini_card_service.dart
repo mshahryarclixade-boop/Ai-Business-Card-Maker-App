@@ -85,58 +85,6 @@ class GeminiCardService {
     }
   }
 
-  /// Reads a finished card image and returns the raw JSON text describing
-  /// every text / icon on it (see AiCardPromptBuilder.buildLayoutPrompt).
-  Future<String> generateLayoutJson({
-    required String prompt,
-    required Uint8List imageBytes,
-    required String imageMime,
-  }) async {
-    debugPrint('GeminiCardService.generateLayoutJson: '
-        'image=${imageBytes.length}B prompt=${prompt.length} chars');
-
-    try {
-      final callable = _functions.httpsCallable(
-        'generateLayoutJson',
-        options: HttpsCallableOptions(timeout: const Duration(seconds: 120)),
-      );
-
-      final result = await callable.call(<String, dynamic>{
-        'prompt': prompt,
-        'imageBase64': base64Encode(imageBytes),
-        'imageMime': imageMime,
-      }).timeout(const Duration(seconds: 130));
-
-      final data = result.data;
-      final text = data is Map ? data['json'] : null;
-
-      if (text is! String || text.trim().isEmpty) {
-        throw const GeminiException(
-          "The AI didn't return the card layout. Please try again.",
-        );
-      }
-
-      debugPrint('Layout JSON length: ${text.length}');
-      return text;
-    } on TimeoutException {
-      throw const GeminiException(
-        'The AI took too long to respond. Please try again.',
-      );
-    } on GeminiException {
-      rethrow;
-    } on FirebaseFunctionsException catch (e, stackTrace) {
-      debugPrint('generateLayoutJson function error: ${e.code} ${e.message}');
-      debugPrint('$stackTrace');
-      throw GeminiException(_messageForFunctionsError(e));
-    } catch (e, stackTrace) {
-      debugPrint('generateLayoutJson unknown error: $e');
-      debugPrint('$stackTrace');
-      throw const GeminiException(
-        'Could not reach the AI service. Check your connection and try again.',
-      );
-    }
-  }
-
   String _messageForFunctionsError(FirebaseFunctionsException e) {
     switch (e.code) {
       case 'deadline-exceeded':
