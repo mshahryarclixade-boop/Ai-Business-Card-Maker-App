@@ -3,12 +3,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../service/remove_bg_service.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// The 4 screens described in the flow:
 /// initial (take/upload) -> confirm (retake or accept) -> processing -> result
@@ -75,15 +76,15 @@ class RemoveBackgroundController extends GetxController {
     } on RemoveBgException catch (e) {
       state.value = RemoveBgState.confirm;
       Get.snackbar(
-        'Background removal failed',
+        'remove_bg_failed_title'.tr,
         e.message,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (_) {
       state.value = RemoveBgState.confirm;
       Get.snackbar(
-        'Something went wrong',
-        'Please try again.',
+        'remove_bg_error_title'.tr,
+        'remove_bg_try_again_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -119,8 +120,8 @@ class RemoveBackgroundController extends GetxController {
         final granted = await Gal.requestAccess();
         if (!granted) {
           Get.snackbar(
-            'Permission needed',
-            'Allow photo library access to save this image.',
+            'remove_bg_permission_needed_title'.tr,
+            'remove_bg_save_permission_message'.tr,
             snackPosition: SnackPosition.BOTTOM,
           );
           return;
@@ -134,20 +135,20 @@ class RemoveBackgroundController extends GetxController {
       );
 
       Get.snackbar(
-        'Saved',
-        'Image saved to your gallery.',
+        'remove_bg_saved_title'.tr,
+        'remove_bg_saved_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     } on GalException catch (e) {
       Get.snackbar(
-        'Could not save',
+        'remove_bg_save_failed_title'.tr,
         e.type.message,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (_) {
       Get.snackbar(
-        'Could not save',
-        'Please try downloading again.',
+        'remove_bg_save_failed_title'.tr,
+        'remove_bg_save_failed_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -165,7 +166,7 @@ class RemoveBackgroundController extends GetxController {
       final file = await _writeResultToTempFile();
       final result = await Share.shareXFiles(
         [XFile(file.path, mimeType: 'image/png')],
-        text: 'Background removed with AI Business Card Maker',
+        text: 'remove_bg_share_text'.tr,
       );
 
       if (result.status == ShareResultStatus.dismissed) {
@@ -173,8 +174,8 @@ class RemoveBackgroundController extends GetxController {
       }
     } catch (_) {
       Get.snackbar(
-        'Could not share',
-        'Please try again.',
+        'remove_bg_share_failed_title'.tr,
+        'remove_bg_try_again_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {

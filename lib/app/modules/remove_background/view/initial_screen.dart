@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../controller/remove_background_controller.dart';
 import '../widget/remove_bg_app_bar.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class InitialScreen extends GetView<RemoveBackgroundController> {
   const InitialScreen({super.key});
@@ -13,7 +14,7 @@ class InitialScreen extends GetView<RemoveBackgroundController> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const RemoveBgAppBar(title: 'Background Remover'),
+        RemoveBgAppBar(title: 'remove_bg_initial_title'.tr),
 
         Expanded(
           child: Center(
@@ -37,9 +38,9 @@ class InitialScreen extends GetView<RemoveBackgroundController> {
                       ),
 
                       // Small sparkle/vector placed on the top-right
-                      Positioned(
+                      PositionedDirectional(
                         top: -4,
-                        right: -4,
+                        end: -4,
                         child: Image.asset(
                           'assets/images/bg_vector_2.png',
                           width: 20,
@@ -53,8 +54,8 @@ class InitialScreen extends GetView<RemoveBackgroundController> {
 
                 const SizedBox(height: 20),
 
-                const Text(
-                  'Remove any background in\none tap',
+                Text(
+                  'remove_bg_initial_headline'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
@@ -66,8 +67,8 @@ class InitialScreen extends GetView<RemoveBackgroundController> {
 
                 const SizedBox(height: 6),
 
-                const Text(
-                  'Powered by AI',
+                Text(
+                  'remove_bg_initial_powered'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 12,
@@ -97,8 +98,8 @@ class InitialScreen extends GetView<RemoveBackgroundController> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Take a picture',
+                  child: Text(
+                    'remove_bg_initial_take_picture'.tr,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 14,
@@ -124,8 +125,8 @@ class InitialScreen extends GetView<RemoveBackgroundController> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Upload from gallery',
+                  child: Text(
+                    'remove_bg_initial_upload_gallery'.tr,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 14,

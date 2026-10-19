@@ -47,7 +47,7 @@ class RemoveBgAppBar extends StatelessWidget
       actions: showCrown
           ? [
         Padding(
-          padding: const EdgeInsets.only(right: 16),
+          padding: const EdgeInsetsDirectional.only(end: 16),
           child: GestureDetector(
             onTap: () {
               openPaywall(source: 'remove_bg', plans: true);

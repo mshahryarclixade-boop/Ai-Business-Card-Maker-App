@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'symbol_asset_items.dart';
+import '../../../core/translations/tr_extension.dart';
 
 enum CardOrientation { portrait, landscape }
 
@@ -19,37 +20,46 @@ extension CardOrientationSize on CardOrientation {
   String get label {
     switch (this) {
       case CardOrientation.landscape:
-        return 'Landscape';
+        return 'custom_create_orientation_landscape'.tr;
       case CardOrientation.portrait:
-        return 'Portrait';
+        return 'custom_create_orientation_portrait'.tr;
     }
   }
 }
 
 enum CardElementType { text, image, symbol }
 
-enum CardImageMask { none, circle, roundedSquare, hexagon, star, cloud1, cloud2 }
+enum CardImageMask {
+  none,
+  circle,
+  roundedSquare,
+  hexagon,
+  star,
+  cloud1,
+  cloud2,
+}
 
 extension CardImageMaskLabel on CardImageMask {
   String get label {
     switch (this) {
       case CardImageMask.none:
-        return 'None';
+        return 'custom_create_mask_none'.tr;
       case CardImageMask.circle:
-        return 'Circle';
+        return 'custom_create_mask_circle'.tr;
       case CardImageMask.roundedSquare:
-        return 'Square';
+        return 'custom_create_mask_square'.tr;
       case CardImageMask.hexagon:
-        return 'Hexagon';
+        return 'custom_create_mask_hexagon'.tr;
       case CardImageMask.star:
-        return 'Star';
+        return 'custom_create_mask_star'.tr;
       case CardImageMask.cloud1:
-        return 'Cloud';
+        return 'custom_create_mask_cloud'.tr;
       case CardImageMask.cloud2:
-        return 'Cloud+';
+        return 'custom_create_mask_cloud_plus'.tr;
     }
   }
 }
+
 class CardElement {
   final String id;
   final CardElementType type;
@@ -88,7 +98,6 @@ class CardElement {
 
   bool italic;
 
-
   CardElement({
     required this.id,
     required this.type,
@@ -116,13 +125,13 @@ class CardElement {
   factory CardElement.text({
     required String id,
     required Offset position,
-    String text = 'Double tap to edit',
+    String? text,
   }) {
     return CardElement(
       id: id,
       type: CardElementType.text,
       position: position,
-      text: text,
+      text: text ?? 'custom_create_double_tap_to_edit'.tr,
     );
   }
 
@@ -185,8 +194,10 @@ class CardElement {
     double height = 36,
     Color tintColor = const Color(0xFF1E1E24),
   }) {
-    assert(iconData != null || iconAsset != null,
-    'CardElement.sticker needs an iconData or an iconAsset');
+    assert(
+      iconData != null || iconAsset != null,
+      'CardElement.sticker needs an iconData or an iconAsset',
+    );
     return CardElement(
       id: id,
       type: CardElementType.symbol,
@@ -219,7 +230,6 @@ class CardElement {
     double? opacity,
     String? field,
     bool? italic,
-
   }) {
     return CardElement(
       id: id,
@@ -270,7 +280,6 @@ class CardElement {
     'opacity': opacity,
     'field': field,
     'italic': italic,
-
   };
 
   factory CardElement.fromJson(Map<String, dynamic> json) {
@@ -287,22 +296,23 @@ class CardElement {
       fontFamily: json['fontFamily'] as String? ?? 'SF Pro',
       fontSize: (json['fontSize'] as num?)?.toDouble() ?? 18,
       color: Color(json['color'] as int? ?? 0xFF1E1E24),
-      fontWeight:
-      FontWeight.values[json['fontWeight'] as int? ?? FontWeight.w400.index],
+      fontWeight: FontWeight
+          .values[json['fontWeight'] as int? ?? FontWeight.w400.index],
       imageFile: json['imageFilePath'] != null
           ? File(json['imageFilePath'] as String)
           : null,
       imageAsset: json['imageAsset'] as String?,
       width: (json['width'] as num?)?.toDouble() ?? 80,
       height: (json['height'] as num?)?.toDouble() ?? 80,
-      imageMask:
-      CardImageMask.values.byName(json['imageMask'] as String? ?? 'none'),
+      imageMask: CardImageMask.values.byName(
+        json['imageMask'] as String? ?? 'none',
+      ),
       symbol: json['symbol'] as String? ?? '',
       iconData: json['iconCodePoint'] != null
           ? stickerIconFor(
-        json['iconCodePoint'] as int,
-        json['iconFontFamily'] as String?,
-      )
+              json['iconCodePoint'] as int,
+              json['iconFontFamily'] as String?,
+            )
           : null,
       iconAsset: json['iconAsset'] as String?,
       tintColor: Color(json['tintColor'] as int? ?? 0xFF1E1E24),
@@ -342,6 +352,20 @@ const List<Color> kPresetColors = [
 
 /// A tiny fixed symbol/emoji set for the "Symbols" tool.
 const List<String> kSampleSymbols = [
-  '★', '✓', '♥', '➤', '☎', '✉', '⚑', '☀',
-  '✦', '⬤', '◆', '⬥', '☺', '⚡', '❖', '➜',
+  '★',
+  '✓',
+  '♥',
+  '➤',
+  '☎',
+  '✉',
+  '⚑',
+  '☀',
+  '✦',
+  '⬤',
+  '◆',
+  '⬥',
+  '☺',
+  '⚡',
+  '❖',
+  '➜',
 ];

@@ -3,13 +3,16 @@ import 'dart:math' as math;
 import 'package:ai_business_card_maker/app/modules/profile/view/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/legal_links.dart';
 import '../../paywall/controller/subscription_controller.dart';
 import '../../paywall/view/paywall_screen.dart';
 import '../../recent designs/view/my_cards_view.dart';
+import '../../../core/translations/app_strings.dart';
+import '../../../core/translations/tr_extension.dart';
+import 'language_view.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
@@ -28,7 +31,7 @@ class SettingsView extends StatelessWidget {
                 alignment: Alignment.center,
                 children: [
                   Align(
-                    alignment: Alignment.centerLeft,
+                    alignment: AlignmentDirectional.centerStart,
                     child: IconButton(
                       onPressed: () => Navigator.of(context).pop(),
                       icon: const Icon(
@@ -36,12 +39,12 @@ class SettingsView extends StatelessWidget {
                         size: 20,
                         color: AppColors.titleDark,
                       ),
-                      padding: const EdgeInsets.only(left: 12),
+                      padding: const EdgeInsetsDirectional.only(start: 12),
                       constraints: const BoxConstraints(),
                     ),
                   ),
-                  const Text(
-                    'Settings',
+                  Text(
+                    'settings_title'.tr,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 18,
@@ -70,43 +73,58 @@ class SettingsView extends StatelessWidget {
                         // Settings options.
                         _SettingsTile(
                           icon: Icons.person,
-                          title: 'Profile',
+                          title: 'settings_profile',
                           onTap: () => Get.to(() => const ProfileView()),
                         ),
                         const SizedBox(height: 7),
 
                         _SettingsTile(
                           icon: Icons.card_membership_rounded,
-                          title: 'My Cards',
+                          title: 'settings_my_cards',
                           onTap: () => Get.to(() => const MyCardsView()),
                         ),
                         const SizedBox(height: 7),
 
                         const _SettingsTile(
                           icon: Icons.mail,
-                          title: 'Contact Us',
+                          title: 'settings_contact_us',
                         ),
                         const SizedBox(height: 7),
 
-                        const _SettingsTile(icon: Icons.star, title: 'Rate Us'),
+                        const _SettingsTile(icon: Icons.star, title: 'settings_rate_us'),
                         const SizedBox(height: 7),
 
                         const _SettingsTile(
                           icon: Icons.share,
-                          title: 'Share App',
+                          title: 'settings_share_app',
+                        ),
+                        const SizedBox(height: 7),
+
+                        // Re-reads the current language label when it changes.
+                        ValueListenableBuilder<String>(
+                          valueListenable: AppStrings.changes,
+                          builder: (context, _, __) => _SettingsTile(
+                            icon: Icons.language_rounded,
+                            title: 'settings_language_title',
+                            value: currentLanguageLabel(),
+                            onTap: () => Get.to(
+                                  () => const LanguageView(),
+                              transition: Transition.rightToLeft,
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 7),
 
                         const _SettingsTile(
                           icon: Icons.assignment_rounded,
-                          title: 'Privacy Policy',
+                          title: 'settings_privacy_policy',
                           onTap: LegalLinks.openPrivacyPolicy,
                         ),
                         const SizedBox(height: 7),
 
                         const _SettingsTile(
                           icon: Icons.description_rounded,
-                          title: 'Terms and Conditions',
+                          title: 'settings_terms',
                           onTap: LegalLinks.openTermsOfUse,
                         ),
                         const SizedBox(height: 7),
@@ -121,8 +139,8 @@ class SettingsView extends StatelessWidget {
                         // const SizedBox(height: 7),
 
                         // Version text.
-                        const Text(
-                          'Version 1.0.0',
+                        Text(
+                          'settings_version'.tr,
                           style: TextStyle(
                             fontFamily: AppTextStyles.fontFamily,
                             fontSize: 10,
@@ -171,11 +189,11 @@ class _ProBanner extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         children: [
           // Banner title.
-          const Positioned(
-            left: 20,
+          PositionedDirectional(
+            start: 20,
             top: 20,
             child: Text(
-              'Unlock Pro - Create\nWithout Limits',
+              'settings_pro_banner_title'.tr,
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
                 fontSize: 18,
@@ -187,8 +205,8 @@ class _ProBanner extends StatelessWidget {
           ),
 
           // Get Pro button.
-          Positioned(
-            left: 20,
+          PositionedDirectional(
+            start: 20,
             bottom: 22,
             child: Container(
               height: 33,
@@ -210,8 +228,8 @@ class _ProBanner extends StatelessWidget {
                     color: const Color(0xFFF5A623),
                   ),
                   const SizedBox(width: 8),
-                  const Text(
-                    'Get Pro',
+                  Text(
+                    'settings_get_pro'.tr,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 13,
@@ -376,9 +394,9 @@ class _ProBanner extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text(
-                            'BUSINESS\nCARD',
+                            'settings_banner_card_label'.tr,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 5,
@@ -410,7 +428,15 @@ class _SettingsTile extends StatelessWidget {
   final String title;
   final VoidCallback? onTap;
 
-  const _SettingsTile({required this.icon, required this.title, this.onTap});
+  /// Optional current value shown at the end of the card (e.g. language).
+  final String? value;
+
+  const _SettingsTile({
+    required this.icon,
+    required this.title,
+    this.onTap,
+    this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -432,15 +458,39 @@ class _SettingsTile extends StatelessWidget {
               child: Icon(icon, size: 17, color: AppColors.primary),
             ),
             const SizedBox(width: 6),
-            Text(
-              title,
-              style: const TextStyle(
-                fontFamily: AppTextStyles.fontFamily,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.titleDark,
+            Expanded(
+              child: Text(
+                title.tr,
+                style: const TextStyle(
+                  fontFamily: AppTextStyles.fontFamily,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.titleDark,
+                ),
               ),
             ),
+            if (value != null) ...[
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  value!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: AppTextStyles.fontFamily,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.textGrey,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 2),
+              const Icon(
+                Icons.chevron_right_rounded,
+                size: 20,
+                color: AppColors.textGrey,
+              ),
+            ],
           ],
         ),
       ),

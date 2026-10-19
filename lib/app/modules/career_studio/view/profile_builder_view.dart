@@ -4,9 +4,12 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../widgets/career_widgets.dart';
+import 'profile_generated_view.dart';
+import 'package:get/get.dart' hide Trans;
+import '../../../core/translations/tr_extension.dart';
 
-/// Profile Builder: goal, audience and industry. UI only; "Generate my
-/// profile" has no backend yet.
+/// Profile Builder: goal, audience, industry and work experience.
+/// UI only; "Generate my profile" has no backend yet.
 class ProfileBuilderView extends StatefulWidget {
   const ProfileBuilderView({super.key});
 
@@ -21,6 +24,7 @@ class _ProfileBuilderViewState extends State<ProfileBuilderView> {
     'Raise funding',
     'Build authority',
   ];
+
   static const _audiences = [
     'Startup founders',
     'Recruiters',
@@ -29,18 +33,48 @@ class _ProfileBuilderViewState extends State<ProfileBuilderView> {
     'Investors',
     'Small businesses',
   ];
+
+  // Display keys for the English ids above (the ids go into profileData;
+  // goal keys live in career_widgets.dart).
+  static const _audienceKeys = {
+    'Startup founders': 'career_builder_audience_founders',
+    'Recruiters': 'career_builder_audience_recruiters',
+    'Product managers': 'career_builder_audience_pms',
+    'Agencies': 'career_builder_audience_agencies',
+    'Investors': 'career_builder_audience_investors',
+    'Small businesses': 'career_builder_audience_small_biz',
+  };
+
   static const _maxAudience = 3;
 
   String _goal = 'Win clients';
+
   final Set<String> _selectedAudience = {
     'Startup founders',
     'Product managers',
   };
+
   final _industry = TextEditingController();
+  final _tenure = TextEditingController();
+
+  // NEW: Multiple work experience entries.
+  final List<_WorkExperienceEntry> _experiences = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _addExperience();
+  }
 
   @override
   void dispose() {
     _industry.dispose();
+    _tenure.dispose();
+
+    for (final experience in _experiences) {
+      experience.dispose();
+    }
+
     super.dispose();
   }
 
@@ -54,6 +88,50 @@ class _ProfileBuilderViewState extends State<ProfileBuilderView> {
     });
   }
 
+  // NEW: Add a work experience entry.
+  void _addExperience() {
+    setState(() {
+      _experiences.add(_WorkExperienceEntry());
+    });
+  }
+
+  // NEW: Remove a work experience entry.
+  void _removeExperience(int index) {
+    setState(() {
+      _experiences[index].dispose();
+      _experiences.removeAt(index);
+    });
+  }
+
+  // NEW: Pass entered data to the generated profile screen.
+  void _generateProfile() {
+    final experiences = _experiences
+        .map((experience) {
+          return {
+            'role': experience.roleController.text.trim(),
+            'company': experience.companyController.text.trim(),
+            'tenure': experience.tenureController.text.trim(),
+          };
+        })
+        .where((experience) {
+          return experience.values.any((value) => value.toString().isNotEmpty);
+        })
+        .toList();
+
+    Get.to(
+      () => ProfileGeneratedView(
+        profileData: {
+          'goal': _goal,
+          'targetAudience': _selectedAudience.toList(),
+          'industry': _industry.text.trim(),
+          'tenure': _tenure.text.trim(),
+          'experiences': experiences,
+        },
+      ),
+      transition: Transition.rightToLeft,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +143,7 @@ class _ProfileBuilderViewState extends State<ProfileBuilderView> {
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Column(
             children: [
-              const CareerAppBar(title: 'Profile Builder'),
+              CareerAppBar(title: 'career_builder_title'.tr),
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(20, 2, 20, 16),
@@ -74,8 +152,8 @@ class _ProfileBuilderViewState extends State<ProfileBuilderView> {
                     children: [
                       // const _StepBar(step: 2, total: 3),
                       // const SizedBox(height: 22),
-                      const Text(
-                        'Who should find you?',
+                      Text(
+                        'career_builder_who_title'.tr,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 26,
@@ -84,9 +162,8 @@ class _ProfileBuilderViewState extends State<ProfileBuilderView> {
                         ),
                       ),
                       const SizedBox(height: 5),
-                      const Text(
-                        'We tune your headline and keywords so these people '
-                        'see you in search.',
+                      Text(
+                        'career_builder_who_subtitle'.tr,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 14,
@@ -97,7 +174,8 @@ class _ProfileBuilderViewState extends State<ProfileBuilderView> {
                       const SizedBox(height: 16),
                       const _CardSummary(),
                       const SizedBox(height: 18),
-                      const _SectionLabel('Your main goal'),
+
+                      _SectionLabel('career_builder_goal_label'.tr),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: 4,
@@ -105,16 +183,18 @@ class _ProfileBuilderViewState extends State<ProfileBuilderView> {
                         children: [
                           for (final g in _goals)
                             _ChoicePill(
-                              label: g,
+                              label: kCareerGoalKeys[g]!.tr,
                               selected: _goal == g,
                               onTap: () => setState(() => _goal = g),
                             ),
                         ],
                       ),
+
                       const SizedBox(height: 18),
-                      const _SectionLabel(
-                        'Who do you want to reach?',
-                        hint: 'Pick up to $_maxAudience',
+                      _SectionLabel(
+                        'career_builder_audience_label'.tr,
+                        hint: 'career_builder_audience_hint'
+                            .trParams({'max': _maxAudience}),
                       ),
                       const SizedBox(height: 10),
                       Wrap(
@@ -123,67 +203,154 @@ class _ProfileBuilderViewState extends State<ProfileBuilderView> {
                         children: [
                           for (final a in _audiences)
                             _ChoicePill(
-                              label: a,
+                              label: _audienceKeys[a]!.tr,
                               selected: _selectedAudience.contains(a),
                               onTap: () => _toggleAudience(a),
                             ),
                         ],
                       ),
+
                       const SizedBox(height: 18),
-                      const _SectionLabel('Industry'),
+                      _SectionLabel('career_builder_industry_label'.tr),
                       const SizedBox(height: 10),
+
+                      // Existing industry field, unchanged in style.
                       TextField(
                         controller: _industry,
-                        textInputAction: TextInputAction.done,
+                        textInputAction: TextInputAction.next,
                         style: const TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 16,
                           color: AppColors.titleDark,
                         ),
-                        decoration: InputDecoration(
-                          hintText: 'e.g. Design & SaaS',
-                          hintStyle: const TextStyle(
-                            fontFamily: AppTextStyles.fontFamily,
-                            fontSize: 16,
-                            color: AppColors.textGrey,
-                          ),
-                          filled: true,
-                          fillColor: AppColors.scaffoldBg,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 18,
-                            vertical: 16,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: AppColors.pillBorder,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: AppColors.pillBorder,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: AppColors.onboardingBtnEnd,
-                            ),
-                          ),
+                        decoration: _fieldDecoration(
+                          hint: 'career_builder_industry_hint'.tr,
                         ),
                       ),
+
+                      // NEW: Total industry/company tenure.
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _tenure,
+                        textInputAction: TextInputAction.next,
+                        style: const TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 16,
+                          color: AppColors.titleDark,
+                        ),
+                        decoration: _fieldDecoration(
+                          hint: 'career_builder_total_experience_hint'.tr,
+                        ),
+                      ),
+
+                      // NEW: Multiple work experience section.
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: _SectionLabel(
+                              'career_builder_work_experience_label'.tr,
+                            ),
+                          ),
+                          TextButton.icon(
+                            onPressed: _addExperience,
+                            icon: const Icon(Icons.add, size: 18),
+                            label: Text('career_builder_add'.tr),
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppColors.onboardingBtnEnd,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+
+                      ...List.generate(_experiences.length, (index) {
+                        final experience = _experiences[index];
+
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.scaffoldBg,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: AppColors.pillBorder),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      'career_builder_experience_n'.trParams({'n': index + 1}),
+                                      style: const TextStyle(
+                                        fontFamily: AppTextStyles.fontFamily,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.titleDark,
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    tooltip: 'career_builder_remove_experience'.tr,
+                                    visualDensity: VisualDensity.compact,
+                                    onPressed: () => _removeExperience(index),
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              TextField(
+                                controller: experience.roleController,
+                                textInputAction: TextInputAction.next,
+                                style: _fieldTextStyle,
+                                decoration: _fieldDecoration(
+                                  hint: 'career_builder_role_hint'.tr,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              TextField(
+                                controller: experience.companyController,
+                                textInputAction: TextInputAction.next,
+                                style: _fieldTextStyle,
+                                decoration: _fieldDecoration(
+                                  hint: 'career_builder_company_hint'.tr,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              TextField(
+                                controller: experience.tenureController,
+                                textInputAction: TextInputAction.done,
+                                style: _fieldTextStyle,
+                                decoration: _fieldDecoration(
+                                  hint: 'career_builder_duration_hint'.tr,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
                     ],
                   ),
                 ),
               ),
+
+              // Existing bottom button layout retained.
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      'Uses your 1 free build this month',
+                    Text(
+                      'career_builder_free_build_note'.tr,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 12,
@@ -192,9 +359,9 @@ class _ProfileBuilderViewState extends State<ProfileBuilderView> {
                     ),
                     const SizedBox(height: 10),
                     CareerPrimaryButton(
-                      label: 'Generate my profile',
+                      label: 'career_builder_generate_button'.tr,
                       icon: Icons.auto_awesome,
-                      onTap: careerComingSoon,
+                      onTap: _generateProfile,
                     ),
                   ],
                 ),
@@ -204,6 +371,53 @@ class _ProfileBuilderViewState extends State<ProfileBuilderView> {
         ),
       ),
     );
+  }
+
+  // NEW: Shared field decoration matching the existing Industry field.
+  InputDecoration _fieldDecoration({required String hint}) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(
+        fontFamily: AppTextStyles.fontFamily,
+        fontSize: 15,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textGrey,
+      ),
+      filled: true,
+      fillColor: AppColors.scaffoldBg,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.pillBorder),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.pillBorder),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.onboardingBtnEnd),
+      ),
+    );
+  }
+
+  static const TextStyle _fieldTextStyle = TextStyle(
+    fontFamily: AppTextStyles.fontFamily,
+    fontSize: 16,
+    color: AppColors.titleDark,
+  );
+}
+
+// NEW: Controllers for each work experience entry.
+class _WorkExperienceEntry {
+  final roleController = TextEditingController();
+  final companyController = TextEditingController();
+  final tenureController = TextEditingController();
+
+  void dispose() {
+    roleController.dispose();
+    companyController.dispose();
+    tenureController.dispose();
   }
 }
 
@@ -248,11 +462,12 @@ class _CardSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = ProfileStore.to.profile.value;
-    final name = p.fullName.trim().isEmpty ? 'Your name' : p.fullName.trim();
+    final name = p.fullName.trim().isEmpty ? 'career_builder_your_name'.tr : p.fullName.trim();
     final role = [
       p.designation.trim(),
       p.companyName.trim(),
     ].where((e) => e.isNotEmpty).join(' · ');
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
@@ -318,8 +533,8 @@ class _CardSummary extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Text(
-              'From your card',
+            child: Text(
+              'career_builder_from_card'.tr,
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
                 fontSize: 11,
@@ -345,25 +560,32 @@ class _SectionLabel extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontFamily: AppTextStyles.fontFamily,
-            fontSize: 13,
-            fontWeight: FontWeight.w800,
-            color: AppColors.titleDark,
-          ),
-        ),
-        if (hint != null)
-          Text(
-            hint!,
+        Flexible(
+          child: Text(
+            label,
             style: const TextStyle(
               fontFamily: AppTextStyles.fontFamily,
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              color: AppColors.textGrey,
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              color: AppColors.titleDark,
             ),
           ),
+        ),
+        if (hint != null) ...[
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              hint!,
+              textAlign: TextAlign.end,
+              style: const TextStyle(
+                fontFamily: AppTextStyles.fontFamily,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: AppColors.textGrey,
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -386,7 +608,7 @@ class _ChoicePill extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 140),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: selected ? AppColors.onboardingBtnEnd : Colors.white,
           borderRadius: BorderRadius.circular(24),

@@ -24,30 +24,33 @@ class TemplateCardCanvas extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = orientation.canvasSize;
 
-    return RepaintBoundary(
-      key: repaintKey,
-      child: Container(
-        width: size.width,
-        height: size.height,
-        clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          image: DecorationImage(
-            image: side.isFileBackground
-                ? FileImage(File(side.background))
-                : AssetImage(side.background),
-            fit: BoxFit.cover,
+    return Directionality(
+      textDirection: TextDirection.ltr, // cards always render left-to-right
+      child: RepaintBoundary(
+        key: repaintKey,
+        child: Container(
+          width: size.width,
+          height: size.height,
+          clipBehavior: Clip.hardEdge,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            image: DecorationImage(
+              image: side.isFileBackground
+                  ? FileImage(File(side.background))
+                  : AssetImage(side.background),
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: Stack(
-          children: [
-            for (final el in side.elements)
-              Positioned(
-                left: el.position.dx + _pad,
-                top: el.position.dy + _pad,
-                child: _content(el),
-              ),
-          ],
+          child: Stack(
+            children: [
+              for (final el in side.elements)
+                Positioned(
+                  left: el.position.dx + _pad,
+                  top: el.position.dy + _pad,
+                  child: _content(el),
+                ),
+            ],
+          ),
         ),
       ),
     );

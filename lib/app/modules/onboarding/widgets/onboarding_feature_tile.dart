@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class OnboardingFeature {
   const OnboardingFeature({
@@ -17,18 +18,18 @@ class OnboardingFeature {
 const onboardingFeatures = [
   OnboardingFeature(
     icon: 'assets/icons/onboarding1_icon1.png',
-    title: 'Create with AI',
-    description: 'Describe your Style, Get a design\nthat fits',
+    title: 'onboarding_feature_create_ai_title',
+    description: 'onboarding_feature_description',
   ),
   OnboardingFeature(
     icon: 'assets/icons/onboarding1_icon2.png',
-    title: 'Explore beautiful templates',
-    description: 'Describe your Style, Get a design\nthat fits',
+    title: 'onboarding_feature_templates_title',
+    description: 'onboarding_feature_description',
   ),
   OnboardingFeature(
     icon: 'assets/icons/onboarding1_icon3.png',
-    title: 'Connect with a QR code',
-    description: 'Describe your Style, Get a design\nthat fits',
+    title: 'onboarding_feature_qr_title',
+    description: 'onboarding_feature_description',
   ),
 ];
 
@@ -80,7 +81,7 @@ class OnboardingFeatureTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  feature.title,
+                  feature.title.tr,
                   style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 18,
@@ -92,7 +93,7 @@ class OnboardingFeatureTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  feature.description,
+                  feature.description.tr,
                   style: const TextStyle(
                     fontFamily: 'SF Pro',
                     fontSize: 15.5,

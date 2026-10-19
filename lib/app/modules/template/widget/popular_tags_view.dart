@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../controller/template_controller.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class PopularTagsView extends StatelessWidget {
   final TemplateController controller;
@@ -15,8 +16,8 @@ class PopularTagsView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Popular Tags',
+          Text(
+            'template_popular_tags'.tr,
             style: TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 16,
@@ -39,7 +40,7 @@ class PopularTagsView extends StatelessWidget {
                   border: Border.all(color: AppColors.pillBorder),
                 ),
                 child: Text(
-                  tag,
+                  controller.categoryLabel(tag),
                   style: const TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 14,

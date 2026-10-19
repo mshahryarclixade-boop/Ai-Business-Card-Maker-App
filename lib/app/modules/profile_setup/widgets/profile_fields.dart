@@ -2,6 +2,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/translations/tr_extension.dart';
 
 const _inputTextStyle = TextStyle(
   fontFamily: 'Inter',
@@ -52,7 +53,7 @@ class ProfileFieldShell extends StatelessWidget {
         if (errorText != null) ...[
           const SizedBox(height: 6),
           Padding(
-            padding: const EdgeInsets.only(left: 4),
+            padding: const EdgeInsetsDirectional.only(start: 4),
             child: Text(
               errorText!,
               style: const TextStyle(
@@ -162,7 +163,7 @@ class ProfilePhoneField extends StatelessWidget {
     final hasError = errorText != null;
 
     return ProfileFieldShell(
-      label: 'Phone number',
+      label: 'profile_setup_phone_label'.tr,
       errorText: errorText,
       child: Container(
         height: 48,

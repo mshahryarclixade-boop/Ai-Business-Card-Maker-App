@@ -1,34 +1,21 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../controller/profile_optimizer_controller.dart';
 import '../widgets/career_widgets.dart';
+import '../../../core/translations/tr_extension.dart';
 
-enum _Source { pdf, link, text }
-
-/// Profile Optimizer: choose how to share the LinkedIn profile. UI only;
-/// "Analyze my profile" has no backend yet.
-class ProfileOptimizerView extends StatefulWidget {
+class ProfileOptimizerView extends GetView<ProfileOptimizerController> {
   const ProfileOptimizerView({super.key});
 
   @override
-  State<ProfileOptimizerView> createState() => _ProfileOptimizerViewState();
-}
-
-class _ProfileOptimizerViewState extends State<ProfileOptimizerView> {
-  _Source _source = _Source.pdf;
-  final _link = TextEditingController();
-  final _sections = TextEditingController();
-
-  @override
-  void dispose() {
-    _link.dispose();
-    _sections.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    Get.put(ProfileOptimizerController());
+
     return Scaffold(
       backgroundColor: AppColors.splashBg,
       body: SafeArea(
@@ -37,15 +24,15 @@ class _ProfileOptimizerViewState extends State<ProfileOptimizerView> {
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Column(
             children: [
-              const CareerAppBar(title: 'Profile Optimizer'),
+              CareerAppBar(title: 'career_optimizer_title'.tr),
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Let\'s check your profile',
+                      Text(
+                        'career_optimizer_heading'.tr,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 26,
@@ -54,108 +41,21 @@ class _ProfileOptimizerViewState extends State<ProfileOptimizerView> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Choose how to share it. We only read it to score it.',
+                      Text(
+                        'career_optimizer_subtitle'.tr,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 14,
-                          fontWeight: FontWeight.w400,
                           height: 1.35,
                           color: AppColors.textSubtitle,
                         ),
                       ),
                       const SizedBox(height: 18),
-                      _SourceCard(
-                        selected: _source == _Source.pdf,
-                        onTap: () => setState(() => _source = _Source.pdf),
-                        title: 'Upload profile PDF',
-                        badge: 'Most accurate',
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'On your LinkedIn profile, tap More → Save to '
-                              'PDF, then pick the file here.',
-                              style: _bodyStyle,
-                            ),
-                            const SizedBox(height: 12),
-                            GestureDetector(
-                              onTap: careerComingSoon,
-                              child: DashedBox(
-                                color: AppColors.onboardingBtnEnd,
-                                radius: 12,
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 50,
-                                  alignment: Alignment.center,
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.file_upload_outlined,
-                                        size: 20,
-                                        color: AppColors.onboardingBtnEnd,
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        'Choose PDF file',
-                                        style: TextStyle(
-                                          fontFamily: AppTextStyles.fontFamily,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.onboardingBtnEnd,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      _PdfCard(controller: controller),
                       const SizedBox(height: 12),
-                      _SourceCard(
-                        selected: _source == _Source.link,
-                        onTap: () => setState(() => _source = _Source.link),
-                        title: 'Paste profile link',
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _Field(
-                              controller: _link,
-                              hint: 'linkedin.com/in/your-name',
-                              keyboardType: TextInputType.url,
-                              onFocus: () =>
-                                  setState(() => _source = _Source.link),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Works for public profiles only.',
-                              style: TextStyle(
-                                fontFamily: AppTextStyles.fontFamily,
-                                fontSize: 12.5,
-                                color: AppColors.textGrey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      _ImagesCard(controller: controller),
                       const SizedBox(height: 12),
-                      _SourceCard(
-                        selected: _source == _Source.text,
-                        onTap: () => setState(() => _source = _Source.text),
-                        title: 'Paste sections by hand',
-                        child: _source == _Source.text
-                            ? _Field(
-                                controller: _sections,
-                                hint:
-                                    'Paste your headline, about and '
-                                    'experience here',
-                                maxLines: 5,
-                              )
-                            : null,
-                      ),
+                      _TextCard(controller: controller),
                     ],
                   ),
                 ),
@@ -165,8 +65,8 @@ class _ProfileOptimizerViewState extends State<ProfileOptimizerView> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      '1 free scan left this month',
+                    Text(
+                      'career_optimizer_free_scan_note'.tr,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 12,
@@ -175,8 +75,8 @@ class _ProfileOptimizerViewState extends State<ProfileOptimizerView> {
                     ),
                     const SizedBox(height: 10),
                     CareerPrimaryButton(
-                      label: 'Analyze my profile',
-                      onTap: careerComingSoon,
+                      label: 'career_optimizer_analyze_button'.tr,
+                      onTap: controller.analyze,
                     ),
                   ],
                 ),
@@ -189,12 +89,232 @@ class _ProfileOptimizerViewState extends State<ProfileOptimizerView> {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Option cards
+// ---------------------------------------------------------------------------
+
+class _PdfCard extends StatelessWidget {
+  const _PdfCard({required this.controller});
+
+  final ProfileOptimizerController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final pdf = controller.pdf.value;
+
+      return _SourceCard(
+        selected: controller.source.value == ProfileSource.pdf,
+        onTap: () => controller.selectSource(ProfileSource.pdf),
+        title: 'career_optimizer_pdf_title'.tr,
+        badge: 'career_optimizer_pdf_badge'.tr,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'career_optimizer_pdf_instructions'.tr,
+              style: _bodyStyle,
+            ),
+            const SizedBox(height: 12),
+            _DashedButton(
+              icon: pdf == null
+                  ? Icons.file_upload_outlined
+                  : Icons.picture_as_pdf_outlined,
+              label: pdf?.name ?? 'career_optimizer_pdf_choose'.tr,
+              onTap: controller.pickPdf,
+            ),
+          ],
+        ),
+      );
+    });
+  }
+}
+
+class _ImagesCard extends StatelessWidget {
+  const _ImagesCard({required this.controller});
+
+  final ProfileOptimizerController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final images = controller.images;
+      final max = ProfileOptimizerController.maxImages;
+
+      return _SourceCard(
+        selected: controller.source.value == ProfileSource.images,
+        onTap: () => controller.selectSource(ProfileSource.images),
+        title: 'career_optimizer_images_title'.tr,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (images.isNotEmpty) ...[
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (int i = 0; i < images.length; i++)
+                    _Thumb(
+                      file: File(images[i].path),
+                      onRemove: () => controller.removeImage(i),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
+            if (images.length < max)
+              _DashedButton(
+                icon: Icons.add_photo_alternate_outlined,
+                label: images.isEmpty
+                    ? 'career_optimizer_images_select'.tr
+                    : 'career_optimizer_images_add_more'.tr,
+                onTap: controller.pickImages,
+              ),
+            const SizedBox(height: 8),
+            Text(
+              'career_optimizer_images_count'
+                  .trParams({'count': images.length, 'max': max}),
+              style: const TextStyle(
+                fontFamily: AppTextStyles.fontFamily,
+                fontSize: 12.5,
+                color: AppColors.textGrey,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+}
+
+class _TextCard extends StatelessWidget {
+  const _TextCard({required this.controller});
+
+  final ProfileOptimizerController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final selected = controller.source.value == ProfileSource.text;
+
+      return _SourceCard(
+        selected: selected,
+        onTap: () => controller.selectSource(ProfileSource.text),
+        title: 'career_optimizer_text_title'.tr,
+        child: selected
+            ? _Field(
+          controller: controller.sections,
+          hint: 'career_optimizer_text_hint'.tr,
+          maxLines: 5,
+        )
+            : null,
+      );
+    });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Shared widgets
+// ---------------------------------------------------------------------------
+
 const _bodyStyle = TextStyle(
   fontFamily: AppTextStyles.fontFamily,
   fontSize: 13.5,
   height: 1.35,
   color: AppColors.textSubtitle,
 );
+
+class _DashedButton extends StatelessWidget {
+  const _DashedButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: DashedBox(
+        color: AppColors.onboardingBtnEnd,
+        radius: 12,
+        child: Container(
+          width: double.infinity,
+          height: 50,
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 20, color: AppColors.onboardingBtnEnd),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: AppTextStyles.fontFamily,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.onboardingBtnEnd,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Thumb extends StatelessWidget {
+  const _Thumb({required this.file, required this.onRemove});
+
+  final File file;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 64,
+      height: 64,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.file(file, fit: BoxFit.cover, cacheWidth: 200),
+            ),
+          ),
+          PositionedDirectional(
+            top: -6,
+            end: -6,
+            child: GestureDetector(
+              onTap: onRemove,
+              child: Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: AppColors.titleDark,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 1.5),
+                ),
+                child: const Icon(Icons.close, size: 12, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class _SourceCard extends StatelessWidget {
   const _SourceCard({
@@ -270,7 +390,7 @@ class _SourceCard extends StatelessWidget {
             ),
             if (child != null) ...[
               const SizedBox(height: 10),
-              Padding(padding: const EdgeInsets.only(left: 34), child: child),
+              Padding(padding: const EdgeInsetsDirectional.only(start: 34), child: child),
             ],
           ],
         ),
@@ -309,15 +429,11 @@ class _Field extends StatelessWidget {
     required this.controller,
     required this.hint,
     this.maxLines = 1,
-    this.keyboardType,
-    this.onFocus,
   });
 
   final TextEditingController controller;
   final String hint;
   final int maxLines;
-  final TextInputType? keyboardType;
-  final VoidCallback? onFocus;
 
   @override
   Widget build(BuildContext context) {
@@ -328,8 +444,6 @@ class _Field extends StatelessWidget {
     return TextField(
       controller: controller,
       maxLines: maxLines,
-      keyboardType: keyboardType,
-      onTap: onFocus,
       style: const TextStyle(
         fontFamily: AppTextStyles.fontFamily,
         fontSize: 15,

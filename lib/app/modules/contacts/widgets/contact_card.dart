@@ -35,13 +35,12 @@ class ContactCard extends StatelessWidget {
       confirmDismiss: (_) => _confirmDelete(context),
       onDismissed: (_) => onDelete(),
       background: Container(
-        margin: const EdgeInsets.only(right: 0),
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
           color: Colors.red,
           borderRadius: BorderRadius.circular(14),
         ),
-        alignment: Alignment.centerLeft,
+        alignment: AlignmentDirectional.centerStart,
         child: const Icon(Icons.delete_outline, color: Colors.white),
       ),
       child: Material(

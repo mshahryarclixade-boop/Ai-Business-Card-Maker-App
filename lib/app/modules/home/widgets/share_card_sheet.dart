@@ -5,7 +5,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:share_plus/share_plus.dart';
 import '../../../core/utils/share_origin.dart';
 import '../../qr_code_generator/view/qr_preview_screen.dart';
@@ -14,6 +14,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../profile_setup/model/user_profile_data.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../../qr_code_generator/view/qr_code_screen.dart';
+import '../../../core/translations/tr_extension.dart';
 
 const String kCardPageUrl = 'https://ai-business-card-e1cde.web.app/card.html';
 
@@ -64,15 +65,15 @@ class _ShareCardSheet extends StatelessWidget {
     try {
       final data = ProfileStore.to.profile.value;
       if (data.fullName.trim().isEmpty) {
-        _snack('No details yet', 'Add your details first to share a link.');
+        _snack('home_share_no_details_title'.tr, 'home_share_no_details_link'.tr);
         return;
       }
       final link = _buildCardLink(data);
 
       await SharePlus.instance.share(
         ShareParams(
-          text: 'Here is my digital business card:\n$link',
-          subject: '${data.fullName.trim()} - Digital Business Card',
+          text: 'home_share_text'.trParams({'link': link}),
+          subject: 'home_share_subject'.trParams({'name': data.fullName.trim()}),
           sharePositionOrigin: shareOrigin(),
         ),
       );
@@ -82,7 +83,7 @@ class _ShareCardSheet extends StatelessWidget {
       );
     } catch (e, st) {
       FirebaseCrashlytics.instance.recordError(e, st, reason: 'share link');
-      _snack('Could not share', 'Please try again.');
+      _snack('home_share_failed_title'.tr, 'home_try_again'.tr);
     }
   }
 
@@ -101,7 +102,7 @@ class _ShareCardSheet extends StatelessWidget {
       );
     } catch (e, st) {
       FirebaseCrashlytics.instance.recordError(e, st, reason: 'share image');
-      _snack('Could not share', 'Please try again.');
+      _snack('home_share_failed_title'.tr, 'home_try_again'.tr);
     }
   }
 
@@ -110,17 +111,17 @@ class _ShareCardSheet extends StatelessWidget {
     try {
       if (!await Gal.hasAccess()) {
         if (!await Gal.requestAccess()) {
-          _snack('Permission needed', 'Allow photo access to save.');
+          _snack('home_share_permission_title'.tr, 'home_share_permission_message'.tr);
           return;
         }
       }
       await Gal.putImage(cardImage.path);
       FirebaseAnalytics.instance.logEvent(name: 'card_saved_to_gallery');
-      _snack('Saved', 'Your card was saved to the gallery.');
+      _snack('home_share_saved_title'.tr, 'home_share_saved_message'.tr);
     } catch (e, st) {
       FirebaseCrashlytics.instance
           .recordError(e, st, reason: 'save card to gallery');
-      _snack('Could not save', 'Please try again.');
+      _snack('home_share_save_failed_title'.tr, 'home_try_again'.tr);
     }
   }
 
@@ -128,7 +129,7 @@ class _ShareCardSheet extends StatelessWidget {
     Get.back();
     final profile = loadSavedQrProfile();
     if (profile == null) {
-      _snack('No details yet', 'Add your details first to show a QR code.');
+      _snack('home_share_no_details_title'.tr, 'home_share_no_details_qr'.tr);
       return;
     }
     FirebaseAnalytics.instance.logEvent(name: 'qr_shown');
@@ -158,8 +159,8 @@ class _ShareCardSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Share Card',
+            Text(
+              'home_share_sheet_title'.tr,
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
                 fontSize: 18,
@@ -170,22 +171,22 @@ class _ShareCardSheet extends StatelessWidget {
             const SizedBox(height: 8),
             _Option(
               icon: Icons.share,
-              label: 'Share Link',
+              label: 'home_share_option_link'.tr,
               onTap: _shareContact,
             ),
             _Option(
               icon: Icons.image_outlined,
-              label: 'Share Card Image',
+              label: 'home_share_option_image'.tr,
               onTap: _shareImage,
             ),
             _Option(
               icon: Icons.download_rounded,
-              label: 'Save to Gallery',
+              label: 'home_share_option_gallery'.tr,
               onTap: _saveToGallery,
             ),
             _Option(
               icon: Icons.qr_code_2_rounded,
-              label: 'Show QR Code',
+              label: 'home_share_option_qr'.tr,
               onTap: _showQr,
             ),
           ],

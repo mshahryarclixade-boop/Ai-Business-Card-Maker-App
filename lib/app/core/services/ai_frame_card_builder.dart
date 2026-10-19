@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart'
     show AssetImage, Color, FileImage, ImageProvider;
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
@@ -20,6 +20,7 @@ import '../utils/widget_image_renderer.dart';
 import 'ai_card_prompt_builder.dart';
 import 'gemini_card_service.dart';
 import 'recent_designs_service.dart';
+import '../../core/translations/tr_extension.dart';
 
 /// Makes an AI card the cheap way: Gemini paints only the two text-free
 /// FRAMES (front and back backgrounds), and the user's details are placed
@@ -72,8 +73,9 @@ abstract final class AiFrameCardBuilder {
     // ---- the two frames (the only Gemini calls) ----
     final gemini = GeminiCardService();
     Future<Uint8List> frame(CardSide side, String emptyBackground) async {
-      final composition = (await rootBundle.load(emptyBackground)).buffer
-          .asUint8List();
+      final composition = (await rootBundle.load(
+        emptyBackground,
+      )).buffer.asUint8List();
       return gemini.generateCard(
         prompt: AiCardPromptBuilder.buildFrame(
           kind: kind,
@@ -121,17 +123,18 @@ abstract final class AiFrameCardBuilder {
     String title = '',
   }) async {
     await loadFonts([...card.front.elements, ...card.back.elements]);
-    Future<Uint8List> thumb(TemplateSideData side) => WidgetImageRenderer.render(
-      TemplateCardCanvas(side: side, orientation: card.orientation),
-      size: card.orientation.canvasSize,
-      images: <ImageProvider>[
-        side.isFileBackground
-            ? FileImage(File(side.background))
-            : AssetImage(side.background),
-        for (final e in side.elements)
-          if (e.imageFile != null) FileImage(e.imageFile!),
-      ],
-    );
+    Future<Uint8List> thumb(TemplateSideData side) =>
+        WidgetImageRenderer.render(
+          TemplateCardCanvas(side: side, orientation: card.orientation),
+          size: card.orientation.canvasSize,
+          images: <ImageProvider>[
+            side.isFileBackground
+                ? FileImage(File(side.background))
+                : AssetImage(side.background),
+            for (final e in side.elements)
+              if (e.imageFile != null) FileImage(e.imageFile!),
+          ],
+        );
     final thumbs = await Future.wait([thumb(card.front), thumb(card.back)]);
 
     final service = Get.find<RecentDesignsService>();
@@ -159,7 +162,7 @@ abstract final class AiFrameCardBuilder {
       final layout = await TemplateData.loadPath(path);
       if (layout != null) return layout;
     }
-    throw const GeminiException('No card layout available.');
+    throw GeminiException('ai_frame_error_no_layout'.tr);
   }
 
   // ------------------------------------------------------------------
@@ -311,7 +314,8 @@ List<double> _luminances((Uint8List, List<List<double>>) args) {
         for (var y = y0; y <= y1; y += stepY) {
           for (var x = x0; x <= x1; x += stepX) {
             final p = decoded.getPixel(x, y);
-            sum += 0.2126 * channel(p.r) +
+            sum +=
+                0.2126 * channel(p.r) +
                 0.7152 * channel(p.g) +
                 0.0722 * channel(p.b);
             n++;

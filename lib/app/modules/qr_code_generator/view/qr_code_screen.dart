@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:get_storage/get_storage.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -17,6 +17,7 @@ import '../service/qr_generator_service.dart';
 import '../model/qr_profile_data.dart';
 import 'qr_preview_screen.dart';
 import '../../paywall/view/paywall_screen.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class CustomQrCodeScreen extends StatefulWidget {
   final bool forCardInsertion;
@@ -212,8 +213,8 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
 
     if (!profile.isValid) {
       Get.snackbar(
-        'Full name required',
-        'Add at least a full name before generating a QR code.',
+        'qr_screen_full_name_required_title'.tr,
+        'qr_screen_full_name_required_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -238,8 +239,8 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
       Get.off(() => QrPreviewScreen(profile: profile));
     } catch (_) {
       Get.snackbar(
-        'Something went wrong',
-        'Could not generate the QR code. Please try again.',
+        'qr_screen_error_title'.tr,
+        'qr_screen_error_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -263,8 +264,8 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
             icon: const Icon(Icons.arrow_back, color: AppColors.titleDark),
             onPressed: () => Get.back(),
           ),
-          title: const Text(
-            'Custom QR Code',
+          title: Text(
+            'qr_screen_title'.tr,
             style: TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 16,
@@ -274,7 +275,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
           ),
           actions: [
             Padding(
-              padding: const EdgeInsets.only(right: 16),
+              padding: const EdgeInsetsDirectional.only(end: 16),
               child: GestureDetector(
                 onTap: () {
                   openPaywall(source: 'qr_code', plans: true);
@@ -282,15 +283,15 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                 child: Container(
                   width: 36,
                   height: 36,
-                  decoration: const BoxDecoration(
-                    color: AppColors.cardWhite,
-                    shape: BoxShape.circle,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryDark,
+                    borderRadius: BorderRadius.circular(22),
                   ),
                   alignment: Alignment.center,
                   child: const FaIcon(
                     FontAwesomeIcons.crown,
                     size: 18,
-                    color: Color(0xFFF5A623),
+                    color: AppColors.crownGold,
                   ),
                 ),
               ),
@@ -306,13 +307,15 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Auto-fill from your saved profile',
-                    style: TextStyle(
-                      fontFamily: AppTextStyles.fontFamily,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                  Expanded(
+                    child: Text(
+                      'qr_screen_auto_fill'.tr,
+                      style: TextStyle(
+                        fontFamily: AppTextStyles.fontFamily,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   Switch(
@@ -324,8 +327,8 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                         final profile = ProfileRepository.getSavedProfile();
                         if (profile == null) {
                           Get.snackbar(
-                            'No saved profile',
-                            'Save your profile first to use auto-fill.',
+                            'qr_screen_no_profile_title'.tr,
+                            'qr_screen_no_profile_message'.tr,
                             snackPosition: SnackPosition.BOTTOM,
                             margin: const EdgeInsets.all(15),
                           );
@@ -345,9 +348,9 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SectionLabel('Personal Info'),
+                    _SectionLabel('qr_screen_section_personal'.tr),
                     _Field(
-                      label: 'Full Name',
+                      label: 'qr_screen_label_full_name'.tr,
                       controller: _fullName,
                       textInputAction: TextInputAction.next,
                     ),
@@ -356,7 +359,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                       children: [
                         Expanded(
                           child: _Field(
-                            label: 'Phone Number',
+                            label: 'qr_screen_label_phone'.tr,
                             controller: _phone,
                             textInputAction: TextInputAction.next,
                             keyboardType: TextInputType.phone,
@@ -365,7 +368,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: _Field(
-                            label: 'Email Address',
+                            label: 'qr_screen_label_email'.tr,
                             controller: _email,
                             textInputAction: TextInputAction.next,
                             keyboardType: TextInputType.emailAddress,
@@ -374,12 +377,12 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                       ],
                     ),
                     const SizedBox(height: 18),
-                    _SectionLabel('Professional'),
+                    _SectionLabel('qr_screen_section_professional'.tr),
                     Row(
                       children: [
                         Expanded(
                           child: _Field(
-                            label: 'Company Name',
+                            label: 'qr_screen_label_company'.tr,
                             controller: _company,
                             textInputAction: TextInputAction.next,
                           ),
@@ -387,7 +390,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: _Field(
-                            label: 'Designation',
+                            label: 'qr_screen_label_designation'.tr,
                             controller: _designation,
                             textInputAction: TextInputAction.next,
                           ),
@@ -396,12 +399,12 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                     ),
                     const SizedBox(height: 10),
                     _Field(
-                      label: 'Website URL',
+                      label: 'qr_screen_label_website'.tr,
                       controller: _website,
                       textInputAction: TextInputAction.next,
                     ),
                     const SizedBox(height: 10),
-                    _SectionLabel('Social Links'),
+                    _SectionLabel('qr_screen_section_social'.tr),
                     ..._socialLinks.map(
                           (link) => Padding(
                         padding: const EdgeInsets.only(bottom: 8),
@@ -461,7 +464,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(left: 14),
+                                padding: const EdgeInsetsDirectional.only(start: 14),
                                 child: Icon(
                                   Icons.add,
                                   color: AppColors.primary,
@@ -470,7 +473,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                'Add custom links',
+                                'qr_screen_add_custom_links'.tr,
                                 style: TextStyle(
                                   fontFamily: AppTextStyles.fontFamily,
                                   fontSize: 12,
@@ -484,12 +487,12 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    _SectionLabel('Location (optional)'),
+                    _SectionLabel('qr_screen_section_location'.tr),
                     Row(
                       children: [
                         Expanded(
                           child: _Field(
-                            label: 'Country',
+                            label: 'qr_screen_label_country'.tr,
                             controller: _country,
                             textInputAction: TextInputAction.next,
                           ),
@@ -497,7 +500,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: _Field(
-                            label: 'City',
+                            label: 'qr_screen_label_city'.tr,
                             controller: _city,
                             textInputAction: TextInputAction.done,
                           ),
@@ -527,8 +530,8 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                             color: Colors.white,
                           ),
                         )
-                            : const Text(
-                          'Generate QR Code',
+                            : Text(
+                          'qr_screen_generate'.tr,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,

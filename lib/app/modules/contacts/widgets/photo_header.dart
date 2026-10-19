@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../model/contact_model.dart';
 import 'round_icon_button.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class PhotoHeader extends StatelessWidget {
   final ContactModel contact;
@@ -38,7 +39,7 @@ class PhotoHeader extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    'Contacts',
+                    'contacts_title'.tr,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontFamily: AppTextStyles.fontFamily,

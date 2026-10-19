@@ -5,6 +5,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../model/qr_code_builder.dart';
 import '../model/qr_profile_data.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class QrGeneratorService {
   /// Build the vCard payload for a profile. Exposed separately so the
@@ -59,7 +60,7 @@ class QrGeneratorService {
     final imageData = await image.toByteData(format: ui.ImageByteFormat.png);
 
     if (imageData == null) {
-      throw Exception('QR generation failed: could not render image data.');
+      throw Exception('qr_generation_failed_render'.tr);
     }
 
     return imageData.buffer.asUint8List();

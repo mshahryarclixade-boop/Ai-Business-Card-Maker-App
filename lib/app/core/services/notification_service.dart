@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../translations/tr_extension.dart';
 
 /// Handles FCM messages received while the app is in the background.
 @pragma('vm:entry-point')
@@ -26,10 +27,10 @@ class NotificationService {
 
   static const String _topic = 'all_users';
 
-  static const AndroidNotificationChannel _channel = AndroidNotificationChannel(
+  static AndroidNotificationChannel get _channel => AndroidNotificationChannel(
     'high_importance_channel',
-    'Important Notifications',
-    description: 'Important app notifications',
+    'notification_channel_name'.tr,
+    description: 'notification_channel_description'.tr,
     importance: Importance.max,
   );
 
@@ -91,11 +92,11 @@ class NotificationService {
             id: message.hashCode,
             title: title ?? '',
             body: body ?? '',
-            notificationDetails: const NotificationDetails(
+            notificationDetails: NotificationDetails(
               android: AndroidNotificationDetails(
                 'high_importance_channel',
-                'Important Notifications',
-                channelDescription: 'Important app notifications',
+                'notification_channel_name'.tr,
+                channelDescription: 'notification_channel_description'.tr,
                 importance: Importance.max,
                 priority: Priority.high,
                 icon: '@mipmap/ic_launcher',

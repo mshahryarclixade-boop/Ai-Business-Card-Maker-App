@@ -5,12 +5,13 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart' as fc;
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../model/contact_model.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class ContactExportService {
   ContactExportService._();
@@ -31,8 +32,8 @@ class ContactExportService {
       final granted = status == fc.PermissionStatus.granted ||
           status == fc.PermissionStatus.limited;
       if (!granted) {
-        _snack('Permission needed',
-            'Allow contacts access to save this contact.');
+        _snack('contacts_permission_title'.tr,
+            'contacts_permission_message'.tr);
         return;
       }
 
@@ -79,7 +80,7 @@ class ContactExportService {
       // Save every detail (incl. photo) straight into the address book.
       final savedId = await fc.FlutterContacts.create(contact);
 
-      _snack('Saved', 'Contact saved to your phone.');
+      _snack('contacts_saved_title'.tr, 'contacts_saved_message'.tr);
 
       // Then open the saved contact in the phone's own Contacts app.
       try {
@@ -90,7 +91,7 @@ class ContactExportService {
     } catch (e, st) {
       debugPrint('CONTACT SAVE ERROR: $e');
       debugPrint('$st');
-      _snack('Could not save', 'Something went wrong while saving the contact.');
+      _snack('contacts_save_failed_title'.tr, 'contacts_save_failed_message'.tr);
     }
   }
 
@@ -114,7 +115,7 @@ class ContactExportService {
     } catch (e, st) {
       debugPrint('CONTACT SHARE ERROR: $e');
       debugPrint('$st');
-      _snack('Could not share', 'Something went wrong while sharing the contact.');
+      _snack('contacts_share_failed_title'.tr, 'contacts_share_failed_message'.tr);
     }
   }
 

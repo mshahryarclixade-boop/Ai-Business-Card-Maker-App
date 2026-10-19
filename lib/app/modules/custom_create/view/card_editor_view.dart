@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'dart:io';
 import '../../../core/services/recent_designs_service.dart';
 import '../../../core/theme/app_colors.dart';
@@ -19,6 +19,7 @@ import '../widgets/bottom_toolbar.dart';
 import '../widgets/canvas.dart';
 import '../widgets/custom_color_picker_popup.dart';
 import '../widgets/top_bar.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class CardEditorView extends StatefulWidget {
   final RecentDesign? design;
@@ -142,8 +143,8 @@ class _CardEditorViewState extends State<CardEditorView> {
     await Clipboard.setData(ClipboardData(text: json));
 
     Get.snackbar(
-      'JSON exported',
-      'Copied to clipboard and printed in the console.',
+      'custom_create_json_exported_title'.tr,
+      'custom_create_json_exported_message'.tr,
       snackPosition: SnackPosition.BOTTOM,
       margin: const EdgeInsets.all(15),
     );
@@ -157,7 +158,7 @@ class _CardEditorViewState extends State<CardEditorView> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Font size'),
+        title: Text('custom_create_font_size_title'.tr),
         content: TextField(
           controller: textController,
           autofocus: true,
@@ -166,7 +167,7 @@ class _CardEditorViewState extends State<CardEditorView> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text('custom_create_cancel'.tr),
           ),
           TextButton(
             onPressed: () {
@@ -174,7 +175,7 @@ class _CardEditorViewState extends State<CardEditorView> {
               if (v != null) controller.setSelectedFontSize(v);
               Navigator.of(context).pop();
             },
-            child: const Text('Done'),
+            child: Text('custom_create_done'.tr),
           ),
         ],
       ),
@@ -345,9 +346,9 @@ class _CardEditorViewState extends State<CardEditorView> {
               final isBackground = target == ColorPickerTarget.background;
               final isElement = target == ColorPickerTarget.element;
 
-              return Positioned(
+              return PositionedDirectional(
                 top: 76,
-                right: 16,
+                end: 16,
                 child: CustomColorPickerPopup(
                   initialColor: isBackground
                       ? controller.backgroundColor.value

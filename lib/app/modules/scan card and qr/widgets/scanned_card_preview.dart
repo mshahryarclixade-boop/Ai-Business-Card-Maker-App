@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../model/scanned_contact_data.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// Small dark "digital business card" preview shown at the top of the
 /// Create Contact screen right after a scan, above the
@@ -24,12 +25,12 @@ class ScannedCardPreview extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(18, 16, 16, 16),
+      padding: const EdgeInsetsDirectional.fromSTEB(18, 16, 16, 16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF221F3B), Color(0xFF2D2A4E)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          begin: AlignmentDirectional.topStart,
+          end: AlignmentDirectional.bottomEnd,
         ),
         borderRadius: BorderRadius.circular(16),
       ),
@@ -44,7 +45,7 @@ class ScannedCardPreview extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      data.fullName.isEmpty ? 'Scanned Card' : data.fullName,
+                      data.fullName.isEmpty ? 'scan_scanned_card_fallback_name'.tr : data.fullName,
                       style: const TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 16,

@@ -7,8 +7,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:get_storage/get_storage.dart';
+import 'app/core/translations/app_strings.dart';
 import 'app/core/services/connectivity_service.dart';
 import 'app/core/services/recent_designs_service.dart';
 import 'app/modules/profile/controller/profile_controller.dart';
@@ -20,9 +22,11 @@ import 'app/modules/paywall/services/revenue_cat_service.dart';
 import 'app/modules/paywall/services/user_credits_manager.dart';
 import 'app/routes/app_pages.dart';
 import 'firebase_options.dart';
+import 'app/core/translations/tr_extension.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await AppStrings.init();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
@@ -80,13 +84,57 @@ void main() async {
 /// Microsoft Clarity project id (not a secret).
 const _clarityProjectId = 'yxjxedb90f';
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    AppStrings.changes.addListener(_onLanguageChanged);
+  }
+
+  @override
+  void dispose() {
+    AppStrings.changes.removeListener(_onLanguageChanged);
+    super.dispose();
+  }
+
+  /// Language picked in Settings: GetMaterialApp keeps its own locale once
+  /// built, so push the new one (this also flips text direction live).
+  void _onLanguageChanged() => Get.updateLocale(_frameworkLocale);
+
+  static bool _frameworkSupports(Locale l) =>
+      GlobalMaterialLocalizations.delegate.isSupported(l);
+
+  /// The app language when Flutter's built-in labels/direction support it
+  /// (they do for every RTL language we ship); English otherwise, since a
+  /// locale the Material delegate can't load would throw.
+  static Locale get _frameworkLocale => _frameworkSupports(AppStrings.locale)
+      ? AppStrings.locale
+      : const Locale(AppStrings.fallbackLanguage);
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'AI Business Card Maker',
+      // The app language (device language on first install) drives text
+      // direction and the Material/Cupertino built-in labels.
+      locale: _frameworkLocale,
+      fallbackLocale: const Locale(AppStrings.fallbackLanguage),
+      supportedLocales: AppStrings.supportedLocales
+          .where(_frameworkSupports)
+          .toList(),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      onGenerateTitle: (_) => 'app_title'.tr,
+      theme: ThemeData(fontFamily: 'SFPro'),
       debugShowCheckedModeBanner: false,
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,

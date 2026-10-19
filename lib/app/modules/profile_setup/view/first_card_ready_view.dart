@@ -1,11 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../routes/app_routes.dart';
 import '../widgets/profile_primary_button.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class FirstCardReadyView extends StatelessWidget {
   const FirstCardReadyView({super.key});
@@ -25,8 +26,8 @@ class FirstCardReadyView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Your First Card is ready',
+                    Text(
+                      'profile_setup_ready_title'.tr,
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 36,
@@ -37,9 +38,8 @@ class FirstCardReadyView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'We’ve added your details to a\nclean starting design. '
-                          'Now make it your\nown.',
+                    Text(
+                      'profile_setup_ready_subtitle'.tr,
                       style: TextStyle(
                         fontFamily: 'SF Pro',
                         fontSize: 18,
@@ -66,7 +66,7 @@ class FirstCardReadyView extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
               child: ProfilePrimaryButton(
-                label: 'Go to Home',
+                label: 'profile_setup_ready_go_home'.tr,
                 showArrow: false,
                 onTap: () => Get.offAllNamed(Routes.MAIN),
               ),

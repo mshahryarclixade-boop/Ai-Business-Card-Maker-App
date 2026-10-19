@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../modules/custom_create/controller/card_editor_controller.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../../core/translations/tr_extension.dart';
 
 /// Small "‹ Front ›" switcher shown above the top-right of the canvas.
 class SideSwitcher extends StatelessWidget {
@@ -26,7 +27,7 @@ class SideSwitcher extends StatelessWidget {
           SizedBox(
             width: 40,
             child: Text(
-              isBack ? 'Back' : 'Front',
+              isBack ? 'side_switcher_back'.tr : 'side_switcher_front'.tr,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontFamily: AppTextStyles.fontFamily,

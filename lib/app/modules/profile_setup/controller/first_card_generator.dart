@@ -12,6 +12,7 @@ import '../../../core/utils/app_fonts.dart';
 import '../../custom_create/model/card_element_model.dart';
 import '../../template/model/template_live_data.dart';
 import '../model/user_profile_data.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// Creates the user's first card (front + back) from the details entered
 /// in onboarding.
@@ -34,8 +35,9 @@ class FirstCardGenerator {
   Future<List<Uint8List>> generate(
       UserProfileData data, {
         String? templateAssetPath,
-        String title = 'My First Card',
+        String? title,
       }) async {
+    final cardTitle = title ?? 'profile_setup_first_card_default_title'.tr;
     final logo = data.hasLogo ? data.logoBytes : null;
     final details = CardDetails.fromUserProfile(data);
 
@@ -43,7 +45,7 @@ class FirstCardGenerator {
     if (templateAssetPath == null) {
       design = await AiFrameCardBuilder.saveCard(
         await _firstCard(details, logo),
-        title: title,
+        title: cardTitle,
       );
     } else {
       final style = (await rootBundle.load(templateAssetPath)).buffer
@@ -53,7 +55,7 @@ class FirstCardGenerator {
         styleMime: _mimeOf(style),
         details: details,
         logo: logo,
-        title: title,
+        title: cardTitle,
       );
     }
 

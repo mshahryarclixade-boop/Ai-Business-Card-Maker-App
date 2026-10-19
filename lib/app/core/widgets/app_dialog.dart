@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../../core/translations/tr_extension.dart';
 
 /// Shows [child] over a blurred, dimmed backdrop.
 Future<T?> showBlurredDialog<T>(
@@ -14,7 +15,7 @@ Future<T?> showBlurredDialog<T>(
   return showGeneralDialog<T>(
     context: context,
     barrierDismissible: barrierDismissible,
-    barrierLabel: 'dialog',
+    barrierLabel: 'app_dialog_barrier_label'.tr,
     barrierColor: Colors.black45,
     transitionDuration: const Duration(milliseconds: 180),
     pageBuilder: (_, _, _) => const SizedBox.shrink(),

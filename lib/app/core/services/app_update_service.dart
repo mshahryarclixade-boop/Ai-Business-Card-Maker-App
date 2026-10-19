@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:get_storage/get_storage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -11,6 +11,7 @@ import '../theme/app_colors.dart';
 import '../widgets/app_dialog.dart';
 import 'remote_config_service.dart';
 import 'store_links.dart';
+import '../translations/tr_extension.dart';
 
 enum UpdateType { none, optional, forced }
 
@@ -183,17 +184,17 @@ abstract final class AppUpdateService {
             const AppDialogIcon(Icons.system_update_rounded),
             const SizedBox(height: 18),
             AppDialogText(
-              title: forced ? 'Update required' : 'Update available',
+              title: forced
+                  ? 'force_update_title'.tr
+                  : 'app_update_dialog_title_optional'.tr,
               message: forced
-                  ? 'This version of the app is no longer supported. '
-                        'Please update to continue.'
-                  : 'A newer version of the app is available with '
-                        'improvements and fixes.',
+                  ? 'app_update_dialog_message_forced'.tr
+                  : 'app_update_dialog_message_optional'.tr,
             ),
             const SizedBox(height: 22),
             Builder(
               builder: (ctx) => AppDialogButton(
-                label: 'Update Now',
+                label: 'force_update_button'.tr,
                 color: AppColors.accent,
                 onTap: () {
                   if (!forced) Navigator.of(ctx).pop();

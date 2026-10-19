@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import 'color_palette.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class ColorChooserCard extends StatefulWidget {
   final Color? currentColor;
@@ -73,8 +74,8 @@ class _ColorChooserCardState extends State<ColorChooserCard> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Choose a color',
+            Text(
+              'custom_create_choose_color'.tr,
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
                 fontSize: 14,
@@ -99,8 +100,8 @@ class _ColorChooserCardState extends State<ColorChooserCard> {
             const SizedBox(height: 18),
             Row(
               children: [
-                const Text(
-                  'Hex',
+                Text(
+                  'custom_create_hex'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 12.5,
@@ -149,8 +150,8 @@ class _ColorChooserCardState extends State<ColorChooserCard> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'Cancel',
+                    child: Text(
+                      'custom_create_cancel'.tr,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontWeight: FontWeight.w600,
@@ -175,8 +176,8 @@ class _ColorChooserCardState extends State<ColorChooserCard> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'Done',
+                    child: Text(
+                      'custom_create_done'.tr,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontWeight: FontWeight.w600,

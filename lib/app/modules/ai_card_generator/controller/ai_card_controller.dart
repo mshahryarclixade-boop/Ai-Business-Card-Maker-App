@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:image_picker/image_picker.dart';
 import 'package:gal/gal.dart';
 import 'package:share_plus/share_plus.dart';
@@ -20,6 +20,7 @@ import '../../profile/model/profile_model.dart';
 import '../../profile/service/profile_repository.dart';
 import '../model/generated_card.dart';
 import '../service/ai_card_service.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class AiCardController extends GetxController {
   static const int promptMaxLength = 200;
@@ -88,11 +89,11 @@ class AiCardController extends GetxController {
 
       Get.snackbar(
         source == ImageSource.camera
-            ? 'Camera unavailable'
-            : 'Gallery unavailable',
+            ? 'ai_card_camera_unavailable_title'.tr
+            : 'ai_card_gallery_unavailable_title'.tr,
         source == ImageSource.camera
-            ? 'Allow camera access to take a photo.'
-            : 'Allow photo access to pick an image.',
+            ? 'ai_card_camera_permission_message'.tr
+            : 'ai_card_gallery_permission_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -118,8 +119,8 @@ class AiCardController extends GetxController {
 
       if (profile == null) {
         Get.snackbar(
-          'No saved profile',
-          'Save your profile first to use auto-fill.',
+          'ai_card_no_profile_title'.tr,
+          'ai_card_no_profile_message'.tr,
           snackPosition: SnackPosition.BOTTOM,
           margin: const EdgeInsets.all(15),
         );
@@ -146,8 +147,8 @@ class AiCardController extends GetxController {
 
     if (!canGenerate) {
       Get.snackbar(
-        'Nothing to generate from',
-        'Upload a reference image, pick a template, or describe your design.',
+        'ai_card_nothing_to_generate_title'.tr,
+        'ai_card_nothing_to_generate_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -239,7 +240,7 @@ class AiCardController extends GetxController {
       debugPrint('$stackTrace');
       debugPrint('=========================================================');
 
-      _fail('Could not generate the card. Please try again.');
+      _fail('ai_card_generate_failed_message'.tr);
     } finally {
       isGenerating.value = false;
     }
@@ -249,7 +250,7 @@ class AiCardController extends GetxController {
     errorMessage.value = message;
 
     Get.snackbar(
-      'Could not generate card',
+      'ai_card_generate_failed_title'.tr,
       message,
       snackPosition: SnackPosition.BOTTOM,
       margin: const EdgeInsets.all(15),
@@ -283,8 +284,8 @@ class AiCardController extends GetxController {
 
         if (!granted) {
           Get.snackbar(
-            'Permission needed',
-            'Allow photo/gallery access to save your card.',
+            'ai_card_permission_needed_title'.tr,
+            'ai_card_save_permission_message'.tr,
             snackPosition: SnackPosition.BOTTOM,
             margin: const EdgeInsets.all(15),
           );
@@ -304,8 +305,8 @@ class AiCardController extends GetxController {
       );
 
       Get.snackbar(
-        'Saved',
-        'Card saved to your gallery.',
+        'ai_card_saved_title'.tr,
+        'ai_card_saved_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -319,8 +320,8 @@ class AiCardController extends GetxController {
       debugPrint('GAL SAVE ERROR: ${e.type} - ${e.platformException}');
 
       Get.snackbar(
-        'Could not save',
-        'Something went wrong while saving to gallery.',
+        'ai_card_save_failed_title'.tr,
+        'ai_card_save_failed_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -335,8 +336,8 @@ class AiCardController extends GetxController {
       debugPrint('$st');
 
       Get.snackbar(
-        'Could not save',
-        'Something went wrong while saving to gallery.',
+        'ai_card_save_failed_title'.tr,
+        'ai_card_save_failed_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -366,7 +367,7 @@ class AiCardController extends GetxController {
       await Share.shareXFiles([
         XFile(card.frontImagePath),
         XFile(card.backImagePath),
-      ], text: 'Check out my AI-generated business card!');
+      ], text: 'ai_card_share_text'.tr);
       await CreditGate.spend(
         cost: exportCost,
         source: 'ai_card_export',
@@ -385,8 +386,8 @@ class AiCardController extends GetxController {
       debugPrint('$st');
 
       Get.snackbar(
-        'Could not share',
-        'Something went wrong while sharing the card.',
+        'ai_card_share_failed_title'.tr,
+        'ai_card_share_failed_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );

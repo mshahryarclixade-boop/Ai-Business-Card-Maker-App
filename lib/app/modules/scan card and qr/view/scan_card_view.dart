@@ -5,7 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // NEW (copy to clipboard)
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:path_provider/path_provider.dart';
@@ -20,6 +20,7 @@ import '../service/card_scanner_service.dart';
 import '../widgets/scan_bottom_controls.dart';
 import '../widgets/scan_frame_overlay.dart';
 import '../widgets/scan_segmented_toggle.dart';
+import '../../../core/translations/tr_extension.dart';
 
 enum _ScanMode { card, qr }
 
@@ -91,7 +92,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
       final cameras = await availableCameras();
       if (!mounted || _mode != _ScanMode.card) return;
       if (cameras.isEmpty) {
-        setState(() => _cameraError = 'No camera found on this device.');
+        setState(() => _cameraError = 'scan_no_camera'.tr);
         return;
       }
 
@@ -109,7 +110,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
       if (mounted) setState(() {});
     } catch (e) {
       if (mounted) {
-        setState(() => _cameraError = 'Camera access is needed to scan a card.');
+        setState(() => _cameraError = 'scan_camera_permission_needed'.tr);
       }
     }
   }
@@ -191,7 +192,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
       final data = await _scannerService.extractFromImage(savedPath);
       _goToCreateContact(data);
     } catch (e) {
-      _showError('Could not read that card. Please try again.');
+      _showError('scan_read_card_failed'.tr);
     } finally {
       if (mounted) setState(() => _isProcessing = false);
     }
@@ -216,7 +217,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
         final raw = await _readQrFromImage(picked.path);
         if (raw == null) {
           _showError(
-            'No QR code found in that image. Try a clearer picture where the whole QR code is visible.',
+            'scan_qr_not_found_in_image'.tr,
           );
         } else if (!_qrHandled) {
           _qrHandled = true;
@@ -227,7 +228,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
     } catch (e, stackTrace) {
       // Log the real reason: before, this catch swallowed every error.
       debugPrint('Gallery scan failed: $e\n$stackTrace');
-      _showError('Could not read that image. Please try again.');
+      _showError('scan_read_image_failed'.tr);
     } finally {
       if (mounted) setState(() => _isProcessing = false);
     }
@@ -360,10 +361,10 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
         Uri.parse(link),
         mode: LaunchMode.externalApplication,
       );
-      if (!ok) _showError('Could not open this link.');
+      if (!ok) _showError('scan_open_link_failed'.tr);
     } catch (e) {
       debugPrint('Could not open QR link: $e');
-      _showError('Could not open this link.');
+      _showError('scan_open_link_failed'.tr);
     }
   }
 
@@ -372,7 +373,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
     final link = _scannedLink;
     if (link == null) return;
     await Clipboard.setData(ClipboardData(text: link));
-    _showError('Link copied');
+    _showError('scan_link_copied'.tr);
   }
 
   // NEW: user closed the link card -> scan again.
@@ -408,7 +409,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
   }
 
   void _showError(String message) {
-    Get.snackbar('Scan', message, snackPosition: SnackPosition.BOTTOM);
+    Get.snackbar('scan_title'.tr, message, snackPosition: SnackPosition.BOTTOM);
   }
 
   // ---------------------------------------------------------------------
@@ -429,9 +430,9 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
               child: ScanSegmentedToggle<_ScanMode>(
                 selected: _mode,
                 onChanged: _switchMode,
-                options: const [
-                  ScanToggleOption(value: _ScanMode.card, label: 'Card', icon: Icons.badge_outlined),
-                  ScanToggleOption(value: _ScanMode.qr, label: 'QR Code', icon: Icons.qr_code),
+                options: [
+                  ScanToggleOption(value: _ScanMode.card, label: 'scan_mode_card'.tr, icon: Icons.badge_outlined),
+                  ScanToggleOption(value: _ScanMode.qr, label: 'scan_mode_qr'.tr, icon: Icons.qr_code),
                 ],
               ),
             ),
@@ -460,7 +461,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
           RoundIconButton(icon: Icons.arrow_back, onTap: () => Get.back()),
           Expanded(
             child: Text(
-              'Scan',
+              'scan_title'.tr,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
@@ -501,7 +502,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
   // NEW
   Widget _buildLinkCard(String link) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 8, 16),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 8, 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -514,9 +515,9 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
             children: [
               const Icon(Icons.link_rounded, size: 20, color: AppColors.primary),
               const SizedBox(width: 8),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Website link',
+                  'scan_website_link'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 13,
@@ -534,7 +535,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
             ],
           ),
           Padding(
-            padding: const EdgeInsets.only(right: 8, bottom: 14),
+            padding: const EdgeInsetsDirectional.only(end: 8, bottom: 14),
             child: Text(
               link,
               maxLines: 3,
@@ -548,7 +549,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsetsDirectional.only(end: 8),
             child: Row(
               children: [
                 Expanded(
@@ -562,7 +563,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Copy'),
+                    child: Text('scan_copy'.tr),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -578,7 +579,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Open'),
+                    child: Text('scan_open'.tr),
                   ),
                 ),
               ],
@@ -656,7 +657,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
           const SizedBox(height: 16),
           TextButton(
             onPressed: _initCamera,
-            child: const Text('Try Again', style: TextStyle(color: AppColors.primary)),
+            child: Text('scan_try_again'.tr, style: TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -669,9 +670,9 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
         width: 240,
         height: 240,
         isScanning: !_qrHandled,
-        statusText: _qrHandled ? 'QR code found' : 'Point at any QR code',
-        instructionText: 'Point at any QR code',
-        instructionSubtext: 'Works with business card QR codes and any standard QR',
+        statusText: _qrHandled ? 'scan_status_qr_found'.tr : 'scan_instruction_qr'.tr,
+        instructionText: 'scan_instruction_qr'.tr,
+        instructionSubtext: 'scan_instruction_qr_subtext'.tr,
       );
     }
 
@@ -687,15 +688,15 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
           child: ScanSegmentedToggle<_CardOrientation>(
             selected: _orientation,
             onChanged: (v) => setState(() => _orientation = v),
-            options: const [
+            options: [
               ScanToggleOption(
                 value: _CardOrientation.landscape,
-                label: 'Landscape',
+                label: 'scan_orientation_landscape'.tr,
                 icon: Icons.crop_landscape,
               ),
               ScanToggleOption(
                 value: _CardOrientation.portrait,
-                label: 'Portrait',
+                label: 'scan_orientation_portrait'.tr,
                 icon: Icons.crop_portrait,
               ),
             ],
@@ -705,8 +706,8 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
           width: frameWidth,
           height: frameHeight,
           isScanning: !_isProcessing,
-          statusText: _isProcessing ? 'Reading card...' : 'Auto-detecting card...',
-          instructionText: 'Place the business card within the frame',
+          statusText: _isProcessing ? 'scan_status_reading_card'.tr : 'scan_status_auto_detecting'.tr,
+          instructionText: 'scan_instruction_card'.tr,
         ),
       ],
     );

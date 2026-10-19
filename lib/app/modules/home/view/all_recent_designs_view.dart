@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/services/recent_designs_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../widgets/recent_design_card.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class AllRecentDesignsView extends StatelessWidget {
   const AllRecentDesignsView({super.key});
@@ -36,9 +37,9 @@ class AllRecentDesignsView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Recent Designs',
+                      'home_recent_designs_title'.tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
@@ -58,9 +59,9 @@ class AllRecentDesignsView extends StatelessWidget {
                 final list = service.designs;
 
                 if (list.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      'No recent designs yet',
+                      'home_recent_designs_empty'.tr,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 13,

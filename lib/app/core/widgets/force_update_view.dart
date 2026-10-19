@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/app_update_service.dart';
 import '../theme/app_colors.dart';
+import '../../core/translations/tr_extension.dart';
 
 class ForceUpdateView extends StatelessWidget {
   const ForceUpdateView({super.key});
@@ -24,8 +25,8 @@ class ForceUpdateView extends StatelessWidget {
                   color: AppColors.accent,
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Update required',
+                Text(
+                  'force_update_title'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 26,
@@ -34,9 +35,8 @@ class ForceUpdateView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'This version of the app is no longer supported. Please '
-                  'update to the latest version to continue.',
+                Text(
+                  'force_update_message'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
@@ -57,8 +57,8 @@ class ForceUpdateView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'Update Now',
+                    child: Text(
+                      'force_update_button'.tr,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,

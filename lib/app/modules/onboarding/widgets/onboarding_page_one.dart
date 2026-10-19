@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import 'onboarding_constrained.dart';
 import 'onboarding_feature_tile.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class OnboardingPageOne extends StatelessWidget {
   const OnboardingPageOne({super.key});
@@ -47,8 +48,8 @@ class OnboardingPageOne extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Your Card. Endless\nPossibilities.',
+              Text(
+                'onboarding_page1_heading'.tr,
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 35,

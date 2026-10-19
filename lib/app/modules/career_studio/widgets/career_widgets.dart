@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// Shared building blocks of the Career Studio screens (UI only).
 
 const kCareerPagePadding = EdgeInsets.symmetric(horizontal: 20);
 
+/// Display keys for the English goal ids used in the profile data.
+const kCareerGoalKeys = {
+  'Get hired': 'career_builder_goal_get_hired',
+  'Win clients': 'career_builder_goal_win_clients',
+  'Raise funding': 'career_builder_goal_raise_funding',
+  'Build authority': 'career_builder_goal_build_authority',
+};
+
 /// "Coming soon" notice for buttons whose backend isn't built yet.
 void careerComingSoon() => Get.snackbar(
-  'Coming soon',
-  'This feature is on its way.',
+  'career_coming_soon_title'.tr,
+  'career_coming_soon_message'.tr,
   snackPosition: SnackPosition.BOTTOM,
   margin: const EdgeInsets.all(15),
 );
@@ -31,7 +40,7 @@ class CareerAppBar extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: AlignmentDirectional.centerStart,
             child: IconButton(
               onPressed: () => Navigator.of(context).maybePop(),
               icon: const Icon(
@@ -39,7 +48,7 @@ class CareerAppBar extends StatelessWidget {
                 size: 24,
                 color: AppColors.titleDark,
               ),
-              padding: const EdgeInsets.only(left: 20),
+              padding: const EdgeInsetsDirectional.only(start: 20),
               constraints: const BoxConstraints(),
             ),
           ),
@@ -54,9 +63,9 @@ class CareerAppBar extends StatelessWidget {
           ),
           if (trailing != null)
             Align(
-              alignment: Alignment.centerRight,
+              alignment: AlignmentDirectional.centerEnd,
               child: Padding(
-                padding: const EdgeInsets.only(right: 20),
+                padding: const EdgeInsetsDirectional.only(end: 20),
                 child: trailing,
               ),
             ),
@@ -101,12 +110,18 @@ class CareerPrimaryButton extends StatelessWidget {
               Icon(icon, size: 18),
               const SizedBox(width: 8),
             ],
-            Text(
-              label,
-              style: const TextStyle(
-                fontFamily: AppTextStyles.fontFamily,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontFamily: AppTextStyles.fontFamily,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ],

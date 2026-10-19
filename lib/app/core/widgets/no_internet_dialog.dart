@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../../core/translations/tr_extension.dart';
 
 // ---------------------------------------------------------------------------
 
@@ -90,8 +91,8 @@ class _NoInternetDialogState extends State<NoInternetDialog> {
                     color: AppColors.titleDark,
                   ),
                   const SizedBox(height: 6),
-                  const Text(
-                    'No Internet',
+                  Text(
+                    'no_internet_title'.tr,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 20,
@@ -102,8 +103,8 @@ class _NoInternetDialogState extends State<NoInternetDialog> {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  const Text(
-                    'Please check your internet and try again',
+                  Text(
+                    'no_internet_message'.tr,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
@@ -116,8 +117,8 @@ class _NoInternetDialogState extends State<NoInternetDialog> {
                   ),
                   if (_stillOffline) ...[
                     const SizedBox(height: 6),
-                    const Text(
-                      'Still no connection',
+                    Text(
+                      'no_internet_still_offline'.tr,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 12,
@@ -147,8 +148,8 @@ class _NoInternetDialogState extends State<NoInternetDialog> {
                               ),
                             ),
                           ),
-                          child: const Text(
-                            'Close',
+                          child: Text(
+                            'no_internet_close'.tr,
                             style: TextStyle(
                               fontFamily: AppTextStyles.fontFamily,
                               fontSize: 13,
@@ -178,21 +179,21 @@ class _NoInternetDialogState extends State<NoInternetDialog> {
                           ),
                           child: _retrying
                               ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                              : const Text(
-                            'Retry',
-                            style: TextStyle(
-                              fontFamily: AppTextStyles.fontFamily,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(
+                                  'no_internet_retry'.tr,
+                                  style: TextStyle(
+                                    fontFamily: AppTextStyles.fontFamily,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                         ),
                       ),
                     ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../controller/business_details_controller.dart';
@@ -7,6 +7,7 @@ import '../widgets/business_logo_widgets.dart';
 import '../widgets/profile_fields.dart';
 import '../widgets/profile_primary_button.dart';
 import '../widgets/profile_step_header.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class BusinessDetailsView extends GetView<BusinessDetailsController> {
   const BusinessDetailsView({super.key});
@@ -33,8 +34,8 @@ class BusinessDetailsView extends GetView<BusinessDetailsController> {
                     children: [
                       const ProfileStepHeader(step: 2),
                       const SizedBox(height: 24),
-                      const Text(
-                        'Introduce your work.',
+                      Text(
+                        'profile_setup_business_title'.tr,
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 40,
@@ -46,16 +47,16 @@ class BusinessDetailsView extends GetView<BusinessDetailsController> {
                       ),
                       const SizedBox(height: 26),
                       ProfileTextField(
-                        label: 'Company name',
-                        hint: 'Clixade',
+                        label: 'profile_setup_business_company_name'.tr,
+                        hint: 'profile_setup_business_company_hint'.tr,
                         controller: controller.companyController,
                         textInputAction: TextInputAction.next,
                         textCapitalization: TextCapitalization.words,
                       ),
                       const SizedBox(height: 28),
                       ProfileTextField(
-                        label: 'Designation',
-                        hint: 'Product Designer',
+                        label: 'profile_setup_business_designation'.tr,
+                        hint: 'profile_setup_business_designation_hint'.tr,
                         controller: controller.designationController,
                         textInputAction: TextInputAction.next,
                         textCapitalization: TextCapitalization.words,
@@ -69,7 +70,7 @@ class BusinessDetailsView extends GetView<BusinessDetailsController> {
                             Expanded(
                               child: LogoOptionCard(
                                 icon: Icons.add_photo_alternate_outlined,
-                                label: 'Upload from gallery',
+                                label: 'profile_setup_business_upload_gallery'.tr,
                                 selected:
                                 controller.mode.value == LogoMode.gallery,
                                 onTap: controller.pickFromGallery,
@@ -79,7 +80,7 @@ class BusinessDetailsView extends GetView<BusinessDetailsController> {
                             Expanded(
                               child: LogoOptionCard(
                                 icon: Icons.language_rounded,
-                                label: 'Company Website',
+                                label: 'profile_setup_business_logo_website'.tr,
                                 selected:
                                 controller.mode.value == LogoMode.website,
                                 onTap: controller.selectWebsite,
@@ -103,8 +104,8 @@ class BusinessDetailsView extends GetView<BusinessDetailsController> {
                             ),
                             const SizedBox(height: 20),
                             ProfileTextField(
-                              label: 'Company website',
-                              hint: 'https://yourcompany.com',
+                              label: 'profile_setup_business_website_label'.tr,
+                              hint: 'profile_setup_business_website_hint'.tr,
                               controller: controller.websiteController,
                               focusNode: controller.websiteFocus,
                               keyboardType: TextInputType.url,
@@ -146,7 +147,7 @@ class BusinessDetailsView extends GetView<BusinessDetailsController> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                 child: ProfilePrimaryButton(
-                  label: 'Create my first card',
+                  label: 'profile_setup_business_create_card'.tr,
                   onTap: controller.onCreateCard,
                 ),
               ),
@@ -164,8 +165,8 @@ class _LogoLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text.rich(
-      const TextSpan(
-        text: 'Company logo',
+      TextSpan(
+        text: 'profile_setup_business_logo_label'.tr,
         style: TextStyle(
           fontFamily: 'Inter',
           fontSize: 20,
@@ -175,7 +176,7 @@ class _LogoLabel extends StatelessWidget {
         ),
         children: [
           TextSpan(
-            text: ' . Optional',
+            text: 'profile_setup_business_optional'.tr,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w400,

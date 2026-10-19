@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -12,6 +12,7 @@ import '../widgets/contact_info_card.dart';
 import 'add_contact_view.dart';
 import '../widgets/info_row.dart';
 import '../widgets/photo_header.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class ContactDetailView extends StatelessWidget {
   final ContactModel contact;
@@ -170,8 +171,7 @@ class ContactDetailView extends StatelessWidget {
                               size: 20,
                               color: Colors.red,
                             ),
-                            label: const Text(
-                              'Delete Contact',
+                            label: Text('contacts_delete_contact'.tr,
                               style: TextStyle(
                                 fontFamily: AppTextStyles.fontFamily,
                                 fontSize: 14,

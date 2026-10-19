@@ -1,9 +1,10 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../routes/app_routes.dart';
 import '../service/profile_store.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class ProfileSetupController extends GetxController {
   final fullNameController = TextEditingController();
@@ -48,7 +49,7 @@ class ProfileSetupController extends GetxController {
     var ok = true;
 
     if (fullName.isEmpty) {
-      nameError.value = 'Please enter your full name';
+      nameError.value = 'profile_setup_error_full_name'.tr;
       ok = false;
     }
 
@@ -57,16 +58,16 @@ class ProfileSetupController extends GetxController {
     final hasPhone = number.isNotEmpty;
 
     if (!hasEmail && !hasPhone) {
-      emailError.value = 'Add an email or a phone number';
-      phoneError.value = 'Add an email or a phone number';
+      emailError.value = 'profile_setup_error_email_or_phone'.tr;
+      phoneError.value = 'profile_setup_error_email_or_phone'.tr;
       ok = false;
     } else {
       if (hasEmail && !_emailRegex.hasMatch(email)) {
-        emailError.value = 'Enter a valid email address';
+        emailError.value = 'profile_setup_error_email_invalid'.tr;
         ok = false;
       }
       if (hasPhone && number.replaceAll(RegExp(r'\D'), '').length < 6) {
-        phoneError.value = 'Enter a valid phone number';
+        phoneError.value = 'profile_setup_error_phone_invalid'.tr;
         ok = false;
       }
     }

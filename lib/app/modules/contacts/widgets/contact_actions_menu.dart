@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../model/contact_model.dart';
 import '../service/contact_export_service.dart';
+import '../../../core/translations/tr_extension.dart';
 
 enum _ContactAction { saveToDevice, share }
 
@@ -38,14 +39,14 @@ class ContactActionsMenu extends StatelessWidget {
             break;
         }
       },
-      itemBuilder: (_) => const [
+      itemBuilder: (_) => [
         PopupMenuItem(
           value: _ContactAction.saveToDevice,
-          child: _MenuRow(icon: Icons.save_alt_rounded, label: 'Save to device'),
+          child: _MenuRow(icon: Icons.save_alt_rounded, label: 'contacts_menu_save_to_device'.tr),
         ),
         PopupMenuItem(
           value: _ContactAction.share,
-          child: _MenuRow(icon: Icons.share_outlined, label: 'Share'),
+          child: _MenuRow(icon: Icons.share_outlined, label: 'contacts_share'.tr),
         ),
       ],
     );
@@ -64,13 +65,15 @@ class _MenuRow extends StatelessWidget {
       children: [
         Icon(icon, size: 20, color: AppColors.primary),
         const SizedBox(width: 12),
-        Text(
-          label,
-          style: const TextStyle(
-            fontFamily: AppTextStyles.fontFamily,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.contactsTitleDark,
+        Flexible(
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontFamily: AppTextStyles.fontFamily,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppColors.contactsTitleDark,
+            ),
           ),
         ),
       ],

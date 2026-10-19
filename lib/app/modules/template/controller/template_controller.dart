@@ -4,13 +4,14 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:get_storage/get_storage.dart';
 
 import '../../custom_create/view/card_editor_view.dart';
 import '../../profile/model/profile_model.dart';
 import '../../profile/service/profile_repository.dart';
 import '../model/template_item.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class TemplateController extends GetxController {
   // 0 = Horizontal, 1 = Vertical, 2 = Saved
@@ -37,6 +38,27 @@ class TemplateController extends GetxController {
     'Care',
     'Real Estate',
   ];
+
+  /// Display label for a category / tag. The English value stays the
+  /// identity used for filtering and asset lookup.
+  static const Map<String, String> _categoryKeys = {
+    'All': 'template_category_all',
+    'Travel': 'template_category_travel',
+    'Spa & Care': 'template_category_spa_care',
+    'Sports & Games': 'template_category_sports_games',
+    'Real Estate': 'template_category_real_estate',
+    'Spa': 'template_category_spa',
+    'Events': 'template_category_events',
+    'Sports': 'template_category_sports',
+    'Games': 'template_category_games',
+    'Fitness': 'template_category_fitness',
+    'Care': 'template_category_care',
+  };
+
+  String categoryLabel(String category) {
+    final key = _categoryKeys[category];
+    return key == null ? category : key.tr;
+  }
 
   final TextEditingController searchController = TextEditingController();
 
@@ -272,8 +294,8 @@ class TemplateController extends GetxController {
 
       if (profile == null) {
         Get.snackbar(
-          'No saved profile',
-          'Save your profile first to use auto-fill.',
+          'template_no_profile_title'.tr,
+          'template_no_profile_message'.tr,
           snackPosition: SnackPosition.BOTTOM,
           margin: const EdgeInsets.all(15),
         );

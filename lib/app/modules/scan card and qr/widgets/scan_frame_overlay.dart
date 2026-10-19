@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/translations/tr_extension.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -13,7 +14,7 @@ class ScanFrameOverlay extends StatelessWidget {
   /// something has been captured and we're processing it.
   final bool isScanning;
 
-  final String statusText;
+  final String? statusText;
   final String instructionText;
   final String? instructionSubtext;
 
@@ -24,7 +25,7 @@ class ScanFrameOverlay extends StatelessWidget {
     required this.instructionText,
     this.instructionSubtext,
     this.isScanning = true,
-    this.statusText = 'Auto-detecting card...',
+    this.statusText,
   });
 
   @override
@@ -70,7 +71,7 @@ class ScanFrameOverlay extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            statusText,
+            statusText ?? 'scan_status_auto_detecting'.tr,
             style: const TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 12,

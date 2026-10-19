@@ -3,13 +3,14 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/share_origin.dart';
+import '../translations/tr_extension.dart';
 
 /// This app's Play Store / App Store listing: opened for updates and ratings,
 /// and shared by "Share App".
@@ -81,18 +82,16 @@ abstract final class StoreLinks {
     try {
       final link = await listingUri();
       final text = link == null
-          ? 'Check out AI Business Card Maker - create and share your '
-                'digital business card.'
-          : 'Check out AI Business Card Maker - create and share your '
-                'digital business card:\n$link';
+          ? 'store_share_text'.tr
+          : 'store_share_text_with_link'.trParams({'link': link});
       await SharePlus.instance.share(
         ShareParams(text: text, sharePositionOrigin: origin),
       );
     } catch (e) {
       log('Could not share app: $e', name: 'StoreLinks');
       Get.snackbar(
-        'Could not share',
-        'Please try again.',
+        'store_share_failed_title'.tr,
+        'store_share_failed_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -100,8 +99,8 @@ abstract final class StoreLinks {
   }
 
   static void _notAvailable() => Get.snackbar(
-    'Not available yet',
-    'The store listing could not be opened right now.',
+    'store_not_available_title'.tr,
+    'store_not_available_message'.tr,
     snackPosition: SnackPosition.BOTTOM,
     margin: const EdgeInsets.all(15),
   );

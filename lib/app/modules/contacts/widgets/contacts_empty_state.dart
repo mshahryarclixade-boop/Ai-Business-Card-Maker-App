@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import 'pill_button.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class ContactsEmptyState extends StatelessWidget {
   final VoidCallback onAddManually;
@@ -28,8 +29,7 @@ class ContactsEmptyState extends StatelessWidget {
               height: 55,
             ),
             const SizedBox(height: 10),
-            const Text(
-              'No Contacts Yet',
+            Text('contacts_empty_title'.tr,
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
                 fontSize: 18,
@@ -38,8 +38,7 @@ class ContactsEmptyState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 3),
-            const Text(
-              'Scan a business card or add manually',
+            Text('contacts_empty_subtitle'.tr,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
@@ -52,17 +51,17 @@ class ContactsEmptyState extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                PillButton(
+                Flexible(child: PillButton(
                   icon: Icons.document_scanner_outlined,
-                  label: 'Scan Card',
+                  label: 'contacts_scan_card'.tr,
                   onTap: onScanCard,
-                ),
+                )),
                 const SizedBox(width: 12),
-                PillButton(
+                Flexible(child: PillButton(
                   icon: Icons.edit,
-                  label: 'Add Manually',
+                  label: 'contacts_add_manually'.tr,
                   onTap: onAddManually,
-                ),
+                )),
               ],
             ),
           ],

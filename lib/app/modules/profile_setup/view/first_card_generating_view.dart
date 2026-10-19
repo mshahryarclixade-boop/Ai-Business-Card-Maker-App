@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../controller/first_card_controller.dart';
 import '../widgets/first_card_widgets.dart';
 import '../widgets/profile_primary_button.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class FirstCardGeneratingView extends GetView<FirstCardController> {
   const FirstCardGeneratingView({super.key});
@@ -22,8 +23,8 @@ class FirstCardGeneratingView extends GetView<FirstCardController> {
           child: Column(
             children: [
               const SizedBox(height: 28),
-              const Text(
-                'A Little Magic in progress',
+              Text(
+                'profile_setup_generating_eyebrow'.tr,
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 20,
@@ -34,10 +35,10 @@ class FirstCardGeneratingView extends GetView<FirstCardController> {
                 ),
               ),
               const SizedBox(height: 12),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  'Preparing Your\nFirst Card',
+                  'profile_setup_generating_title'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Inter',
@@ -94,14 +95,14 @@ class _ProgressRows extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _StepRow(
-            text: 'Your Personal details added',
+            text: 'profile_setup_generating_personal_done'.tr,
             done: personal,
             active: personalActive,
           ),
           if (hasCompany) ...[
             const SizedBox(height: 22),
             _StepRow(
-              text: 'Your Company details added',
+              text: 'profile_setup_generating_company_done'.tr,
               done: company,
               active: companyActive,
             ),
@@ -109,8 +110,8 @@ class _ProgressRows extends StatelessWidget {
           const SizedBox(height: 22),
           _StepRow(
             text: creating
-                ? 'Your first design is ready'
-                : 'Creating your first design...',
+                ? 'profile_setup_generating_design_ready'.tr
+                : 'profile_setup_generating_design_creating'.tr,
             done: creating,
             active: creatingActive,
             highlight: true,
@@ -174,8 +175,8 @@ class _FailureBlock extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Your details are saved.',
+          Text(
+            'profile_setup_generating_details_saved'.tr,
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 14,
@@ -185,15 +186,15 @@ class _FailureBlock extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ProfilePrimaryButton(
-            label: 'Try Again',
+            label: 'profile_setup_generating_try_again'.tr,
             showArrow: false,
             onTap: controller.tryAgain,
           ),
           const SizedBox(height: 8),
           TextButton(
             onPressed: controller.useFreeTemplate,
-            child: const Text(
-              'Use a Free Template',
+            child: Text(
+              'profile_setup_generating_use_template'.tr,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 18,

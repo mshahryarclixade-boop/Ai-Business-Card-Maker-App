@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// Two-segment sliding pill selector used for "Saved | Favorite".
 class PillTabSelector extends StatelessWidget {
   final int selectedIndex; // 0 or 1
-  final List<String> labels;
+  final List<String>? labels;
   final ValueChanged<int> onChanged;
 
   const PillTabSelector({
     super.key,
     required this.selectedIndex,
     required this.onChanged,
-    this.labels = const ['Saved', 'Favorite'],
+    this.labels,
   });
 
   @override
   Widget build(BuildContext context) {
+    final labels = this.labels ??
+        ['pill_tab_saved'.tr, 'pill_tab_favorite'.tr];
     return Container(
       height: 44,
       padding: const EdgeInsets.all(4),

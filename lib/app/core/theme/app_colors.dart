@@ -150,4 +150,5 @@ class AppColors {
   static const Color crownGold = Color(0xFFFFC94A);
 
   static const Color cardShadow = Color(0x1A000000);
+  static const Color lightpurple = Color(0xFF8C88FF);
 }

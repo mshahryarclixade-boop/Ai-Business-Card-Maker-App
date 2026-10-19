@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../routes/app_routes.dart';
 import '../../profile_setup/service/profile_store.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// Shown on Home in place of the card preview while the user has no card
 /// (for example after tapping "I'll do it later" in onboarding).
@@ -20,7 +21,7 @@ class CreateFirstCardSection extends StatelessWidget {
           final name = ProfileStore.to.profile.value.fullName.trim();
           final first = name.isEmpty ? '' : name.split(' ').first;
           return Text(
-            first.isEmpty ? 'Welcome' : 'Welcome, $first',
+            first.isEmpty ? 'home_welcome'.tr : 'home_welcome_name'.trParams({'name': first}),
             style: const TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 20,
@@ -57,8 +58,8 @@ class CreateFirstCardSection extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Your business card will appear here',
+                Text(
+                  'home_first_card_placeholder_title'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
@@ -68,8 +69,8 @@ class CreateFirstCardSection extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  'Add your details and AI will design it for you',
+                Text(
+                  'home_first_card_placeholder_subtitle'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
@@ -89,8 +90,8 @@ class CreateFirstCardSection extends StatelessWidget {
             // toNamed (not offAllNamed) so Back returns to Home.
             onPressed: () => Get.toNamed(Routes.PERSONAL_DETAILS),
             icon: const Icon(Icons.auto_awesome, size: 16),
-            label: const Text(
-              'Create Your First Card',
+            label: Text(
+              'home_first_card_create_button'.tr,
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
                 fontSize: 14,

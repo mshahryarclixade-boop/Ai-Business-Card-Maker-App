@@ -3,6 +3,7 @@ import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../controller/template_controller.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class TemplateSearchBar extends StatelessWidget {
   final TemplateController controller;
@@ -43,10 +44,10 @@ class TemplateSearchBar extends StatelessWidget {
                   fontSize: 14,
                   color: AppColors.titleDark,
                 ),
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   isCollapsed: true,
                   border: InputBorder.none,
-                  hintText: 'Search by style or profession...',
+                  hintText: 'template_search_hint'.tr,
                   hintStyle: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 14,

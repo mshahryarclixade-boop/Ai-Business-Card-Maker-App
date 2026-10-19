@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import 'onboarding_constrained.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class OnboardingBottomActions extends StatelessWidget {
   const OnboardingBottomActions({
@@ -38,18 +39,24 @@ class OnboardingBottomActions extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'Create my Profile',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        height: 22 / 18,
-                        letterSpacing: 0,
-                        color: AppColors.white,
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'onboarding_create_profile'.tr,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            height: 22 / 18,
+                            letterSpacing: 0,
+                            color: AppColors.white,
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(width: 10),
@@ -63,10 +70,10 @@ class OnboardingBottomActions extends StatelessWidget {
             GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: onSecondary,
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                 child: Text(
-                  'I’ll do it later',
+                  'onboarding_do_it_later'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'SF Pro',

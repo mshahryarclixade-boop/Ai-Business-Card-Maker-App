@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
+import '../../core/translations/tr_extension.dart';
 
 class SocialPlatform {
   final String name;
@@ -118,7 +119,7 @@ class _PlatformPickerSheet extends StatelessWidget {
           builder: (context, constraints) {
             final itemWidth =
                 (constraints.maxWidth - (_spacing * (_itemsPerRow - 1))) /
-                    _itemsPerRow;
+                _itemsPerRow;
 
             return Wrap(
               spacing: _spacing,
@@ -126,28 +127,28 @@ class _PlatformPickerSheet extends StatelessWidget {
               children: kSocialPlatforms
                   .map(
                     (p) => SizedBox(
-                  width: itemWidth,
-                  child: InkWell(
-                    onTap: () => Navigator.pop(context, p),
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          p.imagePath,
-                          width: 36,
-                          height: 36,
-                          fit: BoxFit.contain,
+                      width: itemWidth,
+                      child: InkWell(
+                        onTap: () => Navigator.pop(context, p),
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              p.imagePath,
+                              width: 36,
+                              height: 36,
+                              fit: BoxFit.contain,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              p.name,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 6),
-                        Text(
-                          p.name,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 11),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              )
+                  )
                   .toList(),
             );
           },
@@ -216,8 +217,8 @@ class _LinkUrlSheetState extends State<_LinkUrlSheet> {
               textInputAction: TextInputAction.done,
               onSubmitted: (v) => Navigator.pop(context, v),
               decoration: InputDecoration(
-                labelText: 'URL',
-                hintText: 'Enter link here',
+                labelText: 'add_link_url_label'.tr,
+                hintText: 'add_link_url_hint'.tr,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -233,7 +234,7 @@ class _LinkUrlSheetState extends State<_LinkUrlSheet> {
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Add'),
+                child: Text('add_link_add_button'.tr),
               ),
             ),
           ],

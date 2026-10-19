@@ -1,11 +1,12 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../profile_setup/service/profile_store.dart';
 import '../model/contact_model.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// Opens the phone's messaging and mail apps with an editable draft.
 class ContactFollowUpService {
@@ -41,10 +42,13 @@ class ContactFollowUpService {
   static String draft(ContactModel c) {
     final to = c.firstName.trim();
     final me = ProfileStore.to.profile.value.fullName.trim();
-    final hello = to.isEmpty ? 'Hi,' : 'Hi $to,';
-    final bye = me.isEmpty ? '' : '\n\nBest regards,\n$me';
-    return '$hello\n\nIt was great meeting you. '
-        'I would love to stay in touch.$bye';
+    final hello = to.isEmpty
+        ? 'contacts_followup_greeting_anonymous'.tr
+        : 'contacts_followup_greeting'.trParams({'name': to});
+    final bye = me.isEmpty
+        ? ''
+        : 'contacts_followup_sign_off'.trParams({'name': me});
+    return 'contacts_followup_body'.trParams({'greeting': hello}) + bye;
   }
 
   static Future<void> sendSms(ContactModel c) async {
@@ -67,7 +71,7 @@ class ContactFollowUpService {
   static Future<void> sendEmail(ContactModel c) async {
     final address = email(c);
     if (address == null) return;
-    final subject = Uri.encodeComponent('Nice to meet you');
+    final subject = Uri.encodeComponent('contacts_followup_subject'.tr);
     final body = Uri.encodeComponent(draft(c));
     await _open(Uri.parse('mailto:$address?subject=$subject&body=$body'));
   }
@@ -83,8 +87,8 @@ class ContactFollowUpService {
 
   static void _fail() {
     Get.snackbar(
-      'Could not open',
-      'No app was found for this action.',
+      'contacts_open_failed_title'.tr,
+      'contacts_open_failed_message'.tr,
       snackPosition: SnackPosition.BOTTOM,
       margin: const EdgeInsets.all(15),
     );

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import '../../../core/utils/app_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../controller/card_editor_controller.dart';
 import '../controller/card_editor_symbols_controller_ext.dart';
 import '../model/card_element_model.dart';
 import 'image_mask_clipper.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class CardCanvas extends StatelessWidget {
   final CardEditorController controller;
@@ -20,41 +21,44 @@ class CardCanvas extends StatelessWidget {
     return Obx(() {
       final size = controller.orientation.value.canvasSize;
 
-      return RepaintBoundary(
-        key: repaintKey,
-        child: GestureDetector(
-          onTap: () => controller.selectElement(null),
-          child: Container(
-            width: size.width,
-            height: size.height,
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-              color: controller.backgroundColor.value,
-              borderRadius: BorderRadius.circular(1),
-              image: controller.backgroundImage.value != null
-                  ? DecorationImage(
-                image: FileImage(controller.backgroundImage.value!),
-                fit: BoxFit.cover,
-              )
-                  : controller.backgroundTemplate.value != null
-                  ? DecorationImage(
-                image: AssetImage(controller.backgroundTemplate.value!),
-                fit: BoxFit.cover,
-              )
-                  : null,
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x33000000),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Stack(
-              children: [
-                for (final el in controller.elements)
-                  CanvasElementWidget(controller: controller, element: el),
-              ],
+      return Directionality(
+        textDirection: TextDirection.ltr, // cards always render left-to-right
+        child: RepaintBoundary(
+          key: repaintKey,
+          child: GestureDetector(
+            onTap: () => controller.selectElement(null),
+            child: Container(
+              width: size.width,
+              height: size.height,
+              clipBehavior: Clip.hardEdge,
+              decoration: BoxDecoration(
+                color: controller.backgroundColor.value,
+                borderRadius: BorderRadius.circular(1),
+                image: controller.backgroundImage.value != null
+                    ? DecorationImage(
+                        image: FileImage(controller.backgroundImage.value!),
+                        fit: BoxFit.cover,
+                      )
+                    : controller.backgroundTemplate.value != null
+                    ? DecorationImage(
+                        image: AssetImage(controller.backgroundTemplate.value!),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x33000000),
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Stack(
+                children: [
+                  for (final el in controller.elements)
+                    CanvasElementWidget(controller: controller, element: el),
+                ],
+              ),
             ),
           ),
         ),
@@ -77,16 +81,17 @@ class CanvasElementWidget extends StatelessWidget {
   /// legacy emoji symbol, which keeps its old text-based rendering).
   bool get _isIconSticker =>
       element.type == CardElementType.symbol &&
-          (element.iconData != null || element.iconAsset != null);
+      (element.iconData != null || element.iconAsset != null);
 
-  static const double _pad = 20;  // room around the element for corner buttons
-  static const double _hit = 32;  // tappable size of the ✕ / resize buttons
+  static const double _pad = 20; // room around the element for corner buttons
+  static const double _hit = 32; // tappable size of the ✕ / resize buttons
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       // Hidden while the canvas is being captured for saving.
-      final isSelected = !controller.isCapturing.value &&
+      final isSelected =
+          !controller.isCapturing.value &&
           controller.selectedElementId.value == element.id;
       final canvasSize = controller.orientation.value.canvasSize;
       final onFront = controller.currentSide.value == 0;
@@ -105,17 +110,28 @@ class CanvasElementWidget extends StatelessWidget {
                 onTap: () => controller.selectElement(element.id),
                 onDoubleTap: element.type == CardElementType.text
                     ? () {
-                  controller.selectElement(element.id); // pehle isay select karo
-                  _editTextContent(context);
-                }
+                        controller.selectElement(
+                          element.id,
+                        ); // pehle isay select karo
+                        _editTextContent(context);
+                      }
                     : null,
                 onPanStart: (_) => controller.startDrag(element.id),
                 onPanUpdate: (details) {
                   final size = _elementSize();
                   var next = element.position + details.delta;
                   next = Offset(
-                    next.dx.clamp(0, (canvasSize.width - size.width).clamp(0, double.infinity)),
-                    next.dy.clamp(0, (canvasSize.height - size.height).clamp(0, double.infinity)),
+                    next.dx.clamp(
+                      0,
+                      (canvasSize.width - size.width).clamp(0, double.infinity),
+                    ),
+                    next.dy.clamp(
+                      0,
+                      (canvasSize.height - size.height).clamp(
+                        0,
+                        double.infinity,
+                      ),
+                    ),
                   );
                   controller.updateDragPosition(element.id, next);
                 },
@@ -152,8 +168,11 @@ class CanvasElementWidget extends StatelessWidget {
                           color: Colors.redAccent,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.close_rounded,
-                            size: 14, color: Colors.white),
+                        child: const Icon(
+                          Icons.close_rounded,
+                          size: 14,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -219,8 +238,11 @@ class CanvasElementWidget extends StatelessWidget {
                           color: AppColors.primary,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.open_in_full_rounded,
-                            size: 13, color: Colors.white),
+                        child: const Icon(
+                          Icons.open_in_full_rounded,
+                          size: 13,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -235,8 +257,10 @@ class CanvasElementWidget extends StatelessWidget {
   Size _elementSize() {
     switch (element.type) {
       case CardElementType.text:
-        return Size(element.text.length * element.fontSize * 0.55 + 8,
-            element.fontSize + 12);
+        return Size(
+          element.text.length * element.fontSize * 0.55 + 8,
+          element.fontSize + 12,
+        );
       case CardElementType.image:
       case CardElementType.symbol:
         return Size(element.width, element.height);
@@ -251,7 +275,9 @@ class CanvasElementWidget extends StatelessWidget {
           return const SizedBox.shrink();
         }
         return Text(
-          element.text.isEmpty ? 'Double tap to edit' : element.text,
+          element.text.isEmpty
+              ? 'custom_create_double_tap_to_edit'.tr
+              : element.text,
           style: AppFonts.textStyle(
             element.fontFamily,
             fontSize: element.fontSize,
@@ -262,7 +288,7 @@ class CanvasElementWidget extends StatelessWidget {
         );
 
       case CardElementType.image:
-      // Bundled asset image (template logo)
+        // Bundled asset image (template logo)
         if (element.imageAsset != null) {
           return Image.asset(
             element.imageAsset!,
@@ -282,13 +308,20 @@ class CanvasElementWidget extends StatelessWidget {
         );
         return element.imageMask == CardImageMask.none
             ? ClipRRect(borderRadius: BorderRadius.circular(6), child: image)
-            : ClipPath(clipper: ImageMaskClipper(element.imageMask), child: image);
+            : ClipPath(
+                clipper: ImageMaskClipper(element.imageMask),
+                child: image,
+              );
 
       case CardElementType.symbol:
         if (element.iconData != null) {
           return Opacity(
             opacity: element.opacity,
-            child: Icon(element.iconData, size: element.height, color: element.tintColor),
+            child: Icon(
+              element.iconData,
+              size: element.height,
+              color: element.tintColor,
+            ),
           );
         }
         if (element.iconAsset != null) {
@@ -315,7 +348,7 @@ class CanvasElementWidget extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Edit text'),
+        title: Text('custom_create_edit_text_title'.tr),
         content: TextField(
           controller: textController,
           autofocus: true,
@@ -324,7 +357,7 @@ class CanvasElementWidget extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text('custom_create_cancel'.tr),
           ),
           TextButton(
             onPressed: () {
@@ -332,7 +365,7 @@ class CanvasElementWidget extends StatelessWidget {
               controller.updateSelectedText(text: textController.text);
               Navigator.of(context).pop();
             },
-            child: const Text('Done'),
+            child: Text('custom_create_done'.tr),
           ),
         ],
       ),

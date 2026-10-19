@@ -44,9 +44,9 @@ class TemplateCard extends StatelessWidget {
               ),
             ),
             if (item.isPremium)
-              Positioned(
+              PositionedDirectional(
                 bottom: 8,
-                right: 8,
+                end: 8,
                 child: Container(
                   padding: const EdgeInsets.all(5),
                   decoration: const BoxDecoration(
@@ -56,9 +56,9 @@ class TemplateCard extends StatelessWidget {
                   child: const FaIcon(FontAwesomeIcons.crown, size: 12, color: Color(0xFFF5A623)),
                 ),
               ),
-            Positioned(
+            PositionedDirectional(
               top: 8,
-              right: 8,
+              end: 8,
               child: GestureDetector(
                 onTap: onHeartTap,
                 child: Container(

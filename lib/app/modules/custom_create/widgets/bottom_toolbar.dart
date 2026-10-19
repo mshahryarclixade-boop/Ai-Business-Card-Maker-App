@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../controller/card_editor_controller.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// Bottom toolbar: Text, QR code, Background, Image, Symbols.
 class BottomToolbar extends StatelessWidget {
@@ -24,31 +25,31 @@ class BottomToolbar extends StatelessWidget {
           children: [
             ToolbarIcon(
               asset: 'assets/icons/text.png',
-              label: 'Text',
+              label: 'custom_create_toolbar_text'.tr,
               active: controller.activeTool.value == CardTool.text,
               onTap: () => controller.selectTool(CardTool.text),
             ),
             ToolbarIcon(
               asset: 'assets/icons/qrcode.png',
-              label: 'QR code',
+              label: 'custom_create_toolbar_qr_code'.tr,
               active: controller.activeTool.value == CardTool.qr,
               onTap: () => controller.selectTool(CardTool.qr),
             ),
             ToolbarIcon(
               asset: 'assets/icons/background.png',
-              label: 'Background',
+              label: 'custom_create_toolbar_background'.tr,
               active: controller.activeTool.value == CardTool.background,
               onTap: () => controller.selectTool(CardTool.background),
             ),
             ToolbarIcon(
               asset: 'assets/icons/image.png',
-              label: 'Image',
+              label: 'custom_create_toolbar_image'.tr,
               active: controller.activeTool.value == CardTool.image,
               onTap: () => controller.selectTool(CardTool.image),
             ),
             ToolbarIcon(
               asset: 'assets/icons/symbol.png',
-              label: 'Symbols',
+              label: 'custom_create_toolbar_symbols'.tr,
               active: controller.activeTool.value == CardTool.symbols,
               onTap: () => controller.selectTool(CardTool.symbols),
             ),

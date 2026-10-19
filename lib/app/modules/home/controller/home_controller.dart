@@ -5,7 +5,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import '../../../core/services/connectivity_service.dart';
 import '../../../core/services/gemini_card_service.dart';
 import '../../../core/services/notification_service.dart';
@@ -21,6 +21,7 @@ import '../../profile_setup/service/profile_store.dart';
 import '../../template/controller/template_controller.dart';
 import '../../template/model/template_item.dart';
 import '../../template/model/template_live_data.dart';
+import '../../../core/translations/tr_extension.dart';
 // import '../../../core/widgets/rate_app_dialog.dart';
 
 class HomeController extends GetxController {
@@ -178,8 +179,8 @@ class HomeController extends GetxController {
       );
 
       Get.snackbar(
-        'Template applied',
-        'Your card was updated.',
+        'home_template_applied_title'.tr,
+        'home_template_applied_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -192,8 +193,8 @@ class HomeController extends GetxController {
       debugPrint('Apply live template error: $e');
       debugPrintStack(stackTrace: st);
       Get.snackbar(
-        'Could not apply template',
-        'Please try again.',
+        'home_template_apply_failed_title'.tr,
+        'home_try_again'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -230,8 +231,8 @@ class HomeController extends GetxController {
       );
 
       Get.snackbar(
-        'Template applied',
-        'Your card was updated.',
+        'home_template_applied_title'.tr,
+        'home_template_applied_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -244,7 +245,7 @@ class HomeController extends GetxController {
       debugPrint('Apply template failed: ${e.message}');
       debugPrintStack(stackTrace: st);
       Get.snackbar(
-        'Could not apply template',
+        'home_template_apply_failed_title'.tr,
         e.message,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
@@ -254,8 +255,8 @@ class HomeController extends GetxController {
       debugPrint('Apply template error: $e');
       debugPrintStack(stackTrace: st);
       Get.snackbar(
-        'Could not apply template',
-        'Please try again.',
+        'home_template_apply_failed_title'.tr,
+        'home_try_again'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );

@@ -21,9 +21,9 @@ class PanelHeader extends StatelessWidget {
             width: 40,
             height: 44,
             child: Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Padding(
-                padding: EdgeInsets.only(left: 4),
+                padding: EdgeInsetsDirectional.only(start: 4),
                 child: Icon(Icons.arrow_back_ios_new_rounded, size: 15),
               ),
             ),

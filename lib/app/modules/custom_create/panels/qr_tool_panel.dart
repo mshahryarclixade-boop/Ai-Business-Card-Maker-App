@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../controller/card_editor_controller.dart';
 import '../widgets/panel_shared.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class QrToolPanel extends StatelessWidget {
   final CardEditorController controller;
@@ -41,8 +42,8 @@ class QrToolPanel extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
-                'Generate QR Code',
+              child: Text(
+                'custom_create_qr_generate'.tr,
                 style: TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
                   fontSize: 13,
@@ -64,8 +65,8 @@ class QrToolPanel extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
-                'Upload from Gallery',
+              child: Text(
+                'custom_create_upload_from_gallery'.tr,
                 style: TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
                   fontSize: 13,

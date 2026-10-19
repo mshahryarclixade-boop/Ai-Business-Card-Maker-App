@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:image_picker/image_picker.dart';
 import '../../../core/services/connectivity_service.dart';
 import '../../../core/theme/app_colors.dart';
@@ -12,6 +12,7 @@ import '../controller/ai_card_controller.dart';
 import '../service/ai_card_service.dart';
 import 'ai_card_preview_view.dart';
 import '../../paywall/view/paywall_screen.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class AiCardGeneratorView extends StatelessWidget {
   final String? initialPrompt;
@@ -39,8 +40,8 @@ class AiCardGeneratorView extends StatelessWidget {
             icon: const Icon(Icons.arrow_back, color: AppColors.titleDark),
             onPressed: () => Get.back(),
           ),
-          title: const Text(
-            'AI Card Generator',
+          title: Text(
+            'ai_card_generator_title'.tr,
             style: TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 16,
@@ -50,7 +51,7 @@ class AiCardGeneratorView extends StatelessWidget {
           ),
           actions: [
             Padding(
-              padding: const EdgeInsets.only(right: 16),
+              padding: const EdgeInsetsDirectional.only(end: 16),
               child: GestureDetector(
                 onTap: () {
                   openPaywall(source: 'ai_card_generator', plans: true);
@@ -83,8 +84,8 @@ class AiCardGeneratorView extends StatelessWidget {
                 _ReferenceImagePicker(controller: controller),
                 const SizedBox(height: 24),
 
-                const Text(
-                  'No Design Yet? Try a Ready Template.',
+                Text(
+                  'ai_card_generator_ready_template_heading'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 14,
@@ -96,8 +97,8 @@ class AiCardGeneratorView extends StatelessWidget {
                 _ReadyTemplateRow(controller: controller),
                 const SizedBox(height: 16),
 
-                const Text(
-                  'Enter Prompt',
+                Text(
+                  'ai_card_generator_prompt_heading'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 14,
@@ -136,9 +137,9 @@ class AiCardGeneratorView extends StatelessWidget {
                           width: 144,
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
+                            alignment: AlignmentDirectional.centerStart,
                             child: Text(
-                              'Auto fill profile details',
+                              'ai_card_generator_auto_fill'.tr,
                               maxLines: 1,
                               style: AppTextStyles.splashSubtitle.copyWith(
                                 fontSize: 14,
@@ -205,7 +206,7 @@ class AiCardGeneratorView extends StatelessWidget {
                             )
                           : const Icon(Icons.auto_awesome, size: 18),
                       label: Text(
-                        isBusy ? 'Generating…' : 'Generate Card',
+                        isBusy ? 'ai_card_generator_generating'.tr : 'ai_card_generator_generate'.tr,
                         style: const TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 15,
@@ -248,8 +249,8 @@ class _ReferenceImagePicker extends StatelessWidget {
                   Icons.photo_camera_outlined,
                   color: AppColors.primary,
                 ),
-                title: const Text(
-                  'Camera',
+                title: Text(
+                  'ai_card_generator_camera'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 14,
@@ -267,8 +268,8 @@ class _ReferenceImagePicker extends StatelessWidget {
                   Icons.photo_library_outlined,
                   color: AppColors.primary,
                 ),
-                title: const Text(
-                  'Gallery',
+                title: Text(
+                  'ai_card_generator_gallery'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 14,
@@ -315,8 +316,8 @@ class _ReferenceImagePicker extends StatelessWidget {
                         fit: BoxFit.contain,
                       ),
                       const SizedBox(height: 12),
-                      const Text(
-                        'Upload reference image',
+                      Text(
+                        'ai_card_generator_upload_reference'.tr,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 14,
@@ -326,7 +327,7 @@ class _ReferenceImagePicker extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'AI will use this as inspiration',
+                        'ai_card_generator_upload_hint'.tr,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 12,
@@ -336,7 +337,7 @@ class _ReferenceImagePicker extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Supported formats JPEG, JPG, PNG, HEIC and TIFF',
+                        'ai_card_generator_supported_formats'.tr,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
@@ -345,7 +346,7 @@ class _ReferenceImagePicker extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Max file size 50 MB',
+                        'ai_card_generator_max_file_size'.tr,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 11,
@@ -356,7 +357,7 @@ class _ReferenceImagePicker extends StatelessWidget {
                   )
                 /// UPLOAD IMAGE BOX FIT
                 : Stack(
-                    alignment: Alignment.topRight,
+                    alignment: AlignmentDirectional.topEnd,
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
@@ -496,7 +497,7 @@ class _PromptField extends StatelessWidget {
           fontSize: 14,
         ),
         decoration: InputDecoration(
-          hintText: 'Describe your ideal design...',
+          hintText: 'ai_card_generator_prompt_hint'.tr,
           hintStyle: TextStyle(
             fontFamily: AppTextStyles.fontFamily,
             fontSize: 14,

@@ -2,12 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/services/recent_designs_service.dart';
 import '../../ai_card_generator/view/ai_card_generator_view.dart';
 import '../../custom_create/view/card_editor_view.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// Preview screen opened when a card is tapped from either My Cards
 /// or Ai Cards. Shows front + back, with Download / Edit at the bottom.
@@ -30,8 +31,8 @@ class CardDetailView extends StatelessWidget {
         final granted = await Gal.requestAccess();
         if (!granted) {
           Get.snackbar(
-            'Permission needed',
-            'Allow photo/gallery access to save your card.',
+            'card_detail_permission_needed_title'.tr,
+            'card_detail_save_permission_message'.tr,
             snackPosition: SnackPosition.BOTTOM,
             margin: const EdgeInsets.all(15),
           );
@@ -45,15 +46,15 @@ class CardDetailView extends StatelessWidget {
       }
 
       Get.snackbar(
-        'Saved',
-        'Card saved to your gallery.',
+        'card_detail_saved_title'.tr,
+        'card_detail_saved_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
     } catch (e) {
       Get.snackbar(
-        'Could not save',
-        'Something went wrong while saving to gallery.',
+        'card_detail_save_failed_title'.tr,
+        'card_detail_save_failed_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -118,8 +119,8 @@ class CardDetailView extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text(
-                            'Download',
+                          child: Text(
+                            'card_detail_download'.tr,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 15,
@@ -141,8 +142,8 @@ class CardDetailView extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text(
-                              'Edit',
+                            child: Text(
+                              'card_detail_edit'.tr,
                               style: TextStyle(
                                 color: AppColors.primary,
                                 fontSize: 15,
@@ -157,9 +158,9 @@ class CardDetailView extends StatelessWidget {
                 ),
               ],
             ),
-            Positioned(
+            PositionedDirectional(
               top: 8,
-              left: 20,
+              start: 20,
               child: _CircleBackButton(onTap: () => Get.back()),
             ),
           ],

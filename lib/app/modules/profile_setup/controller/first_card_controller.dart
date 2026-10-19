@@ -3,12 +3,13 @@ import 'dart:typed_data';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import '../../../core/services/gemini_card_service.dart';
 import '../../../routes/app_routes.dart';
 import '../model/user_profile_data.dart';
 import '../service/profile_store.dart';
 import 'first_card_generator.dart';
+import '../../../core/translations/tr_extension.dart';
 
 enum FirstCardStatus { generating, failed }
 
@@ -101,7 +102,7 @@ class FirstCardController extends GetxController {
       // the friendly message.
       errorMessage.value = kDebugMode
           ? 'DEBUG: $e'
-          : 'Something went wrong while creating your card.';
+          : 'profile_setup_first_card_error'.tr;
       status.value = FirstCardStatus.failed;
     } finally {
       _running = false;

@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:ai_business_card_maker/app/core/theme/app_colors.dart';
 import 'package:ai_business_card_maker/app/modules/career_studio/view/career_studio_view.dart';
+import 'package:ai_business_card_maker/app/modules/career_studio/view/post_planner_view.dart';
 import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_builder_view.dart';
 import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_optimizer_view.dart';
 import 'package:ai_business_card_maker/app/modules/home/widgets/ai_toolkit_section.dart';
@@ -91,25 +93,15 @@ void main() {
     expect(find.text('Post Planner'), findsOneWidget);
   });
 
-  testWidgets('Build profile opens Profile Builder', (t) async {
+  testWidgets('Career Studio card opens Career Studio', (t) async {
     phone(t);
     await t.pumpWidget(_app(const Scaffold(body: AiToolkitSection())));
-    await t.tap(find.text('Build profile'));
+    await t.tap(find.text('Career Studio'));
     await t.pumpAndSettle();
-    expect(find.byType(ProfileBuilderView), findsOneWidget);
-    expect(find.text('Who should find you?'), findsOneWidget);
+    expect(find.byType(CareerStudioView), findsOneWidget);
   });
 
-  testWidgets('Optimize profile opens Profile Optimizer', (t) async {
-    phone(t);
-    await t.pumpWidget(_app(const Scaffold(body: AiToolkitSection())));
-    await t.tap(find.text('Optimize profile'));
-    await t.pumpAndSettle();
-    expect(find.byType(ProfileOptimizerView), findsOneWidget);
-    expect(find.text('Let\'s check your profile'), findsOneWidget);
-  });
-
-  testWidgets('Career Studio cards open their screens, Post Planner does not', (
+  testWidgets('Career Studio cards open their screens', (
     t,
   ) async {
     phone(t);
@@ -126,7 +118,7 @@ void main() {
     await t.pumpAndSettle();
     await t.tap(find.text('Post Planner'));
     await t.pumpAndSettle();
-    expect(find.byType(CareerStudioView), findsOneWidget);
+    expect(find.byType(PostPlannerView), findsOneWidget);
   });
 
   testWidgets('Profile Builder: single goal, audience capped at three', (
@@ -142,7 +134,7 @@ void main() {
         .widgetList<AnimatedContainer>(find.byType(AnimatedContainer))
         .where(
           (c) =>
-              (c.decoration as BoxDecoration).color == const Color(0xFF583DD0),
+              (c.decoration as BoxDecoration).color == AppColors.onboardingBtnEnd,
         )
         .length;
     // 1 goal + 3 audiences

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/translations/tr_extension.dart';
 import '../controller/template_controller.dart';
 
 class OrientationTabs extends StatelessWidget {
@@ -9,17 +10,24 @@ class OrientationTabs extends StatelessWidget {
 
   const OrientationTabs({super.key, required this.controller});
 
-  static const _labels = ['Horizontal', 'Vertical', 'Saved'];
+  static const _labelKeys = [
+    'template_tab_horizontal',
+    'template_tab_vertical',
+    'template_tab_saved',
+  ];
   static const _icons = [null, null, Icons.favorite];
 
   @override
   Widget build(BuildContext context) {
     return Obx(
-          () => Row(
-        children: List.generate(_labels.length, (index) {
+          () => FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: AlignmentDirectional.centerStart,
+        child: Row(
+        children: List.generate(_labelKeys.length, (index) {
           final isActive = controller.tabIndex.value == index;
           return Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsetsDirectional.only(end: 16),
             child: GestureDetector(
               onTap: () => controller.changeTab(index),
               child: Container(
@@ -35,7 +43,7 @@ class OrientationTabs extends StatelessWidget {
                       const SizedBox(width: 6),
                     ],
                     Text(
-                      _labels[index],
+                      _labelKeys[index].tr,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 14,
@@ -49,6 +57,7 @@ class OrientationTabs extends StatelessWidget {
             ),
           );
         }),
+      ),
       ),
     );
   }
@@ -68,7 +77,7 @@ class FilterChipsRow extends StatelessWidget {
           children: controller.filters.map((filter) {
             final isActive = controller.selectedFilter.value == filter;
             return Padding(
-              padding: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsetsDirectional.only(end: 10),
               child: GestureDetector(
                 onTap: () => controller.selectFilter(filter),
                 child: Container(
@@ -81,7 +90,7 @@ class FilterChipsRow extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    filter,
+                    controller.categoryLabel(filter),
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 14,

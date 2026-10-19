@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
+import '../../../core/translations/tr_extension.dart';
 
 class RemoveBgService {
   RemoveBgService({String? apiKey})
@@ -17,8 +18,7 @@ class RemoveBgService {
   Future<Uint8List> removeBackground(File imageFile) async {
     if (apiKey.isEmpty) {
       throw RemoveBgException(
-        'Missing remove.bg API key. Add REMOVE_BG_API_KEY via '
-            '--dart-define or pass it to RemoveBgService().',
+        'remove_bg_error_missing_key'.tr,
       );
     }
 
@@ -40,22 +40,22 @@ class RemoveBgService {
     } on RemoveBgException {
       rethrow;
     } catch (e) {
-      throw RemoveBgException('Could not reach remove.bg. Check your connection and try again.');
+      throw RemoveBgException('remove_bg_error_unreachable'.tr);
     }
   }
 
   String _messageForStatus(int statusCode, String body) {
     switch (statusCode) {
       case 400:
-        return 'That image could not be processed. Try a different photo.';
+        return 'remove_bg_error_bad_image'.tr;
       case 402:
-        return 'Background removal credits are exhausted for this API key.';
+        return 'remove_bg_error_credits'.tr;
       case 403:
-        return 'Invalid or unauthorized remove.bg API key.';
+        return 'remove_bg_error_unauthorized'.tr;
       case 429:
-        return 'Too many requests. Please wait a moment and try again.';
+        return 'remove_bg_error_rate_limited'.tr;
       default:
-        return 'Background removal failed (error $statusCode). Please try again.';
+        return 'remove_bg_error_generic'.trParams({'code': statusCode});
     }
   }
 }

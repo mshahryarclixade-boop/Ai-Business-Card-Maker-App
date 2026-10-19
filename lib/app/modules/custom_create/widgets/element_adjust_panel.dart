@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:collection/collection.dart';
 
 import 'color_palette.dart';
 import '../controller/card_editor_controller.dart';
 import '../controller/card_editor_symbols_controller_ext.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// The color + opacity (+ optional size) editor shown once a sticker is
 /// placed on the canvas. Used identically by the Social, Arrow and Icons
@@ -44,8 +45,8 @@ class ElementAdjustPanel extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 14),
-            const Text(
-              'Opacity',
+            Text(
+              'custom_create_opacity'.tr,
               style: TextStyle(fontSize: 12, color: Color(0xFF8A8A93)),
             ),
             Slider(
@@ -56,8 +57,8 @@ class ElementAdjustPanel extends StatelessWidget {
               onChanged: controller.setSelectedOpacity,
             ),
             if (showSizeSlider) ...[
-              const Text(
-                'Size',
+              Text(
+                'custom_create_size'.tr,
                 style: TextStyle(fontSize: 12, color: Color(0xFF8A8A93)),
               ),
               Slider(

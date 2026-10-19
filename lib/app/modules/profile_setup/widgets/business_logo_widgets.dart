@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class LogoOptionCard extends StatelessWidget {
   const LogoOptionCard({
@@ -150,7 +151,7 @@ class LogoSearchingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _LogoCardShell(
+    return _LogoCardShell(
       child: Row(
         children: [
           SizedBox(
@@ -169,7 +170,7 @@ class LogoSearchingCard extends StatelessWidget {
           ),
           SizedBox(width: 13),
           Text(
-            'Looking for the logo…',
+            'profile_setup_logo_looking'.tr,
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 16,
@@ -205,8 +206,8 @@ class LogoNotFoundNotice extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'We couldn’t find a logo on this website.',
+        Text(
+          'profile_setup_logo_not_found'.tr,
           style: TextStyle(
             fontFamily: 'Inter',
             fontSize: 14,
@@ -221,12 +222,12 @@ class LogoNotFoundNotice extends StatelessWidget {
             TextButton(
               onPressed: onUpload,
               style: TextButton.styleFrom(padding: EdgeInsets.zero),
-              child: const Text('Upload logo', style: _linkStyle),
+              child: Text('profile_setup_logo_upload'.tr, style: _linkStyle),
             ),
             TextButton(
               onPressed: onContinueWithout,
               style: TextButton.styleFrom(padding: EdgeInsets.zero),
-              child: const Text('Continue without logo', style: _linkStyle),
+              child: Text('profile_setup_logo_continue_without'.tr, style: _linkStyle),
             ),
           ],
         ),

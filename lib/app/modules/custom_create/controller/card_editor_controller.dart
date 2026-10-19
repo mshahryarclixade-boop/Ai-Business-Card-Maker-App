@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,6 +15,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import '../../../core/services/app_review_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class CardTool {
   static const String none = '';
@@ -187,8 +188,8 @@ class CardEditorController extends GetxController {
 
       if (textElements.isEmpty) {
         Get.snackbar(
-          'No text yet',
-          'Tap "Add Text" first, then Edit Text to style it.',
+          'custom_create_no_text_title'.tr,
+          'custom_create_no_text_message'.tr,
           snackPosition: SnackPosition.BOTTOM,
           margin: const EdgeInsets.all(15),
         );
@@ -319,13 +320,13 @@ class CardEditorController extends GetxController {
       sourcePath: sourcePath,
       uiSettings: [
         AndroidUiSettings(
-          toolbarTitle: 'Crop Photo',
+          toolbarTitle: 'custom_create_crop_photo'.tr,
           toolbarColor: AppColors.primary,
           toolbarWidgetColor: Colors.white,
           activeControlsWidgetColor: AppColors.primary,
           lockAspectRatio: false,
         ),
-        IOSUiSettings(title: 'Crop Photo', aspectRatioLockEnabled: false),
+        IOSUiSettings(title: 'custom_create_crop_photo'.tr, aspectRatioLockEnabled: false),
       ],
     );
 
@@ -604,8 +605,8 @@ class CardEditorController extends GetxController {
     _syncFlags();
 
     Get.snackbar(
-      toSide == 1 ? 'Moved to Back' : 'Moved to Front',
-      'Switch sides to see it.',
+      toSide == 1 ? 'custom_create_moved_to_back'.tr : 'custom_create_moved_to_front'.tr,
+      'custom_create_switch_sides_message'.tr,
       snackPosition: SnackPosition.BOTTOM,
       margin: const EdgeInsets.all(15),
       duration: const Duration(seconds: 2),
@@ -923,8 +924,8 @@ class CardEditorController extends GetxController {
       FirebaseAnalytics.instance.logEvent(name: 'card_saved');
 
       Get.snackbar(
-        'Saved',
-        'Your card has been saved.',
+        'custom_create_saved_title'.tr,
+        'custom_create_saved_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -947,8 +948,8 @@ class CardEditorController extends GetxController {
       debugPrint('$st');
 
       Get.snackbar(
-        'Could not save',
-        'Something went wrong while saving your card.',
+        'custom_create_save_failed_title'.tr,
+        'custom_create_save_failed_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );

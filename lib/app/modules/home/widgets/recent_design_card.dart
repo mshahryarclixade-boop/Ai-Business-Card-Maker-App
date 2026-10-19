@@ -64,9 +64,9 @@ class RecentDesignCard extends StatelessWidget {
               ),
             ),
             if (showFavoriteBadge)
-              Positioned(
+              PositionedDirectional(
                 top: 8,
-                right: 8,
+                end: 8,
                 child: GestureDetector(
                   onTap: onFavoriteTap,
                   child: Container(
@@ -84,9 +84,9 @@ class RecentDesignCard extends StatelessWidget {
                 ),
               ),
             if (isPremium)
-              const Positioned(
+              const PositionedDirectional(
                 bottom: 8,
-                right: 8,
+                end: 8,
                 child: Icon(
                   Icons.emoji_events, // swap for the crown asset icon
                   color: AppColors.crownGold,

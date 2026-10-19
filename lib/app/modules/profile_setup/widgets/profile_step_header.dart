@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class ProfileStepHeader extends StatelessWidget {
   const ProfileStepHeader({super.key, required this.step, this.totalSteps = 2});
@@ -33,7 +34,7 @@ class ProfileStepHeader extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Step $step of $totalSteps',
+          'profile_setup_step_of'.trParams({'step': step, 'total': totalSteps}),
           style: const TextStyle(
             fontFamily: 'Onest',
             fontSize: 14,

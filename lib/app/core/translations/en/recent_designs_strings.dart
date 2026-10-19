@@ -1,0 +1,21 @@
+/// English strings: recent_designs.
+const Map<String, String> recentDesignsStrings = {
+  'my_cards_title': 'My Cards',
+  'my_cards_empty_title': 'No Cards Yet',
+  'my_cards_empty_subtitle': 'Cards you create or save will\nappear here - ready to share\nanytime.',
+  'my_cards_empty_button': 'Create Card',
+  'my_cards_ai_empty_title': 'No Ai Cards Yet',
+  'my_cards_ai_empty_subtitle': 'Cards generated with AI will\nappear here - ready to share\nanytime.',
+  'my_cards_ai_empty_button': 'Generate with AI',
+  'card_detail_permission_needed_title': 'Permission needed',
+  'card_detail_save_permission_message': 'Allow photo/gallery access to save your card.',
+  'card_detail_saved_title': 'Saved',
+  'card_detail_saved_message': 'Card saved to your gallery.',
+  'card_detail_save_failed_title': 'Could not save',
+  'card_detail_save_failed_message': 'Something went wrong while saving to gallery.',
+  'card_detail_download': 'Download',
+  'card_detail_edit': 'Edit',
+  'my_cards_tab_ai': 'Ai Cards',
+  'pill_tab_saved': 'Saved',
+  'pill_tab_favorite': 'Favorite',
+};

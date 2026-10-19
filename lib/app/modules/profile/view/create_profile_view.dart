@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../controller/profile_controller.dart';
 import '../widgets/dashed_border.dart';
 import '../widgets/social_link_picker.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class CreateProfileView extends StatefulWidget {
   const CreateProfileView({super.key});
@@ -74,8 +75,8 @@ class _CreateProfileViewState extends State<CreateProfileView> {
 
     if (firstName.isEmpty || lastName.isEmpty) {
       Get.snackbar(
-        'Incomplete Profile',
-        'Please enter your first and last name.',
+        'profile_incomplete_title'.tr,
+        'profile_incomplete_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -142,8 +143,8 @@ class _CreateProfileViewState extends State<CreateProfileView> {
           Get.back();
         },
       ),
-      title: const Text(
-        'Create Profile',
+      title: Text(
+        'profile_create_title'.tr,
         style: TextStyle(
           fontFamily: AppTextStyles.fontFamily,
           fontSize: 16,
@@ -154,7 +155,7 @@ class _CreateProfileViewState extends State<CreateProfileView> {
       centerTitle: true,
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 12),
+          padding: const EdgeInsetsDirectional.only(end: 12),
           child: Center(
             child: SizedBox(
               height: 32,
@@ -169,8 +170,8 @@ class _CreateProfileViewState extends State<CreateProfileView> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Save',
+                child: Text(
+                  'profile_save'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 14,
@@ -214,9 +215,9 @@ class _CreateProfileViewState extends State<CreateProfileView> {
 
   List<Widget> _buildPersonalDetailsSection() {
     return [
-      const _SectionTitle(
+      _SectionTitle(
         icon: Icons.person_outline_rounded,
-        title: 'Personal Details',
+        title: 'profile_section_personal'.tr,
       ),
       const SizedBox(height: _fieldGap),
       Row(
@@ -224,14 +225,14 @@ class _CreateProfileViewState extends State<CreateProfileView> {
           Expanded(
             child: _ProfileField(
               controller: controller.firstNameController,
-              hint: 'First Name',
+              hint: 'profile_hint_first_name'.tr,
             ),
           ),
           const SizedBox(width: _fieldGap),
           Expanded(
             child: _ProfileField(
               controller: controller.lastNameController,
-              hint: 'Last Name',
+              hint: 'profile_hint_last_name'.tr,
             ),
           ),
         ],
@@ -239,33 +240,33 @@ class _CreateProfileViewState extends State<CreateProfileView> {
       const SizedBox(height: _fieldGap),
       _ProfileField(
         controller: controller.taglineController,
-        hint: 'Tagline e.g. Helping brands grow digitally',
+        hint: 'profile_hint_tagline'.tr,
       ),
     ];
   }
 
   List<Widget> _buildProfessionalDetailsSection() {
     return [
-      const _SectionTitle(
+      _SectionTitle(
         icon: Icons.business_center_outlined,
-        title: 'Professional Details',
+        title: 'profile_section_professional'.tr,
       ),
       const SizedBox(height: _fieldGap),
       _ProfileField(
         controller: controller.companyNameController,
-        hint: 'Company Name',
+        hint: 'profile_hint_company_name'.tr,
         prefixIcon: Icons.business_outlined,
       ),
       const SizedBox(height: _fieldGap),
       _ProfileField(
         controller: controller.jobTitleController,
-        hint: 'Job Title',
+        hint: 'profile_hint_job_title'.tr,
         prefixIcon: Icons.badge_outlined,
       ),
       const SizedBox(height: _fieldGap),
       _ProfileField(
         controller: controller.companyWebsiteController,
-        hint: 'Company Website',
+        hint: 'profile_hint_company_website'.tr,
         prefixIcon: Icons.language_rounded,
       ),
     ];
@@ -273,14 +274,14 @@ class _CreateProfileViewState extends State<CreateProfileView> {
 
   List<Widget> _buildContactDetailsSection() {
     return [
-      const _SectionTitle(
+      _SectionTitle(
         icon: Icons.phone_outlined,
-        title: 'Contact Details',
+        title: 'profile_section_contact'.tr,
       ),
       const SizedBox(height: _fieldGap),
       _ProfileField(
         controller: controller.emailController,
-        hint: 'loremipsum@gmail.com',
+        hint: 'profile_hint_email'.tr,
         prefixIcon: Icons.email_outlined,
         keyboardType: TextInputType.emailAddress,
       ),
@@ -294,7 +295,7 @@ class _CreateProfileViewState extends State<CreateProfileView> {
       const SizedBox(height: _fieldGap),
       _ProfileField(
         controller: controller.locationController,
-        hint: 'loremipsum, Faisalabad',
+        hint: 'profile_hint_location'.tr,
         prefixIcon: Icons.location_on_outlined,
       ),
     ];
@@ -302,7 +303,7 @@ class _CreateProfileViewState extends State<CreateProfileView> {
 
   List<Widget> _buildSocialLinksSection() {
     return [
-      const _SectionTitle(icon: Icons.link_rounded, title: 'Social Links'),
+      _SectionTitle(icon: Icons.link_rounded, title: 'profile_section_social'.tr),
       const SizedBox(height: _fieldGap),
       Obx(
             () => Column(
@@ -324,7 +325,7 @@ class _CreateProfileViewState extends State<CreateProfileView> {
           Expanded(
             child: _ProfileField(
               controller: controller.socialLinkControllers[i],
-              hint: 'e.g. linkedin.com/in/yourname',
+              hint: 'profile_hint_social_link'.tr,
               prefixIcon: Icons.link_rounded,
               prefixImagePath:
               i < _socialLinkIcons.length ? _socialLinkIcons[i] : null,
@@ -376,7 +377,7 @@ class _CreateProfileViewState extends State<CreateProfileView> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Add custom links',
+                'profile_add_custom_links'.tr,
                 style: TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
                   fontSize: 12,
@@ -541,8 +542,8 @@ class _ProfileImagePicker extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            right: -4,
+          PositionedDirectional(
+            end: -4,
             bottom: -4,
             child: Container(
               width: 22,
@@ -582,7 +583,7 @@ class _ProfileImagePicker extends StatelessWidget {
         Icon(icon, size: 24, color: AppColors.primary),
         const SizedBox(height: 4),
         Text(
-          'Company\nLogo',
+          'profile_company_logo'.tr,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: AppTextStyles.fontFamily,
@@ -643,8 +644,8 @@ class _CreateProfileSavedOverlay extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const Text(
-                      'Profile Saved',
+                    Text(
+                      'profile_saved_title'.tr,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 14,
@@ -653,8 +654,8 @@ class _CreateProfileSavedOverlay extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    const Text(
-                      'Auto-fill is now active.',
+                    Text(
+                      'profile_saved_autofill_message'.tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,

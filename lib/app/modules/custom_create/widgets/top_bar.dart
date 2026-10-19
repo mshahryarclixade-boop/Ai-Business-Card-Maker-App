@@ -1,11 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../controller/card_editor_controller.dart';
+import '../../../core/translations/tr_extension.dart';
 
 const double _kDialogWidth = 332;
 const double _kDialogMinHeight = 188;
@@ -38,7 +39,7 @@ class TopBar extends StatelessWidget {
       decoration: const BoxDecoration(
         gradient: AppColors.topBarGradient,
       ),
-      padding: const EdgeInsets.fromLTRB(4, 6, 18, 6),
+      padding: const EdgeInsetsDirectional.fromSTEB(4, 6, 18, 6),
       child: Row(
         children: [
           IconButton(
@@ -93,8 +94,8 @@ class TopBar extends StatelessWidget {
                     AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 )
-                    : const Text(
-                  'Save',
+                    : Text(
+                  'custom_create_save'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 16,
@@ -149,8 +150,8 @@ class TopBar extends StatelessWidget {
                       color: AppColors.titleDark,
                     ),
                     const SizedBox(height: 6),
-                    const Text(
-                      'Discard this card?',
+                    Text(
+                      'custom_create_discard_title'.tr,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 20,
@@ -161,8 +162,8 @@ class TopBar extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    const Text(
-                      'Your changes will be lost if you leave now.',
+                    Text(
+                      'custom_create_discard_message'.tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
@@ -194,8 +195,10 @@ class TopBar extends StatelessWidget {
                                 BorderRadius.circular(_kButtonRadius),
                               ),
                             ),
-                            child: const Text(
-                              'Keep editing',
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                              'custom_create_keep_editing'.tr,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -204,6 +207,7 @@ class TopBar extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                                 decoration: TextDecoration.none,
                               ),
+                            ),
                             ),
                           ),
                         ),
@@ -228,14 +232,17 @@ class TopBar extends StatelessWidget {
                                 BorderRadius.circular(_kButtonRadius),
                               ),
                             ),
-                            child: const Text(
-                              'Discard',
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                              'custom_create_discard'.tr,
                               style: TextStyle(
                                 fontFamily: AppTextStyles.fontFamily,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 decoration: TextDecoration.none,
                               ),
+                            ),
                             ),
                           ),
                         ),

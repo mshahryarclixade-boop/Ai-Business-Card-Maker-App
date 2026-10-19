@@ -6,6 +6,7 @@ import 'social_tab_panel.dart';
 import 'shapes_tab_panel.dart';
 import 'arrow_tab_panel.dart';
 import 'icons_tab_panel.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class SymbolsToolPanel extends StatefulWidget {
   final CardEditorController controller;
@@ -17,7 +18,12 @@ class SymbolsToolPanel extends StatefulWidget {
 
 class _SymbolsToolPanelState extends State<SymbolsToolPanel> {
   int _tabIndex = 0;
-  static const _tabs = ['Social', 'Shapes', 'Arrow', 'Icons'];
+  static List<String> get _tabs => [
+        'custom_create_tab_social'.tr,
+        'custom_create_tab_shapes'.tr,
+        'custom_create_tab_arrow'.tr,
+        'custom_create_tab_icons'.tr,
+      ];
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +41,7 @@ class _SymbolsToolPanelState extends State<SymbolsToolPanel> {
                   width: 44,
                   height: 40,
                   child: Align(
-                    alignment: Alignment.centerLeft,
+                    alignment: AlignmentDirectional.centerStart,
                     child: Icon(Icons.arrow_back, size: 20),
                   ),
                 ),

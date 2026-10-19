@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
+
 import 'create_first_card_section.dart';
 import '../../../core/services/recent_designs_service.dart';
 import '../../../core/theme/app_colors.dart';
@@ -11,6 +12,7 @@ import '../../qr_code_generator/view/qr_code_screen.dart';
 import '../../template/widget/template_live_preview.dart';
 import '../controller/home_controller.dart';
 import 'share_card_sheet.dart';
+import '../../../core/translations/tr_extension.dart';
 
 double _designAspect(RecentDesign design) {
   final o = design.designData?['orientation'] as String?;
@@ -18,6 +20,7 @@ double _designAspect(RecentDesign design) {
   final size = CardOrientation.values.byName(o).canvasSize;
   return size.width / size.height;
 }
+
 /// Welcome message, the user's current card and its main actions.
 class MyCardSection extends StatelessWidget {
   const MyCardSection({super.key});
@@ -29,6 +32,7 @@ class MyCardSection extends StatelessWidget {
 
     return Obx(() {
       if (service.designs.isEmpty) return const CreateFirstCardSection();
+
       final design = service.designs.first;
       final fullName = ProfileStore.to.profile.value.fullName.trim();
       final firstName = fullName.isEmpty ? '' : fullName.split(' ').first;
@@ -36,12 +40,11 @@ class MyCardSection extends StatelessWidget {
       final liveData = home.previewData.value;
       final applying = home.applying.value;
 
-      // The live template preview must use the SAME aspect ratio as the editor
-      // canvas. Forcing 7:4 on a canvas with another ratio made the preview
-      // scale up and crop the top and bottom of the card.
+      // The live template preview uses the same aspect ratio as the editor.
       final canvas = liveData?.orientation.canvasSize;
-      final previewAspect =
-      canvas == null ? 7 / 4 : canvas.width / canvas.height;
+      final previewAspect = canvas == null
+          ? 7 / 4
+          : canvas.width / canvas.height;
 
       void editCard() => Get.to(
             () => CardEditorView(design: design),
@@ -52,15 +55,15 @@ class MyCardSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            firstName.isEmpty ? 'Welcome' : 'Welcome, $firstName',
+            firstName.isEmpty ? 'home_welcome'.tr : 'home_welcome_name'.trParams({'name': firstName}),
             style: const TextStyle(
               fontFamily: AppTextStyles.fontFamily,
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: FontWeight.w700,
               color: AppColors.titleDark,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           GestureDetector(
             onTap: preview == null ? editCard : null,
             child: Container(
@@ -76,49 +79,61 @@ class MyCardSection extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: AspectRatio(
-                  aspectRatio: liveData != null
-                      ? previewAspect
-                      : (preview == null ? _designAspect(design) : 7 / 4),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      if (preview == null)
-                        Image.file(design.file, fit: BoxFit.cover)
-                      else if (liveData != null)
-                      // Draw the template at its real canvas size (exactly as
-                      // in the editor) and scale the whole thing down to fit.
-                        FittedBox(
-                          fit: BoxFit.contain,
-                          child: SizedBox(
-                            width: canvas!.width,
-                            height: canvas.height,
-                            child: TemplateLivePreview(
-                              side: liveData.front,
-                              orientation: liveData.orientation,
-                              repaintKey: home.frontCaptureKey,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 1,
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: liveData != null
+                        ? previewAspect
+                        : (preview == null ? _designAspect(design) : 7 / 4),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        if (preview == null)
+                          Image.file(
+                            design.file,
+                            fit: BoxFit.contain,
+                          )
+                        else if (liveData != null)
+                        // Draw the template at its real canvas size and
+                        // scale the complete design down to fit.
+                          FittedBox(
+                            fit: BoxFit.contain,
+                            child: SizedBox(
+                              width: canvas!.width,
+                              height: canvas.height,
+                              child: TemplateLivePreview(
+                                side: liveData.front,
+                                orientation: liveData.orientation,
+                                repaintKey: home.frontCaptureKey,
+                              ),
+                            ),
+                          )
+                        else
+                          Image.asset(
+                            preview.frontImagePath,
+                            fit: BoxFit.contain,
+                          ),
+                        if (applying)
+                          Container(
+                            color: const Color(0x99FFFFFF),
+                            alignment: Alignment.center,
+                            child: const CircularProgressIndicator(
+                              color: AppColors.primary,
                             ),
                           ),
-                        )
-                      else
-                        Image.asset(preview.frontImagePath, fit: BoxFit.cover),
-                      if (applying)
-                        Container(
-                          color: const Color(0x99FFFFFF),
-                          alignment: Alignment.center,
-                          child: const CircularProgressIndicator(
-                            color: AppColors.primary,
-                          ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
 
-          // Back side of the live preview, drawn off-screen only so it can be
-          // captured when the user taps Apply Template.
+          // Back side of the live preview, drawn off-screen only so it can
+          // be captured when the user taps Apply Template.
           if (liveData != null)
             SizedBox(
               width: 0,
@@ -143,13 +158,13 @@ class MyCardSection extends StatelessWidget {
               ),
             ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
           if (preview == null) ...[
             Row(
               children: [
                 Expanded(
                   child: _ActionButton(
-                    label: 'Share Card',
+                    label: 'home_card_share'.tr,
                     filled: true,
                     onTap: () => showShareCardSheet(design.file),
                   ),
@@ -157,7 +172,7 @@ class MyCardSection extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _ActionButton(
-                    label: 'My QR Code',
+                    label: 'home_card_my_qr'.tr,
                     filled: false,
                     onTap: () => Get.to(
                           () => const CustomQrCodeScreen(),
@@ -172,7 +187,7 @@ class MyCardSection extends StatelessWidget {
               children: [
                 Expanded(
                   child: _ActionButton(
-                    label: 'Edit Template',
+                    label: 'home_card_edit_template'.tr,
                     filled: false,
                     onTap: applying ? null : home.editTemplate,
                   ),
@@ -180,7 +195,7 @@ class MyCardSection extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _ActionButton(
-                    label: applying ? 'Applying...' : 'Apply Template',
+                    label: applying ? 'home_card_applying'.tr : 'home_card_apply_template'.tr,
                     filled: true,
                     onTap: applying ? null : home.applyTemplate,
                   ),
@@ -193,7 +208,7 @@ class MyCardSection extends StatelessWidget {
               children: [
                 Expanded(
                   child: _ActionButton(
-                    label: 'Cancel',
+                    label: 'home_card_cancel'.tr,
                     filled: false,
                     onTap: applying ? null : home.cancelPreview,
                   ),
@@ -201,14 +216,14 @@ class MyCardSection extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _ActionButton(
-                    label: applying ? 'Applying...' : 'Apply Template',
+                    label: applying ? 'home_card_applying'.tr : 'home_card_apply_template'.tr,
                     filled: true,
                     onTap: applying ? null : home.applyTemplate,
                   ),
                 ),
               ],
             ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 8),
         ],
       );
     });
@@ -229,15 +244,13 @@ class _ActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 44,
+      height: 40,
       child: ElevatedButton(
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
           backgroundColor: filled ? AppColors.buttonDark : AppColors.cardWhite,
           elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: Text(
           label,

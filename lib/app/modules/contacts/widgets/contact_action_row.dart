@@ -6,6 +6,7 @@ import '../model/contact_model.dart';
 import '../service/contact_export_service.dart';
 import '../service/contact_follow_up_service.dart';
 import 'pill_button.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// Quick actions under the contact's name. Only actions that can work for
 /// this contact are shown (no email address, no Email button).
@@ -35,8 +36,7 @@ class ContactActionRow extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Send Message',
+            Text('contacts_send_message'.tr,
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
                 fontSize: 16,
@@ -48,23 +48,23 @@ class ContactActionRow extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                PillButton(
+                Flexible(child: PillButton(
                   icon: Icons.sms_outlined,
-                  label: 'SMS',
+                  label: 'contacts_sms'.tr,
                   onTap: () {
                     Navigator.pop(sheetContext);
                     ContactFollowUpService.sendSms(contact);
                   },
-                ),
+                )),
                 const SizedBox(width: 12),
-                PillButton(
+                Flexible(child: PillButton(
                   icon: Icons.chat_outlined,
-                  label: 'WhatsApp',
+                  label: 'contacts_whatsapp'.tr,
                   onTap: () {
                     Navigator.pop(sheetContext);
                     ContactFollowUpService.sendWhatsApp(contact);
                   },
-                ),
+                )),
               ],
             ),
           ],
@@ -84,23 +84,23 @@ class ContactActionRow extends StatelessWidget {
         if (canMessage)
           _ActionItem(
             icon: Icons.chat_bubble_outline_rounded,
-            label: 'Message',
+            label: 'contacts_message'.tr,
             onTap: () => _onMessage(context),
           ),
         if (canEmail)
           _ActionItem(
             icon: Icons.mail_outline_rounded,
-            label: 'Email',
+            label: 'contacts_field_email'.tr,
             onTap: () => ContactFollowUpService.sendEmail(contact),
           ),
         _ActionItem(
           icon: Icons.share_outlined,
-          label: 'Share',
+          label: 'contacts_share'.tr,
           onTap: () => ContactExportService.share(contact),
         ),
         _ActionItem(
           icon: Icons.person_add_alt_1_outlined,
-          label: 'Save to Phone',
+          label: 'contacts_save_to_phone'.tr,
           onTap: () => ContactExportService.saveToDevice(contact),
         ),
       ],

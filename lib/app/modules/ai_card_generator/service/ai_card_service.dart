@@ -10,6 +10,7 @@ import '../../../core/services/gemini_card_service.dart';
 import '../../profile/model/profile_model.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../model/generated_card.dart';
+import '../../../core/translations/tr_extension.dart';
 
 const Map<String, String> kReadyTemplateAssets = {
   // Example:
@@ -40,8 +41,8 @@ class AiCardService {
         'AI CARD SERVICE: no reference resolved '
         '(referenceImage=$referenceImage, templateId=$templateId)',
       );
-      throw const GeminiException(
-        'Choose a template or upload an image first.',
+      throw GeminiException(
+        'ai_card_choose_reference_message'.tr,
       );
     }
 

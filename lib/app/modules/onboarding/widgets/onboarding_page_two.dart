@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import 'onboarding_constrained.dart';
 import 'onboarding_feature_tile.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class OnboardingPageTwo extends StatelessWidget {
   const OnboardingPageTwo({super.key});
@@ -30,9 +31,9 @@ class OnboardingPageTwo extends StatelessWidget {
                 TextSpan(
                   style: _headingStyle,
                   children: [
-                    const TextSpan(text: 'Your Card.\n'),
+                    TextSpan(text: 'onboarding_page2_heading_line1'.tr),
                     TextSpan(
-                      text: 'Endless\nPossibilities.',
+                      text: 'onboarding_page2_heading_line2'.tr,
                       style: _headingStyle.copyWith(
                         color: AppColors.onboardingAccent,
                       ),
@@ -41,8 +42,8 @@ class OnboardingPageTwo extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'A memorable introduction, made in minutes',
+              Text(
+                'onboarding_page2_subtitle'.tr,
                 style: TextStyle(
                   fontFamily: 'SF Pro',
                   fontSize: 18,

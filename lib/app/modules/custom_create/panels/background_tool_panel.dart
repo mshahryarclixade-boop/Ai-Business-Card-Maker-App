@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../controller/card_editor_controller.dart';
 import '../widgets/color_palette.dart';
 import '../widgets/panel_shared.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class BackgroundToolPanel extends StatefulWidget {
   final CardEditorController controller;
@@ -96,8 +97,8 @@ class _BackgroundToolPanelState extends State<BackgroundToolPanel> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text(
-                    'Upload from Gallery',
+                  child: Text(
+                    'custom_create_upload_from_gallery'.tr,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
@@ -123,8 +124,8 @@ class _BackgroundToolPanelState extends State<BackgroundToolPanel> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text(
-                    'Background Templates',
+                  child: Text(
+                    'custom_create_background_templates'.tr,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,

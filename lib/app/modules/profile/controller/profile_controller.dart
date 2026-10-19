@@ -7,7 +7,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gal/gal.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -18,6 +18,7 @@ import '../../paywall/services/credits_gate.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../model/profile_model.dart';
 import '../service/profile_repository.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class ProfileController extends GetxController {
   ProfileModel profile = ProfileModel();
@@ -189,8 +190,8 @@ class ProfileController extends GetxController {
   void addSocialLinkField() {
     if (socialLinkControllers.length >= maxSocialLinks) {
       Get.snackbar(
-        'Limit Reached',
-        'You can add up to $maxSocialLinks custom links.',
+        'profile_limit_reached_title'.tr,
+        'profile_limit_reached_message'.trParams({'max': maxSocialLinks}),
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -312,8 +313,8 @@ class ProfileController extends GetxController {
 
     if (bytes == null) {
       Get.snackbar(
-        'Error',
-        'Could not prepare the card for sharing.',
+        'profile_error_title'.tr,
+        'profile_share_prepare_error'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -329,7 +330,7 @@ class ProfileController extends GetxController {
 
       await Share.shareXFiles([
         XFile(file.path),
-      ], text: 'Check out my business card!');
+      ], text: 'profile_share_text'.tr);
       await CreditGate.spend(cost: exportCost, source: 'profile_export');
       FirebaseAnalytics.instance.logEvent(
         name: 'card_shared',
@@ -342,8 +343,8 @@ class ProfileController extends GetxController {
         reason: 'share profile card',
       );
       Get.snackbar(
-        'Error',
-        'Could not share the card. Please try again.',
+        'profile_error_title'.tr,
+        'profile_share_error'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -362,8 +363,8 @@ class ProfileController extends GetxController {
 
     if (bytes == null) {
       Get.snackbar(
-        'Error',
-        'Could not prepare the card for download.',
+        'profile_error_title'.tr,
+        'profile_download_prepare_error'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -378,8 +379,8 @@ class ProfileController extends GetxController {
       await CreditGate.spend(cost: exportCost, source: 'profile_export');
       FirebaseAnalytics.instance.logEvent(name: 'card_downloaded');
       Get.snackbar(
-        'Downloaded',
-        'Card saved to your photo gallery.',
+        'profile_downloaded_title'.tr,
+        'profile_downloaded_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -390,8 +391,8 @@ class ProfileController extends GetxController {
         reason: 'download profile card',
       );
       Get.snackbar(
-        'Error',
-        'Could not save to gallery. Please check photo permissions.',
+        'profile_error_title'.tr,
+        'profile_download_error'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );

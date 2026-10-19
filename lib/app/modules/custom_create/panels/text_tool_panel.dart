@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import '../../../core/utils/app_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -8,6 +8,7 @@ import '../controller/card_editor_controller.dart';
 import '../model/card_element_model.dart';
 import '../widgets/color_palette.dart';
 import '../widgets/panel_shared.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// Text tool: Add Text / Edit Text, then the font/size/color style bar.
 class TextToolPanel extends StatelessWidget {
@@ -42,13 +43,13 @@ class TextToolPanel extends StatelessWidget {
                 children: [
                   TextToolOption(
                     icon: Icons.text_fields_rounded,
-                    label: 'Add Text',
+                    label: 'custom_create_add_text'.tr,
                     onTap: controller.addText,
                   ),
                   const SizedBox(width: 20),
                   TextToolOption(
                     icon: Icons.edit_note_rounded,
-                    label: 'Edit Text',
+                    label: 'custom_create_edit_text'.tr,
                     onTap: controller.openTextStyleBar,
                   ),
                 ],
@@ -126,7 +127,7 @@ class TextStyleBar extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             PanelHeader(
-              title: 'Edit Text',
+              title: 'custom_create_edit_text'.tr,
               onBack: controller.closeTextStyleBar,
             ),
             const SizedBox(height: 10),
@@ -176,7 +177,7 @@ class TextStyleBar extends StatelessWidget {
                 Expanded(
                   child: StyleSegment(
                     label:
-                    '${(el?.fontSize ?? 16).toStringAsFixed(0)}pt',
+                    'custom_create_font_size_pt'.trParams({'size': (el?.fontSize ?? 16).toStringAsFixed(0)}),
                     active: expanded == 'size',
                     onTap: () =>
                         controller.toggleStylePanel('size'),
@@ -365,7 +366,7 @@ class SizeListPanel extends StatelessWidget {
               return ListTile(
                 dense: true,
                 title: Text(
-                  '${size.toStringAsFixed(0)}pt',
+                  'custom_create_font_size_pt'.trParams({'size': size.toStringAsFixed(0)}),
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 13,
@@ -485,8 +486,8 @@ class _FontSizeInputState extends State<FontSizeInput> {
       ),
       child: Row(
         children: [
-          const Text(
-            'Type size',
+          Text(
+            'custom_create_type_size'.tr,
             style: TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 11.5,
@@ -521,8 +522,8 @@ class _FontSizeInputState extends State<FontSizeInput> {
             ),
           ),
           const SizedBox(width: 4),
-          const Text(
-            'pt',
+          Text(
+            'custom_create_unit_pt'.tr,
             style: TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 12,

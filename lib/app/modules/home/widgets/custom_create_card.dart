@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../custom_create/controller/card_editor_controller.dart';
 import '../../custom_create/model/card_element_model.dart';
 import '../../custom_create/view/card_editor_view.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class CustomCreateCard extends StatelessWidget {
   const CustomCreateCard({super.key});
@@ -87,13 +88,13 @@ class CustomCreateCard extends StatelessWidget {
               ),
 
               // Italic caption, centered below the "+" button.
-              const Positioned(
+              Positioned(
                 left: 0,
                 right: 0,
                 bottom: 12,
                 child: Center(
                   child: Text(
-                    'Start from a blank canvas',
+                    'home_custom_blank_canvas'.tr,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
@@ -201,9 +202,9 @@ class _OrientationSheetState extends State<_OrientationSheet> {
                 ),
               ),
               const SizedBox(height: 10),
-              const Center(
+              Center(
                 child: Text(
-                  'Choose Card Orientation',
+                  'home_orientation_sheet_title'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 22,
@@ -213,9 +214,9 @@ class _OrientationSheetState extends State<_OrientationSheet> {
                 ),
               ),
               const SizedBox(height: 4),
-              const Center(
+              Center(
                 child: Text(
-                  'Select how your card will be laid out',
+                  'home_orientation_sheet_subtitle'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 14,
@@ -264,17 +265,17 @@ class _OrientationSheetState extends State<_OrientationSheet> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.edit_outlined,
                         color: Colors.white,
                         size: 12,
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
-                        'Start Designing',
+                        'home_orientation_start_designing'.tr,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 16,
@@ -337,7 +338,9 @@ class _OrientationOption extends StatelessWidget {
   bool get _isPortrait => orientation == CardOrientation.portrait;
 
   // Dimension label shown below the orientation name, matching the design.
-  String get _dimensionText => _isPortrait ? '2" x 3.5"' : '3.5" x 2"';
+  String get _dimensionText => _isPortrait
+      ? 'home_orientation_dimension_portrait'.tr
+      : 'home_orientation_dimension_landscape'.tr;
 
   @override
   Widget build(BuildContext context) {
@@ -380,9 +383,9 @@ class _OrientationOption extends StatelessWidget {
               // Selection checkmark shown on the top-right corner of the
               // frame for the currently chosen card.
               if (isSelected)
-                Positioned(
+                PositionedDirectional(
                   top: -10,
-                  right: -10,
+                  end: -10,
                   child: Container(
                     width: 22,
                     height: 22,
@@ -438,17 +441,17 @@ class _OrientationOption extends StatelessWidget {
               color: const Color(0xFFE3F6EA),
               borderRadius: BorderRadius.circular(5),
             ),
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
+                const Icon(
                   Icons.check,
                   size: 12,
                   color: Color(0xFF1F9254),
                 ),
-                SizedBox(width: 4),
+                const SizedBox(width: 4),
                 Text(
-                  'Standard',
+                  'home_orientation_standard'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     fontSize: 11,
@@ -497,8 +500,8 @@ class _CardMockPreview extends StatelessWidget {
             const SizedBox(height: 8),
           ],
 
-          const Text(
-            'Your Name',
+          Text(
+            'home_orientation_preview_name'.tr,
             style: TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 13,
@@ -509,8 +512,8 @@ class _CardMockPreview extends StatelessWidget {
 
           const SizedBox(height: 2),
 
-          const Text(
-            'Job Title',
+          Text(
+            'home_orientation_preview_job'.tr,
             style: TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 10,
@@ -532,8 +535,8 @@ class _CardMockPreview extends StatelessWidget {
 
           const SizedBox(height: 6),
 
-          const Text(
-            'youremail@gmail.com',
+          Text(
+            'home_orientation_preview_email'.tr,
             style: TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 8,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class NoResultsState extends StatelessWidget {
   final String query;
@@ -20,7 +21,7 @@ class NoResultsState extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                'Results',
+                'contacts_results_label'.tr,
                 style: const TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
                   fontSize: 13,
@@ -31,10 +32,10 @@ class NoResultsState extends StatelessWidget {
             ],
           ),
         ),
-        const Expanded(
+        Expanded(
           child: Center(
             child: Text(
-              'No matching contacts',
+              'contacts_no_results'.tr,
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
                 fontSize: 13,

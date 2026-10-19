@@ -36,15 +36,21 @@ class ProfilePrimaryButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                height: 22 / 18,
-                letterSpacing: 0,
-                color: AppColors.white,
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    height: 22 / 18,
+                    letterSpacing: 0,
+                    color: AppColors.white,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 10),

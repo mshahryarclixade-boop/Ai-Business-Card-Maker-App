@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -17,6 +17,7 @@ import '../widgets/editable_avatar.dart';
 import '../widgets/labeled_field.dart';
 import '../widgets/section_card.dart';
 import '../widgets/section_header.dart';
+import '../../../core/translations/tr_extension.dart';
 
 enum _DuplicateChoice { update, separate }
 
@@ -200,8 +201,7 @@ class _AddContactViewState extends State<AddContactView> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Contact already exists',
+        title: Text('contacts_duplicate_title'.tr,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: AppTextStyles.fontFamily,
@@ -211,8 +211,7 @@ class _AddContactViewState extends State<AddContactView> {
           ),
         ),
         content: Text(
-          '"${existing.fullName}" looks like a contact you already saved. '
-              'Update it with the new details, or save this as a separate contact?',
+          'contacts_duplicate_message'.trParams({'name': existing.fullName}),
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontFamily: AppTextStyles.fontFamily,
@@ -227,12 +226,12 @@ class _AddContactViewState extends State<AddContactView> {
           OutlinedButton(
             style: _dialogOutlinedStyle,
             onPressed: () => Navigator.pop(context, _DuplicateChoice.separate),
-            child: const Text('Save Separate'),
+            child: Text('contacts_duplicate_save_separate'.tr),
           ),
           ElevatedButton(
             style: _dialogFilledStyle,
             onPressed: () => Navigator.pop(context, _DuplicateChoice.update),
-            child: const Text('Update Existing'),
+            child: Text('contacts_duplicate_update_existing'.tr),
           ),
         ],
       ),
@@ -318,11 +317,11 @@ class _AddContactViewState extends State<AddContactView> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children: [
             Icon(Icons.delete_outline, color: Colors.red, size: 32),
             SizedBox(height: 8),
             Text(
-              'Are you Sure?',
+              'contacts_delete_confirm_title'.tr,
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
                 fontSize: 17,
@@ -332,8 +331,7 @@ class _AddContactViewState extends State<AddContactView> {
             ),
           ],
         ),
-        content: const Text(
-          'This contact will be removed from your list',
+        content: Text('contacts_delete_confirm_message'.tr,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: AppTextStyles.fontFamily,
@@ -347,12 +345,12 @@ class _AddContactViewState extends State<AddContactView> {
           OutlinedButton(
             style: _dialogOutlinedStyle,
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('contacts_cancel'.tr),
           ),
           ElevatedButton(
             style: _dialogFilledStyle,
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text('contacts_delete'.tr),
           ),
         ],
       ),
@@ -383,7 +381,7 @@ class _AddContactViewState extends State<AddContactView> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          _isEditing ? 'Edit Contact' : (_isFromScan ? 'Create Contact' : 'Add Contact'),
+          _isEditing ? 'contacts_form_title_edit'.tr : (_isFromScan ? 'contacts_form_title_create'.tr : 'contacts_add_contact'.tr),
           style: const TextStyle(
             fontFamily: AppTextStyles.fontFamily,
             fontSize: 16,
@@ -394,7 +392,7 @@ class _AddContactViewState extends State<AddContactView> {
         centerTitle: true,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsetsDirectional.only(end: 16),
             child: TextButton(
               onPressed: _save,
               style: TextButton.styleFrom(
@@ -403,10 +401,10 @@ class _AddContactViewState extends State<AddContactView> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Padding(
+              child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
-                  'Save',
+                  'contacts_save'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
                     color: AppColors.white,
@@ -433,14 +431,14 @@ class _AddContactViewState extends State<AddContactView> {
                 const SizedBox(height: 10),
                 if (widget.scannedData!.isMissingName && _firstName.text.trim().isEmpty)
                   ExtractedDataWarning(
-                    title: 'Name Not Found',
-                    message: "We couldn't find a name for this contact. Click below to add a name.",
+                    title: 'contacts_warning_name_missing_title'.tr,
+                    message: 'contacts_warning_name_missing_message'.tr,
                     onTap: () => FocusScope.of(context).requestFocus(_firstNameFocus),
                   ),
                 if (widget.scannedData!.isMissingCompany && _companyName.text.trim().isEmpty)
                   ExtractedDataWarning(
-                    title: 'Card Missing Company Name',
-                    message: 'Company name is required for this contact. Click below to add a name.',
+                    title: 'contacts_warning_company_missing_title'.tr,
+                    message: 'contacts_warning_company_missing_message'.tr,
                     onTap: () => FocusScope.of(context).requestFocus(_companyNameFocus),
                   ),
                 const SizedBox(height: 4),
@@ -450,9 +448,9 @@ class _AddContactViewState extends State<AddContactView> {
 
               // ----- Personal Details -----
               SectionCard(
-                header: const SectionHeader(
+                header: SectionHeader(
                   icon: Icons.person_outline,
-                  title: 'Personal Details',
+                  title: 'contacts_section_personal'.tr,
                 ),
                 children: [
                   Row(
@@ -460,8 +458,8 @@ class _AddContactViewState extends State<AddContactView> {
                     children: [
                       Expanded(
                         child: LabeledField(
-                          label: 'First Name *',
-                          hint: 'First Name',
+                          label: 'contacts_field_first_name_required'.tr,
+                          hint: 'contacts_field_first_name'.tr,
                           controller: _firstName,
                           focusNode: _firstNameFocus,
                           textCapitalization: TextCapitalization.sentences,
@@ -469,15 +467,15 @@ class _AddContactViewState extends State<AddContactView> {
                               widget.scannedData!.isMissingName &&
                               _firstName.text.trim().isEmpty,
                           validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'Required'
+                              ? 'contacts_validation_required'.tr
                               : null,
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: LabeledField(
-                          label: 'Last Name',
-                          hint: 'Last Name',
+                          label: 'contacts_field_last_name'.tr,
+                          hint: 'contacts_field_last_name'.tr,
                           controller: _lastName,
                           textCapitalization: TextCapitalization.sentences,
                         ),
@@ -486,8 +484,8 @@ class _AddContactViewState extends State<AddContactView> {
                   ),
                   const SizedBox(height: 14),
                   LabeledField(
-                    label: 'Company Name *',
-                    hint: 'Company Name',
+                    label: 'contacts_field_company_name_required'.tr,
+                    hint: 'contacts_field_company_name'.tr,
                     controller: _companyName,
                     icon: Icons.apartment_outlined,
                     focusNode: _companyNameFocus,
@@ -496,12 +494,12 @@ class _AddContactViewState extends State<AddContactView> {
                         widget.scannedData!.isMissingCompany &&
                         _companyName.text.trim().isEmpty,
                     validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Required' : null,
+                    (v == null || v.trim().isEmpty) ? 'contacts_validation_required'.tr : null,
                   ),
                   const SizedBox(height: 14),
                   LabeledField(
-                    label: 'Job Title',
-                    hint: 'Job Title',
+                    label: 'contacts_field_job_title'.tr,
+                    hint: 'contacts_field_job_title'.tr,
                     controller: _jobTitle,
                     icon: Icons.badge_outlined,
                     textCapitalization: TextCapitalization.sentences,
@@ -511,37 +509,37 @@ class _AddContactViewState extends State<AddContactView> {
 
               // ----- Contact Details -----
               SectionCard(
-                header: const SectionHeader(
+                header: SectionHeader(
                   icon: Icons.call_outlined,
-                  title: 'Contact Details',
+                  title: 'contacts_section_details'.tr,
                 ),
                 children: [
                   LabeledField(
-                    label: 'Email',
-                    hint: 'someone@email.com',
+                    label: 'contacts_field_email'.tr,
+                    hint: 'contacts_hint_email'.tr,
                     controller: _email,
                     icon: Icons.mail_outline,
                     keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 14),
                   LabeledField(
-                    label: 'Phone Number',
-                    hint: '+92308-6678901',
+                    label: 'contacts_field_phone'.tr,
+                    hint: 'contacts_hint_phone'.tr,
                     controller: _phone,
                     icon: Icons.call_outlined,
                     keyboardType: TextInputType.phone,
                   ),
                   const SizedBox(height: 14),
                   LabeledField(
-                    label: 'LinkedIn',
-                    hint: 'Linkedin.com/in/username',
+                    label: 'contacts_field_linkedin'.tr,
+                    hint: 'contacts_hint_linkedin'.tr,
                     controller: _linkedin,
                     icon: Icons.link,
                   ),
                   const SizedBox(height: 14),
                   LabeledField(
-                    label: 'Website',
-                    hint: 'Company Website',
+                    label: 'contacts_field_website'.tr,
+                    hint: 'contacts_hint_website'.tr,
                     controller: _website,
                     icon: Icons.language,
                     textInputAction: TextInputAction.done,
@@ -553,14 +551,14 @@ class _AddContactViewState extends State<AddContactView> {
               SectionCard(
                 header: SectionHeader(
                   icon: Icons.push_pin_outlined,
-                  title: 'Notes',
+                  title: 'contacts_section_notes'.tr,
                   iconBackgroundColor: const Color(0xFFFCE9DA),
                   iconColor: const Color(0xFFE08A3C),
                 ),
                 children: [
                   LabeledField(
                     controller: _notes,
-                    hint: 'Met at Dubai Expo, follow up next week.',
+                    hint: 'contacts_hint_notes'.tr,
                     maxLines: 3,
                     textCapitalization: TextCapitalization.sentences,
                   ),
@@ -603,8 +601,8 @@ class _AddContactViewState extends State<AddContactView> {
                           const SizedBox(width: 4),
                           Text(
                             _showMoreFields
-                                ? 'Show fewer fields'
-                                : 'Show more fields',
+                                ? 'contacts_show_fewer_fields'.tr
+                                : 'contacts_show_more_fields'.tr,
                             style: const TextStyle(
                               fontFamily: AppTextStyles.fontFamily,
                               color: AppColors.primary,
@@ -618,23 +616,23 @@ class _AddContactViewState extends State<AddContactView> {
                   if (_showMoreFields) ...[
                     const SizedBox(height: 14),
                     LabeledField(
-                      label: 'Company Email',
-                      hint: 'Contact@companyname.com',
+                      label: 'contacts_field_company_email'.tr,
+                      hint: 'contacts_hint_company_email'.tr,
                       controller: _companyEmail,
                       icon: Icons.mail_outline,
                       keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 14),
                     LabeledField(
-                      label: 'Company LinkedIn',
-                      hint: 'Linkedin.com/in/username',
+                      label: 'contacts_field_company_linkedin'.tr,
+                      hint: 'contacts_hint_linkedin'.tr,
                       controller: _companyLinkedin,
                       icon: Icons.link,
                     ),
                     const SizedBox(height: 14),
                     LabeledField(
-                      label: 'Company Address',
-                      hint: 'Company location, city',
+                      label: 'contacts_field_company_address'.tr,
+                      hint: 'contacts_hint_company_address'.tr,
                       controller: _companyAddress,
                       icon: Icons.location_on_outlined,
                       textCapitalization: TextCapitalization.sentences,
@@ -657,8 +655,7 @@ class _AddContactViewState extends State<AddContactView> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Delete Contact',
+                      child: Text('contacts_delete_contact'.tr,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           color: AppColors.white,
@@ -689,12 +686,12 @@ class _AddContactViewState extends State<AddContactView> {
           child: const Icon(Icons.fact_check_outlined, size: 16, color: AppColors.primary),
         ),
         const SizedBox(width: 8),
-        const Expanded(
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Review Extracted Data',
+                'contacts_review_title'.tr,
                 style: TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
                   fontSize: 13,
@@ -704,7 +701,7 @@ class _AddContactViewState extends State<AddContactView> {
               ),
               SizedBox(height: 2),
               Text(
-                'Please review and correct any information',
+                'contacts_review_subtitle'.tr,
                 style: TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
                   fontSize: 11.5,
@@ -733,7 +730,7 @@ class _AddContactViewState extends State<AddContactView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _fullName.isEmpty ? 'Full Name' : _fullName,
+                    _fullName.isEmpty ? 'contacts_placeholder_full_name'.tr : _fullName,
                     style: const TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 18,
@@ -743,7 +740,7 @@ class _AddContactViewState extends State<AddContactView> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    _companyName.text.isEmpty ? 'Company' : _companyName.text,
+                    _companyName.text.isEmpty ? 'contacts_placeholder_company'.tr : _companyName.text,
                     style: const TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 14,
@@ -753,7 +750,7 @@ class _AddContactViewState extends State<AddContactView> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Tap photo to add a picture',
+                    'contacts_photo_hint'.tr,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 12,

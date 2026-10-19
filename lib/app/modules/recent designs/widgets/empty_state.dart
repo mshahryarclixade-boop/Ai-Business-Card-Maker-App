@@ -65,9 +65,9 @@ class EmptyStateView extends StatelessWidget {
                     fit: BoxFit.contain,
                   ),
                   if (showHeartBadge)
-                    const Positioned(
+                    const PositionedDirectional(
                       top: 26,
-                      right: 26,
+                      end: 26,
                       child: _HeartBadge(),
                     ),
                 ],

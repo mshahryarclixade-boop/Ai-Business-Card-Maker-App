@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../controller/card_editor_controller.dart';
 import '../widgets/panel_shared.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class ImageToolPanel extends StatelessWidget {
   final CardEditorController controller;
@@ -36,8 +37,8 @@ class ImageToolPanel extends StatelessWidget {
               onPressed: controller.addImageFromGallery,
               icon: const Icon(Icons.photo_library_outlined,
                   size: 18, color: Colors.white),
-              label: const Text(
-                'Upload from Gallery',
+              label: Text(
+                'custom_create_upload_from_gallery'.tr,
                 style: TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
                   fontSize: 14,
@@ -64,7 +65,7 @@ class ImageToolPanel extends StatelessWidget {
               icon: Icon(Icons.camera_alt_outlined,
                   size: 18, color: AppColors.primary),
               label: Text(
-                'Take a picture',
+                'custom_create_take_picture'.tr,
                 style: TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
                   fontSize: 14,

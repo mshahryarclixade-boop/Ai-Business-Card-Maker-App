@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   cupertino_icons: ^1.0.8
   get: ^4.6.6
@@ -24,7 +26,7 @@ dependencies:
   gal: ^2.3.3            # writes bytes straight into the system photo gallery
   get_storage: ^2.1.1     # persist profile data locally
   shared_preferences: ^2.2.3
-  flutter_contacts: ^2.6.0
+  flutter_contacts: ^2.1.0
   mobile_scanner: ^7.4.2
   camera: ^0.11.2+1
   google_mlkit_text_recognition: ^0.15.0
@@ -52,6 +54,7 @@ dependencies:
   internet_connection_checker_plus: ^3.1.2
   clarity_flutter: ^1.10.1
   package_info_plus: ^9.0.1
+  file_picker: ^8.0.0
 
 dev_dependencies:
   flutter_test:
@@ -66,6 +69,7 @@ flutter:
     - assets/images/first_card_template.png
     - assets/images/bg_templates/
     - assets/icons/
+    - assets/lang/
     - assets/icons/social/
     - assets/icons/bottom_nav_icons/
     - assets/images/templates/travel/horizontal/
@@ -79,3 +83,17 @@ flutter:
     - assets/template_json/first_card/
     - assets/videos/
     - assets/images/toolkit/
+
+  fonts:
+    - family: SFPro
+      fonts:
+        - asset: assets/fonts/SF-Pro-Text-Light.otf
+          weight: 300
+        - asset: assets/fonts/SF-Pro-Text-Regular.otf
+          weight: 400
+        - asset: assets/fonts/SF-Pro-Text-Medium.otf
+          weight: 500
+        - asset: assets/fonts/SF-Pro-Text-Semibold.otf
+          weight: 600
+        - asset: assets/fonts/SF-Pro-Text-Bold.otf
+          weight: 700

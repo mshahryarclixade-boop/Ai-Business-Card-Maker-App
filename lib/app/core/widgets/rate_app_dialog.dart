@@ -3,10 +3,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../../core/translations/tr_extension.dart';
 
 /// Opens the "Happy With Our App?" dialog.
 ///
@@ -99,8 +100,8 @@ class _RateAppDialogState extends State<RateAppDialog> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        'Happy With Our App?',
+                      Text(
+                        'rate_app_title'.tr,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 20,
@@ -148,8 +149,8 @@ class _RateAppDialogState extends State<RateAppDialog> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                                child: const Text(
-                                  'No',
+                                child: Text(
+                                  'rate_app_no'.tr,
                                   style: TextStyle(
                                     fontFamily: AppTextStyles.fontFamily,
                                     fontSize: 15,
@@ -173,8 +174,8 @@ class _RateAppDialogState extends State<RateAppDialog> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                                child: const Text(
-                                  'Yes',
+                                child: Text(
+                                  'rate_app_yes'.tr,
                                   style: TextStyle(
                                     fontFamily: AppTextStyles.fontFamily,
                                     fontSize: 15,

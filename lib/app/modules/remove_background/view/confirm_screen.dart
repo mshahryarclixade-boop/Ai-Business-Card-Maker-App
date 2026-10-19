@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../controller/remove_background_controller.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class ConfirmScreen extends GetView<RemoveBackgroundController> {
   const ConfirmScreen({super.key});
@@ -30,9 +31,9 @@ class ConfirmScreen extends GetView<RemoveBackgroundController> {
           else
             Container(color: Colors.black),
 
-          Positioned(
+          PositionedDirectional(
             top: 8,
-            left: 8,
+            start: 8,
             child: SafeArea(
               child: GestureDetector(
                 onTap: controller.retake,
@@ -41,7 +42,7 @@ class ConfirmScreen extends GetView<RemoveBackgroundController> {
                     horizontal: 18,
                     vertical: 14,
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(
                         Icons.chevron_left,
@@ -49,7 +50,7 @@ class ConfirmScreen extends GetView<RemoveBackgroundController> {
                         size: 25,
                       ),
                       Text(
-                        'Retake',
+                        'remove_bg_confirm_retake'.tr,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 18,

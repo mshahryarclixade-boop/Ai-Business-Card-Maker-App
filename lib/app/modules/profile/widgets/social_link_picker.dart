@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import 'social_link_platforms.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// Result of a completed pick: the chosen platform's name, its icon
 /// asset, and the URL the user typed.
@@ -103,9 +104,9 @@ class _LinkUrlSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.only(
-          left: 20,
-          right: 20,
+        padding: EdgeInsetsDirectional.only(
+          start: 20,
+          end: 20,
           top: 20,
           bottom: MediaQuery.of(context).viewInsets.bottom + 20,
         ),
@@ -136,8 +137,8 @@ class _LinkUrlSheet extends StatelessWidget {
               controller: controller,
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
-                labelText: 'URL',
-                hintText: 'Enter link here',
+                labelText: 'profile_social_url_label'.tr,
+                hintText: 'profile_social_url_hint'.tr,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -153,7 +154,7 @@ class _LinkUrlSheet extends StatelessWidget {
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Add'),
+                child: Text('profile_social_add'.tr),
               ),
             ),
           ],

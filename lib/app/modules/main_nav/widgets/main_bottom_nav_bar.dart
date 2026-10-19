@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class NavItem {
   final String iconAsset;
@@ -21,15 +22,15 @@ const String _navIconsPath = 'assets/icons/bottom_nav_icons';
 const List<NavItem> mainNavItems = [
   NavItem(
     iconAsset: '$_navIconsPath/home.png',
-    label: 'Home',
+    label: 'main_nav_tab_home',
   ),
   NavItem(
     iconAsset: 'assets/icons/scan.png',
-    label: 'Scan',
+    label: 'main_nav_tab_scan',
   ),
   NavItem(
     iconAsset: '$_navIconsPath/contacts.png',
-    label: 'Contacts',
+    label: 'main_nav_tab_contacts',
   ),
 ];
 
@@ -115,16 +116,18 @@ class _Pill extends StatelessWidget {
             tabWidth - _kIndicatorSideGap,
           );
 
-          final indicatorLeft =
+          // Measured from the start edge, so it follows the selected tab in
+          // both left-to-right and right-to-left layouts.
+          final indicatorStart =
               (tabWidth * currentIndex) + (tabWidth - indicatorW) / 2;
 
           return Stack(
             clipBehavior: Clip.none,
             children: [
-              AnimatedPositioned(
+              AnimatedPositionedDirectional(
                 duration: _kSlideDuration,
                 curve: _kSlideCurve,
-                left: indicatorLeft,
+                start: indicatorStart,
                 top: (_kBarHeight - _kIndicatorH) / 2,
                 width: indicatorW,
                 height: _kIndicatorH,
@@ -143,7 +146,7 @@ class _Pill extends StatelessWidget {
                       child: Semantics(
                         button: true,
                         selected: isActive,
-                        label: item.label,
+                        label: item.label.tr,
                         child: GestureDetector(
                           onTap: () => _handleTap(index),
                           behavior: HitTestBehavior.opaque,
@@ -213,7 +216,7 @@ class _NavItemContent extends StatelessWidget {
     isActive ? AppColors.bottomselcted : AppColors.bottomNavInactive;
 
     // Scan icon is larger than Home and Contacts.
-    final double iconSize = item.label == 'Scan' ? 22 : 16;
+    final double iconSize = item.label == 'main_nav_tab_scan' ? 22 : 16;
 
     return SizedBox(
       width: 65,
@@ -256,7 +259,7 @@ class _NavItemContent extends StatelessWidget {
                 height: 1.3,
                 color: color,
               ),
-              child: Text(item.label),
+              child: Text(item.label.tr),
             ),
           ),
         ],

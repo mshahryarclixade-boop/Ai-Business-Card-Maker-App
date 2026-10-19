@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../career_studio/view/career_studio_view.dart';
-import '../../career_studio/view/profile_builder_view.dart';
-import '../../career_studio/view/profile_optimizer_view.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// "Your AI toolkit" on Home: Career Studio and AI Business Analyst.
 /// UI and navigation only.
@@ -21,14 +20,19 @@ class AiToolkitSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
-              'Your AI toolkit',
-              style: TextStyle(
-                fontFamily: AppTextStyles.fontFamily,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: AppColors.titleDark,
+            Flexible(
+              child: Text(
+                'home_toolkit_heading'.tr,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: AppTextStyles.fontFamily,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.titleDark,
+                ),
               ),
             ),
             const SizedBox(width: 8),
@@ -38,8 +42,8 @@ class AiToolkitSection extends StatelessWidget {
                 color: AppColors.primaryDark,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
-                'PRO',
+              child: Text(
+                'home_toolkit_pro_badge'.tr,
                 style: TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
                   fontSize: 11,
@@ -50,19 +54,19 @@ class AiToolkitSection extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         _ToolkitCard(
           onTap: () => _open(const CareerStudioView()),
           leading: Container(
-            width: 46,
-            height: 46,
+            width: 42,
+            height: 42,
             decoration: BoxDecoration(
               color: AppColors.primaryDark,
               borderRadius: BorderRadius.circular(12),
             ),
             child: SizedBox(
-              width: 46,
-              height: 46,
+              width: 42,
+              height: 42,
               child: Center(
                 child: Image.asset(
                   'assets/images/toolkit/career.png',
@@ -73,30 +77,15 @@ class AiToolkitSection extends StatelessWidget {
               ),
             ),
           ),
-          title: 'Career Studio',
-          subtitle: 'Build or optimize your LinkedIn profile',
-          footer: Row(
-            children: [
-              _ToolkitButton(
-                label: 'Build profile',
-                filled: true,
-                onTap: () => _open(const ProfileBuilderView()),
-              ),
-              const SizedBox(width: 8),
-              _ToolkitButton(
-                label: 'Optimize profile',
-                filled: false,
-                onTap: () => _open(const ProfileOptimizerView()),
-              ),
-            ],
-          ),
+          title: 'home_toolkit_career_studio_title',
+          subtitle: 'home_toolkit_career_studio_subtitle',
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         const _ToolkitCard(
           leading: _AvatarPair(),
-          title: 'AI Business Analyst',
-          subtitle: 'Talk to AI investors about your idea',
-          trailing: _FreeBadge('3 free'),
+          title: 'home_toolkit_business_analyst_title',
+          subtitle: 'home_toolkit_business_analyst_subtitle',
+          trailing: _FreeBadge('home_toolkit_free_badge'),
         ),
       ],
     );
@@ -108,7 +97,6 @@ class _ToolkitCard extends StatelessWidget {
     required this.leading,
     required this.title,
     required this.subtitle,
-    this.footer,
     this.trailing,
     this.onTap,
   });
@@ -116,7 +104,6 @@ class _ToolkitCard extends StatelessWidget {
   final Widget leading;
   final String title;
   final String subtitle;
-  final Widget? footer;
   final Widget? trailing;
   final VoidCallback? onTap;
 
@@ -130,7 +117,7 @@ class _ToolkitCard extends StatelessWidget {
         onTap: onTap,
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.pillBorder),
@@ -138,14 +125,20 @@ class _ToolkitCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              leading,
+              SizedBox(
+                width: 62,
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: leading,
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      title.tr,
                       style: const TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 15,
@@ -155,7 +148,7 @@ class _ToolkitCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      subtitle,
+                      subtitle.tr,
                       style: const TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 11.5,
@@ -163,50 +156,14 @@ class _ToolkitCard extends StatelessWidget {
                         color: AppColors.textBody,
                       ),
                     ),
-                    if (footer != null) ...[
-                      const SizedBox(height: 10),
-                      footer!,
-                    ],
                   ],
                 ),
               ),
-              if (trailing != null) ...[const SizedBox(width: 8), trailing!],
+              if (trailing != null) ...[
+                const SizedBox(width: 8),
+                trailing!,
+              ],
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ToolkitButton extends StatelessWidget {
-  const _ToolkitButton({
-    required this.label,
-    required this.filled,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool filled;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-        decoration: BoxDecoration(
-          color: filled ? AppColors.onboardingBtnEnd : AppColors.primarySoft,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontFamily: AppTextStyles.fontFamily,
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: filled ? Colors.white : AppColors.onboardingBtnEnd,
           ),
         ),
       ),
@@ -226,7 +183,9 @@ class _AvatarPair extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white, width: 2),
       ),
-      child: ClipOval(child: Image.asset(asset, fit: BoxFit.cover)),
+      child: ClipOval(
+        child: Image.asset(asset, fit: BoxFit.cover),
+      ),
     );
 
     return SizedBox(
@@ -235,8 +194,8 @@ class _AvatarPair extends StatelessWidget {
       child: Stack(
         children: [
           avatar('assets/images/toolkit/person2.png'),
-          Positioned(
-            left: 24,
+          PositionedDirectional(
+            start: 24,
             child: avatar('assets/images/toolkit/person1.png'),
           ),
         ],
@@ -259,7 +218,7 @@ class _FreeBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        label,
+        label.tr,
         style: const TextStyle(
           fontFamily: AppTextStyles.fontFamily,
           fontSize: 12,

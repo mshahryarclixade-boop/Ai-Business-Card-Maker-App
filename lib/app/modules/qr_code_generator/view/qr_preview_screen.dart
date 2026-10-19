@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -21,6 +21,7 @@ import '../model/qr_code_builder.dart';
 import '../model/qr_profile_data.dart';
 import '../service/qr_generator_service.dart';
 import '../../paywall/view/paywall_screen.dart';
+import '../../../core/translations/tr_extension.dart';
 
 const String _kQrFormKey = 'qr_form_data';
 
@@ -95,13 +96,13 @@ class QrPreviewScreen extends StatelessWidget {
     try {
       final allowed = await Gal.hasAccess() || await Gal.requestAccess();
       if (!allowed) {
-        message = 'Allow photo access to save the QR code.';
+        message = 'qr_preview_save_permission_message'.tr;
       } else {
         await Gal.putImage(file.path);
-        message = 'QR code saved to your gallery.';
+        message = 'qr_preview_saved_message'.tr;
       }
     } catch (_) {
-      message = 'Could not save the QR code. Please try again.';
+      message = 'qr_preview_save_failed_message'.tr;
     }
 
     if (context.mounted) {
@@ -119,15 +120,15 @@ class QrPreviewScreen extends StatelessWidget {
       await SharePlus.instance.share(
         ShareParams(
           files: [XFile(file.path)],
-          text: 'Scan this QR code to save my contact.',
-          subject: '${profile.fullName} - Contact QR Code',
+          text: 'qr_preview_share_text'.tr,
+          subject: 'qr_preview_share_subject'.trParams({'name': profile.fullName}),
           sharePositionOrigin: shareOrigin(),
         ),
       );
     } catch (_) {
       Get.snackbar(
-        'Could not share',
-        'Please try again.',
+        'qr_preview_share_failed_title'.tr,
+        'qr_preview_share_failed_message'.tr,
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
@@ -152,8 +153,8 @@ class QrPreviewScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: AppColors.titleDark),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Preview',
+        title: Text(
+          'qr_preview_title'.tr,
           style: TextStyle(
             fontFamily: AppTextStyles.fontFamily,
             fontSize: 18,
@@ -163,7 +164,7 @@ class QrPreviewScreen extends StatelessWidget {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsetsDirectional.only(end: 16),
             child: GestureDetector(
               onTap: () {
                 openPaywall(source: 'qr_preview', plans: true);
@@ -171,15 +172,15 @@ class QrPreviewScreen extends StatelessWidget {
               child: Container(
                 width: 36,
                 height: 36,
-                decoration: const BoxDecoration(
-                  color: AppColors.cardWhite,
-                  shape: BoxShape.circle,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryDark,
+                  borderRadius: BorderRadius.circular(22),
                 ),
                 alignment: Alignment.center,
                 child: const FaIcon(
                   FontAwesomeIcons.crown,
                   size: 18,
-                  color: Color(0xFFF5A623),
+                  color: AppColors.crownGold,
                 ),
               ),
             ),
@@ -227,7 +228,7 @@ class QrPreviewScreen extends StatelessWidget {
                   ),
                   if (profile.companyName.isNotEmpty)
                     Text(
-                      'Company • ${profile.companyName}',
+                      'qr_preview_company'.trParams({'company': profile.companyName}),
                       style:
                       const TextStyle(color: Colors.white70, fontSize: 12),
                     ),
@@ -264,8 +265,8 @@ class QrPreviewScreen extends StatelessWidget {
                     child: const Icon(Icons.badge_outlined,
                         color: Color(0xFF444494)),
                   ),
-                  title: const Text(
-                    'Create a Business Card',
+                  title: Text(
+                    'qr_preview_create_card_title'.tr,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
@@ -273,8 +274,8 @@ class QrPreviewScreen extends StatelessWidget {
                       letterSpacing: 0,
                     ),
                   ),
-                  subtitle: const Text(
-                    'Use this info to design your card',
+                  subtitle: Text(
+                    'qr_preview_create_card_subtitle'.tr,
                     style: TextStyle(
                       fontFamily: 'SF Pro',
                       fontWeight: FontWeight.w400,
@@ -320,7 +321,7 @@ class QrPreviewScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('Download'),
+                  child: Text('qr_preview_download'.tr),
                 ),
               ),
               const SizedBox(height: 10),
@@ -334,7 +335,7 @@ class QrPreviewScreen extends StatelessWidget {
                   ? ElevatedButton.icon(
                 onPressed: _share,
                 icon: const Icon(Icons.share, size: 18),
-                label: const Text('Share QR Code'),
+                label: Text('qr_preview_share_qr_code'.tr),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -354,7 +355,7 @@ class QrPreviewScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('Share'),
+                child: Text('qr_preview_share'.tr),
               ),
             ),
           ],

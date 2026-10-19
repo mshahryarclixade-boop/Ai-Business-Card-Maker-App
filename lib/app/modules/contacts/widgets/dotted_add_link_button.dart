@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// "+ Add custom links" button with a dashed/dotted rounded border.
 class DottedAddLinkButton extends StatelessWidget {
   final VoidCallback onTap;
-  final String label;
+  final String? label;
 
-  const DottedAddLinkButton({
-    super.key,
-    required this.onTap,
-    this.label = 'Add custom links',
-  });
+  const DottedAddLinkButton({super.key, required this.onTap, this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +27,10 @@ class DottedAddLinkButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.add,
-                size: 16,
-                color: AppColors.primary,
-              ),
+              const Icon(Icons.add, size: 16, color: AppColors.primary),
               const SizedBox(width: 6),
               Text(
-                label,
+                label ?? 'contacts_add_custom_links'.tr,
                 style: const TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
                   color: AppColors.primary,

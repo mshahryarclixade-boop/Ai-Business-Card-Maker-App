@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -13,6 +13,7 @@ import '../widget/search_bar_widget.dart';
 import '../widget/template_card.dart';
 import '../widget/template_preview_card.dart';
 import '../../paywall/view/paywall_screen.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class TemplateView extends GetView<TemplateController> {
   const TemplateView({super.key});
@@ -53,9 +54,9 @@ class _TemplateListing extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                const Center(
+                Center(
                   child: Text(
-                    'Templates',
+                    'template_title'.tr,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 18,
@@ -65,7 +66,7 @@ class _TemplateListing extends StatelessWidget {
                   ),
                 ),
                 Align(
-                  alignment: Alignment.centerRight,
+                  alignment: AlignmentDirectional.centerEnd,
                   child: GestureDetector(
                     onTap: () {
                       openPaywall(source: 'templates', plans: true);
@@ -158,11 +159,11 @@ class _TemplatesGrid extends StatelessWidget {
       final items = controller.currentList;
 
       if (items.isEmpty) {
-        return const Padding(
+        return Padding(
           padding: EdgeInsets.symmetric(vertical: 40),
           child: Center(
             child: Text(
-              'No templates saved yet',
+              'template_none_saved'.tr,
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
                 fontSize: 13,
@@ -244,22 +245,22 @@ class _TemplateDetailView extends StatelessWidget {
       children: [
         // Fixed header — back arrow, title, crown
         Padding(
-          padding: const EdgeInsets.fromLTRB(12, 12, 24, 0),
+          padding: const EdgeInsetsDirectional.fromSTEB(12, 12, 24, 0),
           child: SizedBox(
             height: 36,
             child: Stack(
               alignment: Alignment.center,
               children: [
                 Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: AlignmentDirectional.centerStart,
                   child: GestureDetector(
                     onTap: controller.closeTemplateDetail,
                     child: const Icon(Icons.arrow_back, size: 22, color: AppColors.titleDark),
                   ),
                 ),
-                const Center(
+                Center(
                   child: Text(
-                    'Templates',
+                    'template_title'.tr,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 18,
@@ -269,7 +270,7 @@ class _TemplateDetailView extends StatelessWidget {
                   ),
                 ),
                 Align(
-                  alignment: Alignment.centerRight,
+                  alignment: AlignmentDirectional.centerEnd,
                   child: Container(
                     width: 36,
                     height: 36,
@@ -329,9 +330,9 @@ class _TemplateDetailView extends StatelessWidget {
                           width: 144,
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
+                            alignment: AlignmentDirectional.centerStart,
                             child: Text(
-                              'Auto fill profile details',
+                              'template_auto_fill'.tr,
                               maxLines: 1,
                               style: AppTextStyles.splashSubtitle.copyWith(
                                 fontSize: 14,
@@ -359,8 +360,8 @@ class _TemplateDetailView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'Edit Template',
+                    child: Text(
+                      'template_edit_button'.tr,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 15,

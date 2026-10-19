@@ -2,10 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../controller/ai_card_controller.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class AiCardPreviewView extends StatelessWidget {
   const AiCardPreviewView({super.key});
@@ -27,7 +28,7 @@ class AiCardPreviewView extends StatelessWidget {
           elevation: 0,
           centerTitle: true,
           leading: Padding(
-            padding: const EdgeInsets.only(left: 16),
+            padding: const EdgeInsetsDirectional.only(start: 16),
             child: Container(
               width: 36,
               height: 36,
@@ -63,8 +64,8 @@ class AiCardPreviewView extends StatelessWidget {
               ),
             ),
           ),
-          title: const Text(
-            'Preview',
+          title: Text(
+            'ai_card_preview_title'.tr,
             style: TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 16,
@@ -74,7 +75,7 @@ class AiCardPreviewView extends StatelessWidget {
           ),
           actions: [
             Padding(
-              padding: const EdgeInsets.only(right: 16),
+              padding: const EdgeInsetsDirectional.only(end: 16),
               child: Container(
                 width: 36,
                 height: 36,
@@ -163,7 +164,7 @@ class AiCardPreviewView extends StatelessWidget {
                                       color: Colors.white,
                                     ),
                                   )
-                                : const Text('Download'),
+                                : Text('ai_card_preview_download'.tr),
                           ),
                         ),
                       ),
@@ -180,7 +181,7 @@ class AiCardPreviewView extends StatelessWidget {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: const Text('Regenerate'),
+                          child: Text('ai_card_preview_regenerate'.tr),
                         ),
                       ),
                     ],
@@ -225,14 +226,14 @@ class _GeneratingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           CircularProgressIndicator(color: AppColors.primary),
           SizedBox(height: 20),
           Text(
-            'AI Generating Your Card...',
+            'ai_card_preview_generating_title'.tr,
             style: TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 15,
@@ -242,7 +243,7 @@ class _GeneratingState extends StatelessWidget {
           ),
           SizedBox(height: 6),
           Text(
-            'This will take a few seconds',
+            'ai_card_preview_generating_subtitle'.tr,
             style: TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 12,
@@ -271,8 +272,8 @@ class _ErrorState extends StatelessWidget {
           children: [
             const Icon(Icons.error_outline, size: 40, color: Colors.grey),
             const SizedBox(height: 16),
-            const Text(
-              "Couldn't generate your card",
+            Text(
+              'ai_card_preview_error_title'.tr,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
@@ -306,13 +307,13 @@ class _ErrorState extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text('Try again'),
+                child: Text('ai_card_preview_try_again'.tr),
               ),
             ),
             const SizedBox(height: 10),
             TextButton(
               onPressed: () => Get.back(),
-              child: const Text('Go back'),
+              child: Text('ai_card_preview_go_back'.tr),
             ),
           ],
         ),

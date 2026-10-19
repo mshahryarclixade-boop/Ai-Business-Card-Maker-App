@@ -1,7 +1,7 @@
 import 'package:ai_business_card_maker/app/modules/custom_create/controller/card_editor_controller.dart';
 import 'package:ai_business_card_maker/app/modules/custom_create/view/card_editor_view.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -15,6 +15,7 @@ import '../widgets/pill_tab_selector.dart';
 import '../../home/widgets/recent_design_card.dart';
 import 'card_detail_view.dart';
 import '../../paywall/view/paywall_screen.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// SETTINGS > MY CARDS > MY CARDS
 
@@ -36,9 +37,9 @@ class MyCardsView extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  const Center(
+                  Center(
                     child: Text(
-                      'My Cards',
+                      'my_cards_title'.tr,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 18,
@@ -48,7 +49,7 @@ class MyCardsView extends StatelessWidget {
                     ),
                   ),
                   Align(
-                    alignment: Alignment.centerLeft,
+                    alignment: AlignmentDirectional.centerStart,
                     child: GestureDetector(
                       onTap: () => Get.back(),
                       child: const Icon(
@@ -59,7 +60,7 @@ class MyCardsView extends StatelessWidget {
                     ),
                   ),
                   Align(
-                    alignment: Alignment.centerRight,
+                    alignment: AlignmentDirectional.centerEnd,
                     child: GestureDetector(
                       onTap: () {
                         openPaywall(source: 'my_cards', plans: true);
@@ -67,15 +68,15 @@ class MyCardsView extends StatelessWidget {
                       child: Container(
                         width: 36,
                         height: 36,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryDark,
+                          borderRadius: BorderRadius.circular(22),
                         ),
                         alignment: Alignment.center,
                         child: const FaIcon(
                           FontAwesomeIcons.crown,
                           size: 18,
-                          color: Color(0xFFF5A623),
+                          color: AppColors.crownGold,
                         ),
                       ),
                     ),
@@ -94,7 +95,7 @@ class MyCardsView extends StatelessWidget {
                         () => PillTabSelector(
                       selectedIndex: controller.tabIndex.value,
                       onChanged: controller.selectTab,
-                      labels: const ['My Cards', 'Ai Cards'],
+                      labels: ['my_cards_title'.tr, 'my_cards_tab_ai'.tr],
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -128,10 +129,10 @@ class _SavedTabView extends StatelessWidget {
     if (designs.isEmpty) {
       return EmptyStateView(
         iconAsset: 'assets/icons/mycardicon.png',
-        title: 'No Cards Yet',
+        title: 'my_cards_empty_title'.tr,
         subtitle:
-        'Cards you create or save will\nappear here - ready to share\nanytime.',
-        buttonLabel: 'Create Card',
+        'my_cards_empty_subtitle'.tr,
+        buttonLabel: 'my_cards_empty_button'.tr,
         onButtonTap: () {
           Get.to(
                 () => const CardEditorView(),
@@ -178,9 +179,9 @@ class _AiCardsTabView extends StatelessWidget {
       return EmptyStateView(
         iconAsset: 'assets/icons/mycardicon.png',
         backgroundAsset: 'assets/icons/mycardbg.png',
-        title: 'No Ai Cards Yet',
-        subtitle: 'Cards generated with AI will\nappear here - ready to share\nanytime.',
-        buttonLabel: 'Generate with AI',
+        title: 'my_cards_ai_empty_title'.tr,
+        subtitle: 'my_cards_ai_empty_subtitle'.tr,
+        buttonLabel: 'my_cards_ai_empty_button'.tr,
         onButtonTap: () {
           Get.to(() => const AiCardGeneratorView());
         },

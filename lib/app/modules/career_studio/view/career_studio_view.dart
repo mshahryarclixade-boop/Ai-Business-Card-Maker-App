@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../paywall/view/paywall_screen.dart';
 import '../widgets/career_widgets.dart';
+import 'post_planner_view.dart';
 import 'profile_builder_view.dart';
 import 'profile_optimizer_view.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// Career Studio hub: Profile Builder, Profile Optimizer and (soon) Post
 /// Planner. UI only.
@@ -17,18 +19,18 @@ class CareerStudioView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.splashBg,
+      backgroundColor: AppColors.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
             CareerAppBar(
-              title: 'Career Studio',
+              title: 'career_hub_title'.tr,
               trailing: Container(
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
                   color: AppColors.primaryDark,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(22),
                 ),
                 child: GestureDetector(
                   onTap: () {
@@ -54,26 +56,30 @@ class CareerStudioView extends StatelessWidget {
                     const SizedBox(height: 16),
                     _ToolCard(
                       icon: Icons.person_add_alt_1_outlined,
-                      title: 'Profile Builder',
-                      description:
-                          'Create a profile from scratch, tuned for search and '
-                          'for the people you want to reach.',
-                      tags: const ['Headline', 'About', 'Skills', 'Keywords'],
+                      title: 'career_hub_tool_builder_title'.tr,
+                      description: 'career_hub_tool_builder_description'.tr,
+                      tags: [
+                        'career_hub_tag_headline'.tr,
+                        'career_hub_tag_about'.tr,
+                        'career_hub_tag_skills'.tr,
+                        'career_hub_tag_keywords'.tr,
+                      ],
                       onTap: () => Get.to(
-                        () => const ProfileBuilderView(),
+                            () => const ProfileBuilderView(),
                         transition: Transition.rightToLeft,
                       ),
                     ),
                     const SizedBox(height: 12),
                     _ToolCard(
                       icon: Icons.trending_up_rounded,
-                      title: 'Profile Optimizer',
-                      description:
-                          'Score your current profile and fix what\'s holding it '
-                          'back, one tap at a time.',
-                      tags: const ['Profile score', 'AI rewrites'],
+                      title: 'career_hub_tool_optimizer_title'.tr,
+                      description: 'career_hub_tool_optimizer_description'.tr,
+                      tags: [
+                        'career_hub_tag_profile_score'.tr,
+                        'career_hub_tag_ai_rewrites'.tr,
+                      ],
                       onTap: () => Get.to(
-                        () => const ProfileOptimizerView(),
+                            () => const ProfileOptimizerView(),
                         transition: Transition.rightToLeft,
                       ),
                     ),
@@ -104,8 +110,8 @@ class _HeroCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Positioned(
-            right: -40,
+          PositionedDirectional(
+            end: -40,
             top: -50,
             child: Container(
               width: 170,
@@ -121,46 +127,53 @@ class _HeroCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Get found by the right\npeople on LinkedIn',
+                Text(
+                  'career_hub_hero_title'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
-                    fontSize: 24,
+                    fontSize: 22,
                     height: 1.2,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w800,
                     color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'We reuse your card details, so you start halfway done.',
+                  'career_hub_hero_subtitle'.tr,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
-                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 13,
                     height: 1.35,
                     color: Colors.white.withValues(alpha: 0.8),
                   ),
                 ),
                 const SizedBox(height: 18),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Free plan this month',
-                      style: TextStyle(
-                        fontFamily: AppTextStyles.fontFamily,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                    Flexible(
+                      child: Text(
+                        'career_hub_hero_plan'.tr,
+                        style: TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                    Text(
-                      '1 build · 1 scan left',
-                      style: TextStyle(
-                        fontFamily: AppTextStyles.fontFamily,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                    const SizedBox(width: 12),
+                    Flexible(
+                      child: Text(
+                        'career_hub_hero_usage'.tr,
+                        textAlign: TextAlign.end,
+                        style: TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],
@@ -173,7 +186,7 @@ class _HeroCard extends StatelessWidget {
                     minHeight: 6,
                     backgroundColor: Colors.white.withValues(alpha: 0.18),
                     valueColor: const AlwaysStoppedAnimation(
-                      AppColors.generateCardEnd,
+                      AppColors.lightpurple,
                     ),
                   ),
                 ),
@@ -247,7 +260,7 @@ class _ToolCard extends StatelessWidget {
                     const SizedBox(height: 12),
                     FittedBox(
                       fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
+                      alignment: AlignmentDirectional.centerStart,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -283,68 +296,77 @@ class _ComingSoonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DashedBox(
-      radius: 18,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const CareerIconTile(Icons.calendar_today_outlined),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Text(
-                        'Post Planner',
-                        style: TextStyle(
-                          fontFamily: AppTextStyles.fontFamily,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.titleDark,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF1C7),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Text(
-                          'COMING SOON',
-                          style: TextStyle(
-                            fontFamily: AppTextStyles.fontFamily,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF8A6100),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => Get.to(
+            () => const PostPlannerView(),
+        transition: Transition.rightToLeft,
+      ),
+      child: DashedBox(
+        radius: 18,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const CareerIconTile(Icons.calendar_today_outlined),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'career_hub_post_planner_title'.tr,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: AppTextStyles.fontFamily,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.titleDark,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'Write, schedule and track your LinkedIn posts from one '
-                    'place.',
-                    style: TextStyle(
-                      fontFamily: AppTextStyles.fontFamily,
-                      fontSize: 13.5,
-                      height: 1.35,
-                      color: AppColors.textSubtitle,
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF1C7),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'career_hub_coming_soon_badge'.tr,
+                            style: TextStyle(
+                              fontFamily: AppTextStyles.fontFamily,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF8A6100),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 6),
+                    Text(
+                      'career_hub_post_planner_description'.tr,
+                      style: TextStyle(
+                        fontFamily: AppTextStyles.fontFamily,
+                        fontSize: 13.5,
+                        height: 1.35,
+                        color: AppColors.textSubtitle,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

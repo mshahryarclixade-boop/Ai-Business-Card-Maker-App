@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../model/template_item.dart';
 // ignore: unused_import
 import '../widget/template_preview_card.dart';
+import '../../../core/translations/tr_extension.dart';
 
 /// Pushed as its own route (no bottom nav) — this is where the actual
 /// editing tools (text, colors, logo, etc.) will live later.
@@ -27,8 +28,8 @@ class TemplateEditView extends StatelessWidget {
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
-        title: const Text(
-          'Edit Templates',
+        title: Text(
+          'template_edit_title'.tr,
           style: TextStyle(
             fontFamily: AppTextStyles.fontFamily,
             fontSize: 18,
@@ -38,7 +39,7 @@ class TemplateEditView extends StatelessWidget {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsetsDirectional.only(end: 8),
             child: TextButton(
               onPressed: () {
                 // TODO: hook up real save logic once the editor is built
@@ -57,8 +58,8 @@ class TemplateEditView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text(
-                'Save',
+              child: Text(
+                'template_edit_save'.tr,
                 style: TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
                   fontSize: 14,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
+import '../../../core/translations/tr_extension.dart';
 
 class CustomColorPickerPopup extends StatefulWidget {
   final Color initialColor;
@@ -72,7 +73,7 @@ class _CustomColorPickerPopupState extends State<CustomColorPickerPopup> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Align(
-              alignment: Alignment.topRight,
+              alignment: AlignmentDirectional.topEnd,
               child: GestureDetector(
                 onTap: widget.onClose,
                 behavior: HitTestBehavior.opaque,
@@ -98,7 +99,7 @@ class _CustomColorPickerPopupState extends State<CustomColorPickerPopup> {
                     color: Colors.white.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Text('Hex',
+                  child: Text('custom_create_hex'.tr,
                       style: TextStyle(color: Colors.white70, fontSize: 11)),
                 ),
                 const SizedBox(width: 8),
@@ -138,14 +139,14 @@ class _CustomColorPickerPopupState extends State<CustomColorPickerPopup> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Saved colors',
+                Text('custom_create_saved_colors'.tr,
                     style: TextStyle(
                         color: Colors.white70,
                         fontSize: 11.5,
                         fontWeight: FontWeight.w600)),
                 GestureDetector(
                   onTap: () => widget.onAddSavedColor(color),
-                  child: const Text('+ Add',
+                  child: Text('custom_create_add_saved_color'.tr,
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 11.5,

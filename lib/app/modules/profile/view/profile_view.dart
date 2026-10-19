@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -10,6 +10,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../controller/profile_controller.dart';
 import '../model/profile_model.dart';
 import '../../paywall/view/paywall_screen.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -36,7 +37,7 @@ class _ProfileViewState extends State<ProfileView> {
       backgroundColor: AppColors.scaffoldBg,
       body: SafeArea(
         child: Obx(
-              () => Stack(
+          () => Stack(
             children: [
               controller.hasProfile.value
                   ? _SavedProfile(cardKey: _cardKey)
@@ -81,7 +82,7 @@ class _EmptyProfile extends StatelessWidget {
               alignment: Alignment.center,
               children: [
                 Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: AlignmentDirectional.centerStart,
                   child: GestureDetector(
                     onTap: () => Get.back(),
                     child: Container(
@@ -95,15 +96,15 @@ class _EmptyProfile extends StatelessWidget {
                       child: const Icon(
                         Icons.arrow_back,
                         size: 20,
-                        color:Colors.black,
+                        color: Colors.black,
                       ),
                     ),
                   ),
                 ),
 
-                const Center(
+                Center(
                   child: Text(
-                    'Profile',
+                    'profile_title'.tr,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 18,
@@ -114,7 +115,7 @@ class _EmptyProfile extends StatelessWidget {
                 ),
 
                 Align(
-                  alignment: Alignment.centerRight,
+                  alignment: AlignmentDirectional.centerEnd,
                   child: GestureDetector(
                     onTap: () {
                       openPaywall(source: 'profile', plans: true);
@@ -146,10 +147,7 @@ class _EmptyProfile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 25,
-              vertical: 34,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 34),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
@@ -172,8 +170,8 @@ class _EmptyProfile extends StatelessWidget {
 
                 const SizedBox(height: 22),
 
-                const Text(
-                  'Set up your profile once, use\neverywhere',
+                Text(
+                  'profile_empty_title'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
@@ -185,8 +183,8 @@ class _EmptyProfile extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                const Text(
-                  'Autofill your cards, QR codes and\nAI generator with one tap',
+                Text(
+                  'profile_empty_subtitle'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
@@ -239,7 +237,7 @@ class _SavedProfile extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: AlignmentDirectional.centerStart,
                       child: GestureDetector(
                         onTap: () => Get.back(),
                         child: Container(
@@ -259,9 +257,9 @@ class _SavedProfile extends StatelessWidget {
                       ),
                     ),
 
-                    const Center(
+                    Center(
                       child: Text(
-                        'Profile',
+                        'profile_title'.tr,
                         style: TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 18,
@@ -272,7 +270,7 @@ class _SavedProfile extends StatelessWidget {
                     ),
 
                     Align(
-                      alignment: Alignment.centerRight,
+                      alignment: AlignmentDirectional.centerEnd,
                       child: Container(
                         width: 36,
                         height: 36,
@@ -302,216 +300,227 @@ class _SavedProfile extends StatelessWidget {
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    RepaintBoundary(
-                      key: cardKey,
-                      child: SizedBox(
-                        width: _CardSpec.cardWidth,
-                        height: _CardSpec.cardHeight,
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Container(
-                              width: _CardSpec.cardWidth,
-                              height: _CardSpec.cardHeight,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Color(0x40000000),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            Positioned(
-                              top: 0,
-                              left: 0,
-                              child: ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(16),
-                                  topRight: Radius.circular(16),
+                    Directionality(
+                      textDirection: TextDirection
+                          .ltr, // cards always render left-to-right
+                      child: RepaintBoundary(
+                        key: cardKey,
+                        child: SizedBox(
+                          width: _CardSpec.cardWidth,
+                          height: _CardSpec.cardHeight,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Container(
+                                width: _CardSpec.cardWidth,
+                                height: _CardSpec.cardHeight,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Color(0x40000000),
+                                      blurRadius: 4,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
                                 ),
-                                child: Obx(
-                                      () => Container(
-                                    width: _CardSpec.cardWidth,
-                                    height: _CardSpec.coverHeight,
-                                    color: const Color(0xFFE1E1EE),
-                                    child: controller.coverImage.value != null
-                                        ? Image.file(
-                                      controller.coverImage.value!,
+                              ),
+
+                              Positioned(
+                                top: 0,
+                                left: 0,
+                                child: ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(16),
+                                    topRight: Radius.circular(16),
+                                  ),
+                                  child: Obx(
+                                    () => Container(
                                       width: _CardSpec.cardWidth,
                                       height: _CardSpec.coverHeight,
-                                      fit: BoxFit.cover,
-                                    )
-                                        : null,
+                                      color: const Color(0xFFE1E1EE),
+                                      child: controller.coverImage.value != null
+                                          ? Image.file(
+                                              controller.coverImage.value!,
+                                              width: _CardSpec.cardWidth,
+                                              height: _CardSpec.coverHeight,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : null,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
 
-                            Positioned(
-                              top: _CardSpec.avatarTop,
-                              left: (_CardSpec.cardWidth -
-                                  _CardSpec.avatarSize) /
-                                  2,
-                              child: Obx(
-                                    () => Container(
-                                  width: _CardSpec.avatarSize,
-                                  height: _CardSpec.avatarSize,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: AppColors.primary,
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 3,
-                                    ),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Color(0x1A000000),
-                                        blurRadius: 6,
-                                        offset: Offset(0, 2),
+                              Positioned(
+                                top: _CardSpec.avatarTop,
+                                left:
+                                    (_CardSpec.cardWidth -
+                                        _CardSpec.avatarSize) /
+                                    2,
+                                child: Obx(
+                                  () => Container(
+                                    width: _CardSpec.avatarSize,
+                                    height: _CardSpec.avatarSize,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: AppColors.primary,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 3,
                                       ),
-                                    ],
-                                  ),
-                                  child: ClipOval(
-                                    child: controller.frontImage.value != null
-                                        ? Image.file(
-                                      controller.frontImage.value!,
-                                      width: _CardSpec.avatarSize,
-                                      height: _CardSpec.avatarSize,
-                                      fit: BoxFit.cover,
-                                    )
-                                        : const Icon(
-                                      Icons.person,
-                                      color: Colors.white,
-                                      size: 42,
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Color(0x1A000000),
+                                          blurRadius: 6,
+                                          offset: Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipOval(
+                                      child: controller.frontImage.value != null
+                                          ? Image.file(
+                                              controller.frontImage.value!,
+                                              width: _CardSpec.avatarSize,
+                                              height: _CardSpec.avatarSize,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : const Icon(
+                                              Icons.person,
+                                              color: Colors.white,
+                                              size: 42,
+                                            ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
 
-                            Positioned(
-                              top: _CardSpec.avatarTop +
-                                  _CardSpec.avatarSize +
-                                  12,
-                              left: 24,
-                              right: 24,
-                              bottom: 64,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    controller.profile.fullName,
-                                    style: const TextStyle(
-                                      fontFamily: AppTextStyles.fontFamily,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
-                                      color: Color(0xFF1E1E24),
+                              Positioned(
+                                top:
+                                    _CardSpec.avatarTop +
+                                    _CardSpec.avatarSize +
+                                    12,
+                                left: 24,
+                                right: 24,
+                                bottom: 64,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      controller.profile.fullName,
+                                      style: const TextStyle(
+                                        fontFamily: AppTextStyles.fontFamily,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF1E1E24),
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    controller.profile.companyName,
-                                    style: const TextStyle(
-                                      fontFamily: AppTextStyles.fontFamily,
-                                      fontSize: 12,
-                                      color: AppColors.textSubtitle,
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      controller.profile.companyName,
+                                      style: const TextStyle(
+                                        fontFamily: AppTextStyles.fontFamily,
+                                        fontSize: 12,
+                                        color: AppColors.textSubtitle,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    controller.profile.jobTitle,
-                                    style: const TextStyle(
-                                      fontFamily: AppTextStyles.fontFamily,
-                                      fontSize: 12,
-                                      color: AppColors.textSubtitle,
+                                    Text(
+                                      controller.profile.jobTitle,
+                                      style: const TextStyle(
+                                        fontFamily: AppTextStyles.fontFamily,
+                                        fontSize: 12,
+                                        color: AppColors.textSubtitle,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    controller.profile.companyWebsite,
-                                    style: const TextStyle(
-                                      fontFamily: AppTextStyles.fontFamily,
-                                      fontSize: 12,
-                                      color: AppColors.textSubtitle,
+                                    Text(
+                                      controller.profile.companyWebsite,
+                                      style: const TextStyle(
+                                        fontFamily: AppTextStyles.fontFamily,
+                                        fontSize: 12,
+                                        color: AppColors.textSubtitle,
+                                      ),
                                     ),
-                                  ),
 
-                                  const SizedBox(height: 18),
+                                    const SizedBox(height: 18),
 
-                                  Row(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
+                                    Row(
+                                      crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                          children: [
-                                            _ProfileInfoRow(
-                                              icon: Icons.email_outlined,
-                                              text: controller.profile.email,
-                                            ),
-                                            _ProfileInfoRow(
-                                              icon: Icons.phone_outlined,
-                                              text: controller.profile.phone,
-                                            ),
-                                            if (controller.profile.socialLinks
-                                                .isNotEmpty)
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
                                               _ProfileInfoRow(
-                                                icon: Icons.link_rounded,
-                                                text: controller
-                                                    .profile.socialLinks.first,
-                                              )
-                                            else
-                                              _ProfileInfoRow(
-                                                icon: Icons
-                                                    .location_on_outlined,
-                                                text: controller
-                                                    .profile.location,
+                                                icon: Icons.email_outlined,
+                                                text: controller.profile.email,
                                               ),
-                                          ],
+                                              _ProfileInfoRow(
+                                                icon: Icons.phone_outlined,
+                                                text: controller.profile.phone,
+                                              ),
+                                              if (controller
+                                                  .profile
+                                                  .socialLinks
+                                                  .isNotEmpty)
+                                                _ProfileInfoRow(
+                                                  icon: Icons.link_rounded,
+                                                  text: controller
+                                                      .profile
+                                                      .socialLinks
+                                                      .first,
+                                                )
+                                              else
+                                                _ProfileInfoRow(
+                                                  icon: Icons
+                                                      .location_on_outlined,
+                                                  text: controller
+                                                      .profile
+                                                      .location,
+                                                ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Container(
-                                        width: _CardSpec.qrSize,
-                                        height: _CardSpec.qrSize,
-                                        padding: const EdgeInsets.all(4),
-                                        child: QrImageView(
-                                          data: _SavedProfile._vCardData(
-                                            controller.profile,
-                                          ),
-                                          version: QrVersions.auto,
-                                          gapless: true,
-                                          eyeStyle: const QrEyeStyle(
-                                            eyeShape: QrEyeShape.square,
-                                            color: Color(0xFF1E1E24),
-                                          ),
-                                          dataModuleStyle:
-                                          const QrDataModuleStyle(
-                                            dataModuleShape:
-                                            QrDataModuleShape.square,
-                                            color: Color(0xFF1E1E24),
+                                        const SizedBox(width: 12),
+                                        Container(
+                                          width: _CardSpec.qrSize,
+                                          height: _CardSpec.qrSize,
+                                          padding: const EdgeInsets.all(4),
+                                          child: QrImageView(
+                                            data: _SavedProfile._vCardData(
+                                              controller.profile,
+                                            ),
+                                            version: QrVersions.auto,
+                                            gapless: true,
+                                            eyeStyle: const QrEyeStyle(
+                                              eyeShape: QrEyeShape.square,
+                                              color: Color(0xFF1E1E24),
+                                            ),
+                                            dataModuleStyle:
+                                                const QrDataModuleStyle(
+                                                  dataModuleShape:
+                                                      QrDataModuleShape.square,
+                                                  color: Color(0xFF1E1E24),
+                                                ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
 
-                    Positioned(
+                    PositionedDirectional(
                       top: 1,
-                      right: 0,
+                      end: 0,
                       child: GestureDetector(
                         onTap: controller.toggleCardMenu,
                         child: SizedBox(
@@ -527,24 +536,24 @@ class _SavedProfile extends StatelessWidget {
                     ),
 
                     Obx(
-                          () => controller.isProcessingCard.value
+                      () => controller.isProcessingCard.value
                           ? Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: _CardSpec.cardHeight,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      )
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              height: _CardSpec.cardHeight,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
                           : const SizedBox.shrink(),
                     ),
                   ],
@@ -577,10 +586,7 @@ class _ProfileInfoRow extends StatelessWidget {
   final IconData icon;
   final String text;
 
-  const _ProfileInfoRow({
-    required this.icon,
-    required this.text,
-  });
+  const _ProfileInfoRow({required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -591,11 +597,7 @@ class _ProfileInfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 15,
-            color: AppColors.primary,
-          ),
+          Icon(icon, size: 15, color: AppColors.primary),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -623,9 +625,9 @@ class _CardMenuPopup extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<ProfileController>();
 
-    return Positioned(
+    return PositionedDirectional(
       top: 56,
-      right: 20,
+      end: 20,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(13.3),
         child: BackdropFilter(
@@ -653,7 +655,7 @@ class _CardMenuPopup extends StatelessWidget {
               children: [
                 _CardMenuItem(
                   icon: Icons.ios_share_rounded,
-                  label: 'Share',
+                  label: 'profile_menu_share'.tr,
                   onTap: () {
                     controller.closeCardMenu();
                     controller.shareCard(cardKey);
@@ -663,7 +665,7 @@ class _CardMenuPopup extends StatelessWidget {
                 const SizedBox(height: 8),
                 _CardMenuItem(
                   icon: Icons.file_download_outlined,
-                  label: 'Download',
+                  label: 'profile_menu_download'.tr,
                   onTap: () {
                     controller.closeCardMenu();
                     controller.downloadCard(cardKey);
@@ -710,14 +712,20 @@ class _CardMenuItem extends StatelessWidget {
               color: highlighted ? Colors.white : const Color(0xFF1E1E24),
             ),
             const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontFamily: AppTextStyles.fontFamily,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color:
-                highlighted ? Colors.white : const Color(0xFF1E1E24),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontFamily: AppTextStyles.fontFamily,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: highlighted ? Colors.white : const Color(0xFF1E1E24),
+                  ),
+                ),
               ),
             ),
           ],
@@ -735,10 +743,7 @@ class _SuccessOverlay extends StatelessWidget {
     return Positioned.fill(
       child: ClipRect(
         child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: 5,
-            sigmaY: 5,
-          ),
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: Container(
             color: Colors.black.withOpacity(0.12),
             child: Center(
@@ -776,8 +781,8 @@ class _SuccessOverlay extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const Text(
-                      'Profile Saved',
+                    Text(
+                      'profile_saved_title'.tr,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 14,
@@ -786,8 +791,8 @@ class _SuccessOverlay extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    const Text(
-                      'Your profile has been saved successfully.',
+                    Text(
+                      'profile_saved_success_message'.tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,

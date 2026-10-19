@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:get_storage/get_storage.dart';
 import '../../../core/services/analytics_service.dart';
 import '../../../core/services/app_update_service.dart';
@@ -9,6 +9,7 @@ import '../../../routes/app_routes.dart';
 import '../../onboarding/controller/onboarding_controller.dart';
 import '../../paywall/controller/subscription_controller.dart';
 import '../../paywall/view/paywall_screen.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -118,10 +119,10 @@ class _SplashViewState extends State<SplashView>
                 ),
               ),
               const SizedBox(height: 25),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  'AI Business\nCard Maker',
+                  'splash_title'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Inter',
@@ -134,10 +135,10 @@ class _SplashViewState extends State<SplashView>
                 ),
               ),
               const Spacer(flex: 18),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 19),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 19),
                 child: Text(
-                  'Your Next First Impression',
+                  'splash_tagline'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Inter',
@@ -150,8 +151,8 @@ class _SplashViewState extends State<SplashView>
                 ),
               ),
               const SizedBox(height: 11),
-              const Text(
-                'SMART CARDS REAL CONNECTIONS',
+              Text(
+                'splash_subtitle'.tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'SF Pro',

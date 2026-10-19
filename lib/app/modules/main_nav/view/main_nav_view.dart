@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -11,6 +11,7 @@ import '../controller/main_nav_controller.dart';
 import '../../profile/view/profile_view.dart';
 import '../../contacts/view/contacts_view.dart';
 import '../widgets/main_bottom_nav_bar.dart';
+import '../../../core/translations/tr_extension.dart';
 
 const double _kDialogWidth = 332;
 const double _kDialogMinHeight = 188;
@@ -80,8 +81,8 @@ class MainNavView extends GetView<MainNavController> {
                     color: AppColors.titleDark,
                   ),
                   const SizedBox(height: 6),
-                  const Text(
-                    'Exit App',
+                  Text(
+                    'main_nav_exit_title'.tr,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 20,
@@ -92,8 +93,8 @@ class MainNavView extends GetView<MainNavController> {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  const Text(
-                    'Are you sure you want to exit?',
+                  Text(
+                    'main_nav_exit_message'.tr,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
@@ -126,14 +127,17 @@ class MainNavView extends GetView<MainNavController> {
                               ),
                             ),
                           ),
-                          child: const Text(
-                            'Cancel',
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                            'main_nav_exit_cancel'.tr,
                             style: TextStyle(
                               fontFamily: AppTextStyles.fontFamily,
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: AppColors.titleDark,
                             ),
+                          ),
                           ),
                         ),
                       ),
@@ -156,14 +160,17 @@ class MainNavView extends GetView<MainNavController> {
                               ),
                             ),
                           ),
-                          child: const Text(
-                            'Exit',
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                            'main_nav_exit_confirm'.tr,
                             style: TextStyle(
                               fontFamily: AppTextStyles.fontFamily,
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
                             ),
+                          ),
                           ),
                         ),
                       ),

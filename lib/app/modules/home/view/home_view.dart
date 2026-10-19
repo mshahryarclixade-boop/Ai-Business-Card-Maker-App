@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../widgets/ai_toolkit_section.dart';
 import '../widgets/home_templates_section.dart';
@@ -10,6 +10,7 @@ import '../../settings/view/settings_view.dart';
 import '../controller/home_controller.dart';
 import '../widgets/my_card_section.dart';
 import '../../paywall/view/paywall_screen.dart';
+import '../../../core/translations/tr_extension.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -36,19 +37,27 @@ class HomeView extends GetView<HomeController> {
                 children: [
                   // Fixed top bar
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 16, 15, 0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 15, 0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'AI Business Card Maker',
-                          style: TextStyle(
-                            fontFamily: AppTextStyles.fontFamily,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.titleDark,
+                        Expanded(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: AlignmentDirectional.centerStart,
+                            child: Text(
+                              'home_app_title'.tr,
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontFamily: AppTextStyles.fontFamily,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.titleDark,
+                              ),
+                            ),
                           ),
                         ),
+                        const SizedBox(width: 12),
                         Row(
                           children: [
                             GestureDetector(
@@ -58,15 +67,15 @@ class HomeView extends GetView<HomeController> {
                               child: Container(
                                 width: 36,
                                 height: 36,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.cardWhite,
-                                  shape: BoxShape.circle,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryDark,
+                                  borderRadius: BorderRadius.circular(22),
                                 ),
                                 alignment: Alignment.center,
                                 child: const FaIcon(
                                   FontAwesomeIcons.crown,
                                   size: 18,
-                                  color: Color(0xFFF5A623),
+                                  color: AppColors.crownGold,
                                 ),
                               ),
                             ),
@@ -86,20 +95,19 @@ class HomeView extends GetView<HomeController> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
 
                   Expanded(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 22),
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-
                           const MyCardSection(),
                           const HomeTemplatesSection(),
-                          const SizedBox(height: 18),
+                          const SizedBox(height: 12),
                           const AiToolkitSection(),
-                          const SizedBox(height: 90),
+                          const SizedBox(height: 100),
                         ],
                       ),
                     ),
