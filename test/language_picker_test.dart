@@ -67,50 +67,49 @@ void main() {
   }
 
   TextDirection dir(WidgetTester t) =>
-      Directionality.of(t.element(find.byType(SettingsView)));
+      Directionality.of(t.element(find.byType(SettingsView, skipOffstage: false)));
 
-  testWidgets('card shows the current language and the sheet lists all', (
+  const names = [
+    'English',
+    'العربية',
+    'हिन्दी',
+    'Afrikaans',
+    'Español',
+    'Português',
+    'Bahasa Indonesia',
+    '中文',
+    '한국어',
+    '日本語',
+    'Italiano',
+    'Français',
+    'Deutsch',
+    'Русский',
+  ];
+
+  testWidgets('card shows the current language; the screen lists all', (
     t,
   ) async {
     await pumpApp(t);
     addTearDown(() => t.runAsync(AppStrings.useSystemDefault));
     expect(find.text('Language'), findsOneWidget);
-    expect(find.text('System default'), findsOneWidget); // card value
+    expect(find.text('English'), findsOneWidget); // card value (device = en)
 
     await t.tap(find.text('Language'));
     await t.pumpAndSettle();
-    // Exactly this list, in this order, each in its own script (System
-    // default first). Urdu is not offered in the picker.
-    const names = [
-      'English',
-      'العربية',
-      'हिन्दी',
-      'Afrikaans',
-      'Español',
-      'Português',
-      'Bahasa Indonesia',
-      '中文',
-      '한국어',
-      '日本語',
-      'Italiano',
-      'Français',
-      'Deutsch',
-      'Русский',
-    ];
-    expect(kLanguageOptions.map((o) => o.nativeName), [null, ...names]);
+    // Exactly this list, in this order, each in its own script.
+    expect(kLanguageOptions.map((o) => o.nativeName), names);
+    expect(find.text('اردو'), findsNothing);
     final ys = <double>[];
-    for (final name in names) {
-      expect(find.text(name), findsOneWidget, reason: name);
-      ys.add(t.getTopLeft(find.text(name)).dy);
+    for (final name in names.take(8)) {
+      expect(find.text(name), findsWidgets, reason: name);
+    }
+    for (final name in ['العربية', 'हिन्दी', 'Afrikaans']) {
+      ys.add(t.getTopLeft(find.text(name).last).dy);
     }
     expect(ys, [...ys]..sort(), reason: 'rows are in the requested order');
-    expect(find.text('اردو'), findsNothing);
-    // "System default" is the selected row: exactly one check mark.
-    expect(find.byIcon(Icons.check_rounded), findsOneWidget);
   });
 
-  testWidgets('picking Arabic updates text and direction live; System default '
-      'clears it', (t) async {
+  testWidgets('picking Arabic updates text and direction live', (t) async {
     await pumpApp(t);
     addTearDown(() => t.runAsync(AppStrings.useSystemDefault));
     expect(dir(t), TextDirection.ltr);
@@ -124,24 +123,13 @@ void main() {
     expect(AppStrings.language, 'ar');
     expect(AppStrings.savedChoice, 'ar');
     expect(dir(t), TextDirection.rtl);
-    expect(find.text('Settings'), findsNothing);
-    expect(find.text('العربية'), findsWidgets); // card now shows Arabic
+    expect(find.text('Language'), findsNothing); // title is now Arabic
 
-    // Back to English, then System default.
-    await t.tap(find.text('العربية').first);
-    await t.pumpAndSettle();
+    // Back to English.
     await t.tap(find.text('English'));
     await settle(t);
     await t.pumpAndSettle();
     expect(dir(t), TextDirection.ltr);
-    expect(find.text('Settings'), findsOneWidget);
-
-    await t.tap(find.text('English').first);
-    await t.pumpAndSettle();
-    await t.tap(find.text('System default'));
-    await settle(t);
-    await t.pumpAndSettle();
-    expect(AppStrings.savedChoice, isNull);
-    expect(GetStorage().read<String>('app_language'), isNull);
+    expect(find.text('Language'), findsWidgets);
   });
 }

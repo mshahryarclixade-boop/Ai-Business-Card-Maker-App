@@ -2,7 +2,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:ai_business_card_maker/app/core/translations/app_strings.dart';
+import 'package:ai_business_card_maker/app/modules/career_studio/controller/career_hub_controller.dart';
+import 'package:ai_business_card_maker/app/modules/career_studio/controller/career_score_store.dart';
+import 'package:ai_business_card_maker/app/modules/career_studio/controller/profile_report_controller.dart';
+import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_analyzing_view.dart';
+import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_fix_view.dart';
+import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_fixes_ready_view.dart';
+import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_new_score_view.dart';
 import 'package:ai_business_card_maker/app/modules/career_studio/view/career_studio_view.dart';
+import 'package:ai_business_card_maker/app/modules/career_studio/controller/profile_builder_flow_controller.dart';
+import 'package:ai_business_card_maker/app/modules/career_studio/widgets/career_hub_sheets.dart';
+import 'package:ai_business_card_maker/app/modules/career_studio/widgets/pdf_help_sheet.dart';
 import 'package:ai_business_card_maker/app/modules/career_studio/view/post_planner_view.dart';
 import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_builder_view.dart';
 import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_generated_view.dart';
@@ -432,6 +442,60 @@ final _screens = <String, Widget Function()>{
     body: SingleChildScrollView(child: CreateFirstCardSection()),
   ),
   'career_studio': () => const CareerStudioView(),
+  'career_hub_returning': () => const CareerStudioView(
+    initial: CareerHubState(hasDraft: true, score: 54, fixesDone: 2),
+  ),
+  'career_hub_pro': () => const CareerStudioView(initial: CareerHubState.pro()),
+  'career_hub_builder_draft': () {
+    ProfileBuilderDraftStore.save({'step': 2});
+    return const CareerStudioView();
+  },
+  'career_fix_queue': () => ProfileFixView(
+    controller: ProfileReportController(isPro: true),
+    fix: kReportFixes[2],
+    queue: kReportFixes,
+    index: 2,
+  ),
+  'career_fixes_ready_free': () => ProfileFixesReadyView(
+    controller: ProfileReportController(isPro: false, done: {'headline', 'about'}),
+  ),
+  'career_fixes_ready_pro': () => ProfileFixesReadyView(
+    controller: ProfileReportController(
+      isPro: true,
+      done: {for (final f in kReportFixes) f.id},
+    ),
+  ),
+  'career_new_score': () {
+    CareerScoreStore.newScan();
+    for (final f in kReportFixes) {
+      CareerScoreStore.markDone(f.id);
+    }
+    return const ProfileNewScoreView(save: false);
+  },
+  'career_rescan_loading': () =>
+      const ProfileAnalyzingView(rescan: true, duration: Duration(minutes: 5)),
+  'career_hub_scored': () {
+    CareerScoreStore.newScan();
+    CareerScoreStore.markDone('headline');
+    CareerScoreStore.saveFixes();
+    return const CareerStudioView();
+  },
+  'career_sheet_pdf': () =>
+      _Opener((c) => showPdfHelpSheet(c, onChooseFile: () {})),
+  'career_sheet_post_planner': () => _Opener(showPostPlannerSoonSheet),
+  'career_sheet_upgrade': () => _Opener((c) => showUpgradeSheet(c)),
+  'career_sheet_upgrade_feature': () => _Opener(
+    (c) => showUpgradeSheet(c, lockedFeature: 'career_fix_featured_name'.tr),
+  ),
+  'career_dialog_pro': () => _Opener(
+    (c) => showYoureProDialog(c, buttonLabel: 'career_pro_continue_fixes'.tr),
+  ),
+  'career_sheet_build_used': () => _Opener(
+    (c) => showBuildUsedSheet(c, resetDate: 'Nov 1'),
+  ),
+  'career_sheet_scan_used': () => _Opener(
+    (c) => showScanUsedSheet(c, resetDate: 'Nov 1'),
+  ),
   'profile_builder': () => const ProfileBuilderView(),
   'profile_optimizer': () => const ProfileOptimizerView(),
   'profile_report': () => const ProfileReportView(),

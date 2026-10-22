@@ -1,9 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:image_picker/image_picker.dart';
 
-import '../view/profile_report_view.dart';
+import '../service/career_ai_service.dart';
+import '../view/profile_analyzing_view.dart';
 import '../../../core/translations/tr_extension.dart';
 
 enum ProfileSource { pdf, images, text }
@@ -62,9 +66,42 @@ class ProfileOptimizerController extends GetxController {
     }
 
     Get.to(
-          () => const ProfileReportView(),
+          () => const ProfileAnalyzingView(),
       transition: Transition.rightToLeft,
     );
+  }
+
+  /// Largest upload sent to the AI (callable requests cap at ~10 MB).
+  static const _maxUploadBytes = 7 * 1024 * 1024;
+
+  /// What to scan: the chosen source, read and encoded for the AI.
+  Future<ProfileScanInput> scanInput() async {
+    switch (source.value) {
+      case ProfileSource.text:
+        return ProfileScanInput(text: sections.text.trim());
+      case ProfileSource.pdf:
+        final path = pdf.value?.path;
+        final bytes = path == null ? null : await File(path).readAsBytes();
+        if (bytes == null || bytes.length > _maxUploadBytes) {
+          throw GeminiException('career_ai_error_rejected'.tr);
+        }
+        return ProfileScanInput(pdf: base64Encode(bytes));
+      case ProfileSource.images:
+        var total = 0;
+        final out = <({String base64, String mime})>[];
+        for (final x in images) {
+          final bytes = await x.readAsBytes();
+          total += bytes.length;
+          if (total > _maxUploadBytes) {
+            throw GeminiException('career_ai_error_rejected'.tr);
+          }
+          final mime = x.path.toLowerCase().endsWith('.png')
+              ? 'image/png'
+              : 'image/jpeg';
+          out.add((base64: base64Encode(bytes), mime: mime));
+        }
+        return ProfileScanInput(images: out);
+    }
   }
 
   void _showLimitMessage() =>

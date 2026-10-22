@@ -17,6 +17,19 @@ const kCareerGoalKeys = {
   'Build authority': 'career_builder_goal_build_authority',
 };
 
+/// Jumping back to the Career Studio hub from deep in a flow.
+abstract final class CareerNav {
+  /// Route name of the open hub (set by the hub itself).
+  static String? hubRoute;
+
+  /// Pops everything above the Career Studio hub (or to the first route when
+  /// the hub isn't on the stack).
+  static void toHub() {
+    final name = hubRoute;
+    Get.until((r) => name != null ? r.settings.name == name : r.isFirst);
+  }
+}
+
 /// "Coming soon" notice for buttons whose backend isn't built yet.
 void careerComingSoon() => Get.snackbar(
   'career_coming_soon_title'.tr,
@@ -27,10 +40,21 @@ void careerComingSoon() => Get.snackbar(
 
 /// Back arrow + centred title (+ optional trailing widget).
 class CareerAppBar extends StatelessWidget {
-  const CareerAppBar({super.key, required this.title, this.trailing});
+  const CareerAppBar({
+    super.key,
+    required this.title,
+    this.trailing,
+    this.leadingIcon = Icons.arrow_back_rounded,
+    this.onLeading,
+  });
 
   final String title;
   final Widget? trailing;
+
+  /// Defaults to the back arrow (which mirrors in RTL); [onLeading] defaults
+  /// to popping the route.
+  final IconData leadingIcon;
+  final VoidCallback? onLeading;
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +66,9 @@ class CareerAppBar extends StatelessWidget {
           Align(
             alignment: AlignmentDirectional.centerStart,
             child: IconButton(
-              onPressed: () => Navigator.of(context).maybePop(),
-              icon: const Icon(
-                Icons.arrow_back_rounded,
+              onPressed: onLeading ?? () => Navigator.of(context).maybePop(),
+              icon: Icon(
+                leadingIcon,
                 size: 24,
                 color: AppColors.titleDark,
               ),

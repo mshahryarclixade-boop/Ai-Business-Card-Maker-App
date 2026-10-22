@@ -42,8 +42,10 @@ function wrapGeminiError(e) {
 
 // generateCard: { prompt, referenceBase64, referenceMime, logoBase64?, logoMime? }
 // returns { imageBase64 }
+// With a `task` field it runs a Career Studio text task instead (runCareerTask).
 exports.generateCard = onCall(OPTIONS, async (request) => {
   const d = request.data || {};
+  if (d.task) return runCareerTask(d);
   const prompt = requireString(d.prompt, "prompt");
   const refB64 = requireString(d.referenceBase64, "referenceBase64");
   const refMime = requireString(d.referenceMime, "referenceMime");
@@ -66,3 +68,152 @@ exports.generateCard = onCall(OPTIONS, async (request) => {
     throw wrapGeminiError(e);
   }
 });
+
+// ---------------------------------------------------------------------------
+// Career Studio text AI, served by generateCard when the request has a `task`.
+// { task, language?, ...task fields } -> JSON object (see TASKS)
+
+// Model name (verify before deploy).
+const TEXT_MODEL = "gemini-3.1-flash-lite";
+
+const RULES =
+  "You write LinkedIn profile copy. Use ONLY facts the user provided: never " +
+  "invent employers, numbers, titles, degrees or results. Be clear, specific " +
+  "and concise. Plain text only: no markdown, no emojis, no quotes around " +
+  "the answer.";
+
+function clip(v, max = 3000) {
+  return typeof v === "string" ? v.trim().slice(0, max) : "";
+}
+
+async function generateJson(prompt, extraParts = []) {
+  const ai = getClient();
+  const res = await ai.models.generateContent({
+    model: TEXT_MODEL,
+    contents: [{ role: "user", parts: [{ text: prompt }, ...extraParts] }],
+    config: { responseMimeType: "application/json", temperature: 0.8 },
+  });
+  const raw = res?.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") || "";
+  try {
+    return JSON.parse(raw);
+  } catch (_) {
+    throw new HttpsError("internal", "Bad AI response.");
+  }
+}
+
+function needText(obj, key) {
+  const t = clip(obj?.[key], 4000);
+  if (!t) throw new HttpsError("internal", "Empty AI response.");
+  return t;
+}
+
+function answersBlock(a = {}) {
+  const list = Array.isArray(a.audience) ? a.audience.map((x) => clip(x, 60)).join(", ") : "";
+  return [
+    `Name: ${clip(a.name, 80)}`,
+    `Current role: ${clip(a.role, 100)}`,
+    `Company: ${clip(a.company, 100)}`,
+    `Location: ${clip(a.location, 100)}`,
+    `Years of experience: ${clip(a.experience, 10)}`,
+    `Goal: ${clip(a.goal, 60)}`,
+    `Audience: ${list}`,
+    `Tone: ${clip(a.tone, 30)}`,
+    `Achievements / wins (user's words): ${clip(a.wins, 1500) || "none given"}`,
+  ].join("\n");
+}
+
+const PART_IDS = ["headline", "about", "experience", "skills", "photo", "featured", "link"];
+
+const TASKS = {
+  // { answers } -> { headline, about, experience }
+  async buildProfile(d, lang) {
+    const out = await generateJson(
+      `${RULES}\nWrite in ${lang}.\n` +
+        "Create a complete LinkedIn profile from these answers.\n" +
+        "- headline: one line, max 200 characters, role + who you help + value.\n" +
+        "- about: 2-3 short paragraphs, max 1200 characters, first person, in the requested tone, aimed at the audience and goal.\n" +
+        "- experience: the current role as a short description plus 2-4 bullet lines starting with '• ', built only from the wins given (if none, keep it to the role and responsibilities).\n" +
+        'Return JSON: {"headline": "", "about": "", "experience": ""}\n\n' +
+        answersBlock(d.answers),
+    );
+    return {
+      headline: needText(out, "headline"),
+      about: needText(out, "about"),
+      experience: needText(out, "experience"),
+    };
+  },
+
+  // { section, text, answers? } -> { text }
+  async rewrite(d, lang) {
+    const section = clip(d.section, 20);
+    const out = await generateJson(
+      `${RULES}\nWrite in ${lang}.\n` +
+        `Rewrite this LinkedIn "${section}" section with fresh wording. Keep every fact, ` +
+        "the tone and about the same length. Do not add new claims.\n" +
+        'Return JSON: {"text": ""}\n\n' +
+        `Profile answers for context:\n${answersBlock(d.answers)}\n\n` +
+        `Text to rewrite:\n${clip(d.text)}`,
+    );
+    return { text: needText(out, "text") };
+  },
+
+  // { fixId, issue, current, avoid?, profile? } -> { text }
+  async fixSuggestion(d, lang) {
+    const avoid = Array.isArray(d.avoid) ? d.avoid.map((x) => clip(x, 600)).filter(Boolean) : [];
+    const out = await generateJson(
+      `${RULES}\nWrite in ${lang}.\n` +
+        `A LinkedIn profile check found this issue in the "${clip(d.fixId, 20)}" part: ${clip(d.issue, 300)}\n` +
+        "Write the improved replacement text: clearer, shorter, based only on the current " +
+        "text and profile facts below. For parts that are not text (banner, link, featured, " +
+        "skills) give the concrete suggestion in one or two short lines.\n" +
+        (avoid.length ? `Must differ from these earlier suggestions:\n- ${avoid.join("\n- ")}\n` : "") +
+        'Return JSON: {"text": ""}\n\n' +
+        `Current text of this part:\n${clip(d.current) || "(empty)"}\n\n` +
+        `Rest of the profile:\n${clip(d.profile, 3500) || "(not available)"}`,
+    );
+    return { text: needText(out, "text") };
+  },
+
+  // { text?, images?: [{base64,mime}], pdf?: {base64} } -> { scores, current }
+  async analyze(d, lang) {
+    const parts = [];
+    if (d.pdf?.base64) parts.push(inlinePart(d.pdf.base64, "application/pdf"));
+    for (const im of (Array.isArray(d.images) ? d.images : []).slice(0, 5)) {
+      if (im?.base64) parts.push(inlinePart(im.base64, clip(im.mime, 40) || "image/jpeg"));
+    }
+    const text = clip(d.text, 8000);
+    if (!parts.length && !text) throw new HttpsError("invalid-argument", "No profile given.");
+    const out = await generateJson(
+      "You audit LinkedIn profiles. Judge ONLY what is in the profile below (text/files). " +
+        `Return JSON: {"isProfile": true, "scores": {${PART_IDS.map((p) => `"${p}": 0-100`).join(", ")}}, ` +
+        `"current": {${PART_IDS.map((p) => `"${p}": ""`).join(", ")}}}.\n` +
+        "scores: how strong each part is (0 = missing/poor, 100 = excellent). photo = profile photo and banner. " +
+        "featured = the Featured section. link = a clean custom profile URL.\n" +
+        `current: a short excerpt (max 140 characters, in the profile's own words) of what the profile has for that part, or "" if it is missing. ` +
+        "Set isProfile to false if this is not a LinkedIn-style profile.\n" +
+        (text ? `\nProfile text:\n${text}` : ""),
+      parts,
+    );
+    if (out.isProfile === false) throw new HttpsError("invalid-argument", "Not a profile.");
+    const scores = {};
+    const current = {};
+    for (const p of PART_IDS) {
+      const n = Number(out.scores?.[p]);
+      scores[p] = Number.isFinite(n) ? Math.max(0, Math.min(100, Math.round(n))) : 0;
+      current[p] = clip(out.current?.[p], 160);
+    }
+    return { scores, current };
+  },
+};
+
+async function runCareerTask(d) {
+  const task = requireString(d.task, "task");
+  const handler = Object.prototype.hasOwnProperty.call(TASKS, task) ? TASKS[task] : null;
+  if (!handler) throw new HttpsError("invalid-argument", "Unknown task.");
+  const lang = clip(d.language, 40) || "English";
+  try {
+    return await handler(d, lang);
+  } catch (e) {
+    throw wrapGeminiError(e);
+  }
+}

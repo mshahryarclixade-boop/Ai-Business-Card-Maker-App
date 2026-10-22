@@ -101,6 +101,27 @@ void main() {
     expect(find.byType(CareerStudioView), findsOneWidget);
   });
 
+  testWidgets('Home -> Career Studio -> Builder and Optimizer still open', (
+    t,
+  ) async {
+    // Regression: both hops use Get.to(() => page); GetX named them alike
+    // and dropped the second one as a duplicate route.
+    phone(t);
+    await t.pumpWidget(_app(const Scaffold(body: AiToolkitSection())));
+    await t.tap(find.text('Career Studio'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Profile Builder'));
+    await t.pumpAndSettle();
+    expect(find.byType(ProfileBuilderView), findsOneWidget);
+    await t.tap(find.byIcon(Icons.close_rounded));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Leave'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Profile Optimizer'));
+    await t.pumpAndSettle();
+    expect(find.byType(ProfileOptimizerView), findsOneWidget);
+  });
+
   testWidgets('Career Studio cards open their screens', (
     t,
   ) async {
@@ -109,7 +130,10 @@ void main() {
     await t.tap(find.text('Profile Builder'));
     await t.pumpAndSettle();
     expect(find.byType(ProfileBuilderView), findsOneWidget);
-    await t.tap(find.byIcon(Icons.arrow_back_rounded));
+    // The builder asks before closing; leave it.
+    await t.tap(find.byIcon(Icons.close_rounded));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Leave'));
     await t.pumpAndSettle();
     await t.tap(find.text('Profile Optimizer'));
     await t.pumpAndSettle();
@@ -118,27 +142,9 @@ void main() {
     await t.pumpAndSettle();
     await t.tap(find.text('Post Planner'));
     await t.pumpAndSettle();
-    expect(find.byType(PostPlannerView), findsOneWidget);
-  });
-
-  testWidgets('Profile Builder: single goal, audience capped at three', (
-    t,
-  ) async {
-    phone(t);
-    await t.pumpWidget(_app(const ProfileBuilderView()));
-    await t.tap(find.text('Get hired'));
-    await t.tap(find.text('Recruiters')); // 3rd selected
-    await t.tap(find.text('Investors')); // would be 4th -> ignored
-    await t.pump();
-    final selected = t
-        .widgetList<AnimatedContainer>(find.byType(AnimatedContainer))
-        .where(
-          (c) =>
-              (c.decoration as BoxDecoration).color == AppColors.onboardingBtnEnd,
-        )
-        .length;
-    // 1 goal + 3 audiences
-    expect(selected, 4);
+    // Post Planner isn't built yet: the card opens the "coming soon" popup.
+    expect(find.byType(PostPlannerView), findsNothing);
+    expect(find.text('Notify me when it\'s ready'), findsOneWidget);
   });
 
   testWidgets('Profile Optimizer: choosing a source selects it', (t) async {

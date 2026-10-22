@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:flutter/widgets.dart' show Element, WidgetsBinding;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:get_storage/get_storage.dart';
+import 'package:intl/date_symbol_data_local.dart'
+    show initializeDateFormatting;
 
 import 'app_languages.dart';
 import 'en_strings.dart';
@@ -69,6 +71,10 @@ abstract final class AppStrings {
         savedChoice ??
         resolve(WidgetsBinding.instance.platformDispatcher.locale);
     await _use(tag);
+    // Month names etc. for every shipped language (used by DateFormat).
+    try {
+      await initializeDateFormatting();
+    } catch (_) {}
     changes.value = language;
   }
 
