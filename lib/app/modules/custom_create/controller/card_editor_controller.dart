@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
@@ -26,22 +27,59 @@ class CardTool {
   static const String symbols = 'symbols';
 }
 
+/// One step of the undo / redo history: the elements and background of the
+/// side being edited, or (when [move] is set) the moving of an element to
+/// the other side of the card.
+class _Snap {
+  _Snap({
+    required this.elements,
+    required this.backgroundColor,
+    this.backgroundImage,
+    this.backgroundTemplate,
+  }) : move = null;
+
+  _Snap.move(_SideMove this.move)
+    : elements = const [],
+      backgroundColor = const Color(0xFFFFFFFF),
+      backgroundImage = null,
+      backgroundTemplate = null;
+
+  final List<CardElement> elements;
+  final Color backgroundColor;
+  final File? backgroundImage;
+  final String? backgroundTemplate;
+  final _SideMove? move;
+}
+
+/// An element sent to the other side, and where it sat in the layer order.
+class _SideMove {
+  _SideMove({
+    required this.element,
+    required this.index,
+    required this.toSide,
+  });
+
+  final CardElement element;
+  final int index;
+  final int toSide;
+}
+
 /// Everything that belongs to ONE side of the card.
 class _SideData {
   List<CardElement> elements;
   Color backgroundColor;
   File? backgroundImage;
   String? backgroundTemplate;
-  List<List<CardElement>> undo;
-  List<List<CardElement>> redo;
+  List<_Snap> undo;
+  List<_Snap> redo;
 
   _SideData({
     List<CardElement>? elements,
     this.backgroundColor = const Color(0xFFFFFFFF),
     this.backgroundImage,
     this.backgroundTemplate,
-    List<List<CardElement>>? undo,
-    List<List<CardElement>>? redo,
+    List<_Snap>? undo,
+    List<_Snap>? redo,
   }) : elements = elements ?? [],
        undo = undo ?? [],
        redo = redo ?? [];
@@ -94,8 +132,12 @@ class CardEditorController extends GetxController {
 
   final RxBool isCapturing = false.obs;
 
-  final List<List<CardElement>> _undoStack = [];
-  final List<List<CardElement>> _redoStack = [];
+  final List<_Snap> _undoStack = [];
+  final List<_Snap> _redoStack = [];
+
+  /// The card as it looks right now, frozen over the canvas while saving so
+  /// the other side can be captured without showing on screen.
+  final Rx<Uint8List?> captureFreeze = Rx<Uint8List?>(null);
 
   // ---- Front / Back sides ------------------------------------------------
   final RxInt currentSide = 0.obs; // 0 = front, 1 = back
@@ -106,7 +148,7 @@ class CardEditorController extends GetxController {
   Rect? _qrSlot;
   int _qrSlotSide = 1;
 
-  List<CardElement>? _preDragSnapshot;
+  _Snap? _preDragSnapshot;
 
   final ImagePicker _picker = ImagePicker();
   int _idCounter = 0;
@@ -117,8 +159,22 @@ class CardEditorController extends GetxController {
   List<CardElement> _clone(List<CardElement> src) =>
       src.map((e) => e.copyWith()).toList();
 
+  _Snap _snap() => _Snap(
+    elements: _clone(elements),
+    backgroundColor: backgroundColor.value,
+    backgroundImage: backgroundImage.value,
+    backgroundTemplate: backgroundTemplate.value,
+  );
+
+  void _restore(_Snap s) {
+    elements.assignAll(_clone(s.elements));
+    backgroundColor.value = s.backgroundColor;
+    backgroundImage.value = s.backgroundImage;
+    backgroundTemplate.value = s.backgroundTemplate;
+  }
+
   void _pushUndo() {
-    _undoStack.add(_clone(elements));
+    _undoStack.add(_snap());
     _redoStack.clear();
     _syncFlags();
   }
@@ -446,8 +502,23 @@ class CardEditorController extends GetxController {
   // Background: color / image / templates
   // ---------------------------------------------------------------------
 
+  DateTime? _lastBgColorChange;
+  int _bgColorStackLen = -1;
+
   void setBackgroundColor(Color color) {
-    _pushUndo();
+    // Dragging in the colour picker changes the colour many times a second:
+    // that is ONE undo step, not hundreds.
+    final now = DateTime.now();
+    final inBurst =
+        _lastBgColorChange != null &&
+        now.difference(_lastBgColorChange!) <
+            const Duration(milliseconds: 300) &&
+        _undoStack.length == _bgColorStackLen;
+    if (!inBurst) {
+      _pushUndo();
+      _bgColorStackLen = _undoStack.length;
+    }
+    _lastBgColorChange = now;
 
     backgroundColor.value = color;
 
@@ -546,7 +617,7 @@ class CardEditorController extends GetxController {
   }
 
   void startDrag(String id) {
-    _preDragSnapshot = _clone(elements);
+    _preDragSnapshot = _snap();
   }
 
   void updateDragPosition(String id, Offset newPosition) {
@@ -587,6 +658,16 @@ class CardEditorController extends GetxController {
     final fromSide = currentSide.value;
     final toSide = 1 - fromSide;
 
+    // The move is a step of this side's history, so Undo brings the element
+    // back to its old place in the layer order and Redo sends it over again.
+    final index = elements.indexWhere((e) => e.id == el.id);
+    _undoStack.add(
+      _Snap.move(
+        _SideMove(element: el.copyWith(), index: index, toSide: toSide),
+      ),
+    );
+    _redoStack.clear();
+
     // Take it off the current side FIRST, so that if the back is created
     // as a copy of the front below, the element is not duplicated.
     elements.removeWhere((e) => e.id == el.id);
@@ -596,10 +677,8 @@ class CardEditorController extends GetxController {
 
     _sides[toSide].elements.add(el);
 
-    // Undo history of both sides would now point at a different layout,
-    // so reset it to avoid the element reappearing on both sides.
-    _undoStack.clear();
-    _redoStack.clear();
+    // The other side's own history was recorded without (or with) this
+    // element, so it can't be replayed safely any more.
     _sides[toSide].undo = [];
     _sides[toSide].redo = [];
     _syncFlags();
@@ -617,14 +696,38 @@ class CardEditorController extends GetxController {
   // Undo / redo / save
   // ---------------------------------------------------------------------
 
+  /// Takes the moved element off the other side (or rebuilds it from the
+  /// copy if it's gone) and puts it back at its old layer on this side.
+  void _undoMove(_SideMove m) {
+    final other = _sides[m.toSide];
+    final i = other.elements.indexWhere((e) => e.id == m.element.id);
+    final back = i == -1 ? m.element.copyWith() : other.elements.removeAt(i);
+    elements.insert(m.index.clamp(0, elements.length), back);
+    other.undo = [];
+    other.redo = [];
+  }
+
+  /// Sends the element to the other side again.
+  void _redoMove(_SideMove m) {
+    final i = elements.indexWhere((e) => e.id == m.element.id);
+    final el = i == -1 ? m.element.copyWith() : elements.removeAt(i);
+    _sides[m.toSide].elements.add(el);
+    _sides[m.toSide].undo = [];
+    _sides[m.toSide].redo = [];
+  }
+
   void undo() {
     if (_undoStack.isEmpty) return;
 
-    _redoStack.add(_clone(elements));
-
     final prev = _undoStack.removeLast();
 
-    elements.assignAll(prev);
+    if (prev.move != null) {
+      _undoMove(prev.move!);
+      _redoStack.add(prev);
+    } else {
+      _redoStack.add(_snap());
+      _restore(prev);
+    }
 
     selectedElementId.value = null;
 
@@ -634,11 +737,15 @@ class CardEditorController extends GetxController {
   void redo() {
     if (_redoStack.isEmpty) return;
 
-    _undoStack.add(_clone(elements));
-
     final next = _redoStack.removeLast();
 
-    elements.assignAll(next);
+    if (next.move != null) {
+      _redoMove(next.move!);
+      _undoStack.add(next);
+    } else {
+      _undoStack.add(_snap());
+      _restore(next);
+    }
 
     selectedElementId.value = null;
 

@@ -20,7 +20,7 @@ class BottomToolbar extends StatelessWidget {
         border: Border(top: BorderSide(color: Color(0xFFEDEDF2))),
       ),
       child: Obx(
-            () => Row(
+        () => Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ToolbarIcon(
@@ -84,7 +84,8 @@ class ToolbarIcon extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
-        width: 70,
+        // 70 wide (five fit from 350px up); narrower screens share the row.
+        width: (MediaQuery.sizeOf(context).width / 5).clamp(0.0, 70.0),
         height: 62,
         alignment: Alignment.center,
         decoration: BoxDecoration(
@@ -105,13 +106,17 @@ class ToolbarIcon extends StatelessWidget {
               color: color, // remove if the PNGs have their own colors
             ),
             const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontFamily: AppTextStyles.fontFamily,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: color,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                maxLines: 1,
+                style: TextStyle(
+                  fontFamily: AppTextStyles.fontFamily,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: color,
+                ),
               ),
             ),
           ],

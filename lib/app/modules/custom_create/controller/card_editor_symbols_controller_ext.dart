@@ -125,14 +125,14 @@ extension CardEditorSymbolsX on CardEditorController {
     }
   }
 
-  Future<Uint8List?> _captureSide(GlobalKey repaintKey, int side) async {
-    switchToSide(side);
+  /// Captures the side on screen (or switches to [side] first).
+  Future<Uint8List?> _captureCurrent(GlobalKey repaintKey) async {
     await _precacheCurrentSide();
     await WidgetsBinding.instance.endOfFrame;
     await WidgetsBinding.instance.endOfFrame;
 
     final boundary =
-    repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+        repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
     if (boundary == null) return null;
     final image = await boundary.toImage(pixelRatio: 3);
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
@@ -143,20 +143,39 @@ extension CardEditorSymbolsX on CardEditorController {
     // Hide editor-only UI (border, ✕, handles) before capturing.
     isCapturing.value = true;
     final startSide = currentSide.value;
+    final otherSide = 1 - startSide;
     try {
       ensureBackInitialized();
 
-      final front = await _captureSide(repaintKey, 0);
-      final back = await _captureSide(repaintKey, 1);
-      if (front == null || back == null) return;
+      // 1. The side on screen is captured where it is, and that picture is
+      //    laid over the canvas...
+      final shown = await _captureCurrent(repaintKey);
+      if (shown == null) return;
+      final ctx = Get.context;
+      if (ctx != null) {
+        try {
+          await precacheImage(MemoryImage(shown), ctx);
+        } catch (_) {}
+      }
+      captureFreeze.value = shown;
+      await WidgetsBinding.instance.endOfFrame;
+
+      // 2. ...so the other side can be switched in and captured behind it
+      //    without ever being seen.
+      switchToSide(otherSide);
+      final hidden = await _captureCurrent(repaintKey);
+      if (hidden == null) return;
 
       await Get.find<RecentDesignsService>().save(
-        front,
-        backThumbnailBytes: back,
+        startSide == 0 ? shown : hidden,
+        backThumbnailBytes: startSide == 0 ? hidden : shown,
         designData: buildDesignData(),
       );
     } finally {
-      switchToSide(startSide);
+      if (currentSide.value != startSide) switchToSide(startSide);
+      // Let the original side draw once before the cover comes off.
+      await WidgetsBinding.instance.endOfFrame;
+      captureFreeze.value = null;
       isCapturing.value = false;
     }
   }

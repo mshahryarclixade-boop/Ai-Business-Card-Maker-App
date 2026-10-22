@@ -55,6 +55,7 @@ dependencies:
   clarity_flutter: ^1.10.1
   package_info_plus: ^9.0.1
   file_picker: ^8.0.0
+  super_clipboard: ^0.9.1
 
 dev_dependencies:
   flutter_test:

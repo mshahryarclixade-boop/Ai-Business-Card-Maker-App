@@ -46,45 +46,74 @@ class CareerAppBar extends StatelessWidget {
     this.trailing,
     this.leadingIcon = Icons.arrow_back_rounded,
     this.onLeading,
+    this.titleInset = 0,
   });
 
   final String title;
   final Widget? trailing;
+
+  /// Gap kept between the title and its neighbours (back arrow, trailing
+  /// widget). When set, the title is centred in the space between them and
+  /// shrinks to fit instead of running under a wide trailing widget. 0 = no
+  /// change: the title stays centred on the screen.
+  final double titleInset;
 
   /// Defaults to the back arrow (which mirrors in RTL); [onLeading] defaults
   /// to popping the route.
   final IconData leadingIcon;
   final VoidCallback? onLeading;
 
+  Widget get _title => Text(
+    title,
+    maxLines: titleInset > 0 ? 1 : null,
+    style: const TextStyle(
+      fontFamily: AppTextStyles.fontFamily,
+      fontSize: 18,
+      fontWeight: FontWeight.w700,
+      color: AppColors.titleDark,
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
+    final back = IconButton(
+      onPressed: onLeading ?? () => Navigator.of(context).maybePop(),
+      icon: Icon(leadingIcon, size: 24, color: AppColors.titleDark),
+      padding: const EdgeInsetsDirectional.only(start: 20),
+      constraints: const BoxConstraints(),
+    );
+
+    if (titleInset > 0) {
+      return SizedBox(
+        height: 56,
+        child: Row(
+          children: [
+            back,
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: titleInset),
+                child: FittedBox(fit: BoxFit.scaleDown, child: _title),
+              ),
+            ),
+            if (trailing != null)
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: 20),
+                child: trailing,
+              )
+            else
+              const SizedBox(width: 44),
+          ],
+        ),
+      );
+    }
+
     return SizedBox(
       height: 56,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: IconButton(
-              onPressed: onLeading ?? () => Navigator.of(context).maybePop(),
-              icon: Icon(
-                leadingIcon,
-                size: 24,
-                color: AppColors.titleDark,
-              ),
-              padding: const EdgeInsetsDirectional.only(start: 20),
-              constraints: const BoxConstraints(),
-            ),
-          ),
-          Text(
-            title,
-            style: const TextStyle(
-              fontFamily: AppTextStyles.fontFamily,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: AppColors.titleDark,
-            ),
-          ),
+          Align(alignment: AlignmentDirectional.centerStart, child: back),
+          _title,
           if (trailing != null)
             Align(
               alignment: AlignmentDirectional.centerEnd,
@@ -124,7 +153,7 @@ class CareerPrimaryButton extends StatelessWidget {
           foregroundColor: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(26),
           ),
         ),
         child: Row(

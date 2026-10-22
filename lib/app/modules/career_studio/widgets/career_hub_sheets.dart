@@ -60,6 +60,9 @@ Future<bool> _buyPlan(BuildContext context, {required bool yearly}) =>
 Future<void> showUpgradeSheet(
   BuildContext context, {
   String? lockedFeature,
+  String? title,
+  List<String>? perkKeys,
+  String? proMessageKey,
   String? continueLabel,
   VoidCallback? onUnlocked,
   CareerPurchaser? purchaser,
@@ -77,6 +80,8 @@ Future<void> showUpgradeSheet(
         padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
         child: _UpgradeSheet(
           lockedFeature: lockedFeature,
+          title: title,
+          perkKeys: perkKeys,
           purchaser: purchaser ?? _buyPlan,
         ),
       ),
@@ -86,6 +91,7 @@ Future<void> showUpgradeSheet(
     await showYoureProDialog(
       context,
       buttonLabel: continueLabel ?? 'career_pro_continue'.tr,
+      messageKey: proMessageKey,
       onContinue: onUnlocked,
     );
   }
@@ -95,6 +101,7 @@ Future<void> showUpgradeSheet(
 Future<void> showYoureProDialog(
   BuildContext context, {
   required String buttonLabel,
+  String? messageKey,
   VoidCallback? onContinue,
 }) async {
   await showDialog<void>(
@@ -136,7 +143,7 @@ Future<void> showYoureProDialog(
             ),
             const SizedBox(height: 8),
             Text(
-              'career_pro_message'.tr,
+              (messageKey ?? 'career_pro_message').tr,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
@@ -380,10 +387,19 @@ class CareerComingSoonBadge extends StatelessWidget {
 // ---------------------------------------------------------------- CS05
 
 class _UpgradeSheet extends StatefulWidget {
-  const _UpgradeSheet({required this.purchaser, this.lockedFeature});
+  const _UpgradeSheet({
+    required this.purchaser,
+    this.lockedFeature,
+    this.title,
+    this.perkKeys,
+  });
 
   final CareerPurchaser purchaser;
   final String? lockedFeature;
+
+  /// Replaces the headline / the four perks (other features reuse the sheet).
+  final String? title;
+  final List<String>? perkKeys;
 
   @override
   State<_UpgradeSheet> createState() => _UpgradeSheetState();
@@ -447,11 +463,12 @@ class _UpgradeSheetState extends State<_UpgradeSheet> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    widget.lockedFeature == null
-                        ? 'career_hub_upgrade_title'.tr
-                        : 'career_hub_upgrade_title_feature'.trParams({
-                            'feature': widget.lockedFeature,
-                          }),
+                    widget.title ??
+                        (widget.lockedFeature == null
+                            ? 'career_hub_upgrade_title'.tr
+                            : 'career_hub_upgrade_title_feature'.trParams({
+                                'feature': widget.lockedFeature,
+                              })),
                     style: const TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 18,
@@ -466,10 +483,15 @@ class _UpgradeSheetState extends State<_UpgradeSheet> {
           ],
         ),
         const SizedBox(height: 14),
-        _Check('career_hub_upgrade_perk_1'.tr),
-        _Check('career_hub_upgrade_perk_2'.tr),
-        _Check('career_hub_upgrade_perk_3'.tr),
-        _Check('career_hub_upgrade_perk_4'.tr),
+        for (final k
+            in widget.perkKeys ??
+                const [
+                  'career_hub_upgrade_perk_1',
+                  'career_hub_upgrade_perk_2',
+                  'career_hub_upgrade_perk_3',
+                  'career_hub_upgrade_perk_4',
+                ])
+          _Check(k.tr),
         const SizedBox(height: 6),
         _PlanTile(
           selected: _yearly,
@@ -542,9 +564,7 @@ class _PlanTile extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: selected
-                ? AppColors.onboardingBtnEnd
-                : AppColors.pillBorder,
+            color: selected ? AppColors.onboardingBtnEnd : AppColors.pillBorder,
             width: selected ? 2 : 1,
           ),
         ),

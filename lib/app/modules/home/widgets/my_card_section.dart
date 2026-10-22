@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../custom_create/model/card_element_model.dart';
 import '../../custom_create/view/card_editor_view.dart';
+import '../../email_signature/view/email_signature_intro_view.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../../qr_code_generator/view/qr_code_screen.dart';
 import '../../template/widget/template_live_preview.dart';
@@ -180,6 +181,8 @@ class MyCardSection extends StatelessWidget {
                     ),
                   ),
                 ),
+                const SizedBox(width: 10),
+                _EmailButton(onTap: openEmailSignature),
               ],
             ),
           ] else if (liveData != null)
@@ -259,6 +262,40 @@ class _ActionButton extends StatelessWidget {
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: filled ? Colors.white : AppColors.titleDark,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Icon-only button that opens the Email signature module.
+class _EmailButton extends StatelessWidget {
+  const _EmailButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: 'email_sig_open'.tr,
+      child: SizedBox(
+        width: 48,
+        height: 40,
+        child: ElevatedButton(
+          onPressed: onTap,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.cardWhite,
+            elevation: 0,
+            padding: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: const Icon(
+            Icons.mail_outline_rounded,
+            size: 22,
+            color: AppColors.titleDark,
           ),
         ),
       ),

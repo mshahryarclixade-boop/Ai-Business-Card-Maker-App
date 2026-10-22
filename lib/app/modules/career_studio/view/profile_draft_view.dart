@@ -158,6 +158,7 @@ class _ProfileDraftViewState extends State<ProfileDraftView> {
                 final left = _c.rewritesLeft.value;
                 return CareerAppBar(
                   title: 'career_draft_title'.tr,
+                  titleInset: 14, // gap around the title, clear of the rewrites pill
                   onLeading: CareerNav.toHub,
                   trailing: _RewritesPill(
                     label: _c.isPro
@@ -213,7 +214,7 @@ class _RewritesPill extends StatelessWidget {
         label,
         style: const TextStyle(
           fontFamily: AppTextStyles.fontFamily,
-          fontSize: 9.5,
+          fontSize: 10.5,
           fontWeight: FontWeight.w800,
           color: AppColors.onboardingBtnEnd,
         ),
@@ -259,7 +260,7 @@ class _SectionCard extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontFamily: AppTextStyles.fontFamily,
-                    fontSize: 13,
+                    fontSize: 15,
                     fontWeight: FontWeight.w800,
                     color: AppColors.titleDark,
                   ),
@@ -280,7 +281,7 @@ class _SectionCard extends StatelessWidget {
                     'career_draft_copy'.tr,
                     style: const TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
-                      fontSize: 12,
+                      fontSize: 13.5,
                       fontWeight: FontWeight.w700,
                       color: AppColors.onboardingBtnEnd,
                     ),
@@ -294,7 +295,7 @@ class _SectionCard extends StatelessWidget {
             text,
             style: const TextStyle(
               fontFamily: AppTextStyles.fontFamily,
-              fontSize: 12.5,
+              fontSize: 14,
               height: 1.45,
               color: AppColors.textBody,
             ),
@@ -345,7 +346,7 @@ class _ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = accent ? AppColors.onboardingBtnEnd : AppColors.titleDark;
     return SizedBox(
-      height: 38,
+      height: 42,
       child: Material(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -384,7 +385,7 @@ class _ActionButton extends StatelessWidget {
                     maxLines: 1,
                     style: TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
-                      fontSize: 12.5,
+                      fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: color,
                     ),

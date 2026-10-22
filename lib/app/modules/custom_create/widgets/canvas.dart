@@ -23,47 +23,68 @@ class CardCanvas extends StatelessWidget {
 
       return Directionality(
         textDirection: TextDirection.ltr, // cards always render left-to-right
-        child: RepaintBoundary(
-          key: repaintKey,
-          child: GestureDetector(
-            onTap: () => controller.selectElement(null),
-            child: Container(
-              width: size.width,
-              height: size.height,
-              clipBehavior: Clip.hardEdge,
-              decoration: BoxDecoration(
-                color: controller.backgroundColor.value,
-                borderRadius: BorderRadius.circular(1),
-                image: controller.backgroundImage.value != null
-                    ? DecorationImage(
-                        image: FileImage(controller.backgroundImage.value!),
-                        fit: BoxFit.cover,
-                      )
-                    : controller.backgroundTemplate.value != null
-                    ? DecorationImage(
-                        image: AssetImage(controller.backgroundTemplate.value!),
-                        fit: BoxFit.cover,
-                      )
-                    : null,
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x33000000),
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
+        child: Stack(
+          children: [
+            _card(size),
+            // While saving, the picture of the card as it was: the other side
+            // is switched in and captured underneath it.
+            if (controller.captureFreeze.value != null)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Image.memory(
+                    controller.captureFreeze.value!,
+                    fit: BoxFit.fill,
+                    gaplessPlayback: true,
+                    filterQuality: FilterQuality.high,
                   ),
-                ],
+                ),
               ),
-              child: Stack(
-                children: [
-                  for (final el in controller.elements)
-                    CanvasElementWidget(controller: controller, element: el),
-                ],
-              ),
-            ),
-          ),
+          ],
         ),
       );
     });
+  }
+
+  Widget _card(Size size) {
+    return RepaintBoundary(
+      key: repaintKey,
+      child: GestureDetector(
+        onTap: () => controller.selectElement(null),
+        child: Container(
+          width: size.width,
+          height: size.height,
+          clipBehavior: Clip.hardEdge,
+          decoration: BoxDecoration(
+            color: controller.backgroundColor.value,
+            borderRadius: BorderRadius.circular(1),
+            image: controller.backgroundImage.value != null
+                ? DecorationImage(
+                    image: FileImage(controller.backgroundImage.value!),
+                    fit: BoxFit.cover,
+                  )
+                : controller.backgroundTemplate.value != null
+                ? DecorationImage(
+                    image: AssetImage(controller.backgroundTemplate.value!),
+                    fit: BoxFit.cover,
+                  )
+                : null,
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x33000000),
+                blurRadius: 10,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              for (final el in controller.elements)
+                CanvasElementWidget(controller: controller, element: el),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

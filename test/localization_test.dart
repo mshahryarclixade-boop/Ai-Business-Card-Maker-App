@@ -9,6 +9,7 @@ import 'package:ai_business_card_maker/app/core/translations/en/career_studio_st
 import 'package:ai_business_card_maker/app/core/translations/en/contacts_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/core_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/custom_create_strings.dart';
+import 'package:ai_business_card_maker/app/core/translations/en/email_signature_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/home_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/main_nav_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/onboarding_strings.dart';
@@ -47,6 +48,7 @@ void main() {
     'remove_background': removeBackgroundStrings,
     'scan': scanStrings,
     'services': servicesStrings,
+    'email_signature': emailSignatureStrings,
     'settings': settingsStrings,
     'splash': splashStrings,
     'template': templateStrings,

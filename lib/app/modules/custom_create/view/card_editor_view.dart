@@ -26,12 +26,7 @@ class CardEditorView extends StatefulWidget {
   final TemplateItem? template;
   final File? qrToAdd;
 
-  const CardEditorView({
-    super.key,
-    this.design,
-    this.template,
-    this.qrToAdd,
-  });
+  const CardEditorView({super.key, this.design, this.template, this.qrToAdd});
 
   @override
   State<CardEditorView> createState() => _CardEditorViewState();
@@ -75,7 +70,8 @@ class _CardEditorViewState extends State<CardEditorView> {
     // Create a fresh controller for this editor screen.
     controller = Get.put(
       CardEditorController(
-        initialOrientation: template?.orientation == TemplateOrientation.vertical
+        initialOrientation:
+            template?.orientation == TemplateOrientation.vertical
             ? CardOrientation.portrait
             : CardOrientation.landscape,
       ),
@@ -112,10 +108,7 @@ class _CardEditorViewState extends State<CardEditorView> {
       } else {
         // AI-generated card (or a legacy thumbnail-only design): only
         // rendered images exist, so load front and back as backgrounds.
-        controller.loadFromImage(
-          design.file,
-          backImageFile: design.backFile,
-        );
+        controller.loadFromImage(design.file, backImageFile: design.backFile);
       }
     }
 
@@ -152,8 +145,9 @@ class _CardEditorViewState extends State<CardEditorView> {
 
   /// DEV ONLY: type an exact font size.
   void _typeFontSize(double current) {
-    final textController =
-    TextEditingController(text: current.toStringAsFixed(1));
+    final textController = TextEditingController(
+      text: current.toStringAsFixed(1),
+    );
 
     showDialog(
       context: context,
@@ -207,9 +201,7 @@ class _CardEditorViewState extends State<CardEditorView> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
-          boxShadow: const [
-            BoxShadow(color: Color(0x33000000), blurRadius: 6),
-          ],
+          boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 6)],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -247,60 +239,82 @@ class _CardEditorViewState extends State<CardEditorView> {
           children: [
             Column(
               children: [
-                TopBar(
-                  controller: controller,
-                  repaintKey: canvasRepaintKey,
-                ),
+                TopBar(controller: controller, repaintKey: canvasRepaintKey),
+                // The canvas and the open tool panel share the space between
+                // the top bar and the toolbar. The panel keeps its natural
+                // height; only when it would not fit (a small screen with the
+                // keyboard open) does it scroll instead of overflowing.
                 Expanded(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Obx(() {
-                          final size =
-                              controller.orientation.value.canvasSize;
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: size.width,
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: SideSwitcher(controller: controller),
-                                ),
+                  child: LayoutBuilder(
+                    builder: (context, box) => Column(
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Obx(() {
+                                  final size =
+                                      controller.orientation.value.canvasSize;
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(
+                                        width: size.width,
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: SideSwitcher(
+                                            controller: controller,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      CardCanvas(
+                                        controller: controller,
+                                        repaintKey: canvasRepaintKey,
+                                      ),
+                                    ],
+                                  );
+                                }),
                               ),
-                              const SizedBox(height: 6),
-                              CardCanvas(
-                                controller: controller,
-                                repaintKey: canvasRepaintKey,
-                              ),
-                            ],
-                          );
-                        }),
-                      ),
+                            ),
+                          ),
+                        ),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(maxHeight: box.maxHeight),
+                          child: SingleChildScrollView(
+                            child: Obx(() {
+                              switch (controller.activeTool.value) {
+                                case CardTool.text:
+                                  return TextToolPanel(controller: controller);
+                                case CardTool.qr:
+                                  return QrToolPanel(controller: controller);
+                                case CardTool.background:
+                                  return BackgroundToolPanel(
+                                    controller: controller,
+                                  );
+                                case CardTool.image:
+                                  return ImageToolPanel(controller: controller);
+                                case CardTool.symbols:
+                                  return SymbolsToolPanel(
+                                    controller: controller,
+                                  );
+                                default:
+                                  return const SizedBox.shrink();
+                              }
+                            }),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                Obx(() {
-                  switch (controller.activeTool.value) {
-                    case CardTool.text:
-                      return TextToolPanel(controller: controller);
-                    case CardTool.qr:
-                      return QrToolPanel(controller: controller);
-                    case CardTool.background:
-                      return BackgroundToolPanel(controller: controller);
-                    case CardTool.image:
-                      return ImageToolPanel(controller: controller);
-                    case CardTool.symbols:
-                      return SymbolsToolPanel(controller: controller);
-                    default:
-                      return const SizedBox.shrink();
-                  }
-                }),
                 Padding(
                   padding: EdgeInsets.only(
-                    bottom: MediaQuery.sizeOf(context).shortestSide >= 600 ? 28 : 0,
+                    bottom: MediaQuery.sizeOf(context).shortestSide >= 600
+                        ? 28
+                        : 0,
                   ),
                   child: BottomToolbar(controller: controller),
                 ),

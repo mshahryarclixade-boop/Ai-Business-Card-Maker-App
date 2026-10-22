@@ -3,6 +3,7 @@ import 'en/career_studio_strings.dart';
 import 'en/contacts_strings.dart';
 import 'en/core_strings.dart';
 import 'en/custom_create_strings.dart';
+import 'en/email_signature_strings.dart';
 import 'en/home_strings.dart';
 import 'en/main_nav_strings.dart';
 import 'en/onboarding_strings.dart';
@@ -27,6 +28,7 @@ const Map<String, String> enStrings = {
     ...careerStudioStrings,
     ...contactsStrings,
     ...customCreateStrings,
+    ...emailSignatureStrings,
     ...homeStrings,
     ...mainNavStrings,
     ...onboardingStrings,
