@@ -8,7 +8,7 @@ import '../../home/view/home_view.dart';
 import '../../template/controller/template_controller.dart';
 import '../../template/view/template_view.dart';
 import '../controller/main_nav_controller.dart';
-import '../../profile/view/profile_view.dart';
+import '../../clixa/view/clixa_view.dart';
 import '../../contacts/view/contacts_view.dart';
 import '../widgets/main_bottom_nav_bar.dart';
 import '../../../core/translations/tr_extension.dart';
@@ -213,7 +213,7 @@ class MainNavView extends GetView<MainNavController> {
                     HomeView(),
                     TemplateView(),
                     ContactsView(),
-                    ProfileView(),
+                    ClixaView(embedded: true),
                   ],
                 ),
               ),

@@ -4,10 +4,14 @@ import 'dart:typed_data';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
+import '../../../core/services/profile_scope.dart';
 import '../model/user_profile_data.dart';
 
 class ProfileStore extends GetxService {
-  static const _key = 'user_profile_data';
+  static const _baseKey = 'user_profile_data';
+
+  /// Storage key of the active profile's details.
+  static String get _key => ProfileScope.key(_baseKey);
 
   static ProfileStore get to => Get.isRegistered<ProfileStore>()
       ? Get.find<ProfileStore>()
@@ -21,14 +25,30 @@ class ProfileStore extends GetxService {
   @override
   void onInit() {
     super.onInit();
-    final raw = _box.read<String>(_key);
-    if (raw == null) return;
+    reload();
+  }
+
+  /// Loads the active profile's details (empty if it has none yet). Called
+  /// at start-up and whenever the user switches profile.
+  void reload() {
+    profile.value = readStored(ProfileScope.id) ?? const UserProfileData();
+  }
+
+  /// The saved details of any profile, or null if it has none.
+  static UserProfileData? readStored(String id) {
+    final raw = GetStorage().read<String>(ProfileScope.key(_baseKey, id));
+    if (raw == null) return null;
     try {
-      profile.value =
-          UserProfileData.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      return UserProfileData.fromJson(jsonDecode(raw) as Map<String, dynamic>);
     } catch (_) {
-      // Corrupt data: start empty.
+      return null; // corrupt data: start empty
     }
+  }
+
+  /// Saves the details of any profile. The active one is updated live.
+  void writeStored(String id, UserProfileData data) {
+    _box.write(ProfileScope.key(_baseKey, id), jsonEncode(data.toJson()));
+    if (id == ProfileScope.id) profile.value = data;
   }
 
   void savePersonal({

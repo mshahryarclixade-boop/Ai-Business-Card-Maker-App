@@ -8,6 +8,8 @@ import 'package:gal/gal.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:share_plus/share_plus.dart';
 import '../../../core/utils/share_origin.dart';
+import '../../qr_code_generator/model/qr_style.dart';
+import '../../qr_code_generator/service/qr_store.dart';
 import '../../qr_code_generator/view/qr_preview_screen.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -127,6 +129,7 @@ class _ShareCardSheet extends StatelessWidget {
 
   void _showQr() {
     Get.back();
+    final entry = QrStore.defaultEntry;
     final profile = loadSavedQrProfile();
     if (profile == null) {
       _snack('home_share_no_details_title'.tr, 'home_share_no_details_qr'.tr);
@@ -134,7 +137,11 @@ class _ShareCardSheet extends StatelessWidget {
     }
     FirebaseAnalytics.instance.logEvent(name: 'qr_shown');
     Get.to(
-          () => QrPreviewScreen(profile: profile, qrOnly: true),
+          () => QrPreviewScreen(
+        profile: profile,
+        qrOnly: true,
+        style: entry?.style ?? QrStyles.classic,
+      ),
       transition: Transition.rightToLeft,
     );
   }

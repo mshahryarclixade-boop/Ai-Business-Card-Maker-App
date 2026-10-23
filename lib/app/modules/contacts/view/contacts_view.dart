@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/crown_upgrade_button.dart';
 import '../../scan card and qr/view/scan_card_view.dart';
 import '../controller/contacts_controller.dart';
 import 'add_contact_view.dart';
@@ -216,22 +216,12 @@ class _ContactsViewState extends State<ContactsView> {
             ),
             Align(
               alignment: AlignmentDirectional.centerEnd,
-              child: GestureDetector(
+              // Same wobbling crown as Home (same size and look).
+              child: CrownUpgradeButton(
+                size: 36,
+                iconSize: 22,
+                borderRadius: 10,
                 onTap: _openPaywall,
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryDark,
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  alignment: Alignment.center,
-                  child: const FaIcon(
-                    FontAwesomeIcons.crown,
-                    size: 18,
-                    color: AppColors.crownGold,
-                  ),
-                ),
               ),
             ),
           ],

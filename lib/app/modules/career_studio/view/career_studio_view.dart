@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
-
+import '../../../core/widgets/crown_upgrade_button.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/translations/tr_extension.dart';
@@ -145,7 +144,9 @@ class _CareerStudioViewState extends State<CareerStudioView> {
                 title: 'career_hub_title'.tr,
                 trailing: s.isPro
                     ? const _ProBadge()
-                    : _CrownButton(onTap: () => showUpgradeSheet(context)),
+                    : CrownUpgradeButton(
+                  onTap: () => showUpgradeSheet(context),
+                ),
               ),
               Expanded(
                 child: SingleChildScrollView(
@@ -250,32 +251,6 @@ class _CareerStudioViewState extends State<CareerStudioView> {
   String _badge(CareerHubState s, {required bool used}) {
     if (s.isPro) return 'career_hub_badge_unlimited'.tr;
     return used ? 'career_hub_badge_used'.tr : 'career_hub_badge_free'.tr;
-  }
-}
-
-class _CrownButton extends StatelessWidget {
-  const _CrownButton({required this.onTap});
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 40,
-        height: 40,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: AppColors.primaryDark,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const FaIcon(
-          FontAwesomeIcons.crown,
-          size: 18,
-          color: AppColors.crownGold,
-        ),
-      ),
-    );
   }
 }
 

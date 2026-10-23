@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../modules/custom_create/model/card_element_model.dart';
+import 'profile_scope.dart';
 
 class RecentDesign {
   final String id;
@@ -63,7 +64,10 @@ class RecentDesign {
 }
 
 class RecentDesignsService extends GetxService {
-  static const _storageKey = 'recent_designs';
+  static const _baseKey = 'recent_designs';
+
+  /// The active profile's designs.
+  static String get _storageKey => ProfileScope.key(_baseKey);
 
   /// Source of truth for both tabs. My Cards / Ai Cards are filtered views.
   final RxList<RecentDesign> designs = <RecentDesign>[].obs;
@@ -82,9 +86,15 @@ class RecentDesignsService extends GetxService {
   List<RecentDesign> get aiDesigns =>
       designs.where((d) => d.isAiGenerated).toList();
 
+  /// Shows the active profile's designs (after the user switches profile).
+  void reload() => _loadFromDisk();
+
   void _loadFromDisk() {
     final raw = _box.read<String>(_storageKey);
-    if (raw == null) return;
+    if (raw == null) {
+      designs.clear();
+      return;
+    }
     final List<dynamic> list = jsonDecode(raw) as List<dynamic>;
     final loaded = list
         .map((e) => RecentDesign.fromJson(e as Map<String, dynamic>))

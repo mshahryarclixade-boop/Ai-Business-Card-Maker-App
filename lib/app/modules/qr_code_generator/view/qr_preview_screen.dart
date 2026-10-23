@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-
+import '../../../core/widgets/crown_upgrade_button.dart';
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,48 +11,39 @@ import 'package:get_storage/get_storage.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
+import '../../../core/services/profile_scope.dart';
 import '../../../core/services/recent_designs_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/share_origin.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../career_studio/widgets/career_hub_sheets.dart';
 import '../../custom_create/view/card_editor_view.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../model/qr_code_builder.dart';
 import '../model/qr_profile_data.dart';
+import '../model/qr_style.dart';
+import '../service/qr_store.dart';
+import '../widgets/styled_qr.dart';
 import '../service/qr_generator_service.dart';
 import '../../paywall/view/paywall_screen.dart';
 import '../../../core/translations/tr_extension.dart';
 
-const String _kQrFormKey = 'qr_form_data';
+String _kQrFormKey() => ProfileScope.key('qr_form_data');
 
-String _str(dynamic v) => v is String ? v : '';
-
+/// The details Home's "show QR" uses: the newest saved QR code's, else the
+/// last form, else the profile's own details.
 QrProfileData? loadSavedQrProfile() {
-  final raw = GetStorage().read<String>(_kQrFormKey);
+  final latest = QrStore.defaultEntry;
+  if (latest != null && latest.profileData.isValid) return latest.profileData;
+
+  final raw = GetStorage().read<String>(_kQrFormKey());
 
   if (raw != null) {
     try {
-      final m = jsonDecode(raw) as Map<String, dynamic>;
-      final links = <SocialLink>[];
-      for (final item in (m['links'] as List?) ?? const []) {
-        if (item is Map) {
-          links.add(
-            SocialLink(platform: _str(item['platform']), url: _str(item['url'])),
-          );
-        }
-      }
-      final saved = QrProfileData(
-        fullName: _str(m['fullName']),
-        phoneNumber: _str(m['phone']),
-        emailAddress: _str(m['email']),
-        companyName: _str(m['company']),
-        designation: _str(m['designation']),
-        websiteUrl: _str(m['website']),
-        country: _str(m['country']),
-        city: _str(m['city']),
-        socialLinks: links,
+      final saved = QrProfileData.fromForm(
+        jsonDecode(raw) as Map<String, dynamic>,
       );
-      if (saved.isValid) return saved;
+      if (saved != null) return saved;
     } catch (_) {
       // Unreadable saved data: fall back to the setup details below.
     }
@@ -78,14 +69,18 @@ class QrPreviewScreen extends StatelessWidget {
   final QrProfileData profile;
   final bool qrOnly;
 
+  /// The look the QR code was saved with.
+  final QrStyle style;
+
   const QrPreviewScreen({
     super.key,
     required this.profile,
     this.qrOnly = false,
+    this.style = QrStyles.classic,
   });
 
   Future<Uint8List> _pngBytes() =>
-      QrGeneratorService().generatePngBytes(profile, size: 1024);
+      QrGeneratorService().generatePngBytes(profile, size: 1024, style: style);
 
   Future<void> _download(BuildContext context) async {
     final bytes = await _pngBytes();
@@ -106,8 +101,9 @@ class QrPreviewScreen extends StatelessWidget {
     }
 
     if (context.mounted) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -121,7 +117,9 @@ class QrPreviewScreen extends StatelessWidget {
         ShareParams(
           files: [XFile(file.path)],
           text: 'qr_preview_share_text'.tr,
-          subject: 'qr_preview_share_subject'.trParams({'name': profile.fullName}),
+          subject: 'qr_preview_share_subject'.trParams({
+            'name': profile.fullName,
+          }),
           sharePositionOrigin: shareOrigin(),
         ),
       );
@@ -136,8 +134,9 @@ class QrPreviewScreen extends StatelessWidget {
   }
 
   Future<File> _writeBytes(String dirPath, Uint8List bytes) async {
-    final file =
-    File('$dirPath/qr_${DateTime.now().millisecondsSinceEpoch}.png');
+    final file = File(
+      '$dirPath/qr_${DateTime.now().millisecondsSinceEpoch}.png',
+    );
     return file.writeAsBytes(bytes);
   }
 
@@ -165,24 +164,10 @@ class QrPreviewScreen extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsetsDirectional.only(end: 16),
-            child: GestureDetector(
-              onTap: () {
-                openPaywall(source: 'qr_preview', plans: true);
-              },
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: AppColors.primaryDark,
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                alignment: Alignment.center,
-                child: const FaIcon(
-                  FontAwesomeIcons.crown,
-                  size: 18,
-                  color: AppColors.crownGold,
-                ),
-              ),
+            child: CrownUpgradeButton(
+              size: 40,
+              iconSize: 22,
+              onTap: () => showUpgradeSheet(context),
             ),
           ),
         ],
@@ -208,12 +193,14 @@ class QrPreviewScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
-                      child: QrImageView(
-                        data: buildVCard(profile),
-                        version: QrVersions.auto,
-                        errorCorrectionLevel: QrErrorCorrectLevel.M,
-                        size: 200,
-                        gapless: true,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: StyledQr(
+                          data: buildVCard(profile),
+                          style: style,
+                          size: 200,
+                          padding: style == QrStyles.classic ? 0 : 10,
+                        ),
                       ),
                     ),
                   ),
@@ -228,9 +215,13 @@ class QrPreviewScreen extends StatelessWidget {
                   ),
                   if (profile.companyName.isNotEmpty)
                     Text(
-                      'qr_preview_company'.trParams({'company': profile.companyName}),
-                      style:
-                      const TextStyle(color: Colors.white70, fontSize: 12),
+                      'qr_preview_company'.trParams({
+                        'company': profile.companyName,
+                      }),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
                     ),
                 ],
               ),
@@ -262,8 +253,10 @@ class QrPreviewScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
-                    child: const Icon(Icons.badge_outlined,
-                        color: Color(0xFF444494)),
+                    child: const Icon(
+                      Icons.badge_outlined,
+                      color: Color(0xFF444494),
+                    ),
                   ),
                   title: Text(
                     'qr_preview_create_card_title'.tr,
@@ -297,7 +290,7 @@ class QrPreviewScreen extends StatelessWidget {
 
                     // The editor loads the card first, then adds the QR.
                     Get.to(
-                          () => CardEditorView(design: design, qrToAdd: file),
+                      () => CardEditorView(design: design, qrToAdd: file),
                       transition: Transition.rightToLeft,
                     );
                   },
@@ -333,30 +326,32 @@ class QrPreviewScreen extends StatelessWidget {
               height: 50,
               child: qrOnly
                   ? ElevatedButton.icon(
-                onPressed: _share,
-                icon: const Icon(Icons.share, size: 18),
-                label: Text('qr_preview_share_qr_code'.tr),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              )
+                      onPressed: _share,
+                      icon: const Icon(Icons.share, size: 18),
+                      label: Text('qr_preview_share_qr_code'.tr),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    )
                   : OutlinedButton(
-                onPressed: _share,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF444494),
-                  side: const BorderSide(
-                      color: Color(0xFF444494), width: 1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text('qr_preview_share'.tr),
-              ),
+                      onPressed: _share,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF444494),
+                        side: const BorderSide(
+                          color: Color(0xFF444494),
+                          width: 1,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text('qr_preview_share'.tr),
+                    ),
             ),
           ],
         ),

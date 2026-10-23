@@ -9,7 +9,10 @@ import '../../custom_create/model/card_element_model.dart';
 import '../../custom_create/view/card_editor_view.dart';
 import '../../email_signature/view/email_signature_intro_view.dart';
 import '../../profile_setup/service/profile_store.dart';
-import '../../qr_code_generator/view/qr_code_screen.dart';
+import '../../qr_code_generator/model/qr_code_builder.dart';
+import '../../qr_code_generator/service/qr_store.dart';
+import '../../qr_code_generator/view/qr_management_screen.dart';
+import '../../qr_code_generator/widgets/styled_qr.dart';
 import '../../template/widget/template_live_preview.dart';
 import '../controller/home_controller.dart';
 import 'share_card_sheet.dart';
@@ -52,20 +55,7 @@ class MyCardSection extends StatelessWidget {
         transition: Transition.rightToLeft,
       );
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            firstName.isEmpty ? 'home_welcome'.tr : 'home_welcome_name'.trParams({'name': firstName}),
-            style: const TextStyle(
-              fontFamily: AppTextStyles.fontFamily,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: AppColors.titleDark,
-            ),
-          ),
-          const SizedBox(height: 8),
-          GestureDetector(
+      final cardTile = GestureDetector(
             onTap: preview == null ? editCard : null,
             child: Container(
               decoration: BoxDecoration(
@@ -131,7 +121,30 @@ class MyCardSection extends StatelessWidget {
                 ),
               ),
             ),
+          );
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            firstName.isEmpty ? 'home_welcome'.tr : 'home_welcome_name'.trParams({'name': firstName}),
+            style: const TextStyle(
+              fontFamily: AppTextStyles.fontFamily,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.titleDark,
+            ),
           ),
+          const SizedBox(height: 8),
+          // Swipe left for the QR code of the active profile.
+          if (preview == null)
+            _SwipeCards(
+              aspect: _designAspect(design),
+              card: cardTile,
+              qr: const _QrPage(),
+            )
+          else
+            cardTile,
 
           // Back side of the live preview, drawn off-screen only so it can
           // be captured when the user taps Apply Template.
@@ -175,10 +188,7 @@ class MyCardSection extends StatelessWidget {
                   child: _ActionButton(
                     label: 'home_card_my_qr'.tr,
                     filled: false,
-                    onTap: () => Get.to(
-                          () => const CustomQrCodeScreen(),
-                      transition: Transition.rightToLeft,
-                    ),
+                    onTap: openQrCodes,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -292,13 +302,203 @@ class _EmailButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: const Icon(
-            Icons.mail_outline_rounded,
-            size: 22,
-            color: AppColors.titleDark,
+          child: Image.asset(
+            'assets/icons/email_signatures_icon.png',
+            width: 22,
+            height: 22,
+            color: AppColors.primary,
           ),
         ),
       ),
     );
+  }
+}
+
+/// The card and, one swipe over, the active profile's QR code, with two dots
+/// showing which one is open. The card keeps its own size; the QR page is
+/// drawn to the same height.
+class _SwipeCards extends StatefulWidget {
+  const _SwipeCards({
+    required this.aspect,
+    required this.card,
+    required this.qr,
+  });
+
+  final double aspect;
+  final Widget card;
+  final Widget qr;
+
+  @override
+  State<_SwipeCards> createState() => _SwipeCardsState();
+}
+
+class _SwipeCardsState extends State<_SwipeCards> {
+  final _controller = PageController();
+  int _page = 0;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        LayoutBuilder(
+          builder: (context, box) {
+            // The card is drawn with 14px at each side and 1px above/below.
+            final height = (box.maxWidth - 28) / widget.aspect + 2;
+            return SizedBox(
+              height: height,
+              child: PageView(
+                controller: _controller,
+                onPageChanged: (i) => setState(() => _page = i),
+                children: [
+                  widget.card,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 1),
+                    child: widget.qr,
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (var i = 0; i < 2; i++)
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                width: i == _page ? 16 : 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: i == _page ? AppColors.primary : AppColors.pillBorder,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// The active profile's newest QR code, or a prompt to make one.
+class _QrPage extends StatelessWidget {
+  const _QrPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final entry = QrStore.defaultEntry;
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        child: GestureDetector(
+          onTap: openQrCodes,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x1A000000),
+                  offset: Offset(0, 4),
+                  blurRadius: 16,
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(14),
+            child: entry == null
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.qr_code_2_rounded,
+                        size: 44,
+                        color: AppColors.textGrey,
+                      ),
+                      const SizedBox(width: 12),
+                      Flexible(
+                        child: Text(
+                          'home_card_qr_empty'.tr,
+                          style: const TextStyle(
+                            fontFamily: AppTextStyles.fontFamily,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.titleDark,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 1,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: FittedBox(
+                            child: StyledQr(
+                              data: buildVCard(entry.profileData),
+                              style: entry.style,
+                              size: 160,
+                              padding: 10,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              entry.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontFamily: AppTextStyles.fontFamily,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.titleDark,
+                              ),
+                            ),
+                            if (entry.profileData.companyName.isNotEmpty)
+                              Text(
+                                entry.profileData.companyName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontFamily: AppTextStyles.fontFamily,
+                                  fontSize: 12.5,
+                                  color: AppColors.textSubtitle,
+                                ),
+                              ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'home_card_qr_hint'.tr,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontFamily: AppTextStyles.fontFamily,
+                                fontSize: 11.5,
+                                color: AppColors.textGrey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      );
+    });
   }
 }

@@ -266,14 +266,24 @@ void main() {
     expect(find.textContaining('Classic'), findsWidgets);
 
     await t.tap(find.text('Copy signature'));
+    await t.pumpAndSettle();
+    expect(find.text('Copy as'), findsOneWidget); // text or image
+    await t.tap(find.text('Text only'));
     await t.pump();
     expect(clipboard, contains('Sara Khan'));
     expect(clipboard, contains('Architect · Studio K'));
     expect(clipboard, contains('Made with AI Business Card Maker'));
     await t.pumpAndSettle(const Duration(seconds: 3));
 
-    // Tapping a saved signature edits it.
-    await t.tap(find.text('Classic · Architect · Studio K'));
+    // The ⋯ menu replaces the arrow; Edit opens the editor.
+    expect(find.byIcon(Icons.more_horiz_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.chevron_right_rounded), findsNothing);
+    await t.tap(find.byIcon(Icons.more_horiz_rounded));
+    await t.pumpAndSettle();
+    expect(find.text('Preview'), findsOneWidget);
+    expect(find.text('Edit'), findsOneWidget);
+    expect(find.text('Delete'), findsOneWidget);
+    await t.tap(find.text('Edit'));
     await t.pumpAndSettle();
     expect(find.text('Edit signature'), findsOneWidget);
     await flush(t);
@@ -326,9 +336,90 @@ void main() {
     expect(EmailSignatureStore.signatures.length, 2);
 
     await t.tap(find.text('Copy signature'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Text only'));
     await t.pump();
     expect(clipboard, isNot(contains('Made with')));
     await t.pumpAndSettle(const Duration(seconds: 3));
+    await flush(t);
+  });
+
+  testWidgets('menu: Preview shows that signature, Delete removes it', (
+    t,
+  ) async {
+    await open(t, pro: true);
+    await createFirst(t);
+    await t.tap(find.text('Save and add to email'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('New signature'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Compact'));
+    await t.pump();
+    await t.tap(find.text('Save and add to email'));
+    await t.pumpAndSettle();
+    final all = EmailSignatureStore.signatures.toList();
+    expect(all.length, 2);
+    expect(EmailSignatureStore.active!.id, all[1].id); // the newest
+
+    Future<void> menu(int row, String action) async {
+      await t.tap(find.byIcon(Icons.more_horiz_rounded).at(row));
+      await t.pumpAndSettle();
+      await t.tap(find.text(action));
+      await t.pumpAndSettle();
+    }
+
+    await menu(0, 'Preview'); // the first (Classic) goes in the preview area
+    expect(EmailSignatureStore.active!.id, all[0].id);
+
+    await menu(1, 'Delete');
+    expect(EmailSignatureStore.signatures.map((e) => e.id), [all[0].id]);
+    expect(find.byIcon(Icons.more_horiz_rounded), findsOneWidget);
+    expect(EmailSignatureStore.active!.id, all[0].id);
+
+    await menu(0, 'Delete'); // delete the last one
+    expect(EmailSignatureStore.signatures, isEmpty);
+    expect(find.text('Copy signature'), findsNothing);
+    await flush(t);
+  });
+
+  testWidgets('Done looks like Copy signature: a primary button, no card', (
+    t,
+  ) async {
+    await open(t);
+    await createFirst(t);
+    await t.tap(find.text('Save and add to email'));
+    await t.pumpAndSettle();
+    ButtonStyleButton button(String label) => t.widget<ButtonStyleButton>(
+      find.ancestor(
+        of: find.text(label),
+        matching: find.byWidgetPredicate((w) => w is ButtonStyleButton),
+      ),
+    );
+    final copy = button('Copy signature');
+    final done = button('Done');
+    expect(done, isA<ElevatedButton>());
+    expect(
+      done.style?.backgroundColor?.resolve({}),
+      copy.style?.backgroundColor?.resolve({}),
+    );
+    // Same size, and no white bar behind it.
+    expect(
+      t.getSize(
+        find.ancestor(
+          of: find.text('Done'),
+          matching: find.byType(ElevatedButton),
+        ),
+      ),
+      t.getSize(
+        find.ancestor(
+          of: find.text('Copy signature'),
+          matching: find.byType(ElevatedButton),
+        ),
+      ),
+    );
+    await t.tap(find.text('Done'));
+    await t.pumpAndSettle();
+    expect(find.byType(EmailSignatureSavedView), findsNothing);
     await flush(t);
   });
 

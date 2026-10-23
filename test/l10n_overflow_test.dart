@@ -40,14 +40,12 @@ import 'package:ai_business_card_maker/app/modules/contacts/widgets/contacts_emp
 import 'package:ai_business_card_maker/app/modules/contacts/widgets/no_results_state.dart';
 import 'package:ai_business_card_maker/app/modules/home/widgets/create_first_card_section.dart';
 import 'package:ai_business_card_maker/app/modules/main_nav/widgets/main_bottom_nav_bar.dart';
-import 'package:ai_business_card_maker/app/modules/remove_background/widget/remove_bg_app_bar.dart';
 import 'package:ai_business_card_maker/app/core/services/recent_designs_service.dart';
 import 'package:ai_business_card_maker/app/modules/contacts/model/contact_model.dart';
 import 'package:ai_business_card_maker/app/modules/contacts/view/contact_detail_view.dart';
 import 'package:ai_business_card_maker/app/modules/contacts/widgets/contact_action_row.dart';
 import 'package:ai_business_card_maker/app/modules/contacts/widgets/contact_actions_menu.dart';
 import 'package:ai_business_card_maker/app/modules/home/controller/home_controller.dart';
-import 'package:ai_business_card_maker/app/modules/home/view/all_recent_designs_view.dart';
 import 'package:ai_business_card_maker/app/modules/home/view/home_view.dart';
 import 'package:ai_business_card_maker/app/modules/home/widgets/home_templates_section.dart';
 import 'package:ai_business_card_maker/app/modules/home/widgets/my_card_section.dart';
@@ -55,7 +53,6 @@ import 'package:ai_business_card_maker/app/modules/profile/view/profile_view.dar
 import 'package:ai_business_card_maker/app/modules/profile_setup/view/business_details_view.dart';
 import 'package:ai_business_card_maker/app/modules/profile_setup/view/personal_details_view.dart';
 import 'package:ai_business_card_maker/app/modules/recent%20designs/view/my_cards_view.dart';
-import 'package:ai_business_card_maker/app/modules/remove_background/view/remove_background_view.dart';
 import 'package:ai_business_card_maker/app/modules/template/view/template_view.dart';
 import 'package:ai_business_card_maker/app/modules/template/widget/template_edit_view.dart';
 import 'package:ai_business_card_maker/app/core/widgets/add_link_sheet.dart';
@@ -67,11 +64,6 @@ import 'package:ai_business_card_maker/app/modules/paywall/controller/subscripti
 import 'package:ai_business_card_maker/app/modules/paywall/view/paywall_view.dart';
 import 'package:ai_business_card_maker/app/modules/paywall/view/paywall_view_2.dart';
 import 'package:ai_business_card_maker/app/modules/recent%20designs/view/card_detail_view.dart';
-import 'package:ai_business_card_maker/app/modules/remove_background/controller/remove_background_controller.dart';
-import 'package:ai_business_card_maker/app/modules/remove_background/view/confirm_screen.dart';
-import 'package:ai_business_card_maker/app/modules/remove_background/view/initial_screen.dart';
-import 'package:ai_business_card_maker/app/modules/remove_background/view/processing_screen.dart';
-import 'package:ai_business_card_maker/app/modules/remove_background/view/result_screen.dart';
 import 'package:ai_business_card_maker/app/modules/scan%20card%20and%20qr/model/scanned_contact_data.dart';
 import 'package:ai_business_card_maker/app/modules/scan%20card%20and%20qr/view/scan_card_view.dart';
 import 'package:ai_business_card_maker/app/modules/scan%20card%20and%20qr/widgets/scanned_card_preview.dart';
@@ -305,10 +297,6 @@ final _screens = <String, Widget Function()>{
     () => Get.find<RecentDesignsService>().designs.clear(),
     const MyCardsView(),
   ),
-  'all_recent_empty': () => _Prep(
-    () => Get.find<RecentDesignsService>().designs.clear(),
-    const AllRecentDesignsView(),
-  ),
   'profile_card_menu': () => _Prep(
     () =>
         Get.put(ProfileController(), permanent: true).showCardMenu.value = true,
@@ -378,17 +366,12 @@ final _screens = <String, Widget Function()>{
       ),
     ),
   ),
-  'remove_bg_initial': () => const Scaffold(body: InitialScreen()),
-  'remove_bg_confirm': () => const Scaffold(body: ConfirmScreen()),
-  'remove_bg_processing': () => const Scaffold(body: ProcessingScreen()),
-  'remove_bg_result': () => const Scaffold(body: ResultScreen()),
   'home_view': () => const HomeView(),
   'home_my_card': () =>
       const Scaffold(body: SingleChildScrollView(child: MyCardSection())),
   'home_templates': () => const Scaffold(
     body: SingleChildScrollView(child: HomeTemplatesSection()),
   ),
-  'all_recent_designs': () => const AllRecentDesignsView(),
   'my_cards': () => const MyCardsView(),
   'contact_detail': () => ContactDetailView(contact: _contact),
   'contact_action_row': () =>
@@ -401,7 +384,6 @@ final _screens = <String, Widget Function()>{
   'business_details': () => const BusinessDetailsView(),
   'template_view': () => const Scaffold(body: TemplateView()),
   'template_edit': () => const TemplateEditView(),
-  'remove_bg': () => const RemoveBackgroundView(),
   'dlg_out_of_credits': () => _dialog(
     ['credit_gate_out_of_credits_title', 'credit_gate_out_of_credits_message'],
     ['credit_gate_upgrade', 'credit_gate_not_now'],
@@ -431,8 +413,6 @@ final _screens = <String, Widget Function()>{
       child: MainBottomNavBar(currentIndex: 0, onTabSelected: (_) {}),
     ),
   ),
-  'remove_bg_app_bar': () =>
-      Scaffold(appBar: RemoveBgAppBar(title: 'remove_bg_initial_title'.tr)),
   'contacts_empty': () => Scaffold(
     body: ContactsEmptyState(onAddManually: () {}, onScanCard: () {}),
   ),
@@ -534,11 +514,6 @@ void main() {
         Get.put(ContactsController(), tag: 'contacts');
         Get.put<HomeController>(_FakeHome());
         Get.put<SubscriptionController>(_FakeSub());
-        final rb = Get.put(RemoveBackgroundController());
-        rb.pickedImage.value = File(
-          '${Directory.systemTemp.path}/l10n_card.png',
-        );
-        rb.resultBytes.value = _png;
         final svc = Get.put(RecentDesignsService());
         final png = File('${Directory.systemTemp.path}/l10n_card.png')
           ..writeAsBytesSync(_png);

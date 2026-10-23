@@ -240,7 +240,7 @@ void main() {
     await openHub(t);
     await t.tap(find.text('Profile Optimizer'));
     await t.pumpAndSettle();
-    await t.tap(find.text('Paste sections by hand'));
+    await t.tap(find.text('Paste sections manually'));
     await t.pumpAndSettle();
     await t.enterText(find.byType(TextField), 'Designer with 5 years');
     await t.tap(find.text('Analyze my profile'));
@@ -318,7 +318,7 @@ void main() {
     await openHub(t);
     await t.tap(find.text('Profile Optimizer'));
     await t.pumpAndSettle();
-    await t.tap(find.text('Paste sections by hand'));
+    await t.tap(find.text('Paste sections manually'));
     await t.pumpAndSettle();
     await t.enterText(find.byType(TextField), 'Designer');
     await t.tap(find.text('Analyze my profile'));

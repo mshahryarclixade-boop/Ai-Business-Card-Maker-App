@@ -47,6 +47,7 @@ class CareerAppBar extends StatelessWidget {
     this.leadingIcon = Icons.arrow_back_rounded,
     this.onLeading,
     this.titleInset = 0,
+    this.showLeading = true,
   });
 
   final String title;
@@ -57,6 +58,9 @@ class CareerAppBar extends StatelessWidget {
   /// shrinks to fit instead of running under a wide trailing widget. 0 = no
   /// change: the title stays centred on the screen.
   final double titleInset;
+
+  /// Hide the back arrow (a screen that is a tab).
+  final bool showLeading;
 
   /// Defaults to the back arrow (which mirrors in RTL); [onLeading] defaults
   /// to popping the route.
@@ -76,7 +80,9 @@ class CareerAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final back = IconButton(
+    final back = !showLeading
+        ? const SizedBox(width: 20)
+        : IconButton(
       onPressed: onLeading ?? () => Navigator.of(context).maybePop(),
       icon: Icon(leadingIcon, size: 24, color: AppColors.titleDark),
       padding: const EdgeInsetsDirectional.only(start: 20),

@@ -244,11 +244,11 @@ const Map<String, String> careerStudioStrings = {
   'career_optimizer_pdf_instructions':
       'On your LinkedIn profile, tap More → Save to PDF, then pick the file here.',
   'career_optimizer_pdf_choose': 'Choose PDF file',
-  'career_optimizer_images_title': 'Upload profile images',
+  'career_optimizer_images_title': 'Upload profile screenshots',
   'career_optimizer_images_select': 'Select images',
   'career_optimizer_images_add_more': 'Add more images',
   'career_optimizer_images_count': '{count}/{max} selected',
-  'career_optimizer_text_title': 'Paste sections by hand',
+  'career_optimizer_text_title': 'Paste sections manually',
   'career_optimizer_text_hint':
       'Paste your headline, about and experience here',
   'career_post_planner_title': 'Post Planner',

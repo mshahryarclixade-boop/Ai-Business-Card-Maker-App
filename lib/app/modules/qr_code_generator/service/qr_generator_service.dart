@@ -5,6 +5,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../model/qr_code_builder.dart';
 import '../model/qr_profile_data.dart';
+import '../model/qr_style.dart';
 import '../../../core/translations/tr_extension.dart';
 
 class QrGeneratorService {
@@ -21,19 +22,25 @@ class QrGeneratorService {
     double borderFraction = 0.08,
     ui.Color foregroundColor = const ui.Color(0xFF000000),
     ui.Color backgroundColor = const ui.Color(0xFFFFFFFF),
+    QrStyle? style,
   }) async {
     final data = payloadFor(profile);
+    // A style sets the colours and the dot / eye shapes.
+    if (style != null) {
+      foregroundColor = style.foreground;
+      backgroundColor = style.background;
+    }
 
     final painter = QrPainter(
       data: data,
       version: QrVersions.auto,
       gapless: true,
       eyeStyle: QrEyeStyle(
-        eyeShape: QrEyeShape.square,
-        color: foregroundColor,
+        eyeShape: style?.eyeShape ?? QrEyeShape.square,
+        color: style?.eyeColor ?? foregroundColor,
       ),
       dataModuleStyle: QrDataModuleStyle(
-        dataModuleShape: QrDataModuleShape.square,
+        dataModuleShape: style?.moduleShape ?? QrDataModuleShape.square,
         color: foregroundColor,
       ),
       errorCorrectionLevel: QrErrorCorrectLevel.M,

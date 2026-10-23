@@ -3,13 +3,15 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
+import '../../../core/services/profile_scope.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../model/email_signature.dart';
 
 /// The user's saved email signatures, kept on the device. Free users can
 /// have [freeLimit]; Pro users any number.
 abstract final class EmailSignatureStore {
-  static const _key = 'email_signatures';
+  static const _baseKey = 'email_signatures';
+  static String get _key => ProfileScope.key(_baseKey);
   static const freeLimit = 1;
 
   static final signatures = <EmailSignature>[].obs;
@@ -28,6 +30,14 @@ abstract final class EmailSignatureStore {
 
   static bool canCreate({required bool isPro}) =>
       isPro || signatures.length < freeLimit;
+
+  /// Shows the active profile's signatures (after a profile switch).
+  static void reload() {
+    _loaded = false;
+    signatures.clear();
+    activeId.value = '';
+    load();
+  }
 
   /// Reads the saved signatures once (memory is the truth afterwards).
   static void load() {

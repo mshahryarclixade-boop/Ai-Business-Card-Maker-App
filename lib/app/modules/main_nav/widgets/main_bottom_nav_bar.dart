@@ -11,9 +11,13 @@ class NavItem {
   final String iconAsset;
   final String label;
 
+  /// A built-in icon instead of an image asset.
+  final IconData? icon;
+
   const NavItem({
-    required this.iconAsset,
+    this.iconAsset = '',
     required this.label,
+    this.icon,
   });
 }
 
@@ -32,6 +36,10 @@ const List<NavItem> mainNavItems = [
     iconAsset: '$_navIconsPath/contacts.png',
     label: 'main_nav_tab_contacts',
   ),
+  NavItem(
+    icon: Icons.psychology_alt_outlined,
+    label: 'main_nav_tab_ai_coach',
+  ),
 ];
 
 // Animation tuning (only motion, no visual change)
@@ -45,8 +53,8 @@ const double _kIndicatorH = 46;
 const double _kBarHeight = 62;
 
 // Width of the whole bar.
-const double _kBarWidth = 280;
-const double _kBarWidthTablet = 340;
+const double _kBarWidth = 320;
+const double _kBarWidthTablet = 400;
 
 // Minimum gap kept between the indicator and neighbouring tabs.
 const double _kIndicatorSideGap = -6;
@@ -233,6 +241,9 @@ class _NavItemContent extends StatelessWidget {
               duration: _kColorDuration,
               curve: Curves.easeOut,
               builder: (context, animatedColor, _) {
+                if (item.icon != null) {
+                  return Icon(item.icon, size: iconSize + 2, color: animatedColor);
+                }
                 return Image.asset(
                   item.iconAsset,
                   color: animatedColor,

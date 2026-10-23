@@ -21,6 +21,8 @@ import 'app/modules/paywall/controller/subscription_controller.dart';
 import 'app/modules/paywall/services/revenue_cat_service.dart';
 import 'app/modules/paywall/services/user_credits_manager.dart';
 import 'app/modules/career_studio/controller/career_score_store.dart';
+import 'app/modules/profiles/service/profiles_manager.dart';
+import 'app/modules/qr_code_generator/service/qr_store.dart';
 import 'app/modules/career_studio/controller/generated_profile_store.dart';
 import 'app/routes/app_pages.dart';
 import 'firebase_options.dart';
@@ -50,6 +52,9 @@ void main() async {
   };
 
   await GetStorage.init();
+  // Which profile is active must be known before any per-profile store loads.
+  ProfilesManager.load();
+  QrStore.load();
   CareerScoreStore.load();
   GeneratedProfileStore.load();
   await NotificationService().init();

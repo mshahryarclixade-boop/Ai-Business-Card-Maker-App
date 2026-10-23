@@ -6,6 +6,7 @@ import 'package:ai_business_card_maker/app/core/translations/app_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/ai_card_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/career_studio_strings.dart';
+import 'package:ai_business_card_maker/app/core/translations/en/clixa_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/contacts_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/core_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/custom_create_strings.dart';
@@ -16,6 +17,7 @@ import 'package:ai_business_card_maker/app/core/translations/en/onboarding_strin
 import 'package:ai_business_card_maker/app/core/translations/en/paywall_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/profile_setup_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/profile_strings.dart';
+import 'package:ai_business_card_maker/app/core/translations/en/profiles_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/qr_code_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/recent_designs_strings.dart';
 import 'package:ai_business_card_maker/app/core/translations/en/remove_background_strings.dart';
@@ -48,7 +50,9 @@ void main() {
     'remove_background': removeBackgroundStrings,
     'scan': scanStrings,
     'services': servicesStrings,
+    'clixa': clixaStrings,
     'email_signature': emailSignatureStrings,
+    'profiles': profilesStrings,
     'settings': settingsStrings,
     'splash': splashStrings,
     'template': templateStrings,

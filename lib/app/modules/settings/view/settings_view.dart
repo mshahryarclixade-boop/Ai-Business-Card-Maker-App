@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:ai_business_card_maker/app/modules/profile/view/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
@@ -9,6 +8,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/legal_links.dart';
 import '../../paywall/controller/subscription_controller.dart';
 import '../../paywall/view/paywall_screen.dart';
+import '../../profiles/view/profiles_view.dart';
 import '../../recent designs/view/my_cards_view.dart';
 import '../../../core/translations/app_strings.dart';
 import '../../../core/translations/tr_extension.dart';
@@ -74,7 +74,11 @@ class SettingsView extends StatelessWidget {
                         _SettingsTile(
                           icon: Icons.person,
                           title: 'settings_profile',
-                          onTap: () => Get.to(() => const ProfileView()),
+                          onTap: () => Get.to(
+                            () => const ProfilesView(),
+                            routeName: profilesRoute,
+                            transition: Transition.rightToLeft,
+                          ),
                         ),
                         const SizedBox(height: 7),
 

@@ -84,7 +84,7 @@ void main() {
   testWidgets('toolkit card opens Career Studio', (t) async {
     phone(t);
     await t.pumpWidget(_app(const Scaffold(body: AiToolkitSection())));
-    expect(find.text('Your AI toolkit'), findsOneWidget);
+    expect(find.text('Your Business ToolKit'), findsOneWidget);
     expect(find.text('Career Studio'), findsOneWidget);
     expect(find.text('AI Business Analyst'), findsOneWidget);
     await t.tap(find.text('Career Studio'));
@@ -150,7 +150,7 @@ void main() {
   testWidgets('Profile Optimizer: choosing a source selects it', (t) async {
     phone(t);
     await t.pumpWidget(_app(const ProfileOptimizerView()));
-    await t.tap(find.text('Paste sections by hand'));
+    await t.tap(find.text('Paste sections manually'));
     await t.pumpAndSettle();
     expect(
       find.text('Paste your headline, about and experience here'),

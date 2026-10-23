@@ -1,28 +1,43 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:get_storage/get_storage.dart';
-import 'package:path_provider/path_provider.dart';
-
+import '../../../core/widgets/crown_upgrade_button.dart';
+import '../../../core/services/profile_scope.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/add_link_sheet.dart';
+import '../../career_studio/widgets/career_hub_sheets.dart';
 import '../../profile/model/profile_model.dart';
 import '../../profile/service/profile_repository.dart';
 import '../../profile_setup/service/profile_store.dart';
-import '../service/qr_generator_service.dart';
 import '../model/qr_profile_data.dart';
-import 'qr_preview_screen.dart';
+import 'qr_style_picker_screen.dart';
 import '../../paywall/view/paywall_screen.dart';
 import '../../../core/translations/tr_extension.dart';
 
 class CustomQrCodeScreen extends StatefulWidget {
   final bool forCardInsertion;
 
-  const CustomQrCodeScreen({super.key, this.forCardInsertion = false});
+  /// Opened from the saved QR codes: after picking a style, saving goes back
+  /// there.
+  final bool fromManagement;
+
+  /// Edit an existing QR code: its form, id and style.
+  final Map<String, dynamic>? initialForm;
+  final String? editId;
+  final String? initialStyleId;
+
+  const CustomQrCodeScreen({
+    super.key,
+    this.forCardInsertion = false,
+    this.fromManagement = false,
+    this.initialForm,
+    this.editId,
+    this.initialStyleId,
+  });
 
   @override
   State<CustomQrCodeScreen> createState() => _CustomQrCodeScreenState();
@@ -38,7 +53,7 @@ class _SocialLinkEntry {
 
 class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
   /// GetStorage key for the last QR form the user generated.
-  static const String _storeKey = 'qr_form_data';
+  static String get _storeKey => ProfileScope.key('qr_form_data');
 
   final _fullName = TextEditingController();
   final _phone = TextEditingController();
@@ -79,9 +94,10 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
   void _loadForm() {
     final raw = GetStorage().read<String>(_storeKey);
 
-    if (raw != null) {
+    if (widget.initialForm != null || raw != null) {
       try {
-        final m = jsonDecode(raw) as Map<String, dynamic>;
+        final m =
+            widget.initialForm ?? jsonDecode(raw!) as Map<String, dynamic>;
         _fullName.text = _s(m['fullName']);
         _phone.text = _s(m['phone']);
         _email.text = _s(m['email']);
@@ -119,30 +135,28 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
   }
 
   /// Remembers the form so "Edit Digital Card Details" opens with it again.
-  void _saveForm() {
-    GetStorage().write(
-      _storeKey,
-      jsonEncode({
-        'fullName': _fullName.text.trim(),
-        'phone': _phone.text.trim(),
-        'email': _email.text.trim(),
-        'company': _company.text.trim(),
-        'designation': _designation.text.trim(),
-        'website': _website.text.trim(),
-        'country': _country.text.trim(),
-        'city': _city.text.trim(),
-        'links': _socialLinks
-            .map(
-              (e) => {
+  void _saveForm() => GetStorage().write(_storeKey, jsonEncode(_formMap()));
+
+  /// The form as stored: what "Edit" and the saved QR codes open with.
+  Map<String, dynamic> _formMap() => {
+    'fullName': _fullName.text.trim(),
+    'phone': _phone.text.trim(),
+    'email': _email.text.trim(),
+    'company': _company.text.trim(),
+    'designation': _designation.text.trim(),
+    'website': _website.text.trim(),
+    'country': _country.text.trim(),
+    'city': _city.text.trim(),
+    'links': _socialLinks
+        .map(
+          (e) => {
             'platform': e.platform,
             'imagePath': e.imagePath,
             'url': e.url,
           },
         )
-            .toList(),
-      }),
-    );
-  }
+        .toList(),
+  };
 
   /// Opens the shared white bottom sheet (4 platform icons per row),
   /// then the URL sheet, and adds the result to the social links list.
@@ -227,16 +241,19 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
     setState(() => _isGenerating = true);
 
     try {
-      final bytes = await QrGeneratorService().generatePngBytes(profile);
-
-      final dir = await getTemporaryDirectory();
-      await File(
-        '${dir.path}/qr_${DateTime.now().millisecondsSinceEpoch}.png',
-      ).writeAsBytes(bytes);
-
       if (!mounted) return;
 
-      Get.off(() => QrPreviewScreen(profile: profile));
+      // Next: pick the QR code's style, then it is saved.
+      Get.off(
+        () => QrStylePickerScreen(
+          form: _formMap(),
+          profile: profile,
+          editId: widget.editId,
+          initialStyleId: widget.initialStyleId,
+          fromManagement: widget.fromManagement,
+        ),
+        transition: Transition.rightToLeft,
+      );
     } catch (_) {
       Get.snackbar(
         'qr_screen_error_title'.tr,
@@ -276,24 +293,10 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
           actions: [
             Padding(
               padding: const EdgeInsetsDirectional.only(end: 16),
-              child: GestureDetector(
-                onTap: () {
-                  openPaywall(source: 'qr_code', plans: true);
-                },
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryDark,
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  alignment: Alignment.center,
-                  child: const FaIcon(
-                    FontAwesomeIcons.crown,
-                    size: 18,
-                    color: AppColors.crownGold,
-                  ),
-                ),
+              child: CrownUpgradeButton(
+                size: 36,
+                iconSize: 22,
+                onTap: () => showUpgradeSheet(context),
               ),
             ),
           ],
@@ -406,7 +409,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                     const SizedBox(height: 10),
                     _SectionLabel('qr_screen_section_social'.tr),
                     ..._socialLinks.map(
-                          (link) => Padding(
+                      (link) => Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -464,7 +467,9 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Padding(
-                                padding: const EdgeInsetsDirectional.only(start: 14),
+                                padding: const EdgeInsetsDirectional.only(
+                                  start: 14,
+                                ),
                                 child: Icon(
                                   Icons.add,
                                   color: AppColors.primary,
@@ -523,20 +528,20 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                         ),
                         child: _isGenerating
                             ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
                             : Text(
-                          'qr_screen_generate'.tr,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
+                                'qr_screen_generate'.tr,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
                       ),
                     ),
                   ],

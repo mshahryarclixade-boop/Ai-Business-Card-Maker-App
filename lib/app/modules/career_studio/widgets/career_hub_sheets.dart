@@ -63,6 +63,9 @@ Future<void> showUpgradeSheet(
   String? title,
   List<String>? perkKeys,
   String? proMessageKey,
+
+  /// Shown under the headline (e.g. a row of avatars).
+  Widget? header,
   String? continueLabel,
   VoidCallback? onUnlocked,
   CareerPurchaser? purchaser,
@@ -82,6 +85,7 @@ Future<void> showUpgradeSheet(
           lockedFeature: lockedFeature,
           title: title,
           perkKeys: perkKeys,
+          header: header,
           purchaser: purchaser ?? _buyPlan,
         ),
       ),
@@ -392,6 +396,7 @@ class _UpgradeSheet extends StatefulWidget {
     this.lockedFeature,
     this.title,
     this.perkKeys,
+    this.header,
   });
 
   final CareerPurchaser purchaser;
@@ -400,6 +405,7 @@ class _UpgradeSheet extends StatefulWidget {
   /// Replaces the headline / the four perks (other features reuse the sheet).
   final String? title;
   final List<String>? perkKeys;
+  final Widget? header;
 
   @override
   State<_UpgradeSheet> createState() => _UpgradeSheetState();
@@ -482,6 +488,10 @@ class _UpgradeSheetState extends State<_UpgradeSheet> {
             ),
           ],
         ),
+        if (widget.header != null) ...[
+          const SizedBox(height: 12),
+          Center(child: widget.header),
+        ],
         const SizedBox(height: 14),
         for (final k
             in widget.perkKeys ??

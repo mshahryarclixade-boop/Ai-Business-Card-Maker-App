@@ -4,7 +4,7 @@ import '../../home/controller/home_controller.dart';
 import '../../scan card and qr/view/scan_card_view.dart';
 
 class MainNavController extends GetxController {
-  /// 0=Home, 1=Template, 2=Contacts, 3=Profile
+  /// 0=Home, 1=Template, 2=Contacts, 3=AI Coach
   final RxInt tabIndex = 0.obs;
 
   void changeTab(int index) {
@@ -12,8 +12,9 @@ class MainNavController extends GetxController {
     tabIndex.value = index;
   }
 
-  /// Bottom bar order is Home (0), Scan (1), Contacts (2).
-  /// Scan opens its own screen, so it never becomes the selected tab.
+  /// Bottom bar order is Home (0), Scan (1), Contacts (2), AI Coach (3).
+  /// Scan opens its own screen, so it never becomes the selected tab. AI Coach
+  /// is the fourth tab.
   void onNavTap(int index) {
     if (index == 1) {
       onScanTap();

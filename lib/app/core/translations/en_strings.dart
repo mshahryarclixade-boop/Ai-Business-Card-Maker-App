@@ -1,5 +1,6 @@
 import 'en/ai_card_strings.dart';
 import 'en/career_studio_strings.dart';
+import 'en/clixa_strings.dart';
 import 'en/contacts_strings.dart';
 import 'en/core_strings.dart';
 import 'en/custom_create_strings.dart';
@@ -9,6 +10,7 @@ import 'en/main_nav_strings.dart';
 import 'en/onboarding_strings.dart';
 import 'en/paywall_strings.dart';
 import 'en/profile_setup_strings.dart';
+import 'en/profiles_strings.dart';
 import 'en/profile_strings.dart';
 import 'en/qr_code_strings.dart';
 import 'en/recent_designs_strings.dart';
@@ -26,6 +28,7 @@ const Map<String, String> enStrings = {
     ...coreStrings,
     ...aiCardStrings,
     ...careerStudioStrings,
+    ...clixaStrings,
     ...contactsStrings,
     ...customCreateStrings,
     ...emailSignatureStrings,
@@ -34,6 +37,7 @@ const Map<String, String> enStrings = {
     ...onboardingStrings,
     ...paywallStrings,
     ...profileStrings,
+    ...profilesStrings,
     ...profileSetupStrings,
     ...qrCodeStrings,
     ...recentDesignsStrings,
