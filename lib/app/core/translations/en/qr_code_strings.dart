@@ -1,8 +1,10 @@
 /// English strings: qr_code.
 const Map<String, String> qrCodeStrings = {
-  'qr_preview_save_permission_message': 'Allow photo access to save the QR code.',
+  'qr_preview_save_permission_message':
+      'Allow photo access to save the QR code.',
   'qr_preview_saved_message': 'QR code saved to your gallery.',
-  'qr_preview_save_failed_message': 'Could not save the QR code. Please try again.',
+  'qr_preview_save_failed_message':
+      'Could not save the QR code. Please try again.',
   'qr_preview_share_text': 'Scan this QR code to save my contact.',
   'qr_preview_share_failed_title': 'Could not share',
   'qr_preview_share_failed_message': 'Please try again.',
@@ -13,9 +15,11 @@ const Map<String, String> qrCodeStrings = {
   'qr_preview_share_qr_code': 'Share QR Code',
   'qr_preview_share': 'Share',
   'qr_screen_full_name_required_title': 'Full name required',
-  'qr_screen_full_name_required_message': 'Add at least a full name before generating a QR code.',
+  'qr_screen_full_name_required_message':
+      'Add at least a full name before generating a QR code.',
   'qr_screen_error_title': 'Something went wrong',
-  'qr_screen_error_message': 'Could not generate the QR code. Please try again.',
+  'qr_screen_error_message':
+      'Could not generate the QR code. Please try again.',
   'qr_screen_title': 'Custom QR Code',
   'qr_screen_auto_fill': 'Auto-fill from your saved profile',
   'qr_screen_no_profile_title': 'No saved profile',
@@ -34,7 +38,8 @@ const Map<String, String> qrCodeStrings = {
   'qr_screen_label_country': 'Country',
   'qr_screen_label_city': 'City',
   'qr_screen_generate': 'Generate QR Code',
-  'qr_generation_failed_render': 'QR generation failed: could not render image data.',
+  'qr_generation_failed_render':
+      'QR generation failed: could not render image data.',
   'qr_preview_share_subject': '{name} - Contact QR Code',
   'qr_preview_company': 'Company • {company}',
 };

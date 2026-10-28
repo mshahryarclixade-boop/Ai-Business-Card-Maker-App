@@ -26,6 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>The microphone lets you dictate your message to Clixa instead of typing it.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Speech recognition turns what you say into text for your message to Clixa.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>The camera is used to scan business cards and QR codes.</string>
 	<key>NSContactsUsageDescription</key>

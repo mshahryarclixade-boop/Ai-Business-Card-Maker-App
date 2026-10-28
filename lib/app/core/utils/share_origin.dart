@@ -1,4 +1,3 @@
-
 import 'package:flutter/widgets.dart';
 
 /// Anchor rectangle for the system share sheet. iOS needs a non-empty

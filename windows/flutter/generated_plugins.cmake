@@ -9,11 +9,13 @@ list(APPEND FLUTTER_PLUGIN_LIST
   firebase_app_check
   firebase_core
   firebase_remote_config
+  flutter_tts
   flutter_udid
   gal
   irondash_engine_context
   permission_handler_windows
   share_plus
+  speech_to_text_windows
   super_native_extensions
   url_launcher_windows
 )

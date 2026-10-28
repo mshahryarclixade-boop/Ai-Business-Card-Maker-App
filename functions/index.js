@@ -1,6 +1,7 @@
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { initializeApp } = require("firebase-admin/app");
 const { GoogleGenAI } = require("@google/genai");
+const panelEngine = require("./panel/engine");
 
 initializeApp();
 
@@ -86,12 +87,12 @@ function clip(v, max = 3000) {
   return typeof v === "string" ? v.trim().slice(0, max) : "";
 }
 
-async function generateJson(prompt, extraParts = []) {
+async function generateJson(prompt, extraParts = [], opts = {}) {
   const ai = getClient();
   const res = await ai.models.generateContent({
     model: TEXT_MODEL,
     contents: [{ role: "user", parts: [{ text: prompt }, ...extraParts] }],
-    config: { responseMimeType: "application/json", temperature: 0.8 },
+    config: { responseMimeType: "application/json", temperature: opts.temperature ?? 0.8 },
   });
   const raw = res?.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") || "";
   try {
@@ -100,6 +101,22 @@ async function generateJson(prompt, extraParts = []) {
     throw new HttpsError("internal", "Bad AI response.");
   }
 }
+
+// Plain text (the Expert Panel's spoken lines).
+async function generateText(prompt, opts = {}) {
+  const ai = getClient();
+  const res = await ai.models.generateContent({
+    model: TEXT_MODEL,
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+    config: { temperature: opts.temperature ?? 0.8 },
+  });
+  const raw = res?.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") || "";
+  if (!raw.trim()) throw new HttpsError("internal", "Empty AI response.");
+  return raw;
+}
+
+// The Expert Panel workflow (see panel/engine.js).
+const panel = panelEngine.create({ generateJson, generateText, HttpsError, log: console });
 
 function needText(obj, key) {
   const t = clip(obj?.[key], 4000);
@@ -122,7 +139,20 @@ function answersBlock(a = {}) {
   ].join("\n");
 }
 
+const COACH_MODES = {
+  discuss:
+    "Help the user sharpen a business idea. Point out what is strong and what is unclear, then ask the one question that would help most.",
+  validate:
+    "Validate the idea honestly. Gather, one question per turn: what they sell, to whom, what buyers would pay, what it costs them to deliver, and how much they can make or serve.",
+  plan:
+    "Help write a one-page business plan step by step. Ask one question at a time (business, customer, offer, price, how they get customers, costs). When you have enough, write the plan as short labelled lines.",
+  numbers:
+    "Work out the numbers: price, cost, margin, profit, break-even. Do the arithmetic only from the user's figures, show it briefly, and ask for any missing figure.",
+  talk: "Answer business questions plainly and practically, and ask what they want to do next.",
+};
+
 const PART_IDS = ["headline", "about", "experience", "skills", "photo", "featured", "link"];
+
 
 const TASKS = {
   // { answers } -> { headline, about, experience }
@@ -172,6 +202,67 @@ const TASKS = {
         `Rest of the profile:\n${clip(d.profile, 3500) || "(not available)"}`,
     );
     return { text: needText(out, "text") };
+  },
+
+  // Clixa, the AI business coach.
+  // { mode, messages: [{role: "user"|"coach", text}], about? } -> { reply, verdict? }
+  async coachReply(d, lang) {
+    const mode = Object.prototype.hasOwnProperty.call(COACH_MODES, d.mode) ? d.mode : "talk";
+    const msgs = (Array.isArray(d.messages) ? d.messages : [])
+      .filter((m) => m && typeof m.text === "string" && m.text.trim())
+      .slice(-24);
+    if (!msgs.length || msgs[msgs.length - 1].role !== "user") {
+      throw new HttpsError("invalid-argument", "Nothing to answer.");
+    }
+    const userTurns = msgs.filter((m) => m.role === "user").length;
+    const convo = msgs
+      .map((m) => `${m.role === "user" ? "User" : "Clixa"}: ${clip(m.text, 800)}`)
+      .join("\n");
+    const about = clip(d.about, 200);
+    const out = await generateJson(
+      "You are Clixa, a warm, practical AI business coach inside a business-card app.\n" +
+        `Write in ${lang}. ${COACH_MODES[mode]}\n` +
+        "Rules: use ONLY facts and figures the user gave; never invent numbers, markets or competitors. " +
+        "Ask at most ONE question per turn. Keep replies under 70 words (a finished plan may use up to 160). " +
+        "Plain text only: no markdown, no emojis, no lists with symbols. " +
+        "You give practice feedback, not financial, legal or tax advice.\n" +
+        (about ? `About the user: ${about}\n` : "") +
+        (mode === "validate"
+          ? `The user has answered ${userTurns} time(s). Once you know what they sell, to whom, ` +
+            "the price, the cost and their capacity (normally after 4 answers), set \"verdict\"; " +
+            "until then set it to null and ask the next missing question. When you give a verdict, " +
+            "\"reply\" is one short sentence leading into it.\n"
+          : "Always set \"verdict\" to null.\n") +
+        'Return JSON: {"reply": "", "verdict": null or {"badge": "one or two words, e.g. Promising, Mixed, Risky", ' +
+        '"headline": "one sentence", "strengths": ["", ""], "risks": ["", ""], "next": ["", ""]}}\n\n' +
+        `Conversation so far:\n${convo}\nClixa:`,
+    );
+    const reply = needText(out, "reply");
+    let verdict = null;
+    const v = out.verdict;
+    if (mode === "validate" && v && typeof v === "object") {
+      const list = (a) =>
+        (Array.isArray(a) ? a : [])
+          .map((x) => clip(x, 140))
+          .filter(Boolean)
+          .slice(0, 4);
+      verdict = {
+        badge: clip(v.badge, 24) || "Mixed",
+        headline: clip(v.headline, 200),
+        strengths: list(v.strengths),
+        risks: list(v.risks),
+        next: list(v.next),
+      };
+      if (!verdict.headline) verdict = null;
+    }
+    return { reply, verdict };
+  },
+
+  // ---- Expert panel (panel/engine.js) ----------------------------------------
+  // panelTurn: one panel line plus the updated session state; the app calls it
+  // again while `then` is "continue".
+  async panelTurn(d, lang) {
+    return panel.turn(d, lang);
   },
 
   // { text?, images?: [{base64,mime}], pdf?: {base64} } -> { scores, current }

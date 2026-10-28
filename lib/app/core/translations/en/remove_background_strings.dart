@@ -1,15 +1,20 @@
 /// English strings: remove_background.
 const Map<String, String> removeBackgroundStrings = {
-  'remove_bg_error_unreachable': 'Could not reach remove.bg. Check your connection and try again.',
-  'remove_bg_error_bad_image': 'That image could not be processed. Try a different photo.',
-  'remove_bg_error_credits': 'Background removal credits are exhausted for this API key.',
+  'remove_bg_error_unreachable':
+      'Could not reach remove.bg. Check your connection and try again.',
+  'remove_bg_error_bad_image':
+      'That image could not be processed. Try a different photo.',
+  'remove_bg_error_credits':
+      'Background removal credits are exhausted for this API key.',
   'remove_bg_error_unauthorized': 'Invalid or unauthorized remove.bg API key.',
-  'remove_bg_error_rate_limited': 'Too many requests. Please wait a moment and try again.',
+  'remove_bg_error_rate_limited':
+      'Too many requests. Please wait a moment and try again.',
   'remove_bg_failed_title': 'Background removal failed',
   'remove_bg_error_title': 'Something went wrong',
   'remove_bg_try_again_message': 'Please try again.',
   'remove_bg_permission_needed_title': 'Permission needed',
-  'remove_bg_save_permission_message': 'Allow photo library access to save this image.',
+  'remove_bg_save_permission_message':
+      'Allow photo library access to save this image.',
   'remove_bg_saved_title': 'Saved',
   'remove_bg_saved_message': 'Image saved to your gallery.',
   'remove_bg_save_failed_title': 'Could not save',
@@ -27,6 +32,8 @@ const Map<String, String> removeBackgroundStrings = {
   'remove_bg_result_download': 'Download',
   'remove_bg_result_share': 'Share',
   'remove_bg_confirm_retake': 'Retake',
-  'remove_bg_error_missing_key': 'Missing remove.bg API key. Add REMOVE_BG_API_KEY via --dart-define or pass it to RemoveBgService().',
-  'remove_bg_error_generic': 'Background removal failed (error {code}). Please try again.',
+  'remove_bg_error_missing_key':
+      'Missing remove.bg API key. Add REMOVE_BG_API_KEY via --dart-define or pass it to RemoveBgService().',
+  'remove_bg_error_generic':
+      'Background removal failed (error {code}). Please try again.',
 };

@@ -1,17 +1,20 @@
 /// English strings: custom_create.
 const Map<String, String> customCreateStrings = {
   'custom_create_no_text_title': 'No text yet',
-  'custom_create_no_text_message': 'Tap "Add Text" first, then Edit Text to style it.',
+  'custom_create_no_text_message':
+      'Tap "Add Text" first, then Edit Text to style it.',
   'custom_create_moved_to_back': 'Moved to Back',
   'custom_create_moved_to_front': 'Moved to Front',
   'custom_create_switch_sides_message': 'Switch sides to see it.',
   'custom_create_saved_title': 'Saved',
   'custom_create_saved_message': 'Your card has been saved.',
   'custom_create_save_failed_title': 'Could not save',
-  'custom_create_save_failed_message': 'Something went wrong while saving your card.',
+  'custom_create_save_failed_message':
+      'Something went wrong while saving your card.',
   'custom_create_crop_photo': 'Crop Photo',
   'custom_create_json_exported_title': 'JSON exported',
-  'custom_create_json_exported_message': 'Copied to clipboard and printed in the console.',
+  'custom_create_json_exported_message':
+      'Copied to clipboard and printed in the console.',
   'custom_create_font_size_title': 'Font size',
   'custom_create_cancel': 'Cancel',
   'custom_create_done': 'Done',
@@ -39,7 +42,8 @@ const Map<String, String> customCreateStrings = {
   'custom_create_toolbar_symbols': 'Symbols',
   'custom_create_save': 'Save',
   'custom_create_discard_title': 'Discard this card?',
-  'custom_create_discard_message': 'Your changes will be lost if you leave now.',
+  'custom_create_discard_message':
+      'Your changes will be lost if you leave now.',
   'custom_create_keep_editing': 'Keep editing',
   'custom_create_discard': 'Discard',
   'custom_create_choose_color': 'Choose a color',

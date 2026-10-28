@@ -7,28 +7,36 @@ const Map<String, String> aiCardStrings = {
   'ai_card_no_profile_title': 'No saved profile',
   'ai_card_no_profile_message': 'Save your profile first to use auto-fill.',
   'ai_card_nothing_to_generate_title': 'Nothing to generate from',
-  'ai_card_nothing_to_generate_message': 'Upload a reference image, pick a template, or describe your design.',
-  'ai_card_generate_failed_message': 'Could not generate the card. Please try again.',
+  'ai_card_nothing_to_generate_message':
+      'Upload a reference image, pick a template, or describe your design.',
+  'ai_card_generate_failed_message':
+      'Could not generate the card. Please try again.',
   'ai_card_generate_failed_title': 'Could not generate card',
   'ai_card_permission_needed_title': 'Permission needed',
-  'ai_card_save_permission_message': 'Allow photo/gallery access to save your card.',
+  'ai_card_save_permission_message':
+      'Allow photo/gallery access to save your card.',
   'ai_card_saved_title': 'Saved',
   'ai_card_saved_message': 'Card saved to your gallery.',
   'ai_card_save_failed_title': 'Could not save',
-  'ai_card_save_failed_message': 'Something went wrong while saving to gallery.',
+  'ai_card_save_failed_message':
+      'Something went wrong while saving to gallery.',
   'ai_card_share_text': 'Check out my AI-generated business card!',
   'ai_card_share_failed_title': 'Could not share',
-  'ai_card_share_failed_message': 'Something went wrong while sharing the card.',
-  'ai_card_choose_reference_message': 'Choose a template or upload an image first.',
+  'ai_card_share_failed_message':
+      'Something went wrong while sharing the card.',
+  'ai_card_choose_reference_message':
+      'Choose a template or upload an image first.',
   'ai_card_generator_title': 'AI Card Generator',
-  'ai_card_generator_ready_template_heading': 'No Design Yet? Try a Ready Template.',
+  'ai_card_generator_ready_template_heading':
+      'No Design Yet? Try a Ready Template.',
   'ai_card_generator_prompt_heading': 'Enter Prompt',
   'ai_card_generator_auto_fill': 'Auto fill profile details',
   'ai_card_generator_generating': 'Generating…',
   'ai_card_generator_generate': 'Generate Card',
   'ai_card_generator_upload_reference': 'Upload reference image',
   'ai_card_generator_upload_hint': 'AI will use this as inspiration',
-  'ai_card_generator_supported_formats': 'Supported formats JPEG, JPG, PNG, HEIC and TIFF',
+  'ai_card_generator_supported_formats':
+      'Supported formats JPEG, JPG, PNG, HEIC and TIFF',
   'ai_card_generator_max_file_size': 'Max file size 50 MB',
   'ai_card_generator_prompt_hint': 'Describe your ideal design...',
   'ai_card_generator_camera': 'Camera',

@@ -98,9 +98,11 @@ class RecentDesignsService extends GetxService {
     final List<dynamic> list = jsonDecode(raw) as List<dynamic>;
     final loaded = list
         .map((e) => RecentDesign.fromJson(e as Map<String, dynamic>))
-        .where((d) =>
-    d.file.existsSync() &&
-        (d.backPath == null || d.backFile!.existsSync()))
+        .where(
+          (d) =>
+              d.file.existsSync() &&
+              (d.backPath == null || d.backFile!.existsSync()),
+        )
         .toList();
     loaded.sort((a, b) => b.savedAt.compareTo(a.savedAt));
     designs.assignAll(loaded);
@@ -112,13 +114,13 @@ class RecentDesignsService extends GetxService {
   }
 
   Future<void> save(
-      Uint8List thumbnailBytes, {
-        Uint8List? backThumbnailBytes,
-        required Map<String, dynamic> designData,
-        String title = '',
-        bool isPremium = false,
-        bool isAiGenerated = false,
-      }) async {
+    Uint8List thumbnailBytes, {
+    Uint8List? backThumbnailBytes,
+    required Map<String, dynamic> designData,
+    String title = '',
+    bool isPremium = false,
+    bool isAiGenerated = false,
+  }) async {
     final dir = await getApplicationDocumentsDirectory();
     final id = DateTime.now().microsecondsSinceEpoch.toString();
     final filePath = '${dir.path}/recent_design_$id.png';
@@ -168,7 +170,7 @@ class RecentDesignsService extends GetxService {
     final paths = <String?>[
       data['backgroundImagePath'] as String?,
       (data['back'] as Map<String, dynamic>?)?['backgroundImagePath']
-      as String?,
+          as String?,
     ];
 
     for (final p in paths) {
@@ -185,5 +187,4 @@ class RecentDesignsService extends GetxService {
     designs.refresh();
     await _persist();
   }
-
 }

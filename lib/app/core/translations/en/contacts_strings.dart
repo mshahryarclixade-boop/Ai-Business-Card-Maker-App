@@ -4,7 +4,8 @@ const Map<String, String> contactsStrings = {
   'contacts_duplicate_save_separate': 'Save Separate',
   'contacts_duplicate_update_existing': 'Update Existing',
   'contacts_delete_confirm_title': 'Are you Sure?',
-  'contacts_delete_confirm_message': 'This contact will be removed from your list',
+  'contacts_delete_confirm_message':
+      'This contact will be removed from your list',
   'contacts_cancel': 'Cancel',
   'contacts_delete': 'Delete',
   'contacts_form_title_edit': 'Edit Contact',
@@ -12,9 +13,11 @@ const Map<String, String> contactsStrings = {
   'contacts_add_contact': 'Add Contact',
   'contacts_save': 'Save',
   'contacts_warning_name_missing_title': 'Name Not Found',
-  'contacts_warning_name_missing_message': 'We couldn\'t find a name for this contact. Click below to add a name.',
+  'contacts_warning_name_missing_message':
+      'We couldn\'t find a name for this contact. Click below to add a name.',
   'contacts_warning_company_missing_title': 'Card Missing Company Name',
-  'contacts_warning_company_missing_message': 'Company name is required for this contact. Click below to add a name.',
+  'contacts_warning_company_missing_message':
+      'Company name is required for this contact. Click below to add a name.',
   'contacts_section_personal': 'Personal Details',
   'contacts_field_first_name_required': 'First Name *',
   'contacts_field_first_name': 'First Name',
@@ -69,14 +72,18 @@ const Map<String, String> contactsStrings = {
   'contacts_saved_title': 'Saved',
   'contacts_saved_message': 'Contact saved to your phone.',
   'contacts_save_failed_title': 'Could not save',
-  'contacts_save_failed_message': 'Something went wrong while saving the contact.',
+  'contacts_save_failed_message':
+      'Something went wrong while saving the contact.',
   'contacts_share_failed_title': 'Could not share',
-  'contacts_share_failed_message': 'Something went wrong while sharing the contact.',
+  'contacts_share_failed_message':
+      'Something went wrong while sharing the contact.',
   'contacts_menu_save_to_device': 'Save to device',
-  'contacts_duplicate_message': '"{name}" looks like a contact you already saved. Update it with the new details, or save this as a separate contact?',
+  'contacts_duplicate_message':
+      '"{name}" looks like a contact you already saved. Update it with the new details, or save this as a separate contact?',
   'contacts_followup_greeting_anonymous': 'Hi,',
   'contacts_followup_greeting': 'Hi {name},',
   'contacts_followup_sign_off': '\n\nBest regards,\n{name}',
-  'contacts_followup_body': '{greeting}\n\nIt was great meeting you. I would love to stay in touch.',
+  'contacts_followup_body':
+      '{greeting}\n\nIt was great meeting you. I would love to stay in touch.',
   'contacts_followup_subject': 'Nice to meet you',
 };

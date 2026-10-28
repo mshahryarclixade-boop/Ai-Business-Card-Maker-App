@@ -5,9 +5,11 @@ const Map<String, String> profileSetupStrings = {
   'profile_setup_error_email_or_phone': 'Add an email or a phone number',
   'profile_setup_error_email_invalid': 'Enter a valid email address',
   'profile_setup_error_phone_invalid': 'Enter a valid phone number',
-  'profile_setup_first_card_error': 'Something went wrong while creating your card.',
+  'profile_setup_first_card_error':
+      'Something went wrong while creating your card.',
   'profile_setup_ready_title': 'Your First Card is ready',
-  'profile_setup_ready_subtitle': 'We’ve added your details to a\nclean starting design. Now make it your\nown.',
+  'profile_setup_ready_subtitle':
+      'We’ve added your details to a\nclean starting design. Now make it your\nown.',
   'profile_setup_ready_go_home': 'Go to Home',
   'profile_setup_business_title': 'Introduce your work.',
   'profile_setup_business_company_name': 'Company name',
@@ -36,7 +38,8 @@ const Map<String, String> profileSetupStrings = {
   'profile_setup_personal_full_name_hint': 'Alex Morgan',
   'profile_setup_personal_email': 'Email address',
   'profile_setup_personal_email_hint': 'Your@company.com',
-  'profile_setup_personal_phone_hint': 'Include your country code. You can edit these details later',
+  'profile_setup_personal_phone_hint':
+      'Include your country code. You can edit these details later',
   'profile_setup_personal_continue': 'Continue',
   'profile_setup_logo_looking': 'Looking for the logo…',
   'profile_setup_logo_not_found': 'We couldn’t find a logo on this website.',

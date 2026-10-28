@@ -1,7 +1,7 @@
 /// English strings: profiles, QR codes (saved list and styles) and the AI
 /// Coach tab.
 const Map<String, String> profilesStrings = {
-  'main_nav_tab_ai_coach': 'AI Coach',
+  'main_nav_tab_ai_coach': 'Clixa AI',
   // Profiles
   'profiles_title': 'Profiles',
   'profiles_subtitle':

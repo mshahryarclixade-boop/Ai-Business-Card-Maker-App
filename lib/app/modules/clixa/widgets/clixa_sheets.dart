@@ -4,6 +4,7 @@ import 'package:get/get.dart' hide Trans;
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/translations/tr_extension.dart';
+import '../../../core/widgets/app_dialog.dart';
 import '../../career_studio/widgets/career_hub_sheets.dart';
 import '../../paywall/controller/subscription_controller.dart';
 import '../../paywall/services/revenue_cat_service.dart';
@@ -11,14 +12,13 @@ import '../controller/clixa_controller.dart';
 import '../model/clixa_models.dart';
 import 'clixa_avatars.dart';
 
-TextStyle _t(double size, Color color, {FontWeight? w, double? h}) =>
-    TextStyle(
-      fontFamily: AppTextStyles.fontFamily,
-      fontSize: size + 1,
-      fontWeight: w,
-      height: h,
-      color: color,
-    );
+TextStyle _t(double size, Color color, {FontWeight? w, double? h}) => TextStyle(
+  fontFamily: AppTextStyles.fontFamily,
+  fontSize: size + 1,
+  fontWeight: w,
+  height: h,
+  color: color,
+);
 
 Future<T?> _sheet<T>(BuildContext context, Widget child) =>
     showModalBottomSheet<T>(
@@ -31,7 +31,9 @@ Future<T?> _sheet<T>(BuildContext context, Widget child) =>
       ),
       builder: (ctx) => SafeArea(
         child: Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
           child: SingleChildScrollView(
             padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
             child: child,
@@ -85,7 +87,11 @@ class _Primary extends StatelessWidget {
       ),
       child: FittedBox(
         fit: BoxFit.scaleDown,
-        child: Text(label, maxLines: 1, style: _t(14, Colors.white, w: FontWeight.w700)),
+        child: Text(
+          label,
+          maxLines: 1,
+          style: _t(14, Colors.white, w: FontWeight.w700),
+        ),
       ),
     ),
   );
@@ -109,7 +115,11 @@ class _Outline extends StatelessWidget {
       ),
       child: FittedBox(
         fit: BoxFit.scaleDown,
-        child: Text(label, maxLines: 1, style: _t(14, AppColors.titleDark, w: FontWeight.w700)),
+        child: Text(
+          label,
+          maxLines: 1,
+          style: _t(14, AppColors.titleDark, w: FontWeight.w700),
+        ),
       ),
     ),
   );
@@ -217,14 +227,21 @@ class _ModeRow extends StatelessWidget {
                 color: AppColors.primarySoft,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(mode.icon, size: 18, color: AppColors.onboardingBtnEnd),
+              child: Icon(
+                mode.icon,
+                size: 18,
+                color: AppColors.onboardingBtnEnd,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(mode.titleKey.tr, style: _t(13, AppColors.titleDark, w: FontWeight.w800)),
+                  Text(
+                    mode.titleKey.tr,
+                    style: _t(13, AppColors.titleDark, w: FontWeight.w800),
+                  ),
                   Text(mode.subtitleKey.tr, style: _t(12, AppColors.textGrey)),
                 ],
               ),
@@ -252,7 +269,11 @@ Future<void> showFreeLimitSheet(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _Title('clixa_limit_chat_title'.tr),
-          _Body('clixa_limit_chat_message'.trParams({'max': ClixaController.freeMessagesPerChat})),
+          _Body(
+            'clixa_limit_chat_message'.trParams({
+              'max': ClixaController.freeMessagesPerChat,
+            }),
+          ),
           _Primary('clixa_get_unlimited_messages'.tr, () {
             Navigator.of(ctx).pop();
             showClixaUpgrade(context);
@@ -283,7 +304,11 @@ Future<void> showDailyLimitSheet(
       builder: (ctx) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _Title('clixa_limit_day_title'.trParams({'total': ClixaController.freeChatsPerDay})),
+          _Title(
+            'clixa_limit_day_title'.trParams({
+              'total': ClixaController.freeChatsPerDay,
+            }),
+          ),
           _Body('clixa_limit_day_message'.tr),
           _Primary('clixa_get_unlimited_chats'.tr, () {
             Navigator.of(ctx).pop();
@@ -303,6 +328,40 @@ Future<void> showDailyLimitSheet(
 
 // -------------------------------------------------------------- chat menu
 
+/// "Delete this chat?" — true when the user confirms.
+Future<bool> _confirmDelete(BuildContext context) async {
+  final ok = await showBlurredDialog<bool>(
+    context,
+    AppDialogCard(
+      children: [
+        const AppDialogIcon(Icons.delete_outline_rounded),
+        const SizedBox(height: 18),
+        AppDialogText(
+          title: 'clixa_delete_confirm_title'.tr,
+          message: 'clixa_delete_confirm_message'.tr,
+        ),
+        const SizedBox(height: 22),
+        Builder(
+          builder: (ctx) => AppDialogButton(
+            label: 'clixa_delete_confirm'.tr,
+            color: const Color(0xFFD32F2F),
+            onTap: () => Navigator.of(ctx).pop(true),
+          ),
+        ),
+        const SizedBox(height: 11),
+        Builder(
+          builder: (ctx) => AppDialogButton(
+            label: 'clixa_cancel'.tr,
+            color: const Color(0xFF3A3A3C),
+            onTap: () => Navigator.of(ctx).pop(false),
+          ),
+        ),
+      ],
+    ),
+  );
+  return ok ?? false;
+}
+
 /// The ⋮ menu of a chat.
 Future<void> showChatMenuSheet(
   BuildContext context,
@@ -314,24 +373,44 @@ Future<void> showChatMenuSheet(
     context,
     Builder(
       builder: (ctx) {
-        Widget item(IconData icon, String label, VoidCallback onTap, {Color? color}) =>
-            InkWell(
-              onTap: onTap,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                child: Row(
-                  children: [
-                    Icon(icon, size: 18, color: color ?? AppColors.onboardingBtnEnd),
-                    const SizedBox(width: 12),
-                    Text(label, style: _t(13, color ?? AppColors.titleDark, w: FontWeight.w600)),
-                  ],
+        Widget item(
+          IconData icon,
+          String label,
+          VoidCallback onTap, {
+          Color? color,
+        }) => InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  size: 18,
+                  color: color ?? AppColors.onboardingBtnEnd,
                 ),
-              ),
-            );
+                const SizedBox(width: 12),
+                Text(
+                  label,
+                  style: _t(
+                    13,
+                    color ?? AppColors.titleDark,
+                    w: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Obx(() => Text(chat.title.value, style: _t(16, AppColors.titleDark, w: FontWeight.w800))),
+            Obx(
+              () => Text(
+                chat.title.value,
+                style: _t(16, AppColors.titleDark, w: FontWeight.w800),
+              ),
+            ),
             const SizedBox(height: 6),
             item(Icons.edit_outlined, 'clixa_rename_chat'.tr, () {
               Navigator.of(ctx).pop();
@@ -343,11 +422,18 @@ Future<void> showChatMenuSheet(
               onNewChat();
             }),
             const Divider(height: 1, color: AppColors.pillBorder),
-            item(Icons.delete_outline_rounded, 'clixa_delete_chat'.tr, () {
-              Navigator.of(ctx).pop();
-              ClixaController.to.delete(chat);
-              onDeleted();
-            }, color: const Color(0xFFD32F2F)),
+            item(
+              Icons.delete_outline_rounded,
+              'clixa_delete_chat'.tr,
+              () async {
+                Navigator.of(ctx).pop();
+                if (!context.mounted) return;
+                if (!await _confirmDelete(context)) return;
+                ClixaController.to.delete(chat);
+                onDeleted();
+              },
+              color: const Color(0xFFD32F2F),
+            ),
             const SizedBox(height: 12),
             _Outline('clixa_close'.tr, () => Navigator.of(ctx).pop()),
           ],
@@ -367,7 +453,10 @@ Future<void> showRenameChatSheet(BuildContext context, ClixaChat chat) {
         children: [
           _Title('clixa_rename_title'.tr),
           const SizedBox(height: 12),
-          Text('clixa_chat_name'.tr, style: _t(12, AppColors.titleDark, w: FontWeight.w700)),
+          Text(
+            'clixa_chat_name'.tr,
+            style: _t(12, AppColors.titleDark, w: FontWeight.w700),
+          ),
           const SizedBox(height: 6),
           TextField(
             controller: field,
@@ -378,7 +467,10 @@ Future<void> showRenameChatSheet(BuildContext context, ClixaChat chat) {
               filled: true,
               fillColor: AppColors.scaffoldBg,
               isDense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 14,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: AppColors.pillBorder),
@@ -396,7 +488,12 @@ Future<void> showRenameChatSheet(BuildContext context, ClixaChat chat) {
           const SizedBox(height: 14),
           Row(
             children: [
-              Expanded(child: _Outline('clixa_cancel'.tr, () => Navigator.of(ctx).pop())),
+              Expanded(
+                child: _Outline(
+                  'clixa_cancel'.tr,
+                  () => Navigator.of(ctx).pop(),
+                ),
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: _Primary('clixa_save'.tr, () {
@@ -439,18 +536,37 @@ Future<void> showSavedChatsSheet(
                     padding: const EdgeInsets.symmetric(vertical: 11),
                     child: Row(
                       children: [
-                        Icon(chat.mode.icon, size: 18, color: AppColors.onboardingBtnEnd),
+                        Icon(
+                          chat.mode.icon,
+                          size: 18,
+                          color: AppColors.onboardingBtnEnd,
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(chat.title.value, maxLines: 1, overflow: TextOverflow.ellipsis, style: _t(13, AppColors.titleDark, w: FontWeight.w700)),
-                              Text(chat.mode.titleKey.tr, style: _t(12, AppColors.textGrey)),
+                              Text(
+                                chat.title.value,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: _t(
+                                  13,
+                                  AppColors.titleDark,
+                                  w: FontWeight.w700,
+                                ),
+                              ),
+                              Text(
+                                chat.mode.titleKey.tr,
+                                style: _t(12, AppColors.textGrey),
+                              ),
                             ],
                           ),
                         ),
-                        const Icon(Icons.chevron_right_rounded, color: AppColors.textGrey),
+                        const Icon(
+                          Icons.chevron_right_rounded,
+                          color: AppColors.textGrey,
+                        ),
                       ],
                     ),
                   ),

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
+import '../../../core/services/speech_input_service.dart';
+import '../../../core/services/tts_service.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/response_actions.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/voice_mic_button.dart';
 import '../../../core/translations/tr_extension.dart';
 import '../controller/clixa_controller.dart';
+import '../service/clixa_ai_service.dart';
 import '../model/clixa_models.dart';
 import '../widgets/clixa_avatars.dart';
 import '../widgets/clixa_sheets.dart';
@@ -34,6 +39,10 @@ class _ClixaChatViewState extends State<ClixaChatView> {
   final _scroll = ScrollController();
   late final List<Worker> _follow;
 
+  /// Dictation into [_input]: the words are typed in as they are heard, and
+  /// stay editable afterwards.
+  final _speech = SpeechInputService();
+
   ClixaChat get chat => widget.chat;
   ClixaController get _c => ClixaController.to;
 
@@ -45,13 +54,22 @@ class _ClixaChatViewState extends State<ClixaChatView> {
       ever(chat.messages, (_) => _toBottom()),
       ever(chat.thinking, (_) => _toBottom()),
     ];
+    _speech.onIssue = (issue) {
+      if (mounted) showSpeechIssue(_speech, issue);
+    };
   }
 
   @override
   void dispose() {
+    // A chat nobody wrote in leaves no trace (and never counts as "used").
+    if (chat.userMessages == 0) {
+      Future.microtask(() => _c.chats.remove(chat));
+    }
     for (final w in _follow) {
       w.dispose();
     }
+    TtsService.instance.stop();
+    _speech.dispose();
     _input.dispose();
     _scroll.dispose();
     super.dispose();
@@ -68,22 +86,56 @@ class _ClixaChatViewState extends State<ClixaChatView> {
     });
   }
 
+  /// The whole chat as plain text, for Share.
+  String _conversationText() {
+    final lines = <String>[chat.title.value];
+    for (final m in chat.messages) {
+      final text = m.verdict?.plainText ?? m.text;
+      if (text.trim().isEmpty) continue;
+      lines.add('${m.fromUser ? 'chat_you'.tr : 'Clixa'}: $text');
+    }
+    return lines.join('\n\n');
+  }
+
   void _limitSheet() => showFreeLimitSheet(
     context,
     onNewChat: () => pickClixaChat(context, replace: true),
   );
 
+  /// Mic button: starts dictation, or stops it (keeping what was heard).
+  Future<void> _toggleMic() async {
+    if (chat.thinking.value && !_speech.listening.value) return;
+    FocusScope.of(context).unfocus();
+    final issue = await _speech.toggle(_input);
+    if (issue != null && mounted) showSpeechIssue(_speech, issue);
+  }
+
   Future<void> _send([String? text]) async {
     final t = (text ?? _input.text).trim();
     if (t.isEmpty) return;
+    await _speech.stop(); // a message in flight must not keep being typed into
+    if (!mounted) return;
     if (_c.limitReached(chat)) {
       _limitSheet();
       return;
     }
     _input.clear();
     FocusScope.of(context).unfocus();
-    await _c.send(chat, t);
-    // The tenth message was the last free one.
+    try {
+      await _c.send(chat, t);
+    } catch (e) {
+      // Nothing was sent: give the text back so it can be tried again.
+      if (!mounted) return;
+      _input.text = t;
+      Get.snackbar(
+        'career_ai_failed_title'.tr,
+        e is GeminiException ? e.message : 'career_ai_error_generic'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(15),
+      );
+      return;
+    }
+    // The last free message was just used.
     if (mounted && _c.limitReached(chat)) _limitSheet();
   }
 
@@ -114,7 +166,11 @@ class _ClixaChatViewState extends State<ClixaChatView> {
                   itemCount: msgs.length + (thinking ? 1 : 0),
                   itemBuilder: (_, i) {
                     if (i == msgs.length) return const _Typing();
-                    return _Bubble(message: msgs[i]);
+                    return _Bubble(
+                      message: msgs[i],
+                      id: '${chat.id}:$i',
+                      conversation: _conversationText,
+                    );
                   },
                 );
               }),
@@ -122,6 +178,8 @@ class _ClixaChatViewState extends State<ClixaChatView> {
             _Footer(
               chat: chat,
               input: _input,
+              speech: _speech,
+              onMic: _toggleMic,
               onSend: _send,
               onSuggestion: () => _send(chat.mode.suggestionKey.tr),
             ),
@@ -146,7 +204,10 @@ class _Header extends StatelessWidget {
         children: [
           IconButton(
             onPressed: () => Navigator.of(context).maybePop(),
-            icon: const Icon(Icons.arrow_back_rounded, color: AppColors.titleDark),
+            icon: const Icon(
+              Icons.arrow_back_rounded,
+              color: AppColors.titleDark,
+            ),
             padding: const EdgeInsetsDirectional.only(start: 20, end: 8),
             constraints: const BoxConstraints(),
           ),
@@ -166,7 +227,9 @@ class _Header extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'clixa_chat_subtitle'.trParams({'mode': chat.mode.titleKey.tr}),
+                  'clixa_chat_subtitle'.trParams({
+                    'mode': chat.mode.titleKey.tr,
+                  }),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: _t(12, AppColors.textGrey),
@@ -176,7 +239,10 @@ class _Header extends StatelessWidget {
           ),
           IconButton(
             onPressed: onMenu,
-            icon: const Icon(Icons.more_vert_rounded, color: AppColors.titleDark),
+            icon: const Icon(
+              Icons.more_vert_rounded,
+              color: AppColors.titleDark,
+            ),
             padding: const EdgeInsetsDirectional.only(start: 8, end: 14),
             constraints: const BoxConstraints(),
           ),
@@ -187,9 +253,15 @@ class _Header extends StatelessWidget {
 }
 
 class _Bubble extends StatelessWidget {
-  const _Bubble({required this.message});
+  const _Bubble({
+    required this.message,
+    required this.id,
+    required this.conversation,
+  });
 
   final ClixaMessage message;
+  final String id;
+  final String Function() conversation;
 
   @override
   Widget build(BuildContext context) {
@@ -224,28 +296,44 @@ class _Bubble extends StatelessWidget {
           const ClixaAvatar(size: 28),
           const SizedBox(width: 8),
           Flexible(
-            child: message.verdict
-                ? const VerdictCard()
-                : Container(
-                    constraints: BoxConstraints(maxWidth: maxW),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    decoration: const BoxDecoration(
-                      color: AppColors.scaffoldBg,
-                      border: Border.fromBorderSide(
-                        BorderSide(color: AppColors.pillBorder),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                message.verdict != null
+                    ? SelectionArea(
+                        child: VerdictCard(verdict: message.verdict!),
+                      )
+                    : Container(
+                        constraints: BoxConstraints(maxWidth: maxW),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
+                        decoration: const BoxDecoration(
+                          color: AppColors.scaffoldBg,
+                          border: Border.fromBorderSide(
+                            BorderSide(color: AppColors.pillBorder),
+                          ),
+                          borderRadius: BorderRadiusDirectional.only(
+                            topStart: Radius.circular(4),
+                            topEnd: Radius.circular(16),
+                            bottomStart: Radius.circular(16),
+                            bottomEnd: Radius.circular(16),
+                          ),
+                        ),
+                        // Long-press to select; the native toolbar has Copy / Select all.
+                        child: SelectableText(
+                          message.text,
+                          style: _t(13, AppColors.titleDark, h: 1.4),
+                        ),
                       ),
-                      borderRadius: BorderRadiusDirectional.only(
-                        topStart: Radius.circular(4),
-                        topEnd: Radius.circular(16),
-                        bottomStart: Radius.circular(16),
-                        bottomEnd: Radius.circular(16),
-                      ),
-                    ),
-                    child: Text(
-                      message.text,
-                      style: _t(13, AppColors.titleDark, h: 1.4),
-                    ),
-                  ),
+                ResponseActions(
+                  id: id,
+                  text: message.verdict?.plainText ?? message.text,
+                  conversation: conversation,
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -273,12 +361,16 @@ class _Footer extends StatelessWidget {
   const _Footer({
     required this.chat,
     required this.input,
+    required this.speech,
+    required this.onMic,
     required this.onSend,
     required this.onSuggestion,
   });
 
   final ClixaChat chat;
   final TextEditingController input;
+  final SpeechInputService speech;
+  final VoidCallback onMic;
   final VoidCallback onSend;
   final VoidCallback onSuggestion;
 
@@ -306,7 +398,10 @@ class _Footer extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.onboardingBtnEnd,
                     side: const BorderSide(color: AppColors.onboardingBtnEnd),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -314,7 +409,12 @@ class _Footer extends StatelessWidget {
                   child: Text(
                     chat.mode.suggestionKey.tr,
                     textAlign: TextAlign.center,
-                    style: _t(12.5, AppColors.onboardingBtnEnd, w: FontWeight.w600, h: 1.3),
+                    style: _t(
+                      12.5,
+                      AppColors.onboardingBtnEnd,
+                      w: FontWeight.w600,
+                      h: 1.3,
+                    ),
                   ),
                 ),
               ),
@@ -337,39 +437,54 @@ class _Footer extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: TextField(
-                  controller: input,
-                  minLines: 1,
-                  maxLines: 4,
-                  textInputAction: TextInputAction.send,
-                  onSubmitted: (_) => onSend(),
-                  style: _t(13, AppColors.titleDark),
-                  decoration: InputDecoration(
-                    hintText: 'clixa_message_hint'.tr,
-                    hintStyle: _t(13, AppColors.textGrey),
-                    filled: true,
-                    fillColor: AppColors.scaffoldBg,
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: AppColors.pillBorder),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: AppColors.pillBorder),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: AppColors.onboardingBtnEnd),
+                child: Obx(
+                  () => TextField(
+                    controller: input,
+                    minLines: 1,
+                    maxLines: 4,
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (_) => onSend(),
+                    style: _t(13, AppColors.titleDark),
+                    decoration: InputDecoration(
+                      hintText:
+                          (speech.listening.value
+                                  ? 'clixa_mic_listening'
+                                  : 'clixa_message_hint')
+                              .tr,
+                      hintStyle: _t(13, AppColors.textGrey),
+                      filled: true,
+                      fillColor: AppColors.scaffoldBg,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: const BorderSide(
+                          color: AppColors.pillBorder,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: const BorderSide(
+                          color: AppColors.pillBorder,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: const BorderSide(
+                          color: AppColors.onboardingBtnEnd,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
+              // Voice input: tap to dictate, tap again to stop.
+              VoiceMicButton(speech: speech, onTap: onMic),
+              const SizedBox(width: 8),
               GestureDetector(
                 onTap: onSend,
                 child: Container(
@@ -379,7 +494,10 @@ class _Footer extends StatelessWidget {
                     color: AppColors.onboardingBtnEnd,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_upward_rounded, color: Colors.white),
+                  child: const Icon(
+                    Icons.arrow_upward_rounded,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],

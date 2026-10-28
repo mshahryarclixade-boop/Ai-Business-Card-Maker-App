@@ -19,6 +19,8 @@ class ProfileOptimizerView extends GetView<ProfileOptimizerController> {
 
     return Scaffold(
       backgroundColor: AppColors.splashBg,
+      // The Analyze button stays at the bottom when the keyboard opens.
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
@@ -28,7 +30,12 @@ class ProfileOptimizerView extends GetView<ProfileOptimizerController> {
               CareerAppBar(title: 'career_optimizer_title'.tr),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    4,
+                    20,
+                    16 + MediaQuery.viewInsetsOf(context).bottom,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -442,9 +449,11 @@ class _Field extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Always outlined, so the field stays visible whether empty, focused or
+    // filled.
     final border = OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide.none,
+      borderSide: const BorderSide(color: Color(0xFFC9C9DB), width: 1.2),
     );
     return TextField(
       controller: controller,
@@ -471,7 +480,10 @@ class _Field extends StatelessWidget {
         enabledBorder: border,
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.onboardingBtnEnd),
+          borderSide: const BorderSide(
+            color: AppColors.onboardingBtnEnd,
+            width: 1.5,
+          ),
         ),
       ),
     );

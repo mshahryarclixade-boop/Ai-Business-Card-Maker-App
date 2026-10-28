@@ -4,6 +4,7 @@ import 'package:get/get.dart' hide Trans;
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/translations/tr_extension.dart';
+import '../../../core/widgets/app_dialog.dart';
 import '../model/qr_code_builder.dart';
 import '../model/qr_entry.dart';
 import '../service/qr_store.dart';
@@ -61,23 +62,30 @@ class QrManagementScreen extends StatelessWidget {
   );
 
   Future<void> _delete(BuildContext context, QrEntry e) async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text('qr_manage_delete_title'.tr),
-        content: Text('qr_manage_delete_message'.tr),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('qr_manage_cancel'.tr),
+    final ok = await showBlurredDialog<bool>(
+      context,
+      AppDialogCard(
+        children: [
+          const AppDialogIcon(Icons.delete_outline_rounded),
+          const SizedBox(height: 18),
+          AppDialogText(
+            title: 'qr_manage_delete_title'.tr,
+            message: 'qr_manage_delete_message'.tr,
           ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(
-              'qr_manage_delete'.tr,
-              style: const TextStyle(color: Colors.red),
+          const SizedBox(height: 22),
+          Builder(
+            builder: (ctx) => AppDialogButton(
+              label: 'qr_manage_delete'.tr,
+              color: const Color(0xFFD32F2F),
+              onTap: () => Navigator.of(ctx).pop(true),
+            ),
+          ),
+          const SizedBox(height: 11),
+          Builder(
+            builder: (ctx) => AppDialogButton(
+              label: 'qr_manage_cancel'.tr,
+              color: const Color(0xFF3A3A3C),
+              onTap: () => Navigator.of(ctx).pop(false),
             ),
           ),
         ],

@@ -8,7 +8,8 @@ const Map<String, String> profileStrings = {
   'profile_download_prepare_error': 'Could not prepare the card for download.',
   'profile_downloaded_title': 'Downloaded',
   'profile_downloaded_message': 'Card saved to your photo gallery.',
-  'profile_download_error': 'Could not save to gallery. Please check photo permissions.',
+  'profile_download_error':
+      'Could not save to gallery. Please check photo permissions.',
   'profile_share_text': 'Check out my business card!',
   'profile_social_url_label': 'URL',
   'profile_social_url_hint': 'Enter link here',
@@ -36,7 +37,8 @@ const Map<String, String> profileStrings = {
   'profile_saved_autofill_message': 'Auto-fill is now active.',
   'profile_title': 'Profile',
   'profile_empty_title': 'Set up your profile once, use\neverywhere',
-  'profile_empty_subtitle': 'Autofill your cards, QR codes and\nAI generator with one tap',
+  'profile_empty_subtitle':
+      'Autofill your cards, QR codes and\nAI generator with one tap',
   'profile_menu_share': 'Share',
   'profile_menu_download': 'Download',
   'profile_saved_success_message': 'Your profile has been saved successfully.',

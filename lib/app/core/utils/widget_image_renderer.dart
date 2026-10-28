@@ -21,7 +21,8 @@ abstract final class WidgetImageRenderer {
     await Future.wait(images.map(_load));
 
     final boundary = RenderRepaintBoundary();
-    final view = ui.PlatformDispatcher.instance.implicitView ??
+    final view =
+        ui.PlatformDispatcher.instance.implicitView ??
         ui.PlatformDispatcher.instance.views.first;
     final renderView = RenderView(
       view: view,

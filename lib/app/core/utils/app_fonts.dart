@@ -5,13 +5,13 @@ class AppFonts {
   AppFonts._();
 
   static TextStyle textStyle(
-      String fontFamily, {
-        double? fontSize,
-        FontWeight? fontWeight,
-        FontStyle? fontStyle,
-        Color? color,
-        double? height,
-      }) {
+    String fontFamily, {
+    double? fontSize,
+    FontWeight? fontWeight,
+    FontStyle? fontStyle,
+    Color? color,
+    double? height,
+  }) {
     if (fontFamily == 'SF Pro') {
       return TextStyle(
         fontFamily: '.SF Pro Text', // iOS system font; falls back to

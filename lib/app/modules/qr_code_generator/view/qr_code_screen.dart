@@ -539,7 +539,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                                 'qr_screen_generate'.tr,
                                 style: TextStyle(
                                   fontSize: 16,
-                                  fontWeight: FontWeight.w400,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                       ),

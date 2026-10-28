@@ -216,11 +216,11 @@ class _ContactsViewState extends State<ContactsView> {
             ),
             Align(
               alignment: AlignmentDirectional.centerEnd,
-              // Same wobbling crown as Home (same size and look).
+              // Same size and look as the Clixa AI screen's crown.
               child: CrownUpgradeButton(
-                size: 36,
+                size: 40,
                 iconSize: 22,
-                borderRadius: 10,
+                borderRadius: 12,
                 onTap: _openPaywall,
               ),
             ),

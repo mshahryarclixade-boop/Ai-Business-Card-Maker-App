@@ -115,7 +115,9 @@ class _ProfileBuilderViewState extends State<ProfileBuilderView> {
         },
         child: Scaffold(
           backgroundColor: AppColors.splashBg,
-          resizeToAvoidBottomInset: true,
+          // The bottom button stays put when the keyboard opens; the form
+          // scrolls clear of the keyboard instead (see the padding below).
+          resizeToAvoidBottomInset: false,
           body: SafeArea(
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
@@ -148,11 +150,11 @@ class _ProfileBuilderViewState extends State<ProfileBuilderView> {
                   ),
                   Expanded(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsetsDirectional.fromSTEB(
+                      padding: EdgeInsetsDirectional.fromSTEB(
                         20,
                         22,
                         20,
-                        16,
+                        16 + MediaQuery.viewInsetsOf(context).bottom,
                       ),
                       child: switch (step) {
                         1 => _stepDetails(),

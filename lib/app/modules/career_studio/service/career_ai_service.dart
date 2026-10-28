@@ -69,7 +69,9 @@ class CloudCareerAi extends CareerAi {
     region: 'us-central1',
   );
 
-  Future<Map<String, dynamic>> _call(
+  /// Calls a text task of the existing `generateCard` function (also used by
+  /// Clixa).
+  Future<Map<String, dynamic>> call(
     String task,
     Map<String, dynamic> data,
   ) async {
@@ -123,7 +125,7 @@ class CloudCareerAi extends CareerAi {
 
   @override
   Future<ProfileDraftTexts> buildProfile(Map<String, dynamic> answers) async {
-    final r = await _call('buildProfile', {'answers': answers});
+    final r = await call('buildProfile', {'answers': answers});
     return (
       headline: _str(r, 'headline'),
       about: _str(r, 'about'),
@@ -137,7 +139,7 @@ class CloudCareerAi extends CareerAi {
     required String text,
     Map<String, dynamic>? answers,
   }) async => _str(
-    await _call('rewrite', {
+    await call('rewrite', {
       'section': section,
       'text': text,
       if (answers != null) 'answers': answers,
@@ -147,7 +149,7 @@ class CloudCareerAi extends CareerAi {
 
   @override
   Future<ProfileAnalysis> analyze(ProfileScanInput input) async {
-    final r = await _call('analyze', input.toJson());
+    final r = await call('analyze', input.toJson());
     final scores = r['scores'];
     final current = r['current'];
     if (scores is! Map) throw GeminiException('career_ai_error_generic'.tr);
@@ -171,7 +173,7 @@ class CloudCareerAi extends CareerAi {
     List<String> avoid = const [],
     String profile = '',
   }) async => _str(
-    await _call('fixSuggestion', {
+    await call('fixSuggestion', {
       'fixId': fixId,
       'issue': issue,
       'current': current,

@@ -4,10 +4,8 @@ import 'package:get/get.dart' hide Trans;
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../career_studio/view/career_studio_view.dart';
-import '../../career_studio/widgets/career_widgets.dart';
-import '../../clixa/controller/clixa_controller.dart';
 import '../../clixa/widgets/clixa_avatars.dart';
-import '../../clixa/widgets/clixa_sheets.dart';
+import '../../expert_panel/view/expert_panel_view.dart';
 import '../../../core/translations/tr_extension.dart';
 
 /// "Your Business ToolKit" on Home: Career Studio and the Expert Panel.
@@ -140,8 +138,8 @@ class _ToolkitCard extends StatelessWidget {
   }
 }
 
-/// The Expert Panel: five AI experts you can pitch an idea to (a Pro feature,
-/// so for now it opens the Go Pro sheet). UI only.
+/// The Expert Panel: five AI experts you can pitch an idea to (a Pro feature
+/// later; free for now). UI only.
 class _ExpertPanelCard extends StatelessWidget {
   const _ExpertPanelCard();
 
@@ -152,13 +150,9 @@ class _ExpertPanelCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(26),
       child: InkWell(
         borderRadius: BorderRadius.circular(26),
-        onTap: () {
-          if (ClixaController.to.isPro) {
-            careerComingSoon();
-          } else {
-            showClixaUpgrade(context);
-          }
-        },
+        // TODO: Pro only (showClixaUpgrade for free users). Open to
+        // everyone while the panel is being tested.
+        onTap: openExpertPanel,
         child: Container(
           width: double.infinity,
           padding: const EdgeInsetsDirectional.fromSTEB(14, 16, 14, 16),
@@ -168,7 +162,7 @@ class _ExpertPanelCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const ExpertAvatars(size: 34, overlap: 8),
+              const ExpertAvatars(size: 34, overlap: 8, count: 2),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(

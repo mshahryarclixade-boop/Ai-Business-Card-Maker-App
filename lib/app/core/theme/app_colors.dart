@@ -55,7 +55,6 @@ class AppColors {
   // headline text
   static const Color bottomselcted = Color(0xFF444494); // headline text
 
-
   // Text
   static const Color textTitle = primaryDark;
   static const Color textSubtitle = Color(0xFF68686A);

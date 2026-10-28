@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ai_business_card_maker/app/core/widgets/crown_upgrade_button.dart';
 import 'package:ai_business_card_maker/app/modules/clixa/controller/clixa_controller.dart';
 import 'package:ai_business_card_maker/app/modules/clixa/model/clixa_models.dart';
+import 'package:ai_business_card_maker/app/modules/clixa/service/clixa_ai_service.dart';
 import 'package:ai_business_card_maker/app/modules/clixa/view/clixa_chat_view.dart';
 import 'package:ai_business_card_maker/app/modules/clixa/view/clixa_view.dart';
 import 'package:ai_business_card_maker/app/modules/home/widgets/ai_toolkit_section.dart';
@@ -10,6 +11,7 @@ import 'package:ai_business_card_maker/app/modules/main_nav/controller/main_nav_
 import 'package:ai_business_card_maker/app/modules/paywall/controller/subscription_controller.dart';
 import 'package:ai_business_card_maker/app/modules/profile_setup/model/user_profile_data.dart';
 import 'package:ai_business_card_maker/app/modules/profile_setup/service/profile_store.dart';
+import 'fake_clixa_ai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +37,7 @@ void main() {
 
   late ClixaController c;
   late _FakeSub sub;
+  late FakeClixaAi ai;
 
   Future<void> boot(WidgetTester t, {bool pro = false, Widget? home}) async {
     Get.reset();
@@ -44,8 +47,8 @@ void main() {
     ProfileStore.to.profile.value = const UserProfileData(
       fullName: 'Ayesha Raza',
     );
-    c = Get.put(ClixaController(), permanent: true)
-      ..replyDelay = const Duration(milliseconds: 10);
+    ClixaAi.instance = ai = FakeClixaAi();
+    c = Get.put(ClixaController(), permanent: true);
     t.view.physicalSize = const Size(390 * 3, 844 * 3);
     t.view.devicePixelRatio = 3;
     addTearDown(t.view.reset);
@@ -173,7 +176,7 @@ void main() {
       );
       expect(
         find.text(
-          'Nice. Who usually buys, and what would they pay for a 2 lb custom cake?',
+          'Reply 1 to: Custom birthday cakes from home, sold on Instagram in Lahore',
         ),
         findsOneWidget,
       );
@@ -186,6 +189,71 @@ void main() {
       await flush(t);
     });
 
+    testWidgets(
+      'Clixa is asked with the chat so far, the kind and who you are',
+      (t) async {
+        await boot(t);
+        ProfileStore.to.profile.value = const UserProfileData(
+          fullName: 'Ayesha Raza',
+          designation: 'Designer',
+          companyName: 'Northwind',
+        );
+        final chat = c.startChat(ClixaMode.plan);
+        await t.runAsync(() => c.send(chat, 'A home bakery'));
+        await t.runAsync(() => c.send(chat, 'For mothers'));
+        final last = ai.calls.last;
+        expect(last.mode, ClixaMode.plan);
+        expect(last.about, 'Ayesha Raza, Designer at Northwind');
+        // Oldest first, ending with the new message; Clixa's own opening
+        // message is part of it.
+        expect(last.history.first, startsWith('coach: '));
+        expect(last.history[1], 'user: A home bakery');
+        expect(last.history[2], 'coach: Reply 1 to: A home bakery');
+        expect(last.history.last, 'user: For mothers');
+        await flush(t);
+      },
+    );
+
+    testWidgets('a failed AI call sends nothing and gives the text back', (
+      t,
+    ) async {
+      await boot(t);
+      final chat = c.startChat(ClixaMode.talk);
+      await t.pumpWidget(GetMaterialApp(home: ClixaChatView(chat: chat)));
+      await settle(t);
+      ai.error = const GeminiException('The AI took too long.');
+      await t.enterText(find.byType(TextField), 'How do I price my work?');
+      await t.tap(find.byIcon(Icons.arrow_upward_rounded));
+      await settle(t);
+      // Nothing was added or counted, the text is back in the box, and the
+      // reason is shown.
+      expect(chat.userMessages, 0);
+      expect(chat.thinking.value, isFalse);
+      expect(chat.title.value, 'New chat · Just talk business');
+      expect(
+        find.text('How do I price my work?'),
+        findsOneWidget,
+      ); // the box only
+      expect(find.text('The AI took too long.'), findsOneWidget);
+      expect(
+        find.text('0 of 10 free messages used in this chat'),
+        findsOneWidget,
+      );
+
+      // Trying again works.
+      ai.error = null;
+      await t.tap(find.byIcon(Icons.arrow_upward_rounded));
+      await settle(t);
+      expect(chat.userMessages, 1);
+      expect(find.text('Reply 1 to: How do I price my work?'), findsOneWidget);
+      // Let the error message time out.
+      await t.pump(const Duration(seconds: 4));
+      await t.pump(const Duration(seconds: 1));
+      await t.pump(const Duration(seconds: 1));
+      await t.pump(const Duration(seconds: 1));
+      await flush(t);
+    });
+
     testWidgets('typing a message works too', (t) async {
       await boot(t);
       await t.tap(find.text('Just talk business'));
@@ -195,10 +263,7 @@ void main() {
       await t.pump();
       await t.pump(const Duration(milliseconds: 400));
       expect(find.text('How do I price my work?'), findsWidgets);
-      expect(
-        find.text('Got it. Tell me a bit more about who this is for.'),
-        findsOneWidget,
-      );
+      expect(find.text('Reply 1 to: How do I price my work?'), findsOneWidget);
       await flush(t);
     });
 
@@ -221,6 +286,9 @@ void main() {
       expect(find.text('Promising'), findsOneWidget);
       expect(find.text('Strengths'), findsOneWidget);
       expect(find.text('Risks'), findsOneWidget);
+      // What Clixa wrote, not a canned text.
+      expect(find.text('Real demand and a healthy margin.'), findsOneWidget);
+      expect(find.text('Take 10 pre-orders'), findsOneWidget);
       expect(find.text('Next steps'), findsOneWidget);
       expect(
         find.text('Practice feedback from an AI coach, not financial advice.'),

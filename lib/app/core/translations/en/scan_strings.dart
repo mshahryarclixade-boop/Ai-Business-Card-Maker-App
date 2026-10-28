@@ -3,7 +3,8 @@ const Map<String, String> scanStrings = {
   'scan_no_camera': 'No camera found on this device.',
   'scan_camera_permission_needed': 'Camera access is needed to scan a card.',
   'scan_read_card_failed': 'Could not read that card. Please try again.',
-  'scan_qr_not_found_in_image': 'No QR code found in that image. Try a clearer picture where the whole QR code is visible.',
+  'scan_qr_not_found_in_image':
+      'No QR code found in that image. Try a clearer picture where the whole QR code is visible.',
   'scan_read_image_failed': 'Could not read that image. Please try again.',
   'scan_open_link_failed': 'Could not open this link.',
   'scan_link_copied': 'Link copied',
@@ -16,7 +17,8 @@ const Map<String, String> scanStrings = {
   'scan_try_again': 'Try Again',
   'scan_status_qr_found': 'QR code found',
   'scan_instruction_qr': 'Point at any QR code',
-  'scan_instruction_qr_subtext': 'Works with business card QR codes and any standard QR',
+  'scan_instruction_qr_subtext':
+      'Works with business card QR codes and any standard QR',
   'scan_orientation_landscape': 'Landscape',
   'scan_orientation_portrait': 'Portrait',
   'scan_status_reading_card': 'Reading card...',

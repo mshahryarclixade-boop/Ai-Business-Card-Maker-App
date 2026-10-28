@@ -53,13 +53,8 @@ class _QrStylePickerScreenState extends State<QrStylePickerScreen> {
             createdAt: DateTime.now(),
           ),
     );
-    Get.snackbar(
-      'qr_saved_title'.tr,
-      'qr_saved_message'.tr,
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(15),
-      duration: const Duration(seconds: 2),
-    );
+    // Go back first: Get.back() only closes an open snackbar instead of
+    // leaving the screen, so the message is shown after navigating.
     if (widget.fromManagement) {
       Get.back(); // the saved QR codes are right underneath
     } else {
@@ -69,6 +64,13 @@ class _QrStylePickerScreenState extends State<QrStylePickerScreen> {
         transition: Transition.rightToLeft,
       );
     }
+    Get.snackbar(
+      'qr_saved_title'.tr,
+      'qr_saved_message'.tr,
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(15),
+      duration: const Duration(seconds: 2),
+    );
   }
 
   @override
@@ -78,6 +80,8 @@ class _QrStylePickerScreenState extends State<QrStylePickerScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
@@ -179,7 +183,16 @@ class _QrStylePickerScreenState extends State<QrStylePickerScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+            // On a tablet the button is lifted clear of the bottom edge (it
+            // was half cut off there); phones keep the original spacing.
+            padding: EdgeInsets.fromLTRB(
+              24,
+              8,
+              24,
+              MediaQuery.sizeOf(context).shortestSide >= 600
+                  ? 15 + MediaQuery.paddingOf(context).bottom
+                  : 20,
+            ),
             child: SizedBox(
               width: double.infinity,
               height: 50,
@@ -193,7 +206,7 @@ class _QrStylePickerScreenState extends State<QrStylePickerScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Text('qr_style_save'.tr),
+                child: Text('qr_style_save'.tr, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),),
               ),
             ),
           ),

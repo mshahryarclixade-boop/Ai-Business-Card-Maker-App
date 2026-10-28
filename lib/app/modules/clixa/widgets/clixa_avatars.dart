@@ -61,9 +61,12 @@ class RoundAsset extends StatelessWidget {
           : null,
       child: ClipPath(
         clipper: ShapeBorderClipper(shape: shape),
+        clipBehavior: Clip.antiAliasWithSaveLayer,
         child: Image.asset(
           asset,
           fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          isAntiAlias: true,
           alignment: Alignment.topCenter,
           errorBuilder: (_, __, ___) => Icon(
             Icons.person_rounded,
@@ -90,24 +93,36 @@ class ClixaAvatar extends StatelessWidget {
 
 /// The five experts as overlapping circles.
 class ExpertAvatars extends StatelessWidget {
-  const ExpertAvatars({super.key, this.size = 34, this.overlap = 10});
+  const ExpertAvatars({
+    super.key,
+    this.size = 34,
+    this.overlap = 10,
+    this.count = 5,
+  });
 
   final double size;
   final double overlap;
+
+  /// How many of the five to show (the Premium sheet shows all five).
+  final int count;
 
   @override
   Widget build(BuildContext context) {
     final step = size - overlap;
     return SizedBox(
-      width: step * (kExpertAssets.length - 1) + size,
+      width: step * (count - 1) + size,
       height: size,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          for (var i = 0; i < kExpertAssets.length; i++)
+          for (var i = 0; i < count; i++)
             PositionedDirectional(
               start: step * i,
-              child: RoundAsset(asset: kExpertAssets[i], size: size, ring: true),
+              child: RoundAsset(
+                asset: kExpertAssets[i],
+                size: size,
+                ring: true,
+              ),
             ),
         ],
       ),

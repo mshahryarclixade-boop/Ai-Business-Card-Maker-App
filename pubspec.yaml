@@ -56,6 +56,8 @@ dependencies:
   package_info_plus: ^9.0.1
   file_picker: ^8.0.0
   super_clipboard: ^0.9.1
+  speech_to_text: ^7.0.0
+  flutter_tts: ^4.2.5
 
 dev_dependencies:
   flutter_test:

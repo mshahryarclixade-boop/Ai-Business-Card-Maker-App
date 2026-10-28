@@ -1,14 +1,9 @@
 import '../../modules/profile_setup/model/user_profile_data.dart';
 import '../../modules/profile/model/profile_model.dart';
 
-enum ReferenceKind {
-  template,
-  upload,
-}
-enum CardSide {
-  front,
-  back,
-}
+enum ReferenceKind { template, upload }
+
+enum CardSide { front, back }
 
 class CardDetails {
   final String name;

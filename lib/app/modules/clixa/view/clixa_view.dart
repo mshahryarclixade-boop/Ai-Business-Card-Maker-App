@@ -15,7 +15,7 @@ import 'clixa_chat_view.dart';
 
 const clixaRoute = '/Clixa';
 
-/// The AI Coach tab: opens Clixa's start screen.
+/// The Clixa AI tab: opens Clixa's start screen.
 void openClixa() => Get.to(
   () => const ClixaView(),
   routeName: clixaRoute,
@@ -85,7 +85,7 @@ TextStyle _t(double size, Color color, {FontWeight? w, double? h}) => TextStyle(
 class ClixaView extends StatelessWidget {
   const ClixaView({super.key, this.embedded = false});
 
-  /// Shown as the AI Coach tab: no back arrow, and room left for the bottom
+  /// Shown as the Clixa AI tab: no back arrow, and room left for the bottom
   /// navigation.
   final bool embedded;
 
@@ -120,7 +120,9 @@ class ClixaView extends StatelessWidget {
                   embedded ? 110 : 24,
                 ),
                 children: [
-                  _ClixaCard(onTap: () => pickClixaChat(context)),
+                  _ClixaCard(
+                    onTap: () => startClixaChat(context, ClixaMode.discuss),
+                  ),
                   const SizedBox(height: 20),
                   Row(
                     children: [
@@ -184,27 +186,14 @@ class ClixaView extends StatelessWidget {
                     onTap: () => startClixaChat(context, ClixaMode.talk),
                   ),
                   Obx(() {
-                    final chats = c.chats.take(5).toList();
-                    if (chats.isEmpty) return const SizedBox.shrink();
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-                        Text(
-                          'clixa_recent'.tr,
-                          style: _t(
-                            14,
-                            AppColors.titleDark,
-                            w: FontWeight.w800,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        for (final chat in chats)
-                          _RecentRow(
-                            chat: chat,
-                            onTap: () => openClixaChat(chat),
-                          ),
-                      ],
+                    final chats = c.chats
+                        .where((x) => x.userMessages > 0)
+                        .take(5)
+                        .toList();
+                    if (chats.isEmpty) return const _NoRecentChats();
+                    return _RecentChats(
+                      chats: chats,
+                      onOpen: (chat) => openClixaChat(chat),
                     );
                   }),
                 ],
@@ -383,66 +372,171 @@ class _PromptCard extends StatelessWidget {
   }
 }
 
-class _RecentRow extends StatelessWidget {
-  const _RecentRow({required this.chat, required this.onTap});
-
-  final ClixaChat chat;
-  final VoidCallback onTap;
+/// Shown under the heading while there are no chats yet.
+class _NoRecentChats extends StatelessWidget {
+  const _NoRecentChats();
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Material(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.only(top: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'clixa_recent'.tr,
+            style: _t(14, AppColors.titleDark, w: FontWeight.w800),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 28),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
               border: Border.all(color: AppColors.pillBorder),
             ),
-            child: Row(
+            child: Text(
+              'clixa_no_recent'.tr,
+              textAlign: TextAlign.center,
+              style: _t(13, AppColors.textGrey),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Recent chats in one rounded card, rows split by a divider, with the AI
+/// disclaimer underneath.
+class _RecentChats extends StatelessWidget {
+  const _RecentChats({required this.chats, required this.onOpen});
+
+  final List<ClixaChat> chats;
+  final void Function(ClixaChat chat) onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'clixa_recent'.tr,
+            style: _t(14, AppColors.titleDark, w: FontWeight.w800),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AppColors.pillBorder),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
               children: [
-                Icon(
-                  chat.mode.icon,
-                  size: 18,
-                  color: AppColors.onboardingBtnEnd,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Obx(
-                        () => Text(
-                          chat.title.value,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: _t(
-                            13,
-                            AppColors.titleDark,
-                            w: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        chat.mode.titleKey.tr,
-                        style: _t(12, AppColors.textGrey),
-                      ),
-                    ],
+                for (var i = 0; i < chats.length; i++) ...[
+                  if (i > 0)
+                    const Divider(
+                      height: 1,
+                      thickness: 1,
+                      indent: 16,
+                      endIndent: 16,
+                      color: AppColors.pillBorder,
+                    ),
+                  _RecentRow(
+                    chat: chats[i],
+                    when: chats[i].whenLabel,
+                    onTap: () => onOpen(chats[i]),
                   ),
-                ),
-                const Icon(
-                  Icons.chevron_right_rounded,
-                  color: AppColors.textGrey,
-                ),
+                ],
               ],
             ),
           ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              'clixa_ai_disclaimer'.tr,
+              textAlign: TextAlign.center,
+              style: _t(12, AppColors.textGrey, h: 1.4),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RecentRow extends StatelessWidget {
+  const _RecentRow({
+    required this.chat,
+    required this.when,
+    required this.onTap,
+  });
+
+  final ClixaChat chat;
+  final String when;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            const ClixaAvatar(size: 54),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Obx(
+                    () => Text(
+                      chat.title.value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: _t(17, AppColors.primaryDark, w: FontWeight.w800),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'clixa_recent_subtitle'.trParams({
+                      'mode': chat.mode.titleKey.tr,
+                      'when': when,
+                    }),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: _t(13, AppColors.textGrey),
+                  ),
+                ],
+              ),
+            ),
+            Obx(() {
+              chat.messages.length;
+              final badge = chat.verdictBadge;
+              if (badge == null) return const SizedBox.shrink();
+              return Container(
+                margin: const EdgeInsetsDirectional.only(start: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primarySoft,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  badge,
+                  style: _t(13, AppColors.onboardingBtnEnd, w: FontWeight.w800),
+                ),
+              );
+            }),
+          ],
         ),
       ),
     );
