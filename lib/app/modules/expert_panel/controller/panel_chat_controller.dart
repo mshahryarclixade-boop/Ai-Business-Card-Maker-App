@@ -1,4 +1,6 @@
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
+
+import '../../../core/translations/tr_extension.dart';
 
 import '../model/expert_models.dart';
 import '../service/panel_ai_service.dart';
@@ -58,14 +60,37 @@ class PanelChatController extends GetxController {
     }
   }
 
-  /// The End button. The session never ends by itself on "thanks" or "bye":
+  /// Ends the session now, after the user confirmed in the app: the report
+  /// (Pitch) or action plan (Consultation) is then written from what was said.
+  /// No model call is needed to end it, so it cannot fail or be talked out of.
+  Future<void> endNow() async {
+    if (over.value || thinking.value) return;
+    session.engine = {...session.engine, 'ended': 'user_ended'};
+    over.value = true;
+    await PanelHistory.save(session);
+  }
+
+  /// Asks the panel in the chat to end (kept for a typed "end the session").
+  /// The session never ends by itself on "thanks" or "bye":
   /// the user asks to end it, Clixa asks "Do you want me to end the session
   /// now?", and only a yes ends it. So this just says it in the chat.
-  Future<bool> requestEnd() => send('I want to end the session.');
+  Future<bool> requestEnd() => send('panel_end_request'.tr);
 
-  Future<void> _loop({void Function()? onLine}) async {
+  /// Pitch: skip the remaining questions and go to the panel's decisions.
+  Future<void> goToDecision() async {
+    if (!session.canGoToDecision || thinking.value) return;
+    thinking.value = true;
+    try {
+      await _loop(decide: true);
+    } finally {
+      thinking.value = false;
+      await PanelHistory.save(session);
+    }
+  }
+
+  Future<void> _loop({void Function()? onLine, bool decide = false}) async {
     for (var i = 0; i < _maxLinesPerCall; i++) {
-      final t = await PanelAi.instance.turn(session);
+      final t = await PanelAi.instance.turn(session, decide: decide && i == 0);
       _apply(t);
       if (t.hasLine) onLine?.call();
       if (t.then != 'continue') return;

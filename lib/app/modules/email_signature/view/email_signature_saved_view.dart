@@ -57,7 +57,8 @@ class EmailSignatureSavedView extends StatelessWidget {
   Future<void> _copyImage() async {
     try {
       final boundary =
-      _frameKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+          _frameKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
       if (boundary == null) return;
       final image = await boundary.toImage(pixelRatio: 3);
       final data = await image.toByteData(format: ui.ImageByteFormat.png);
@@ -67,7 +68,7 @@ class EmailSignatureSavedView extends StatelessWidget {
       await file.writeAsBytes(data.buffer.asUint8List());
       await Share.shareXFiles([XFile(file.path)]);
     } catch (e) {
-      Get.snackbar('Error', '$e');
+      Get.snackbar('email_signature_error_title'.tr, '$e');
     }
   }
 
@@ -124,7 +125,7 @@ class EmailSignatureSavedView extends StatelessWidget {
   void _preview(EmailSignature sig) => EmailSignatureStore.setActive(sig.id);
 
   void _edit(EmailSignature sig) => Get.to(
-        () => EmailSignatureEditorView(existing: sig, fromSaved: true),
+    () => EmailSignatureEditorView(existing: sig, fromSaved: true),
     routeName: editorRoute,
     transition: Transition.rightToLeft,
   );
@@ -133,7 +134,7 @@ class EmailSignatureSavedView extends StatelessWidget {
 
   void _new(BuildContext context) {
     void open() => Get.to(
-          () => const EmailSignatureEditorView(fromSaved: true),
+      () => const EmailSignatureEditorView(fromSaved: true),
       routeName: editorRoute,
       transition: Transition.rightToLeft,
     );
@@ -286,11 +287,11 @@ class _Row extends StatelessWidget {
   );
 
   PopupMenuItem<_RowAction> _item(
-      _RowAction value,
-      IconData icon,
-      String label, {
-        Color color = AppColors.titleDark,
-      }) => PopupMenuItem<_RowAction>(
+    _RowAction value,
+    IconData icon,
+    String label, {
+    Color color = AppColors.titleDark,
+  }) => PopupMenuItem<_RowAction>(
     value: value,
     child: Row(
       children: [
@@ -378,11 +379,7 @@ class _Row extends StatelessWidget {
                 Icons.visibility_outlined,
                 'email_sig_preview'.tr,
               ),
-              _item(
-                _RowAction.edit,
-                Icons.edit_outlined,
-                'email_sig_edit'.tr,
-              ),
+              _item(_RowAction.edit, Icons.edit_outlined, 'email_sig_edit'.tr),
               _item(
                 _RowAction.delete,
                 Icons.delete_outline_rounded,

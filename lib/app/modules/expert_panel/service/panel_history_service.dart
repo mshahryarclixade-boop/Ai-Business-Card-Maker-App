@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:convert';
 
 import 'package:get_storage/get_storage.dart';
@@ -31,6 +32,11 @@ class PanelHistory {
           out.add(_fromJson(j));
         } catch (_) {} // skip a damaged entry
       }
+      log(
+        'saved discussions: ${out.length} of $_max (the oldest beyond $_max '
+        'are dropped on the next save)',
+        name: 'PanelHistory',
+      );
       return out;
     } catch (_) {
       return [];

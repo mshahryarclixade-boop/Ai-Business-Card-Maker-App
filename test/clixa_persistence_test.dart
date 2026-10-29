@@ -128,4 +128,19 @@ void main() {
     expect(after.chats.length, 1);
     expect(after.chats.single.messages.any((m) => m.text == 'Good chat'), isTrue);
   });
+
+  test('only the newest 10 chats are kept; older ones are dropped on save', () async {
+    final c = ClixaController()..onInit();
+    final ids = <String>[];
+    for (var i = 0; i < 12; i++) {
+      final chat = c.startChat(ClixaMode.talk);
+      ids.add(chat.id);
+      await c.send(chat, 'Question $i');
+    }
+    final after = restarted();
+    expect(after.chats.length, 10);
+    // Newest first: the last ten started are kept, the first two are gone.
+    expect(after.chats.map((x) => x.id), ids.reversed.take(10).toList());
+    expect(after.chats.any((x) => x.id == ids.first), isFalse);
+  });
 }

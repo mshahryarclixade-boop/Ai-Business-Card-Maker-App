@@ -76,4 +76,5 @@ const Map<String, String> emailSignatureStrings = {
   'email_sig_saved_list': 'Your signatures',
   'email_sig_new': 'New signature',
   'email_sig_done': 'Done',
+  'email_signature_error_title': 'Error',
 };

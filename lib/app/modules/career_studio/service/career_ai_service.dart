@@ -5,12 +5,17 @@ import 'package:flutter/foundation.dart';
 
 import '../../../core/services/gemini_card_service.dart' show GeminiException;
 import '../../../core/translations/app_strings.dart';
+import '../../../core/utils/ai_usage_log.dart';
 import '../../../core/translations/tr_extension.dart';
 
 export '../../../core/services/gemini_card_service.dart' show GeminiException;
 
 /// The three generated sections of the Profile Builder.
-typedef ProfileDraftTexts = ({String headline, String about, String experience});
+typedef ProfileDraftTexts = ({
+  String headline,
+  String about,
+  String experience,
+});
 
 /// A scanned profile: strength 0-100 per part and a short excerpt of what the
 /// profile has there. Part ids: headline, about, experience, skills, photo,
@@ -75,31 +80,31 @@ class CloudCareerAi extends CareerAi {
     'buildProfile' || 'rewrite' => 'profileBuilder',
     'analyze' || 'fixSuggestion' => 'profileOptimizer',
     'coachReply' => 'businessCoach',
-    'panelTurn' => 'expertPanel',
+    'panelTurn' || 'panelReport' => 'expertPanel',
     _ => 'generateCard', // any older task still served there
   };
 
   /// Calls a text task (Career Studio, Clixa, the Expert Panel).
   Future<Map<String, dynamic>> call(
     String task,
-    Map<String, dynamic> data,
-  ) async {
+    Map<String, dynamic> data, {
+    Duration timeout = const Duration(seconds: 90),
+  }) async {
     try {
       final result = await _functions
           .httpsCallable(
             functionFor(task),
-            options: HttpsCallableOptions(
-              timeout: const Duration(seconds: 90),
-            ),
+            options: HttpsCallableOptions(timeout: timeout),
           )
           .call(<String, dynamic>{
             'task': task,
             'language': AppStrings.locale.languageCode,
             ...data,
           })
-          .timeout(const Duration(seconds: 95));
+          .timeout(timeout + const Duration(seconds: 5));
       final d = result.data;
       if (d is! Map) throw GeminiException('career_ai_error_generic'.tr);
+      logAiUsage(task, d['_usage']);
       return Map<String, dynamic>.from(d);
     } on TimeoutException {
       throw GeminiException('gemini_error_timeout'.tr);

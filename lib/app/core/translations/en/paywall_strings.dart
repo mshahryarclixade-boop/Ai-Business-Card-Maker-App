@@ -1,2 +1,42 @@
-/// English strings: paywall.
-const Map<String, String> paywallStrings = {};
+/// English strings: paywall. The paywall's own texts come from Remote Config
+/// (English defaults in PaywallConfig); these are what the defaults show in
+/// the app language. Keep "$2.49" and "70%" as they are: the app swaps in the
+/// real store price and saving.
+const Map<String, String> paywallStrings = {
+  'paywall_cfg_trial_button': 'Start {days}-Day Free Trial',
+  'paywall_cfg_continue': 'Continue',
+  'paywall_cfg_trial_benefit': '{days} days completely free, no charge today',
+  'paywall_cfg_trial_info1':
+      'No payment today, {yearly_price}/year after trial',
+  'paywall_cfg_trial_info2': 'Cancel anytime before trial ends',
+  'paywall_cfg_s1_title1': 'Start creating',
+  'paywall_cfg_s1_title2': 'for free',
+  'paywall_cfg_s1_subtitle': 'Unlock everything with Pro',
+  'paywall_cfg_feat_ai': 'Unlimited AI Card Generation',
+  'paywall_cfg_feat_scan': 'Scan Unlimited Cards',
+  'paywall_cfg_feat_templates': '50+ Premium Templates',
+  'paywall_cfg_feat_qr': 'Scan any QR Code',
+  'paywall_cfg_feat_bg': 'Remove Background',
+  'paywall_cfg_yearly_pro': 'Yearly Pro',
+  'paywall_cfg_save_badge': 'Save 70%',
+  'paywall_cfg_price_note': 'Just \$2.49/month, billed annually',
+  'paywall_cfg_s2_title': 'Unlock Pro & keep creating',
+  'paywall_cfg_s2_subtitle': 'Get unlimited access to every feature',
+  'paywall_cfg_s2_feat_ai': 'Unlimited AI Card',
+  'paywall_cfg_s2_feat_scan': 'Unlimited Scan',
+  'paywall_cfg_s2_feat_templates': '50+ Templates',
+  'paywall_cfg_s2_feat_watermark': 'No watermark',
+  'paywall_cfg_s2_feat_qr': 'QR Generator',
+  'paywall_cfg_s2_feat_bg': 'BG Remover',
+  'paywall_cfg_commitment': 'No commitment, cancel anytime',
+  'paywall_cfg_monthly': 'Monthly',
+  'paywall_cfg_per_month': '/month',
+  'paywall_cfg_monthly_desc': 'Full access to all Pro features',
+  'paywall_cfg_yearly': 'Yearly',
+  'paywall_cfg_most_popular': 'Most Popular',
+  'paywall_cfg_per_year': '/year',
+  'paywall_cfg_original_price': '\$83.88/year',
+  'paywall_cfg_restore': 'Restore Purchase',
+  'paywall_cfg_terms': 'Term Of Use',
+  'paywall_cfg_privacy': 'Privacy Policy',
+};

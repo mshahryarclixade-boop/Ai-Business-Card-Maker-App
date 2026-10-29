@@ -17,15 +17,31 @@ class FakePanelAi extends PanelAi {
   var _i = 0;
 
   @override
-  Future<PanelTurn> turn(PanelSession session) async {
-    sent.add(session.toRequest());
+  Future<PanelTurn> turn(PanelSession session, {bool decide = false}) async {
+    sent.add(session.toRequest(action: decide ? 'decide' : null));
     if (_i >= script.length) throw const GeminiException('no more turns');
     return script[_i++](session);
   }
+
+  @override
+  Future<Map<String, dynamic>> report(PanelSession session) async => {
+    'status': 'complete',
+  };
 }
 
-PanelTurn line(String speaker, String text, String then, {Map<String, dynamic>? state, String? userText}) =>
-    PanelTurn(speaker: speaker, text: text, then: then, state: state ?? {'stage': 'DEEP_DIVE'}, userText: userText);
+PanelTurn line(
+  String speaker,
+  String text,
+  String then, {
+  Map<String, dynamic>? state,
+  String? userText,
+}) => PanelTurn(
+  speaker: speaker,
+  text: text,
+  then: then,
+  state: state ?? {'stage': 'DEEP_DIVE'},
+  userText: userText,
+);
 
 PanelSession newSession({PanelMode mode = PanelMode.pitch}) =>
     PanelSession(experts: [0, 1, 2, 3, 4], mode: mode, title: 'New idea');
@@ -45,14 +61,23 @@ void main() {
   });
 
   test('the cast matches the prompts and Clixa hosts', () {
-    expect(kExperts.map((e) => e.id).toSet(), {'dave', 'olivia', 'john', 'marcus', 'sara'});
+    expect(kExperts.map((e) => e.id).toSet(), {
+      'dave',
+      'olivia',
+      'john',
+      'marcus',
+      'sara',
+    });
     expect(expertById('clixa').name, 'Clixa');
     expect(expertById('dave').shortRoleKey, 'panel_role_finance');
     expect(newSession().expertIds.length, 5);
   });
 
   test('a new session opens with Clixa\'s welcome', () async {
-    final ai = FakePanelAi([(s) => line('clixa', 'Hi, I am Clixa.', 'user', state: {'stage': 'PITCH'})]);
+    final ai = FakePanelAi([
+      (s) =>
+          line('clixa', 'Hi, I am Clixa.', 'user', state: {'stage': 'PITCH'}),
+    ]);
     PanelAi.instance = ai;
     final s = newSession();
     final c = PanelChatController(s);
@@ -64,64 +89,96 @@ void main() {
     expect(s.messages.length, 1);
   });
 
-  test('send calls again while the server says continue, and keeps the state', () async {
-    final ai = FakePanelAi([
-      (s) => line('dave', 'First.', 'continue', state: {'stage': 'DEEP_DIVE', 'n': 1}, userText: 'my pitch'),
-      (s) => line('sara', 'Second?', 'user', state: {'stage': 'DEEP_DIVE', 'n': 2}),
-    ]);
-    PanelAi.instance = ai;
-    final s = newSession();
-    final c = PanelChatController(s);
-    expect(await c.send('  my pitch  '), isTrue);
-    expect(s.messages.map((m) => m.speaker), [null, 'dave', 'sara']);
-    expect(s.engine['n'], 2);
-    // The second call carried the first call's state and the line it produced.
-    expect(ai.sent[1]['state'], {'stage': 'DEEP_DIVE', 'n': 1});
-    expect((ai.sent[1]['messages'] as List).length, 2);
-    expect(c.thinking.value, isFalse);
-  });
+  test(
+    'send calls again while the server says continue, and keeps the state',
+    () async {
+      final ai = FakePanelAi([
+        (s) => line(
+          'dave',
+          'First.',
+          'continue',
+          state: {'stage': 'DEEP_DIVE', 'n': 1},
+          userText: 'my pitch',
+        ),
+        (s) => line(
+          'sara',
+          'Second?',
+          'user',
+          state: {'stage': 'DEEP_DIVE', 'n': 2},
+        ),
+      ]);
+      PanelAi.instance = ai;
+      final s = newSession();
+      final c = PanelChatController(s);
+      expect(await c.send('  my pitch  '), isTrue);
+      expect(s.messages.map((m) => m.speaker), [null, 'dave', 'sara']);
+      expect(s.engine['n'], 2);
+      // The second call carried the first call's state and the line it produced.
+      expect(ai.sent[1]['state'], {'stage': 'DEEP_DIVE', 'n': 1});
+      expect((ai.sent[1]['messages'] as List).length, 2);
+      expect(c.thinking.value, isFalse);
+    },
+  );
 
   test('the server\'s redacted text replaces what the user typed', () async {
     PanelAi.instance = FakePanelAi([
-      (s) => line('clixa', 'Please keep numbers private.', 'user', userText: 'card [number removed]'),
+      (s) => line(
+        'clixa',
+        'Please keep numbers private.',
+        'user',
+        userText: 'card [number removed]',
+      ),
     ]);
     final s = newSession();
     await PanelChatController(s).send('card 4111 1111 1111 1111');
     expect(s.messages.first.text, 'card [number removed]');
   });
 
-  test('empty messages are ignored; a failed first call takes the message back out', () async {
-    PanelAi.instance = FakePanelAi([]);
-    final s = newSession();
-    final c = PanelChatController(s);
-    expect(await c.send('   '), isFalse);
-    await expectLater(c.send('hello'), throwsA(isA<GeminiException>()));
-    expect(s.messages, isEmpty, reason: 'nothing was answered, so the message is given back');
-    expect(c.thinking.value, isFalse);
-  });
+  test(
+    'empty messages are ignored; a failed first call takes the message back out',
+    () async {
+      PanelAi.instance = FakePanelAi([]);
+      final s = newSession();
+      final c = PanelChatController(s);
+      expect(await c.send('   '), isFalse);
+      await expectLater(c.send('hello'), throwsA(isA<GeminiException>()));
+      expect(
+        s.messages,
+        isEmpty,
+        reason: 'nothing was answered, so the message is given back',
+      );
+      expect(c.thinking.value, isFalse);
+    },
+  );
 
   test('a later failure keeps the lines that already arrived', () async {
-    PanelAi.instance = FakePanelAi([
-      (s) => line('dave', 'One.', 'continue'),
-    ]);
+    PanelAi.instance = FakePanelAi([(s) => line('dave', 'One.', 'continue')]);
     final s = newSession();
     expect(await PanelChatController(s).send('hi'), isTrue);
     expect(s.messages.length, 2);
   });
 
-  test('when the server ends the session the controller is over and sends no more', () async {
-    final ai = FakePanelAi([
-      (s) => line('clixa', 'I\'m ending this session now.', 'end', state: {'stage': 'DEEP_DIVE', 'ended': 'conduct'}),
-    ]);
-    PanelAi.instance = ai;
-    final s = newSession();
-    final c = PanelChatController(s);
-    await c.send('you idiots');
-    expect(c.over.value, isTrue);
-    expect(s.ended, 'conduct');
-    expect(await c.send('hello?'), isFalse);
-    expect(ai.sent.length, 1);
-  });
+  test(
+    'when the server ends the session the controller is over and sends no more',
+    () async {
+      final ai = FakePanelAi([
+        (s) => line(
+          'clixa',
+          'I\'m ending this session now.',
+          'end',
+          state: {'stage': 'DEEP_DIVE', 'ended': 'conduct'},
+        ),
+      ]);
+      PanelAi.instance = ai;
+      final s = newSession();
+      final c = PanelChatController(s);
+      await c.send('you idiots');
+      expect(c.over.value, isTrue);
+      expect(s.ended, 'conduct');
+      expect(await c.send('hello?'), isFalse);
+      expect(ai.sent.length, 1);
+    },
+  );
 
   test('End says it in the chat; only the server ends the session', () async {
     final ai = FakePanelAi([
@@ -138,7 +195,12 @@ void main() {
   });
 
   test('the request carries mode, the selected experts and the state', () {
-    final s = PanelSession(experts: [0, 4], mode: PanelMode.consult, title: 't', engine: {'stage': 'ADVISE'});
+    final s = PanelSession(
+      experts: [0, 4],
+      mode: PanelMode.consult,
+      title: 't',
+      engine: {'stage': 'ADVISE'},
+    );
     s.messages.add(const PanelMessage(text: 'hi', round: 1));
     final r = s.toRequest(userName: 'Ayesha');
     expect(r['mode'], 'consult');
@@ -147,4 +209,88 @@ void main() {
     expect(r['userName'], 'Ayesha');
     expect(r.containsKey('endRequest'), isFalse);
   });
+
+  test(
+    'End now ends the session without a model call, ready for the report',
+    () async {
+      final ai = FakePanelAi([]);
+      PanelAi.instance = ai;
+      final s = newSession();
+      s.messages.add(PanelMessage(text: 'my idea', round: 1));
+      final c = PanelChatController(s);
+      await c.endNow();
+      expect(c.over.value, isTrue);
+      expect(s.engine['ended'], 'user_ended');
+      expect(ai.sent, isEmpty, reason: 'no call to end');
+      expect((await ai.report(s))['status'], 'complete');
+    },
+  );
+
+  test(
+    'Go to decision is offered only in the Pitch Q&A stage and sends the decide action',
+    () async {
+      final ai = FakePanelAi([
+        (s) => line(
+          'dave',
+          'IN · 75/100 — Strong margin.',
+          'continue',
+          state: {
+            'pitch': {'stage': 'DEAL'},
+          },
+        ),
+        (s) => line(
+          'clixa',
+          'Thanks, you scored 62.',
+          'end',
+          state: {
+            'pitch': {'stage': 'DONE'},
+            'ended': 'completed',
+          },
+        ),
+      ]);
+      PanelAi.instance = ai;
+      final s = newSession();
+      expect(s.canGoToDecision, isFalse, reason: 'no stage yet');
+      s.engine = {
+        'pitch': {'stage': 'INTAKE'},
+      };
+      expect(s.canGoToDecision, isFalse);
+      s.engine = {
+        'pitch': {'stage': 'QA'},
+      };
+      expect(s.canGoToDecision, isTrue);
+      expect(
+        newSession(mode: PanelMode.consult)
+          ..engine = {
+            'pitch': {'stage': 'QA'},
+          },
+        isNotNull,
+      );
+      expect(
+        (newSession(mode: PanelMode.consult)
+              ..engine = {
+                'pitch': {'stage': 'QA'},
+              })
+            .canGoToDecision,
+        isFalse,
+      );
+
+      s.messages.add(PanelMessage(text: 'my pitch', round: 1));
+      final c = PanelChatController(s);
+      await c.goToDecision();
+      expect(
+        ai.sent.first['action'],
+        'decide',
+        reason: 'the first call carries the action',
+      );
+      expect(
+        ai.sent.last.containsKey('action'),
+        isFalse,
+        reason: 'follow-up calls do not',
+      );
+      expect(s.messages.map((m) => m.speaker), [null, 'dave', 'clixa']);
+      expect(c.over.value, isTrue);
+      expect(s.canGoToDecision, isFalse);
+    },
+  );
 }

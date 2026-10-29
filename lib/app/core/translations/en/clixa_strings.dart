@@ -54,9 +54,11 @@ const Map<String, String> clixaStrings = {
   'chat_stop_reading': 'Stop reading',
   'chat_you': 'You',
   'chat_share_failed_title': 'Couldn\'t share',
-  'chat_share_failed_message': 'The conversation could not be shared. Please try again.',
+  'chat_share_failed_message':
+      'The conversation could not be shared. Please try again.',
   'chat_tts_failed_title': 'Read aloud unavailable',
-  'chat_tts_failed_message': 'Text-to-speech is not available on this device right now.',
+  'chat_tts_failed_message':
+      'Text-to-speech is not available on this device right now.',
   'clixa_mic_start': 'Speak your message',
   'clixa_mic_stop': 'Stop listening',
   'clixa_mic_listening': 'Listening…',
@@ -147,6 +149,10 @@ const Map<String, String> clixaStrings = {
   'panel_thinking': 'The experts are thinking…',
   'panel_nothing_to_end':
       'Send your idea first, then end the session for feedback.',
+  'panel_end_request': 'I want to end the session.',
+  'panel_go_to_decision': 'Go to decision',
+  'panel_report_btn': 'View report',
+  'panel_plan_title': 'Your action plan',
   'panel_report_loading': 'The panel is writing its feedback…',
   'panel_report_failed':
       'Couldn\'t get the feedback. Check your connection and try again.',

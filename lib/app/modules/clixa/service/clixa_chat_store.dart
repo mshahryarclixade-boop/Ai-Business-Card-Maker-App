@@ -22,7 +22,7 @@ class ClixaChatStore {
 
   static const _chatsKey = 'clixa_chats';
   static const _dailyKey = 'clixa_daily';
-  static const _max = 50;
+  static const _max = 10;
 
   /// Tests switch this off: they have no storage directory.
   static bool enabled = true;
@@ -59,6 +59,11 @@ class ClixaChatStore {
     } catch (e) {
       log('load failed: $e', name: 'ClixaChatStore');
     }
+    log(
+      'saved chats: ${chats.length} of $_max (the oldest beyond $_max are '
+      'dropped on the next save)',
+      name: 'ClixaChatStore',
+    );
     return ClixaSaved(chats, day, started);
   }
 

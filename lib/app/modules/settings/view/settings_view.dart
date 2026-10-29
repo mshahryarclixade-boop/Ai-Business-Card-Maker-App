@@ -92,6 +92,7 @@ class SettingsView extends StatelessWidget {
                         const _SettingsTile(
                           icon: Icons.mail,
                           title: 'settings_contact_us',
+                          onTap: LegalLinks.openContactUs,
                         ),
                         const SizedBox(height: 7),
 

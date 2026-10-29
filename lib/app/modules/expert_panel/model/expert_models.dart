@@ -147,12 +147,24 @@ class PanelSession {
   bool get isOver => ended != null;
   bool get paused => engine['paused'] == true;
 
-  Map<String, dynamic> toRequest({String? userName}) => {
+  /// Pitch only: the stage the server is in (INTAKE, OPENING, QA, DEAL,
+  /// VERDICT, DONE), or null before the first answer.
+  String? get pitchStage {
+    final p = engine['pitch'];
+    return p is Map && p['stage'] is String ? p['stage'] as String : null;
+  }
+
+  /// Pitch: the "Go to decision" button is offered while questions are open.
+  bool get canGoToDecision =>
+      mode == PanelMode.pitch && !isOver && pitchStage == 'QA';
+
+  Map<String, dynamic> toRequest({String? userName, String? action}) => {
     'mode': mode.id,
     'experts': expertIds,
     'messages': [for (final m in messages) m.toJson()],
     'state': engine,
     'userName': ?userName,
+    'action': ?action,
   };
 }
 

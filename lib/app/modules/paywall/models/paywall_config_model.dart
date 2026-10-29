@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:intl/intl.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../controller/subscription_controller.dart';
 import '../services/revenue_cat_service.dart';
+
+import '../../../core/translations/tr_extension.dart';
 
 /// Paywall copy and display settings, delivered as one JSON parameter
 /// (`paywall_config`) in Firebase Remote Config.
@@ -159,19 +161,22 @@ class PaywallConfig {
       .replaceAll('{yearly_price}', yearly.price);
 
   String get trialButtonLabel => _fill(
-    trialEnabled ? _trial['button_label'] : _trial['no_trial_button_label'],
+    _loc(
+      (trialEnabled ? _trial['button_label'] : _trial['no_trial_button_label'])
+          as String,
+    ),
   );
-  String get trialBenefitText => _fill(_trial['benefit_text']);
-  String get trialInfoLine1 => _fill(_trial['info_line_1']);
-  String get trialInfoLine2 => _fill(_trial['info_line_2']);
+  String get trialBenefitText => _fill(_loc(_trial['benefit_text'] as String));
+  String get trialInfoLine1 => _fill(_loc(_trial['info_line_1'] as String));
+  String get trialInfoLine2 => _fill(_loc(_trial['info_line_2'] as String));
 
   // --- Screen 1 ---
-  String get s1TitleLine1 => _s1['title_line1'] as String;
-  String get s1TitleLine2 => _s1['title_line2'] as String;
-  String get s1Subtitle => _s1['subtitle'] as String;
-  String get s1PlanTitle => _s1['plan_title'] as String;
-  String get s1SaveBadge => _withSavePercent(_s1['save_badge'] as String);
-  String get s1PriceNote => _withPerMonth(_s1['price_note'] as String);
+  String get s1TitleLine1 => _loc(_s1['title_line1'] as String);
+  String get s1TitleLine2 => _loc(_s1['title_line2'] as String);
+  String get s1Subtitle => _loc(_s1['subtitle'] as String);
+  String get s1PlanTitle => _loc(_s1['plan_title'] as String);
+  String get s1SaveBadge => _withSavePercent(_loc(_s1['save_badge'] as String));
+  String get s1PriceNote => _withPerMonth(_loc(_s1['price_note'] as String));
 
   /// Each feature has an `icon` key (ai, scan, templates, qr, bg) and `text`.
   List<PaywallFeature> get s1Features {
@@ -180,7 +185,12 @@ class PaywallConfig {
     if (list is List) {
       for (final f in list) {
         if (f is Map && f['text'] is String) {
-          out.add(PaywallFeature(f['icon']?.toString() ?? '', f['text']));
+          out.add(
+            PaywallFeature(
+              f['icon']?.toString() ?? '',
+              _loc(f['text'] as String),
+            ),
+          );
         }
       }
     }
@@ -189,20 +199,25 @@ class PaywallConfig {
 
   static List<PaywallFeature> get _defaultS1Features => [
     for (final f in (defaultJson['screen1'] as Map)['features'] as List)
-      PaywallFeature(f['icon'] as String, f['text'] as String),
+      PaywallFeature(f['icon'] as String, _loc(f['text'] as String)),
   ];
 
   // --- Screen 2 ---
-  String get s2Title => _s2['title'] as String;
-  String get s2Subtitle => _s2['subtitle'] as String;
-  String get s2ButtonLabel => _s2['button_label'] as String;
-  String get s2CommitmentText => _s2['commitment_text'] as String;
+  String get s2Title => _loc(_s2['title'] as String);
+  String get s2Subtitle => _loc(_s2['subtitle'] as String);
+  String get s2ButtonLabel => _loc(_s2['button_label'] as String);
+  String get s2CommitmentText => _loc(_s2['commitment_text'] as String);
 
   List<String> get s2Features {
     final list = _s2['features'];
-    final out = list is List ? list.whereType<String>().toList() : <String>[];
+    final out = list is List
+        ? list.whereType<String>().map(_loc).toList()
+        : <String>[];
     return out.isEmpty
-        ? List<String>.from((defaultJson['screen2'] as Map)['features'])
+        ? [
+            for (final f in (defaultJson['screen2'] as Map)['features'] as List)
+              _loc(f as String),
+          ]
         : out;
   }
 
@@ -219,7 +234,7 @@ class PaywallConfig {
       savePercent: _savePercent,
       storeOriginalPrice: m == null
           ? null
-          : '${_money(m.price * 12, m.currencyCode)}${p['period']}',
+          : '${_money(m.price * 12, m.currencyCode)}${_loc(p['period'] as String)}',
     );
   }
 
@@ -261,9 +276,9 @@ class PaywallConfig {
   }
 
   // --- Footer ---
-  String get restoreLabel => _footer['restore'] as String;
-  String get termsLabel => _footer['terms'] as String;
-  String get privacyLabel => _footer['privacy'] as String;
+  String get restoreLabel => _loc(_footer['restore'] as String);
+  String get termsLabel => _loc(_footer['terms'] as String);
+  String get privacyLabel => _loc(_footer['privacy'] as String);
 }
 
 class PaywallFeature {
@@ -287,21 +302,68 @@ class PaywallPlan {
   final String? storeOriginalPrice;
 
   bool get visible => _p['visible'] as bool;
-  String get title => _p['title'] as String;
+  String get title => _loc(_p['title'] as String);
   String get price => product?.priceString ?? _p['price'] as String;
-  String get period => _p['period'] as String;
-  String get description => (_p['description'] ?? '') as String;
-  String get badge => (_p['badge'] ?? '') as String;
+  String get period => _loc(_p['period'] as String);
+  String get description => _loc((_p['description'] ?? '') as String);
+  String get badge => _loc((_p['badge'] ?? '') as String);
   String get originalPrice {
-    final text = (_p['original_price'] ?? '') as String;
+    final text = _loc((_p['original_price'] ?? '') as String);
     return text.isEmpty ? text : storeOriginalPrice ?? text;
   }
 
   String get saveBadge =>
-      _withPercent((_p['save_badge'] ?? '') as String, savePercent);
+      _withPercent(_loc((_p['save_badge'] ?? '') as String), savePercent);
 
   /// [text]'s first "70%" replaced by [percent], when known.
   static String _withPercent(String text, int? percent) => percent == null
       ? text
       : text.replaceFirst(RegExp(r'\d+\s?%'), '$percent%');
+}
+
+/// The paywall's texts come from Remote Config, with English defaults. A text
+/// that is still the English default is shown in the app language (the key
+/// below); a text the remote config changed is shown as written there.
+const Map<String, String> _defaultTextKeys = {
+  'Start {days}-Day Free Trial': 'paywall_cfg_trial_button',
+  'Continue': 'paywall_cfg_continue',
+  '{days} days completely free, no charge today': 'paywall_cfg_trial_benefit',
+  'No payment today, {yearly_price}/year after trial':
+      'paywall_cfg_trial_info1',
+  'Cancel anytime before trial ends': 'paywall_cfg_trial_info2',
+  'Start creating': 'paywall_cfg_s1_title1',
+  'for free': 'paywall_cfg_s1_title2',
+  'Unlock everything with Pro': 'paywall_cfg_s1_subtitle',
+  'Unlimited AI Card Generation': 'paywall_cfg_feat_ai',
+  'Scan Unlimited Cards': 'paywall_cfg_feat_scan',
+  '50+ Premium Templates': 'paywall_cfg_feat_templates',
+  'Scan any QR Code': 'paywall_cfg_feat_qr',
+  'Remove Background': 'paywall_cfg_feat_bg',
+  'Yearly Pro': 'paywall_cfg_yearly_pro',
+  'Save 70%': 'paywall_cfg_save_badge',
+  'Just \$2.49/month, billed annually': 'paywall_cfg_price_note',
+  'Unlock Pro & keep creating': 'paywall_cfg_s2_title',
+  'Get unlimited access to every feature': 'paywall_cfg_s2_subtitle',
+  'Unlimited AI Card': 'paywall_cfg_s2_feat_ai',
+  'Unlimited Scan': 'paywall_cfg_s2_feat_scan',
+  '50+ Templates': 'paywall_cfg_s2_feat_templates',
+  'No watermark': 'paywall_cfg_s2_feat_watermark',
+  'QR Generator': 'paywall_cfg_s2_feat_qr',
+  'BG Remover': 'paywall_cfg_s2_feat_bg',
+  'No commitment, cancel anytime': 'paywall_cfg_commitment',
+  'Monthly': 'paywall_cfg_monthly',
+  '/month': 'paywall_cfg_per_month',
+  'Full access to all Pro features': 'paywall_cfg_monthly_desc',
+  'Yearly': 'paywall_cfg_yearly',
+  'Most Popular': 'paywall_cfg_most_popular',
+  '/year': 'paywall_cfg_per_year',
+  '\$83.88/year': 'paywall_cfg_original_price',
+  'Restore Purchase': 'paywall_cfg_restore',
+  'Term Of Use': 'paywall_cfg_terms',
+  'Privacy Policy': 'paywall_cfg_privacy',
+};
+
+String _loc(String s) {
+  final key = _defaultTextKeys[s];
+  return key == null ? s : key.tr;
 }

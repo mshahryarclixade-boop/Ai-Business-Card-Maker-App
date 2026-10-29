@@ -2,6 +2,7 @@ const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { initializeApp } = require("firebase-admin/app");
 const { GoogleGenAI } = require("@google/genai");
 const panelEngine = require("./panel/engine");
+const usage = require("./usage");
 
 initializeApp();
 
@@ -56,16 +57,21 @@ exports.generateCard = onCall(OPTIONS, async (request) => {
   if (d.logoBase64 && d.logoMime) parts.push(inlinePart(d.logoBase64, d.logoMime));
 
   try {
-    const ai = getClient();
-    const res = await ai.models.generateContent({
-      model: CARD_MODEL,
-      contents: [{ role: "user", parts }],
-      config: { responseModalities: ["IMAGE"] },
+    const [result, summary] = await usage.withUsage("generateCard.image", async () => {
+      const ai = getClient();
+      const t0 = Date.now();
+      const res = await ai.models.generateContent({
+        model: CARD_MODEL,
+        contents: [{ role: "user", parts }],
+        config: { responseModalities: ["IMAGE"] },
+      });
+      usage.record({ label: "card.image", model: CARD_MODEL, res, ms: Date.now() - t0 });
+      const outParts = res?.candidates?.[0]?.content?.parts || [];
+      const img = outParts.find((p) => p.inlineData && p.inlineData.data);
+      if (!img) throw new HttpsError("internal", "No image returned.");
+      return { imageBase64: img.inlineData.data };
     });
-    const outParts = res?.candidates?.[0]?.content?.parts || [];
-    const img = outParts.find((p) => p.inlineData && p.inlineData.data);
-    if (!img) throw new HttpsError("internal", "No image returned.");
-    return { imageBase64: img.inlineData.data };
+    return { ...result, _usage: summary };
   } catch (e) {
     throw wrapGeminiError(e);
   }
@@ -90,11 +96,13 @@ function clip(v, max = 3000) {
 
 async function generateJson(prompt, extraParts = [], opts = {}) {
   const ai = getClient();
+  const t0 = Date.now();
   const res = await ai.models.generateContent({
     model: TEXT_MODEL,
     contents: [{ role: "user", parts: [{ text: prompt }, ...extraParts] }],
     config: { responseMimeType: "application/json", temperature: opts.temperature ?? 0.8 },
   });
+  usage.record({ label: opts.label, model: TEXT_MODEL, res, ms: Date.now() - t0 });
   const raw = res?.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") || "";
   try {
     return JSON.parse(raw);
@@ -106,11 +114,13 @@ async function generateJson(prompt, extraParts = [], opts = {}) {
 // Plain text (the Expert Panel's spoken lines).
 async function generateText(prompt, opts = {}) {
   const ai = getClient();
+  const t0 = Date.now();
   const res = await ai.models.generateContent({
     model: TEXT_MODEL,
     contents: [{ role: "user", parts: [{ text: prompt }] }],
     config: { temperature: opts.temperature ?? 0.8 },
   });
+  usage.record({ label: opts.label, model: TEXT_MODEL, res, ms: Date.now() - t0 });
   const raw = res?.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") || "";
   if (!raw.trim()) throw new HttpsError("internal", "Empty AI response.");
   return raw;
@@ -266,6 +276,11 @@ const TASKS = {
     return panel.turn(d, lang);
   },
 
+  // panelReport: the Pitch report or the Consultation action plan.
+  async panelReport(d, lang) {
+    return panel.report(d, lang);
+  },
+
   // { text?, images?: [{base64,mime}], pdf?: {base64} } -> { scores, current }
   async analyze(d, lang) {
     const parts = [];
@@ -305,7 +320,8 @@ async function runCareerTask(d, allowed = Object.keys(TASKS)) {
   if (!handler) throw new HttpsError("invalid-argument", "Unknown task.");
   const lang = clip(d.language, 40) || "English";
   try {
-    return await handler(d, lang);
+    const [result, summary] = await usage.withUsage(task, () => handler(d, lang));
+    return result && typeof result === "object" ? { ...result, _usage: summary } : result;
   } catch (e) {
     throw wrapGeminiError(e);
   }
@@ -335,4 +351,7 @@ exports.profileOptimizer = textFunction(["analyze", "fixSuggestion"], {
 exports.businessCoach = textFunction(["coachReply"]);
 
 // The Expert Panel.
-exports.expertPanel = textFunction(["panelTurn"]);
+exports.expertPanel = textFunction(["panelTurn", "panelReport"], {
+  ...TEXT_OPTIONS,
+  timeoutSeconds: 150, // a report can retry once
+});

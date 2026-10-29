@@ -11,6 +11,8 @@ import '../../../core/widgets/voice_mic_button.dart';
 import '../controller/panel_chat_controller.dart';
 import '../model/expert_models.dart';
 import '../service/panel_ai_service.dart';
+import '../service/panel_history_service.dart';
+import 'panel_report_view.dart';
 
 TextStyle _t(double size, Color color, {FontWeight? w, double? h}) => TextStyle(
   fontFamily: AppTextStyles.fontFamily,
@@ -51,6 +53,9 @@ class _ExpertPanelChatViewState extends State<ExpertPanelChatView> {
     _follow = [
       ever(session.messages, (_) => _toBottom()),
       ever(_c.thinking, (_) => _toBottom()),
+      ever(_c.over, (over) {
+        if (over) _openReportSoon();
+      }),
     ];
     _speech.onIssue = (issue) {
       if (mounted) showSpeechIssue(_speech, issue);
@@ -82,6 +87,26 @@ class _ExpertPanelChatViewState extends State<ExpertPanelChatView> {
     });
   }
 
+  var _opening = false;
+
+  /// The session is over: give the user a moment to read the last line, then
+  /// open the report (Pitch) or the action plan (Consultation).
+  void _openReportSoon() {
+    if (_opening) return;
+    _opening = true;
+    Future.delayed(const Duration(milliseconds: 1800), () {
+      _opening = false;
+      if (!mounted) return;
+      PanelHistory.save(session);
+      _openReport();
+    });
+  }
+
+  void _openReport() => Get.to(
+    () => PanelReportView(session: session),
+    transition: Transition.rightToLeft,
+  );
+
   void _error(Object e) {
     Get.snackbar(
       'career_ai_failed_title'.tr,
@@ -107,6 +132,14 @@ class _ExpertPanelChatViewState extends State<ExpertPanelChatView> {
       lines.add('$who: ${m.text}');
     }
     return lines.join('\n\n');
+  }
+
+  Future<void> _goToDecision() async {
+    try {
+      await _c.goToDecision();
+    } catch (e) {
+      if (mounted) _error(e);
+    }
   }
 
   Future<void> _toggleMic() async {
@@ -146,11 +179,33 @@ class _ExpertPanelChatViewState extends State<ExpertPanelChatView> {
       );
       return;
     }
-    try {
-      await _c.requestEnd();
-    } catch (e) {
-      if (mounted) _error(e);
-    }
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'panel_end_title'.tr,
+          style: _t(16, AppColors.titleDark, w: FontWeight.w800),
+        ),
+        content: Text(
+          'panel_end_message'.tr,
+          style: _t(13, AppColors.textGrey, h: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('panel_keep_chatting'.tr),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('panel_end_confirm'.tr),
+          ),
+        ],
+      ),
+    );
+    // Ending needs no model call: the report page opens as soon as it is set.
+    if (ok == true && mounted) await _c.endNow();
   }
 
   @override
@@ -223,7 +278,10 @@ class _ExpertPanelChatViewState extends State<ExpertPanelChatView> {
                   ),
                   Obx(
                     () => _c.over.value
-                        ? const SizedBox.shrink()
+                        ? OutlinedButton(
+                            onPressed: _openReport,
+                            child: Text('panel_report_btn'.tr),
+                          )
                         : OutlinedButton(
                             onPressed: _end,
                             style: OutlinedButton.styleFrom(
@@ -282,6 +340,30 @@ class _ExpertPanelChatViewState extends State<ExpertPanelChatView> {
                 );
               }),
             ),
+            // Pitch: skip the remaining questions and hear the decisions.
+            Obx(() {
+              session
+                  .messages
+                  .length; // rebuild when the stage may have changed
+              final show =
+                  session.canGoToDecision &&
+                  !_c.thinking.value &&
+                  !_c.over.value;
+              return show
+                  ? Container(
+                      color: Colors.white,
+                      alignment: AlignmentDirectional.centerEnd,
+                      padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+                      child: TextButton(
+                        onPressed: _goToDecision,
+                        child: Text(
+                          'panel_go_to_decision'.tr,
+                          style: _t(13, _blue, w: FontWeight.w800),
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink();
+            }),
             Container(
               color: Colors.white,
               padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),

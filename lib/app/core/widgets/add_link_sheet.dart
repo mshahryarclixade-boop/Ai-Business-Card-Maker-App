@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../../core/translations/tr_extension.dart';
 
+/// What to show for the platform: only the generic "Link" is translated
+/// (the others are brand names).
+String socialPlatformLabel(SocialPlatform p) =>
+    p.name == 'Link' ? 'social_platform_link'.tr : p.name;
+
 class SocialPlatform {
   final String name;
   final String imagePath;
@@ -140,7 +145,7 @@ class _PlatformPickerSheet extends StatelessWidget {
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              p.name,
+                              socialPlatformLabel(p),
                               textAlign: TextAlign.center,
                               style: const TextStyle(fontSize: 11),
                             ),
@@ -204,7 +209,7 @@ class _LinkUrlSheetState extends State<_LinkUrlSheet> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  widget.platform.name,
+                  socialPlatformLabel(widget.platform),
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ],

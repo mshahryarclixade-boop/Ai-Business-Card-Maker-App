@@ -1,3 +1,4 @@
+import '../utils/ai_usage_log.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -55,6 +56,7 @@ class GeminiCardService {
           .timeout(const Duration(seconds: 190));
 
       final data = result.data;
+      logAiUsage('card image', data is Map ? data['_usage'] : null);
       final b64 = data is Map ? data['imageBase64'] : null;
 
       if (b64 is! String || b64.isEmpty) {

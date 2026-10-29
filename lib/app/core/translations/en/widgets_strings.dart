@@ -18,4 +18,5 @@ const Map<String, String> widgetsStrings = {
   'side_switcher_front': 'Front',
   'rate_app_no': 'No',
   'app_dialog_barrier_label': 'dialog',
+  'social_platform_link': 'Link',
 };

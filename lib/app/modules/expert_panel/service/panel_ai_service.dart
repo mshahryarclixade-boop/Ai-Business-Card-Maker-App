@@ -42,7 +42,14 @@ abstract class PanelAi {
   /// With no messages yet: Clixa's welcome. With the user's message last: the
   /// Safety check, the Director and the first line it picked. After a panel
   /// line: the next line. Call again while [PanelTurn.then] is `continue`.
-  Future<PanelTurn> turn(PanelSession session);
+  ///
+  /// [decide] is the Pitch "Go to decision" button: no new message, the
+  /// panel moves on to the Deal.
+  Future<PanelTurn> turn(PanelSession session, {bool decide = false});
+
+  /// Pitch: the scored report. Consultation: the action plan. A map whose
+  /// `status` is complete, partial, ended_early, paused or too_short.
+  Future<Map<String, dynamic>> report(PanelSession session);
 }
 
 /// Asks the existing `generateCard` Cloud Function (`panelTurn`). The Gemini
@@ -58,10 +65,10 @@ class CloudPanelAi extends PanelAi {
   }
 
   @override
-  Future<PanelTurn> turn(PanelSession session) async {
+  Future<PanelTurn> turn(PanelSession session, {bool decide = false}) async {
     final r = await _api.call(
       'panelTurn',
-      session.toRequest(userName: _userName),
+      session.toRequest(userName: _userName, action: decide ? 'decide' : null),
     );
     final speaker = r['speaker'];
     final state = r['state'];
@@ -73,5 +80,19 @@ class CloudPanelAi extends PanelAi {
       userText: r['userText'] is String ? r['userText'] as String : null,
       move: r['move'] is String ? r['move'] as String : null,
     );
+  }
+
+  @override
+  Future<Map<String, dynamic>> report(PanelSession session) async {
+    final r = await _api.call(
+      'panelReport',
+      session.toRequest(userName: _userName),
+      // A report is one long answer (and may retry once on the server).
+      timeout: const Duration(seconds: 150),
+    );
+    if (r['status'] is! String) {
+      throw const GeminiException('The report could not be read.');
+    }
+    return r;
   }
 }
