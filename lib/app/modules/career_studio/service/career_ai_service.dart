@@ -62,15 +62,24 @@ abstract class CareerAi {
   });
 }
 
-/// Talks to the existing `generateCard` Cloud Function (a request with a
-/// `task` is a text task); the key and model stay on the server.
+/// Talks to the text AI Cloud Functions (one per feature, see [functionFor]);
+/// the key and model stay on the server.
 class CloudCareerAi extends CareerAi {
   late final FirebaseFunctions _functions = FirebaseFunctions.instanceFor(
     region: 'us-central1',
   );
 
-  /// Calls a text task of the existing `generateCard` function (also used by
-  /// Clixa).
+  /// The Cloud Function that serves [task]. Each feature has its own, so
+  /// it scales and shows up in billing and logs separately.
+  static String functionFor(String task) => switch (task) {
+    'buildProfile' || 'rewrite' => 'profileBuilder',
+    'analyze' || 'fixSuggestion' => 'profileOptimizer',
+    'coachReply' => 'businessCoach',
+    'panelTurn' => 'expertPanel',
+    _ => 'generateCard', // any older task still served there
+  };
+
+  /// Calls a text task (Career Studio, Clixa, the Expert Panel).
   Future<Map<String, dynamic>> call(
     String task,
     Map<String, dynamic> data,
@@ -78,7 +87,7 @@ class CloudCareerAi extends CareerAi {
     try {
       final result = await _functions
           .httpsCallable(
-            'generateCard',
+            functionFor(task),
             options: HttpsCallableOptions(
               timeout: const Duration(seconds: 90),
             ),
@@ -97,10 +106,10 @@ class CloudCareerAi extends CareerAi {
     } on GeminiException {
       rethrow;
     } on FirebaseFunctionsException catch (e) {
-      debugPrint('generateCard/$task: ${e.code} ${e.message}');
+      debugPrint('${functionFor(task)}/$task: ${e.code} ${e.message}');
       throw GeminiException(_messageFor(e.code));
     } catch (e) {
-      debugPrint('generateCard/$task: $e');
+      debugPrint('${functionFor(task)}/$task: $e');
       throw GeminiException('gemini_error_unreachable'.tr);
     }
   }

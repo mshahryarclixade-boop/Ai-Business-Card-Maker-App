@@ -43,7 +43,8 @@ function wrapGeminiError(e) {
 
 // generateCard: { prompt, referenceBase64, referenceMime, logoBase64?, logoMime? }
 // returns { imageBase64 }
-// With a `task` field it runs a Career Studio text task instead (runCareerTask).
+// A `task` field still runs a text task here, for app builds from before the
+// text features got their own functions (see below); new builds never send it.
 exports.generateCard = onCall(OPTIONS, async (request) => {
   const d = request.data || {};
   if (d.task) return runCareerTask(d);
@@ -297,9 +298,10 @@ const TASKS = {
   },
 };
 
-async function runCareerTask(d) {
+async function runCareerTask(d, allowed = Object.keys(TASKS)) {
   const task = requireString(d.task, "task");
-  const handler = Object.prototype.hasOwnProperty.call(TASKS, task) ? TASKS[task] : null;
+  const handler =
+    allowed.includes(task) && Object.prototype.hasOwnProperty.call(TASKS, task) ? TASKS[task] : null;
   if (!handler) throw new HttpsError("invalid-argument", "Unknown task.");
   const lang = clip(d.language, 40) || "English";
   try {
@@ -308,3 +310,29 @@ async function runCareerTask(d) {
     throw wrapGeminiError(e);
   }
 }
+
+// ---------------------------------------------------------------------------
+// One function per text feature: each scales, logs and bills on its own, and
+// text calls don't pay for the 1 GiB the image function needs.
+// Same request as before: { task, language?, ...task fields }.
+
+const TEXT_OPTIONS = { ...OPTIONS, memory: "256MiB", timeoutSeconds: 60 };
+
+const textFunction = (tasks, options = TEXT_OPTIONS) =>
+  onCall(options, (request) => runCareerTask(request.data || {}, tasks));
+
+// Career Studio: Profile Builder.
+exports.profileBuilder = textFunction(["buildProfile", "rewrite"]);
+
+// Career Studio: Profile Optimizer (reads PDFs and screenshots, so more room).
+exports.profileOptimizer = textFunction(["analyze", "fixSuggestion"], {
+  ...TEXT_OPTIONS,
+  memory: "512MiB",
+  timeoutSeconds: 120,
+});
+
+// Clixa, the AI business coach / analyst.
+exports.businessCoach = textFunction(["coachReply"]);
+
+// The Expert Panel.
+exports.expertPanel = textFunction(["panelTurn"]);
