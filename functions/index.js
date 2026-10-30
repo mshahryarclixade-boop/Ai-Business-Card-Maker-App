@@ -289,19 +289,37 @@ const TASKS = {
       if (im?.base64) parts.push(inlinePart(im.base64, clip(im.mime, 40) || "image/jpeg"));
     }
     const text = clip(d.text, 8000);
-    if (!parts.length && !text) throw new HttpsError("invalid-argument", "No profile given.");
+    // What arrived, so a failing upload can be told apart from a rejected one.
+    console.log("analyze input", {
+      textChars: text.length,
+      pdfKB: d.pdf?.base64 ? Math.round((d.pdf.base64.length * 3) / 4 / 1024) : 0,
+      images: (Array.isArray(d.images) ? d.images : []).map((im) => ({
+        mime: clip(im?.mime, 40) || "(none)",
+        kb: im?.base64 ? Math.round((im.base64.length * 3) / 4 / 1024) : 0,
+      })),
+    });
+    if (!parts.length && !text) {
+      console.warn("analyze rejected: no profile given");
+      throw new HttpsError("invalid-argument", "No profile given.");
+    }
     const out = await generateJson(
       "You audit LinkedIn profiles. Judge ONLY what is in the profile below (text/files). " +
-        `Return JSON: {"isProfile": true, "scores": {${PART_IDS.map((p) => `"${p}": 0-100`).join(", ")}}, ` +
+        `Return JSON: {"isProfile": true, "reason": "", "scores": {${PART_IDS.map((p) => `"${p}": 0-100`).join(", ")}}, ` +
         `"current": {${PART_IDS.map((p) => `"${p}": ""`).join(", ")}}}.\n` +
         "scores: how strong each part is (0 = missing/poor, 100 = excellent). photo = profile photo and banner. " +
         "featured = the Featured section. link = a clean custom profile URL.\n" +
         `current: a short excerpt (max 140 characters, in the profile's own words) of what the profile has for that part, or "" if it is missing. ` +
-        "Set isProfile to false if this is not a LinkedIn-style profile.\n" +
+        "The input may be a LinkedIn profile (screenshots, even partial ones, or LinkedIn's \"Save to PDF\" export), " +
+        "a CV / resume, or pasted profile text: all of these count as a profile — score whatever parts are there. " +
+        "Set isProfile to false ONLY if there is no professional profile content at all (e.g. a random photo, a receipt), " +
+        'and then give a few words why in "reason".\n' +
         (text ? `\nProfile text:\n${text}` : ""),
       parts,
     );
-    if (out.isProfile === false) throw new HttpsError("invalid-argument", "Not a profile.");
+    if (out.isProfile === false) {
+      console.warn("analyze rejected: not a profile", { reason: clip(out.reason, 200) });
+      throw new HttpsError("invalid-argument", "Not a profile.");
+    }
     const scores = {};
     const current = {};
     for (const p of PART_IDS) {

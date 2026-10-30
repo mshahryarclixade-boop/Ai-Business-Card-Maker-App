@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show compute, debugPrint;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 
 import '../service/career_ai_service.dart';
@@ -90,12 +93,22 @@ class ProfileOptimizerController extends GetxController {
         var total = 0;
         final out = <({String base64, String mime})>[];
         for (final x in images) {
-          final bytes = await x.readAsBytes();
+          // Phone screenshots are full-size PNGs (2–5 MB each); shrunk to a
+          // readable JPEG they are a few hundred KB, so all 5 fit.
+          final original = await x.readAsBytes();
+          final small = await compute(_shrinkForUpload, original);
+          final bytes = small ?? original;
           total += bytes.length;
+          debugPrint(
+            'OPTIMIZER image: ${original.length ~/ 1024} KB -> '
+            '${bytes.length ~/ 1024} KB (total ${total ~/ 1024} KB)',
+          );
           if (total > _maxUploadBytes) {
             throw GeminiException('career_ai_error_rejected'.tr);
           }
-          final mime = x.path.toLowerCase().endsWith('.png')
+          final mime = small != null
+              ? 'image/jpeg'
+              : x.path.toLowerCase().endsWith('.png')
               ? 'image/png'
               : 'image/jpeg';
           out.add((base64: base64Encode(bytes), mime: mime));
@@ -122,4 +135,15 @@ class ProfileOptimizerController extends GetxController {
     sections.dispose();
     super.onClose();
   }
+}
+
+/// A screenshot scaled to at most 1600 px wide as an 80 % JPEG — still easy
+/// to read for the AI. Null if it can't be decoded (then sent as it is).
+Uint8List? _shrinkForUpload(Uint8List bytes) {
+  final decoded = img.decodeImage(bytes);
+  if (decoded == null) return null;
+  final resized = decoded.width > 1600
+      ? img.copyResize(decoded, width: 1600)
+      : decoded;
+  return Uint8List.fromList(img.encodeJpg(resized, quality: 80));
 }
