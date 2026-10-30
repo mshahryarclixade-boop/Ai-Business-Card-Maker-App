@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -44,14 +45,14 @@ class CustomLinkChip extends StatelessWidget {
               ),
             ),
           ),
-          GestureDetector(
+          TapTarget(child: GestureDetector(
             onTap: onRemove,
             child: const Icon(
               Icons.close,
               size: 16,
               color: AppColors.contactsSubtitleGrey,
             ),
-          ),
+          )),
         ],
       ),
     );

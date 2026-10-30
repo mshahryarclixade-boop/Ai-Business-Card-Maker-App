@@ -27,7 +27,7 @@ class AiToolkitSection extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontFamily: AppTextStyles.fontFamily,
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
             color: AppColors.titleDark,
           ),

@@ -1,10 +1,12 @@
 import 'dart:math' as math;
 
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/services/store_links.dart';
 import '../../../core/utils/legal_links.dart';
 import '../../paywall/controller/subscription_controller.dart';
 import '../../paywall/view/paywall_screen.dart';
@@ -32,7 +34,7 @@ class SettingsView extends StatelessWidget {
                 children: [
                   Align(
                     alignment: AlignmentDirectional.centerStart,
-                    child: IconButton(
+                    child: TapTarget(child: IconButton(
                       onPressed: () => Navigator.of(context).pop(),
                       icon: const Icon(
                         Icons.arrow_back_ios_new_rounded,
@@ -41,7 +43,7 @@ class SettingsView extends StatelessWidget {
                       ),
                       padding: const EdgeInsetsDirectional.only(start: 12),
                       constraints: const BoxConstraints(),
-                    ),
+                    )),
                   ),
                   Text(
                     'settings_title'.tr,
@@ -96,12 +98,17 @@ class SettingsView extends StatelessWidget {
                         ),
                         const SizedBox(height: 7),
 
-                        const _SettingsTile(icon: Icons.star, title: 'settings_rate_us'),
+                        _SettingsTile(
+                          icon: Icons.star,
+                          title: 'settings_rate_us',
+                          onTap: StoreLinks.rateApp,
+                        ),
                         const SizedBox(height: 7),
 
-                        const _SettingsTile(
+                        _SettingsTile(
                           icon: Icons.share,
                           title: 'settings_share_app',
+                          onTap: () => StoreLinks.shareApp(context),
                         ),
                         const SizedBox(height: 7),
 
@@ -476,9 +483,15 @@ class _SettingsTile extends StatelessWidget {
             ),
             if (value != null) ...[
               const SizedBox(width: 8),
-              Flexible(
+              // Not a Flexible: next to the Expanded title it would take half
+              // of the free space and leave the value floating mid-row.
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.sizeOf(context).width * 0.4,
+                ),
                 child: Text(
                   value!,
+                  textAlign: TextAlign.end,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(

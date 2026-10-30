@@ -72,6 +72,10 @@ void main() {
     t.view.physicalSize = const Size(390 * 3, 844 * 3);
     t.view.devicePixelRatio = 3;
     addTearDown(t.view.reset);
+    // The crown wiggles forever (as on Clixa); reduce-motion keeps it still so
+    // pumpAndSettle can finish.
+    t.platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(t.platformDispatcher.clearAccessibilityFeaturesTestValue);
     await t.pumpWidget(
       GetMaterialApp(
         home: Scaffold(
@@ -118,6 +122,9 @@ void main() {
 
   testWidgets('screens slide in from the right', (t) async {
     await open(t);
+    // Transitions are skipped under reduce-motion: turn it off here, and settle with
+    // fixed pumps because the intro's crown keeps wiggling.
+    t.platformDispatcher.clearAccessibilityFeaturesTestValue();
     expect(t.getTopLeft(find.byType(EmailSignatureIntroView)).dx, 0);
     await t.tap(find.text('Create my signature'));
     await t.pump();
@@ -127,7 +134,7 @@ void main() {
       greaterThan(0),
       reason: 'editor slides in',
     );
-    await t.pumpAndSettle();
+    await t.pump(const Duration(seconds: 1));
     await t.tap(find.text('Save and add to email'));
     await t.pump();
     await t.pump(const Duration(milliseconds: 80));
@@ -136,7 +143,7 @@ void main() {
       greaterThan(0),
       reason: 'saved screen slides in',
     );
-    await t.pumpAndSettle();
+    await t.pump(const Duration(seconds: 1));
     await flush(t);
   });
 

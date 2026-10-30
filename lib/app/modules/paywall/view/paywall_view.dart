@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -95,7 +96,7 @@ class _CloseButton extends StatelessWidget {
     return Positioned(
       top: 16,
       right: 24,
-      child: GestureDetector(
+      child: TapTarget(child: GestureDetector(
         onTap: () => PaywallActions.exit(),
         child: Container(
           width: 26,
@@ -110,7 +111,7 @@ class _CloseButton extends StatelessWidget {
             color: Color(0xFF292938),
           ),
         ),
-      ),
+      )),
     );
   }
 }

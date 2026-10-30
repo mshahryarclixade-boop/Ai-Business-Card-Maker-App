@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -332,7 +333,7 @@ class _CreateProfileViewState extends State<CreateProfileView> {
             ),
           ),
           const SizedBox(width: 8),
-          GestureDetector(
+          TapTarget(child: GestureDetector(
             onTap: () => _removeSocialLinkField(i),
             child: Container(
               width: 34,
@@ -348,7 +349,7 @@ class _CreateProfileViewState extends State<CreateProfileView> {
                 color: Colors.redAccent,
               ),
             ),
-          ),
+          )),
         ],
       ),
     );

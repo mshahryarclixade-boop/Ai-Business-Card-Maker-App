@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 import '../../../core/translations/tr_extension.dart';
@@ -196,7 +197,7 @@ class _RoundDarkButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // _RoundDarkButton.build (check / eyedropper): the circle stays 26px,
-    return GestureDetector(
+    return TapTarget(child: GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
@@ -212,7 +213,7 @@ class _RoundDarkButton extends StatelessWidget {
           child: Icon(icon, size: 14, color: Colors.white),
         ),
       ),
-    );
+    ));
   }
 }
 

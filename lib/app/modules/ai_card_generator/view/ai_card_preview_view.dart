@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class AiCardPreviewView extends StatelessWidget {
               ),
               alignment: Alignment.center,
               child: Obx(
-                () => IconButton(
+                () => TapTarget(child: IconButton(
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   icon: controller.isSharing.value
@@ -60,7 +61,7 @@ class AiCardPreviewView extends StatelessWidget {
                           controller.generatedCard.value == null)
                       ? null
                       : () => controller.shareCard(),
-                ),
+                )),
               ),
             ),
           ),

@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -117,7 +118,7 @@ class _ProfileEditorViewState extends State<ProfileEditorView> {
                   children: [
                     Align(
                       alignment: AlignmentDirectional.centerStart,
-                      child: IconButton(
+                      child: TapTarget(child: IconButton(
                         onPressed: () => Navigator.of(context).pop(),
                         icon: const Icon(
                           Icons.arrow_back_ios_new_rounded,
@@ -126,7 +127,7 @@ class _ProfileEditorViewState extends State<ProfileEditorView> {
                         ),
                         padding: const EdgeInsetsDirectional.only(start: 12),
                         constraints: const BoxConstraints(),
-                      ),
+                      )),
                     ),
                     Text(
                       (widget.editId == null

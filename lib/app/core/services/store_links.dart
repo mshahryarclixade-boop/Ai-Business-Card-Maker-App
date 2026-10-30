@@ -1,11 +1,8 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
-import 'package:http/http.dart' as http;
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -14,33 +11,41 @@ import '../translations/tr_extension.dart';
 
 /// This app's Play Store / App Store listing: opened for updates and ratings,
 /// and shared by "Share App".
+///
+/// The listing addresses are NOT guessed: the app is not published yet, so a
+/// link built from the package or bundle id would lead nowhere. Set them when
+/// the listings exist, at build time:
+///
+///   flutter run --dart-define=PLAY_STORE_URL=https://play.google.com/store/apps/details?id=...
+///               --dart-define=APP_STORE_URL=https://apps.apple.com/app/id...
+///
+/// Without them, Rate App says the store page is not available yet and Share
+/// App shares the plain invitation text.
 abstract final class StoreLinks {
-  /// The listing page, or null when it can't be determined (iOS before the
-  /// app is live in the App Store, or offline).
-  ///
-  /// Android: the https Play link (opens the Play Store app directly; a
-  /// market:// link can show an app chooser when several stores exist).
-  /// iOS: found by bundle id through the iTunes lookup, so no numeric Apple
-  /// id has to be hard-coded.
-  static Future<Uri?> listingUri() async {
-    try {
-      final id = (await PackageInfo.fromPlatform()).packageName;
-      if (Platform.isAndroid) {
-        return Uri.parse('https://play.google.com/store/apps/details?id=$id');
-      }
-      if (Platform.isIOS) {
-        final res = await http
-            .get(Uri.parse('https://itunes.apple.com/lookup?bundleId=$id'))
-            .timeout(const Duration(seconds: 8));
-        final results = (jsonDecode(res.body)['results'] as List?) ?? const [];
-        final url = results.isEmpty ? null : results.first['trackViewUrl'];
-        return url is String ? Uri.parse(url) : null;
-      }
-    } catch (e) {
-      log('Could not resolve store listing: $e', name: 'StoreLinks');
-    }
-    return null;
+  static const String playStoreUrl = String.fromEnvironment('PLAY_STORE_URL');
+  static const String appStoreUrl = String.fromEnvironment('APP_STORE_URL');
+
+  /// The configured listing for this platform, or null when there is none
+  /// (not configured yet, an unsupported platform or an invalid address).
+  static Uri? get listing => parse(
+    Platform.isAndroid
+        ? playStoreUrl
+        : Platform.isIOS
+        ? appStoreUrl
+        : '',
+  );
+
+  /// [raw] as an http(s) address, or null when it is empty or not one.
+  static Uri? parse(String raw) {
+    final t = raw.trim();
+    if (t.isEmpty) return null;
+    final u = Uri.tryParse(t);
+    return u != null && (u.scheme == 'https' || u.scheme == 'http') && u.host.isNotEmpty
+        ? u
+        : null;
   }
+
+  static Future<Uri?> listingUri() async => listing;
 
   /// Opens the listing; with [review] it opens the App Store's "write a
   /// review" page on iOS (Android's listing has the rating box on top).
@@ -56,13 +61,6 @@ abstract final class StoreLinks {
     try {
       if (await launchUrl(uri, mode: LaunchMode.externalApplication)) {
         return true;
-      }
-      if (Platform.isAndroid) {
-        final id = (await PackageInfo.fromPlatform()).packageName;
-        return launchUrl(
-          Uri.parse('market://details?id=$id'),
-          mode: LaunchMode.externalApplication,
-        );
       }
     } catch (e) {
       log('Could not open store: $e', name: 'StoreLinks');

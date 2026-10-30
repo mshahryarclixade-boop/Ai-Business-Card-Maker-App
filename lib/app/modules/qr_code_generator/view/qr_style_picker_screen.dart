@@ -1,3 +1,4 @@
+import '../../career_studio/widgets/career_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -78,139 +79,137 @@ class _QrStylePickerScreenState extends State<QrStylePickerScreen> {
     final data = buildVCard(widget.profile);
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.titleDark),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          'qr_style_title'.tr,
-          style: TextStyle(
-            fontFamily: AppTextStyles.fontFamily,
-            fontSize: 19,
-            fontWeight: FontWeight.w700,
-            color: AppColors.titleDark,
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            CareerAppBar(title: 'qr_style_title'.tr),
+            Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(28),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3F3D9E),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
-                            child: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 180),
-                              child: StyledQr(
-                                key: ValueKey(_style.id),
-                                data: data,
-                                style: _style,
-                                size: 200,
-                                padding: 10,
-                              ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(28),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF3F3D9E),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(6),
+                                    child: AnimatedSwitcher(
+                                      duration: const Duration(
+                                        milliseconds: 180,
+                                      ),
+                                      child: StyledQr(
+                                        key: ValueKey(_style.id),
+                                        data: data,
+                                        style: _style,
+                                        size: 200,
+                                        padding: 10,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 14),
+                                Text(
+                                  widget.profile.fullName,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                                if (widget.profile.companyName.isNotEmpty)
+                                  Text(
+                                    widget.profile.companyName,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 14),
-                        Text(
-                          widget.profile.fullName,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 17,
-                          ),
-                        ),
-                        if (widget.profile.companyName.isNotEmpty)
+                          const SizedBox(height: 20),
                           Text(
-                            widget.profile.companyName,
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 13,
+                            'qr_style_subtitle'.tr,
+                            style: TextStyle(
+                              fontFamily: AppTextStyles.fontFamily,
+                              fontSize: 14,
+                              color: AppColors.textSubtitle,
                             ),
                           ),
-                      ],
+                          const SizedBox(height: 12),
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 12,
+                            children: [
+                              for (final s in QrStyles.all)
+                                _StyleTile(
+                                  style: s,
+                                  data: data,
+                                  selected: s.id == _style.id,
+                                  onTap: () => setState(() => _style = s),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'qr_style_subtitle'.tr,
-                    style: TextStyle(
-                      fontFamily: AppTextStyles.fontFamily,
-                      fontSize: 14,
-                      color: AppColors.textSubtitle,
+                  Padding(
+                    // On a tablet the button is lifted clear of the bottom edge (it
+                    // was half cut off there); phones keep the original spacing.
+                    padding: EdgeInsets.fromLTRB(
+                      24,
+                      8,
+                      24,
+                      MediaQuery.sizeOf(context).shortestSide >= 600
+                          ? 15 + MediaQuery.paddingOf(context).bottom
+                          : 20,
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    children: [
-                      for (final s in QrStyles.all)
-                        _StyleTile(
-                          style: s,
-                          data: data,
-                          selected: s.id == _style.id,
-                          onTap: () => setState(() => _style = s),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: _save,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
-                    ],
+                        child: Text(
+                          'qr_style_save'.tr,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
-          Padding(
-            // On a tablet the button is lifted clear of the bottom edge (it
-            // was half cut off there); phones keep the original spacing.
-            padding: EdgeInsets.fromLTRB(
-              24,
-              8,
-              24,
-              MediaQuery.sizeOf(context).shortestSide >= 600
-                  ? 15 + MediaQuery.paddingOf(context).bottom
-                  : 20,
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: _save,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text('qr_style_save'.tr, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

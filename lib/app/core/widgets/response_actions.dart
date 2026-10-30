@@ -1,3 +1,4 @@
+import 'tap_target.dart';
 import 'dart:async';
 import 'dart:developer';
 
@@ -130,7 +131,7 @@ class _ActionIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Tooltip(
     message: label,
-    child: InkResponse(
+    child: TapTarget(child: InkResponse(
       onTap: onTap,
       radius: 20,
       child: Padding(
@@ -141,6 +142,6 @@ class _ActionIcon extends StatelessWidget {
           color: active ? AppColors.onboardingBtnEnd : AppColors.textGrey,
         ),
       ),
-    ),
+    )),
   );
 }

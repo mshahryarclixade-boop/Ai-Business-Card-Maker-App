@@ -571,7 +571,7 @@ function create({ generateJson, generateText, HttpsError, log = console }) {
         }))
         .filter((x) => x.step)
         .slice(0, 5);
-      if (steps.length < 3) return null;
+      if (steps.length < 2) return null; // the prompt asks for 3–5; 2 is still a usable plan
       steps[0].timeframe = "this week"; // the first step must be doable within 7 days
       const used = new Set();
       const insights = (Array.isArray(c?.key_insights) ? c.key_insights : [])

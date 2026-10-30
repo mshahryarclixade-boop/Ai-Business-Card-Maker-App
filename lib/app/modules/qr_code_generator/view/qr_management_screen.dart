@@ -1,3 +1,4 @@
+import '../../career_studio/widgets/career_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -5,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/translations/tr_extension.dart';
 import '../../../core/widgets/app_dialog.dart';
+import '../../contacts/widgets/contacts_fab.dart';
 import '../model/qr_code_builder.dart';
 import '../model/qr_entry.dart';
 import '../service/qr_store.dart';
@@ -45,10 +47,15 @@ class QrManagementScreen extends StatelessWidget {
     transition: Transition.rightToLeft,
   );
 
-  void _open(QrEntry e) => Get.to(
-    () => QrPreviewScreen(profile: e.profileData, style: e.style),
-    transition: Transition.rightToLeft,
-  );
+  /// Preview: this saved code becomes the one Home and "Show QR Code" show,
+  /// and its own saved data and style are shown on the preview screen.
+  void _preview(QrEntry e) {
+    QrStore.select(e.id);
+    Get.to(
+      () => QrPreviewScreen(profile: e.profileData, style: e.style),
+      transition: Transition.rightToLeft,
+    );
+  }
 
   void _edit(QrEntry e) => Get.to(
     () => CustomQrCodeScreen(
@@ -98,78 +105,71 @@ class QrManagementScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.titleDark),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          'qr_manage_title'.tr,
-          style: TextStyle(
-            fontFamily: AppTextStyles.fontFamily,
-            fontSize: 19,
-            fontWeight: FontWeight.w700,
-            color: AppColors.titleDark,
-          ),
+      // The same button as on Contacts (shape, size, right and bottom spacing).
+      floatingActionButton: Tooltip(
+        message: 'qr_manage_new'.tr,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 108),
+          child: ContactsFab(onTap: _create),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _create,
-        tooltip: 'qr_manage_new'.tr,
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.add_rounded, size: 28),
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            CareerAppBar(title: 'qr_manage_title'.tr),
+            Expanded(
+              child: Obx(() {
+                final list = QrStore.entries.toList();
+                if (list.isEmpty) return const _Empty();
+                final wide = MediaQuery.sizeOf(context).width >= 600;
+                return GridView.builder(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 190),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: wide ? 3 : 2,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                    childAspectRatio: 0.82,
+                  ),
+                  itemCount: list.length,
+                  itemBuilder: (_, i) {
+                    final e = list[i];
+                    return _QrCard(
+                      entry: e,
+                      onPreview: () => _preview(e),
+                      onEdit: () => _edit(e),
+                      onDelete: () => _delete(context, e),
+                    );
+                  },
+                );
+              }),
+            ),
+          ],
+        ),
       ),
-      body: Obx(() {
-        final list = QrStore.entries.toList();
-        if (list.isEmpty) return const _Empty();
-        final wide = MediaQuery.sizeOf(context).width >= 600;
-        return GridView.builder(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 96),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: wide ? 3 : 2,
-            crossAxisSpacing: 14,
-            mainAxisSpacing: 14,
-            childAspectRatio: 0.82,
-          ),
-          itemCount: list.length,
-          itemBuilder: (_, i) {
-            final e = list[i];
-            return _QrCard(
-              entry: e,
-              onOpen: () => _open(e),
-              onEdit: () => _edit(e),
-              onDelete: () => _delete(context, e),
-            );
-          },
-        );
-      }),
     );
   }
 }
 
-enum _Action { open, edit, delete }
+enum _Action { preview, edit, delete }
 
 class _QrCard extends StatelessWidget {
   const _QrCard({
     required this.entry,
-    required this.onOpen,
+    required this.onPreview,
     required this.onEdit,
     required this.onDelete,
   });
 
   final QrEntry entry;
-  final VoidCallback onOpen;
+  final VoidCallback onPreview;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onOpen,
+      onTap: onPreview,
       child: Container(
         padding: const EdgeInsets.fromLTRB(12, 8, 4, 10),
         decoration: BoxDecoration(
@@ -199,14 +199,14 @@ class _QrCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 onSelected: (a) => switch (a) {
-                  _Action.open => onOpen(),
+                  _Action.preview => onPreview(),
                   _Action.edit => onEdit(),
                   _Action.delete => onDelete(),
                 },
                 itemBuilder: (_) => [
                   PopupMenuItem(
-                    value: _Action.open,
-                    child: Text('qr_manage_menu_open'.tr),
+                    value: _Action.preview,
+                    child: Text('qr_manage_menu_preview'.tr),
                   ),
                   PopupMenuItem(
                     value: _Action.edit,

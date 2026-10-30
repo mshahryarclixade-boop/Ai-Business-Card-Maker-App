@@ -112,10 +112,10 @@ class CloudCareerAi extends CareerAi {
       rethrow;
     } on FirebaseFunctionsException catch (e) {
       debugPrint('${functionFor(task)}/$task: ${e.code} ${e.message}');
+      if (e.code == 'invalid-argument' && e.message == 'Not a profile.') {
+        throw GeminiException('career_ai_error_not_profile'.tr);
+      }
       throw GeminiException(_messageFor(e.code));
-    } catch (e) {
-      debugPrint('${functionFor(task)}/$task: $e');
-      throw GeminiException('gemini_error_unreachable'.tr);
     }
   }
 

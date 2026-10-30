@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
@@ -31,7 +32,7 @@ class RecentDesignCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return TapTarget(child: GestureDetector(
       onTap: onTap,
       onLongPress: onLongPress,
       child: AspectRatio(
@@ -96,6 +97,6 @@ class RecentDesignCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }

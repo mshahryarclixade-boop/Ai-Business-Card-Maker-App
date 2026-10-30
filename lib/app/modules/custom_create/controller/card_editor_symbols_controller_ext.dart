@@ -40,6 +40,9 @@ extension CardEditorSymbolsX on CardEditorController {
   void _addSticker(IconAssetItem item, double size) {
     final icon = _toIconData(item);
     if (icon == null) return;
+    // Adding a sticker is an Undo step like adding text or a symbol: without
+    // it the first sticker (and every one added in a row) could not be undone.
+    recordHistory();
     final el = CardElement.sticker(
       id: _newId(),
       position: _centerSpawn(size),

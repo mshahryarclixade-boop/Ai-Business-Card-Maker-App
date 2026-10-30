@@ -39,6 +39,7 @@ const Map<String, String> profilesStrings = {
   'qr_manage_empty_message':
       'Create a QR code that shares your contact details in one scan.',
   'qr_manage_menu_open': 'Open',
+  'qr_manage_menu_preview': 'Preview',
   'qr_manage_menu_edit': 'Edit',
   'qr_manage_delete': 'Delete',
   'qr_manage_delete_title': 'Delete this QR code?',

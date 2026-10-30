@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -82,12 +83,12 @@ class CareerAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final back = !showLeading
         ? const SizedBox(width: 20)
-        : IconButton(
+        : TapTarget(child: IconButton(
       onPressed: onLeading ?? () => Navigator.of(context).maybePop(),
       icon: Icon(leadingIcon, size: 24, color: AppColors.titleDark),
       padding: const EdgeInsetsDirectional.only(start: 20),
       constraints: const BoxConstraints(),
-    );
+    ));
 
     if (titleInset > 0) {
       return SizedBox(

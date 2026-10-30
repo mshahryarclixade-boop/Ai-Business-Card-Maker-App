@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -67,7 +68,7 @@ class _TemplateListing extends StatelessWidget {
                 ),
                 Align(
                   alignment: AlignmentDirectional.centerEnd,
-                  child: GestureDetector(
+                  child: TapTarget(child: GestureDetector(
                     onTap: () {
                       openPaywall(source: 'templates', plans: true);
                     },
@@ -85,7 +86,7 @@ class _TemplateListing extends StatelessWidget {
                         color: Color(0xFFF5A623),
                       ),
                     ),
-                  ),
+                  )),
                 ),
               ],
             ),
@@ -253,10 +254,10 @@ class _TemplateDetailView extends StatelessWidget {
               children: [
                 Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: GestureDetector(
+                  child: TapTarget(child: GestureDetector(
                     onTap: controller.closeTemplateDetail,
                     child: const Icon(Icons.arrow_back, size: 22, color: AppColors.titleDark),
-                  ),
+                  )),
                 ),
                 Center(
                   child: Text(

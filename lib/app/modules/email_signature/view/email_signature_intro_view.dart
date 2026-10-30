@@ -1,5 +1,6 @@
+import '../../../core/widgets/crown_upgrade_button.dart';
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
@@ -58,22 +59,12 @@ class EmailSignatureIntroView extends StatelessWidget {
               trailing: Obx(
                 () => signatureIsPro()
                     ? const SizedBox.shrink()
-                    : GestureDetector(
+                    // The same crown as Clixa's (size, colours, wiggle).
+                    : CrownUpgradeButton(
+                        size: 40,
+                        iconSize: 22,
+                        borderRadius: 12,
                         onTap: () => showUpgradeSheet(context),
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryDark,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          alignment: Alignment.center,
-                          child: const FaIcon(
-                            FontAwesomeIcons.crown,
-                            size: 16,
-                            color: AppColors.crownGold,
-                          ),
-                        ),
                       ),
               ),
             ),

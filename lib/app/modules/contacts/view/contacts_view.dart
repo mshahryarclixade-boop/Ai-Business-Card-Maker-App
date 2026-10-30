@@ -1,3 +1,4 @@
+  import '../../career_studio/widgets/career_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -193,39 +194,17 @@ class _ContactsViewState extends State<ContactsView> {
     );
   }
 
+  /// The same app bar as Clixa's: this screen is a tab, so no back arrow.
   Widget _buildAppBar() {
-    return Padding(
-      // top padding matched to 12 so this header lines up with
-      // Templates' and Profile's headers (was 16 before).
-      padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-      child: SizedBox(
-        height: 36,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Center(
-              child: Text(
-                'contacts_title'.tr,
-                style: TextStyle(
-                  fontFamily: AppTextStyles.fontFamily,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.titleDark,
-                ),
-              ),
-            ),
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              // Same size and look as the Clixa AI screen's crown.
-              child: CrownUpgradeButton(
-                size: 40,
-                iconSize: 22,
-                borderRadius: 12,
-                onTap: _openPaywall,
-              ),
-            ),
-          ],
-        ),
+    return CareerAppBar(
+      title: 'contacts_title'.tr,
+      showLeading: false,
+      // Same size and look as the Clixa AI screen's crown.
+      trailing: CrownUpgradeButton(
+        size: 40,
+        iconSize: 22,
+        borderRadius: 12,
+        onTap: _openPaywall,
       ),
     );
   }

@@ -179,6 +179,10 @@ class CardEditorController extends GetxController {
     _syncFlags();
   }
 
+  /// Records the card as it is now as one Undo step. Call it right before a
+  /// change made outside this class (e.g. adding a sticker).
+  void recordHistory() => _pushUndo();
+
   void _syncFlags() {
     canUndo.value = _undoStack.isNotEmpty;
     canRedo.value = _redoStack.isNotEmpty;

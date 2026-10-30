@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
+import '../../../core/theme/card_shadow.dart';
 import 'create_first_card_section.dart';
 import '../../../core/services/recent_designs_service.dart';
 import '../../../core/theme/app_colors.dart';
@@ -57,24 +58,17 @@ class MyCardSection extends StatelessWidget {
 
       final cardTile = GestureDetector(
             onTap: preview == null ? editCard : null,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x1A000000),
-                    offset: Offset(0, 4),
-                    blurRadius: 16,
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 1,
-                  ),
+            // The shadow follows the card itself (as on the live templates),
+            // not the padded box around it, and is not clipped.
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 1),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(kCardPreviewRadius),
+                  boxShadow: kCardPreviewShadow,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(kCardPreviewRadius),
                   child: AspectRatio(
                     aspectRatio: liveData != null
                         ? previewAspect
@@ -403,7 +397,8 @@ class _QrPage extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              // Square-ish, like the card it sits next to (Home only).
+              borderRadius: BorderRadius.circular(2),
               boxShadow: const [
                 BoxShadow(
                   color: Color(0x1A000000),

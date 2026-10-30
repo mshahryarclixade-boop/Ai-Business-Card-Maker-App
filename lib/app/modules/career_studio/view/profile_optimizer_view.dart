@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -308,7 +309,7 @@ class _Thumb extends StatelessWidget {
           PositionedDirectional(
             top: -6,
             end: -6,
-            child: GestureDetector(
+            child: TapTarget(child: GestureDetector(
               onTap: onRemove,
               child: Container(
                 width: 20,
@@ -320,7 +321,7 @@ class _Thumb extends StatelessWidget {
                 ),
                 child: const Icon(Icons.close, size: 12, color: Colors.white),
               ),
-            ),
+            )),
           ),
         ],
       ),

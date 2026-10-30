@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../core/theme/app_colors.dart';
@@ -59,7 +60,7 @@ class TemplateCard extends StatelessWidget {
             PositionedDirectional(
               top: 8,
               end: 8,
-              child: GestureDetector(
+              child: TapTarget(child: GestureDetector(
                 onTap: onHeartTap,
                 child: Container(
                   padding: const EdgeInsets.all(6),
@@ -73,7 +74,7 @@ class TemplateCard extends StatelessWidget {
                     color: isSaved ? Colors.redAccent : AppColors.pillLabelGrey,
                   ),
                 ),
-              ),
+              )),
             ),
           ],
         ),

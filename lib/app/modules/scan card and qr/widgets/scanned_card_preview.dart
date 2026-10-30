@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -69,7 +70,7 @@ class ScannedCardPreview extends StatelessWidget {
                 ),
               ),
               if (onRescan != null)
-                GestureDetector(
+                TapTarget(child: GestureDetector(
                   onTap: onRescan,
                   child: Container(
                     padding: const EdgeInsets.all(7),
@@ -79,7 +80,7 @@ class ScannedCardPreview extends StatelessWidget {
                     ),
                     child: const Icon(Icons.replay, size: 15, color: AppColors.white),
                   ),
-                ),
+                )),
             ],
           ),
           if (details.isNotEmpty) ...[

@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -147,14 +148,14 @@ class _ProfileGeneratedViewState extends State<ProfileGeneratedView> {
               color: Colors.white,
               child: CareerAppBar(
                 title: 'career_generated_title'.tr,
-                trailing: GestureDetector(
+                trailing: TapTarget(child: GestureDetector(
                   onTap: careerComingSoon,
                   child: const Icon(
                     Icons.refresh_rounded,
                     size: 22,
                     color: AppColors.onboardingBtnEnd,
                   ),
-                ),
+                )),
               ),
             ),
             Expanded(

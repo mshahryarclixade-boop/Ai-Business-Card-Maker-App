@@ -36,7 +36,9 @@ void main() async {
 
   await FirebaseAppCheck.instance.activate(
     providerAndroid: const AndroidPlayIntegrityProvider(),
-    providerApple: const AppleAppAttestWithDeviceCheckFallbackProvider(),
+    providerApple: kDebugMode
+        ? const AppleDebugProvider()
+        : const AppleAppAttestWithDeviceCheckFallbackProvider(),
   );
 
   // Crashlytics: collect only in release builds.

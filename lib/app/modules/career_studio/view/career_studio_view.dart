@@ -144,9 +144,13 @@ class _CareerStudioViewState extends State<CareerStudioView> {
                 title: 'career_hub_title'.tr,
                 trailing: s.isPro
                     ? const _ProBadge()
+                    // Same crown, size and spacing as Clixa's app bar.
                     : CrownUpgradeButton(
-                  onTap: () => showUpgradeSheet(context),
-                ),
+                        size: 40,
+                        iconSize: 22,
+                        borderRadius: 12,
+                        onTap: () => showUpgradeSheet(context),
+                      ),
               ),
               Expanded(
                 child: SingleChildScrollView(

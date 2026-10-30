@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -593,7 +594,7 @@ class _ImageTile extends StatelessWidget {
               ),
             ),
             if (has)
-              IconButton(
+              TapTarget(child: IconButton(
                 tooltip: 'email_sig_remove_image'.tr,
                 onPressed: onRemove,
                 visualDensity: VisualDensity.compact,
@@ -604,7 +605,7 @@ class _ImageTile extends StatelessWidget {
                   size: 16,
                   color: AppColors.textGrey,
                 ),
-              ),
+              )),
           ],
         ),
       ),

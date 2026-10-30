@@ -1,3 +1,4 @@
+import 'tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -61,7 +62,7 @@ class _Arrow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return TapTarget(child: GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: enabled ? onTap : null,
       child: Padding(
@@ -72,6 +73,6 @@ class _Arrow extends StatelessWidget {
           color: AppColors.titleDark.withValues(alpha: enabled ? 1 : 0.3),
         ),
       ),
-    );
+    ));
   }
 }

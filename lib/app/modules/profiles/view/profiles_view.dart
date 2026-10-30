@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -96,7 +97,7 @@ class ProfilesView extends StatelessWidget {
                 children: [
                   Align(
                     alignment: AlignmentDirectional.centerStart,
-                    child: IconButton(
+                    child: TapTarget(child: IconButton(
                       onPressed: () => Navigator.of(context).pop(),
                       icon: const Icon(
                         Icons.arrow_back_ios_new_rounded,
@@ -105,7 +106,7 @@ class ProfilesView extends StatelessWidget {
                       ),
                       padding: const EdgeInsetsDirectional.only(start: 12),
                       constraints: const BoxConstraints(),
-                    ),
+                    )),
                   ),
                   Text(
                     'profiles_title'.tr,

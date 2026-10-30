@@ -277,7 +277,8 @@ void main() {
       // The ⋯ menu: Edit opens the form with this QR code's details.
       await t.tap(find.byIcon(Icons.more_horiz_rounded));
       await t.pumpAndSettle();
-      expect(find.text('Open'), findsOneWidget);
+      expect(find.text('Preview'), findsOneWidget);
+      expect(find.text('Open'), findsNothing);
       expect(find.text('Edit'), findsOneWidget);
       await t.tap(find.text('Edit'));
       await t.pump();

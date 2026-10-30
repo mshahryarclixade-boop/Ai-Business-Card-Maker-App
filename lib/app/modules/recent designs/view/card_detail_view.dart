@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -201,13 +202,13 @@ class _CircleBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return TapTarget(child: GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(8),
         child: const Icon(Icons.arrow_back,
             color: Colors.black, size: 20),
       ),
-    );
+    ));
   }
 }

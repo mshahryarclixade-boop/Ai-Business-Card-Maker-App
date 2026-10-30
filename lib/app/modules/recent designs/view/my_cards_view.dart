@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:ai_business_card_maker/app/modules/custom_create/controller/card_editor_controller.dart';
 import 'package:ai_business_card_maker/app/modules/custom_create/view/card_editor_view.dart';
 import 'package:flutter/material.dart';
@@ -50,18 +51,18 @@ class MyCardsView extends StatelessWidget {
                   ),
                   Align(
                     alignment: AlignmentDirectional.centerStart,
-                    child: GestureDetector(
+                    child: TapTarget(child: GestureDetector(
                       onTap: () => Get.back(),
                       child: const Icon(
                         Icons.arrow_back,
                         color: AppColors.textDark,
                         size: 20,
                       ),
-                    ),
+                    )),
                   ),
                   Align(
                     alignment: AlignmentDirectional.centerEnd,
-                    child: GestureDetector(
+                    child: TapTarget(child: GestureDetector(
                       onTap: () {
                         openPaywall(source: 'my_cards', plans: true);
                       },
@@ -79,7 +80,7 @@ class MyCardsView extends StatelessWidget {
                           color: AppColors.crownGold,
                         ),
                       ),
-                    ),
+                    )),
                   ),
                 ],
               ),

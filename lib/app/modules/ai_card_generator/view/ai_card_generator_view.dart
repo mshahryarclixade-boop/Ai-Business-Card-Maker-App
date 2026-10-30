@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -52,7 +53,7 @@ class AiCardGeneratorView extends StatelessWidget {
           actions: [
             Padding(
               padding: const EdgeInsetsDirectional.only(end: 16),
-              child: GestureDetector(
+              child: TapTarget(child: GestureDetector(
                 onTap: () {
                   openPaywall(source: 'ai_card_generator', plans: true);
                 },
@@ -70,7 +71,7 @@ class AiCardGeneratorView extends StatelessWidget {
                     color: Color(0xFFF5A623),
                   ),
                 ),
-              ),
+              )),
             ),
           ],
         ),
@@ -370,7 +371,7 @@ class _ReferenceImagePicker extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(6),
-                        child: GestureDetector(
+                        child: TapTarget(child: GestureDetector(
                           onTap: controller.clearReferenceImage,
                           child: Container(
                             width: 26,
@@ -386,7 +387,7 @@ class _ReferenceImagePicker extends StatelessWidget {
                               color: Colors.white,
                             ),
                           ),
-                        ),
+                        )),
                       ),
                     ],
                   ),
@@ -427,7 +428,7 @@ class _ReadyTemplateRow extends StatelessWidget {
               final id = entries[i].key;
               final imagePath = entries[i].value;
 
-              return GestureDetector(
+              return TapTarget(child: GestureDetector(
                 onTap: () => controller.selectReadyTemplate(id),
                 child: Obx(
                   () => Container(
@@ -460,7 +461,7 @@ class _ReadyTemplateRow extends StatelessWidget {
                     ),
                   ),
                 ),
-              );
+              ));
             },
           );
         },

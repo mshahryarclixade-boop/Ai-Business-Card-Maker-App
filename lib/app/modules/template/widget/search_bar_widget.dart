@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import '../../../core/theme/app_colors.dart';
@@ -26,14 +27,14 @@ class TemplateSearchBar extends StatelessWidget {
         ),
         child: Row(
           children: [
-            GestureDetector(
+            TapTarget(child: GestureDetector(
               onTap: controller.isSearching.value ? controller.exitSearch : null,
               child: Icon(
                 controller.isSearching.value ? Icons.arrow_back : Icons.search,
                 size: 20,
                 color: controller.isSearching.value ? AppColors.titleDark : AppColors.pillLabelGrey,
               ),
-            ),
+            )),
             const SizedBox(width: 10),
             Expanded(
               child: TextField(

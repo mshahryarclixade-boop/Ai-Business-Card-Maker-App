@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -128,7 +129,7 @@ class LogoPreviewCard extends StatelessWidget {
               ),
             ),
           ),
-          GestureDetector(
+          TapTarget(child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: onRemove,
             child: const Padding(
@@ -139,7 +140,7 @@ class LogoPreviewCard extends StatelessWidget {
                 color: AppColors.profileHintText,
               ),
             ),
-          ),
+          )),
         ],
       ),
     );

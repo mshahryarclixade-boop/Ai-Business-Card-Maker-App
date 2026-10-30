@@ -1042,3 +1042,90 @@ test("consultation: if the Director fails the first advisor answers", async () =
   await c.open();
   assert.equal((await c.say("question")).lines[0].speaker, "olivia");
 });
+
+// -------------------------------------------------- report robustness
+
+test("report: a Verdict with fewer than 3 points, or a numeric-string score, is still usable; a missing score is not", async () => {
+  const short = await pitchToQa({ verdict: () => ({ overall_score: "62", summary: "s", strengths: ["a"], risks: ["b", "c"], next_steps: ["Do x"], closing: "Done." }) });
+  await short.s.say("30 customers.");
+  await short.s.decide();
+  assert.equal(short.s.state.pitch.stage, "DONE");
+  assert.deepEqual([short.s.state.pitch.verdict.strengths.length, short.s.state.pitch.verdict.risks.length], [1, 2]);
+  const rep = await short.eng.report({ mode: "pitch", experts: short.s.experts, messages: short.s.messages, state: short.s.state }, "English");
+  assert.equal(rep.status, "complete");
+  assert.equal(rep.overall_score, 62);
+  for (const bad of [null, undefined, "", "abc"]) {
+    const t = await pitchToQa({ verdict: () => ({ overall_score: bad, summary: "s", strengths: ["a"], risks: ["b"], next_steps: ["c"], closing: "x" }) });
+    await t.s.say("30 customers.");
+    const r = await t.s.decide();
+    assert.equal(r.lines.at(-1).note, "pitch_unavailable", `overall_score=${bad}`);
+    assert.equal(t.s.state.pitch.verdict, null);
+  }
+});
+
+test("report: a decision with a null or missing score is rejected, not read as 0", async () => {
+  const bad = build({ deal: (ids) => ({ decisions: ids.map((id) => ({ expert: id, decision: "IN", score: null, reason: "r" })) }) });
+  const s = new Session(bad.eng, { mode: "pitch" });
+  await s.open();
+  await s.say("full pitch details here");
+  const r = await s.decide();
+  assert.equal(r.lines.at(-1).note, "pitch_unavailable");
+  assert.equal(s.state.pitch.decisions, null);
+});
+
+test("report: every edge input ends in a report, a too_short note or a clear error, never a crash", async () => {
+  const { eng } = build({ report: (p) => ({ status: "complete", title: "t", cases: [{ business: "b", situation: "s", key_insights: [], action_plan: [{ step: "a" }, { step: "b" }], metrics_to_watch: [], open_questions: [] }], professional_help: [] }) });
+  const ids = ["dave", "olivia", "john", "marcus", "sara"];
+  const ok = async (d) => { try { return (await eng.report(d, "English")).status; } catch (e) { return e.code; } };
+  assert.equal(await ok({ mode: "pitch", experts: ids, messages: [], state: null }), "too_short");
+  assert.equal(await ok({ mode: "pitch", experts: ids, messages: [{ text: 5 }, null, { speaker: "x", text: "y" }], state: "junk" }), "too_short");
+  assert.equal(await ok({ mode: "consultation", experts: ids, messages: [], state: { realTurns: 1 } }), "too_short");
+  assert.equal(await ok({ mode: "consultation", experts: ids, messages: [{ speaker: null, text: "a" }], state: { realTurns: 3, ended: "user_ended" } }), "complete", "a plan with 2 steps is usable");
+  assert.equal(await ok({ mode: "pitch", experts: [], messages: [], state: {} }), "invalid-argument");
+  assert.equal(await ok({ mode: "pitch", experts: ids, messages: [], state: { ended: "conduct" } }), "ended_early");
+  assert.equal(await ok({ mode: "pitch", experts: ids, messages: [], state: { crisis: true } }), "paused");
+});
+
+test("pitch Opening accepts the common alternative shapes a model may return (keys, wrapper, inline question)", async () => {
+  const shapes = {
+    "other key names": (ids) => ({ reactions: ids.map((id) => ({ investor: id[0].toUpperCase() + id.slice(1), response: `R ${id}.`, follow_up: `Q ${id}?` })) }),
+    "bare array": (ids) => ids.map((id) => ({ expert: id, reaction: `R ${id}.`, question: `Q ${id}?` })),
+    "keyed by expert": (ids) => ({ reactions: Object.fromEntries(ids.map((id) => [id, { reaction: `R ${id}.`, question: `Q ${id}?` }])) }),
+    "question inside the reaction": (ids) => ({ reactions: ids.map((id) => ({ expert: id, reaction: `Nice start from ${id}. What does one cost?` })) }),
+  };
+  for (const [name, opening] of Object.entries(shapes)) {
+    const t = build({ opening });
+    const s = new Session(t.eng, { mode: "pitch" });
+    await s.open();
+    const r = await s.say("full pitch with price and ask");
+    assert.equal(r.lines.length, 5, name);
+    assert.equal(s.state.pitch.stage, "QA", name);
+    assert.ok(Object.values(s.state.pitch.questions).every((q) => q.endsWith("?")), name);
+  }
+});
+
+test("pitch Deal and Q&A Director accept alternative key names, and a failed step logs only the SHAPE of the answer (no user text)", async () => {
+  const logged = [];
+  const alt = build({
+    deal: (ids) => ({ investors: ids.map((id) => ({ name: id, verdict: "in", rating: "70", why: `W ${id}.` })) }),
+    qa: (inp) => ({ experts: [{ name: inp.panelists_present[0].toLowerCase(), note: "probe", asks: true }], summary: "Updated summary with new facts about candles.", moveToDeal: false }),
+  });
+  const s = new Session(alt.eng, { mode: "pitch" });
+  await s.open();
+  await s.say("full pitch details here");
+  const q = await s.say("30 customers.");
+  assert.equal(q.lines[0].speaker, "dave");
+  const d = await s.decide();
+  assert.equal(d.lines.filter((l) => l.note === "decision").length, 5);
+  assert.equal(s.state.pitch.decisions.dave.score, 70);
+
+  const eng = engineMod.create({ generateJson: async (p) => (p.startsWith("You check each user message") ? { action: "allow", isSafe: true, category: "none", reason: "ok" } : p.includes("OPENING REACTIONS.") ? { secret: "my private pitch text", reactions: [{ expert: 1 }] } : { sufficient: true, pitchSummary: "A candle shop with enough detail for the panel." }), generateText: async () => "t", HttpsError, log: { error: (...a) => logged.push(a.join(" ")) } });
+  const s2 = new Session(eng, { mode: "pitch" });
+  const open = await eng.turn({ mode: "pitch", experts: IDS5, messages: [], state: null }, "English");
+  s2.messages.push({ speaker: "clixa", text: open.text }, { speaker: null, text: "private text" });
+  await eng.turn({ mode: "pitch", experts: IDS5, messages: s2.messages, state: open.state }, "English");
+  const line = logged.find((l) => l.includes("invalid answer") && l.includes("panel.pitch.opening"));
+  assert.ok(line, "the invalid answer is logged");
+  assert.ok(line.includes("reactions") && line.includes("string"), "shape is there");
+  assert.ok(!line.includes("my private pitch text"), "values are not");
+});

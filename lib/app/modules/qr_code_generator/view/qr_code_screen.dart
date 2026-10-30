@@ -1,3 +1,4 @@
+import '../../career_studio/widgets/career_widgets.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -273,282 +274,281 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(
-          backgroundColor: AppColors.background,
-          elevation: 0,
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppColors.titleDark),
-            onPressed: () => Get.back(),
-          ),
-          title: Text(
-            'qr_screen_title'.tr,
-            style: TextStyle(
-              fontFamily: AppTextStyles.fontFamily,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.titleDark,
-            ),
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsetsDirectional.only(end: 16),
-              child: CrownUpgradeButton(
-                size: 36,
-                iconSize: 22,
-                onTap: () => showUpgradeSheet(context),
+        body: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              CareerAppBar(
+                title: 'qr_screen_title'.tr,
+                trailing: CrownUpgradeButton(
+                  size: 40,
+                  iconSize: 22,
+                  borderRadius: 12,
+                  onTap: () => showUpgradeSheet(context),
+                ),
               ),
-            ),
-          ],
-        ),
-        body: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              color: AppColors.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      'qr_screen_auto_fill'.tr,
-                      style: TextStyle(
-                        fontFamily: AppTextStyles.fontFamily,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Switch(
-                    value: _autoFill,
-                    activeColor: Colors.white,
-                    activeTrackColor: Colors.white38,
-                    onChanged: (value) {
-                      if (value) {
-                        final profile = ProfileRepository.getSavedProfile();
-                        if (profile == null) {
-                          Get.snackbar(
-                            'qr_screen_no_profile_title'.tr,
-                            'qr_screen_no_profile_message'.tr,
-                            snackPosition: SnackPosition.BOTTOM,
-                            margin: const EdgeInsets.all(15),
-                          );
-                          return;
-                        }
-                        _applyProfileAutofill(profile);
-                      }
-                      setState(() => _autoFill = value);
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+              Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SectionLabel('qr_screen_section_personal'.tr),
-                    _Field(
-                      label: 'qr_screen_label_full_name'.tr,
-                      controller: _fullName,
-                      textInputAction: TextInputAction.next,
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _Field(
-                            label: 'qr_screen_label_phone'.tr,
-                            controller: _phone,
-                            textInputAction: TextInputAction.next,
-                            keyboardType: TextInputType.phone,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _Field(
-                            label: 'qr_screen_label_email'.tr,
-                            controller: _email,
-                            textInputAction: TextInputAction.next,
-                            keyboardType: TextInputType.emailAddress,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-                    _SectionLabel('qr_screen_section_professional'.tr),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _Field(
-                            label: 'qr_screen_label_company'.tr,
-                            controller: _company,
-                            textInputAction: TextInputAction.next,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _Field(
-                            label: 'qr_screen_label_designation'.tr,
-                            controller: _designation,
-                            textInputAction: TextInputAction.next,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    _Field(
-                      label: 'qr_screen_label_website'.tr,
-                      controller: _website,
-                      textInputAction: TextInputAction.next,
-                    ),
-                    const SizedBox(height: 10),
-                    _SectionLabel('qr_screen_section_social'.tr),
-                    ..._socialLinks.map(
-                      (link) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                link.imagePath,
-                                width: 28,
-                                height: 28,
-                                fit: BoxFit.contain,
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  link.url,
-                                  style: TextStyle(
-                                    fontFamily: AppTextStyles.fontFamily,
-                                    fontSize: 13,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close, size: 18),
-                                onPressed: () =>
-                                    setState(() => _socialLinks.remove(link)),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: _openAddLinkSheet,
-                      child: Container(
-                        width: double.infinity,
-                        height: 40,
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: CustomPaint(
-                          painter: _DottedBorderPainter(
-                            color: AppColors.primary,
-                            radius: 10,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsetsDirectional.only(
-                                  start: 14,
-                                ),
-                                child: Icon(
-                                  Icons.add,
-                                  color: AppColors.primary,
-                                  size: 18,
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                'qr_screen_add_custom_links'.tr,
-                                style: TextStyle(
-                                  fontFamily: AppTextStyles.fontFamily,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    _SectionLabel('qr_screen_section_location'.tr),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _Field(
-                            label: 'qr_screen_label_country'.tr,
-                            controller: _country,
-                            textInputAction: TextInputAction.next,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _Field(
-                            label: 'qr_screen_label_city'.tr,
-                            controller: _city,
-                            textInputAction: TextInputAction.done,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    SizedBox(
+                    Container(
                       width: double.infinity,
-                      height: 40,
-                      child: ElevatedButton(
-                        onPressed: _isGenerating ? null : _generate,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      color: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 2,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'qr_screen_auto_fill'.tr,
+                              style: TextStyle(
+                                fontFamily: AppTextStyles.fontFamily,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
-                        ),
-                        child: _isGenerating
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
+                          Switch(
+                            value: _autoFill,
+                            activeColor: Colors.white,
+                            activeTrackColor: Colors.white38,
+                            onChanged: (value) {
+                              if (value) {
+                                final profile =
+                                    ProfileRepository.getSavedProfile();
+                                if (profile == null) {
+                                  Get.snackbar(
+                                    'qr_screen_no_profile_title'.tr,
+                                    'qr_screen_no_profile_message'.tr,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    margin: const EdgeInsets.all(15),
+                                  );
+                                  return;
+                                }
+                                _applyProfileAutofill(profile);
+                              }
+                              setState(() => _autoFill = value);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _SectionLabel('qr_screen_section_personal'.tr),
+                            _Field(
+                              label: 'qr_screen_label_full_name'.tr,
+                              controller: _fullName,
+                              textInputAction: TextInputAction.next,
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _Field(
+                                    label: 'qr_screen_label_phone'.tr,
+                                    controller: _phone,
+                                    textInputAction: TextInputAction.next,
+                                    keyboardType: TextInputType.phone,
+                                  ),
                                 ),
-                              )
-                            : Text(
-                                'qr_screen_generate'.tr,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: _Field(
+                                    label: 'qr_screen_label_email'.tr,
+                                    controller: _email,
+                                    textInputAction: TextInputAction.next,
+                                    keyboardType: TextInputType.emailAddress,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 18),
+                            _SectionLabel('qr_screen_section_professional'.tr),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _Field(
+                                    label: 'qr_screen_label_company'.tr,
+                                    controller: _company,
+                                    textInputAction: TextInputAction.next,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: _Field(
+                                    label: 'qr_screen_label_designation'.tr,
+                                    controller: _designation,
+                                    textInputAction: TextInputAction.next,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            _Field(
+                              label: 'qr_screen_label_website'.tr,
+                              controller: _website,
+                              textInputAction: TextInputAction.next,
+                            ),
+                            const SizedBox(height: 10),
+                            _SectionLabel('qr_screen_section_social'.tr),
+                            ..._socialLinks.map(
+                              (link) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                        link.imagePath,
+                                        width: 28,
+                                        height: 28,
+                                        fit: BoxFit.contain,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          link.url,
+                                          style: TextStyle(
+                                            fontFamily:
+                                                AppTextStyles.fontFamily,
+                                            fontSize: 13,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.close, size: 18),
+                                        onPressed: () => setState(
+                                          () => _socialLinks.remove(link),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
+                            ),
+                            InkWell(
+                              onTap: _openAddLinkSheet,
+                              child: Container(
+                                width: double.infinity,
+                                height: 40,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: CustomPaint(
+                                  painter: _DottedBorderPainter(
+                                    color: AppColors.primary,
+                                    radius: 10,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsetsDirectional.only(
+                                              start: 14,
+                                            ),
+                                        child: Icon(
+                                          Icons.add,
+                                          color: AppColors.primary,
+                                          size: 18,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        'qr_screen_add_custom_links'.tr,
+                                        style: TextStyle(
+                                          fontFamily: AppTextStyles.fontFamily,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            _SectionLabel('qr_screen_section_location'.tr),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _Field(
+                                    label: 'qr_screen_label_country'.tr,
+                                    controller: _country,
+                                    textInputAction: TextInputAction.next,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: _Field(
+                                    label: 'qr_screen_label_city'.tr,
+                                    controller: _city,
+                                    textInputAction: TextInputAction.done,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 40,
+                              child: ElevatedButton(
+                                onPressed: _isGenerating ? null : _generate,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: _isGenerating
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : Text(
+                                        'qr_screen_generate'.tr,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

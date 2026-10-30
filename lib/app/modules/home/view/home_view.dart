@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 import '../../../core/widgets/crown_upgrade_button.dart';
@@ -132,7 +133,7 @@ class _RoundIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return TapTarget(child: GestureDetector(
       onTap: onTap,
       child: Container(
         width: 36,
@@ -147,6 +148,6 @@ class _RoundIconButton extends StatelessWidget {
           color: iconColor,
         ),
       ),
-    );
+    ));
   }
 }

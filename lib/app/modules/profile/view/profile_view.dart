@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -83,7 +84,7 @@ class _EmptyProfile extends StatelessWidget {
               children: [
                 Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: GestureDetector(
+                  child: TapTarget(child: GestureDetector(
                     onTap: () => Get.back(),
                     child: Container(
                       width: 36,
@@ -99,7 +100,7 @@ class _EmptyProfile extends StatelessWidget {
                         color: Colors.black,
                       ),
                     ),
-                  ),
+                  )),
                 ),
 
                 Center(
@@ -116,7 +117,7 @@ class _EmptyProfile extends StatelessWidget {
 
                 Align(
                   alignment: AlignmentDirectional.centerEnd,
-                  child: GestureDetector(
+                  child: TapTarget(child: GestureDetector(
                     onTap: () {
                       openPaywall(source: 'profile', plans: true);
                     },
@@ -134,7 +135,7 @@ class _EmptyProfile extends StatelessWidget {
                         color: Color(0xFFF5A623),
                       ),
                     ),
-                  ),
+                  )),
                 ),
               ],
             ),
@@ -238,7 +239,7 @@ class _SavedProfile extends StatelessWidget {
                   children: [
                     Align(
                       alignment: AlignmentDirectional.centerStart,
-                      child: GestureDetector(
+                      child: TapTarget(child: GestureDetector(
                         onTap: () => Get.back(),
                         child: Container(
                           width: 36,
@@ -254,7 +255,7 @@ class _SavedProfile extends StatelessWidget {
                             color: AppColors.titleDark,
                           ),
                         ),
-                      ),
+                      )),
                     ),
 
                     Center(
@@ -521,7 +522,7 @@ class _SavedProfile extends StatelessWidget {
                     PositionedDirectional(
                       top: 1,
                       end: 0,
-                      child: GestureDetector(
+                      child: TapTarget(child: GestureDetector(
                         onTap: controller.toggleCardMenu,
                         child: SizedBox(
                           width: _CardSpec.menuBtnSize,
@@ -532,7 +533,7 @@ class _SavedProfile extends StatelessWidget {
                             color: Color(0xFF1E1E24),
                           ),
                         ),
-                      ),
+                      )),
                     ),
 
                     Obx(

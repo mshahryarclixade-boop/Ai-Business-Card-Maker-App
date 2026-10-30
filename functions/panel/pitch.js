@@ -91,18 +91,57 @@ function create(h) {
   // --------------------------------------------------------------- helpers
 
   const clone = (p) => JSON.parse(JSON.stringify(p));
+  /** A number, or a numeric string like "62"; null/empty/other is NOT a number (Number(null) would be 0). */
+  const num = (v) => (typeof v === "number" && Number.isFinite(v) ? v : typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v)) ? Number(v) : null);
   const present = (ctx) => ctx.ids;
   const personas = (ctx) => present(ctx).map((id) => `### ${NAMES[id]}\n${fill(P.CHARACTERS[id], vars(ctx))}`).join("\n\n");
   const recent = (ctx, n) => chatText(ctx, n) || "(nothing yet)";
   const clean = (text, id) => S.capWords(S.redactSensitive(S.cleanLine(text, NAMES[id])).text, LINE_WORDS);
 
+  /** The structure of a model answer with every value replaced by its type: safe to log (no user text). */
+  function shapeOf(v, depth = 0) {
+    if (Array.isArray(v)) return depth > 2 ? "array" : v.slice(0, 2).map((x) => shapeOf(x, depth + 1));
+    if (v && typeof v === "object") return depth > 2 ? "object" : Object.fromEntries(Object.entries(v).map(([k, x]) => [k, shapeOf(x, depth + 1)]));
+    return v === null ? "null" : typeof v;
+  }
+
+  /** First present field of [o] among [names]. */
+  const pick = (o, names) => {
+    for (const n of names) if (o && o[n] !== undefined && o[n] !== null) return o[n];
+    return undefined;
+  };
+
+  /**
+   * The list of entries in a model answer, whatever the wrapper: an array, an
+   * object holding an array under one of [listKeys], or an object keyed by
+   * expert id (each value becomes an entry with that id).
+   */
+  function entriesOf(raw, listKeys, ids) {
+    if (Array.isArray(raw)) return raw;
+    if (!raw || typeof raw !== "object") return null;
+    for (const k of listKeys) {
+      if (Array.isArray(raw[k])) return raw[k];
+      if (raw[k] && typeof raw[k] === "object") {
+        const inner = entriesOf(raw[k], [], ids); // keyed by expert id inside the wrapper
+        if (inner) return inner;
+      }
+    }
+    const keyed = Object.keys(raw).filter((k) => ids.includes(k.toLowerCase()) && raw[k] && typeof raw[k] === "object");
+    return keyed.length ? keyed.map((k) => ({ expert: k, ...raw[k] })) : null;
+  }
+  const idOf = (x) => {
+    const v = pick(x, ["expert", "investor", "name", "id", "speaker", "character"]);
+    return typeof v === "string" ? v.trim().toLowerCase() : "";
+  };
+
   /** One JSON call whose answer must pass [validate]; one more try if it does not. */
   async function validated(prompt, temperature, label, validate) {
     for (let i = 0; i < 2; i++) {
       try {
-        const out = validate(await jsonCall(prompt, temperature, label));
+        const raw = await jsonCall(prompt, temperature, label);
+        const out = validate(raw);
         if (out) return out;
-        log.error?.("pitch step returned an invalid answer", label);
+        log.error?.("pitch step returned an invalid answer", label, JSON.stringify(shapeOf(raw)).slice(0, 600));
       } catch (e) {
         log.error?.("pitch step failed", label, e?.message || e);
       }
@@ -148,12 +187,20 @@ function create(h) {
   // ---------------------------------------------------------------- Opening
 
   function validOpening(raw, ids) {
-    const list = Array.isArray(raw?.reactions) ? raw.reactions : null;
+    const list = entriesOf(raw, ["reactions", "investors", "experts", "responses", "opening"], ids);
     if (!list) return null;
     const by = {};
     for (const r of list) {
-      const id = typeof r?.expert === "string" ? r.expert.trim().toLowerCase() : "";
-      if (ids.includes(id) && str(r.reaction, 600) && str(r.question, 300) && !by[id]) by[id] = { reaction: str(r.reaction, 600), question: str(r.question, 300) };
+      const id = idOf(r);
+      let reaction = str(pick(r, ["reaction", "response", "reply", "comment", "first_reaction", "text"]), 600);
+      let question = str(pick(r, ["question", "follow_up", "followUp", "ask", "q"]), 300);
+      if (!question && reaction.includes("?")) {
+        // The question came inside the reaction: split at the sentence that holds it.
+        const i = reaction.lastIndexOf(".", reaction.indexOf("?")) + 1;
+        question = reaction.slice(i).trim();
+        reaction = reaction.slice(0, i).trim() || reaction;
+      }
+      if (ids.includes(id) && reaction && question && !by[id]) by[id] = { reaction, question };
     }
     return ids.every((id) => by[id]) ? by : null;
   }
@@ -183,19 +230,21 @@ function create(h) {
   // ------------------------------------------------------------------- Q&A
 
   function validQaDirector(raw, ids, final) {
-    if (!raw || typeof raw !== "object" || !Array.isArray(raw.speakers)) return null;
+    const list = entriesOf(raw, ["speakers", "experts", "investors", "responders"], ids);
+    if (!list) return null;
     const speakers = [];
-    for (const sp of raw.speakers) {
-      const id = typeof sp?.expert === "string" ? sp.expert.trim().toLowerCase() : "";
+    for (const sp of list) {
+      const id = idOf(sp);
       if (!ids.includes(id) || speakers.some((x) => x.id === id) || speakers.length >= 2) continue;
-      speakers.push({ id, instruction: str(sp.instruction, 240) || "react to what the founder just said", ask: sp.ask === true });
+      speakers.push({ id, instruction: str(pick(sp, ["instruction", "note", "focus", "task"]), 240) || "react to what the founder just said", ask: pick(sp, ["ask", "asks", "ask_question"]) === true });
     }
     if (!speakers.length) return null;
     // Only the last speaker may ask, and nobody asks in the final round.
     speakers.forEach((x, i) => {
       if (final || i < speakers.length - 1) x.ask = false;
     });
-    return { speakers, summary: str(raw.pitchSummary, SUMMARY_CHARS), toDeal: raw.move_to_deal === true };
+    const summary = str(pick(raw, ["pitchSummary", "pitch_summary", "summary", "updated_summary"]), SUMMARY_CHARS);
+    return { speakers, summary, toDeal: pick(raw, ["move_to_deal", "moveToDeal", "go_to_deal"]) === true };
   }
 
   /** One expert's line: their persona + the shared rules, the summary and the last 6 messages. */
@@ -280,15 +329,17 @@ function create(h) {
   // ------------------------------------------------------------------- Deal
 
   function validDeal(raw, ids) {
-    const list = Array.isArray(raw?.decisions) ? raw.decisions : null;
+    const list = entriesOf(raw, ["decisions", "investors", "experts", "results", "verdicts"], ids);
     if (!list) return null;
     const by = {};
     for (const x of list) {
-      const id = typeof x?.expert === "string" ? x.expert.trim().toLowerCase() : "";
-      const dec = typeof x?.decision === "string" ? x.decision.trim().toUpperCase() : "";
-      const score = Number(x?.score);
-      if (!ids.includes(id) || by[id] || !(dec === "IN" || dec === "OUT") || !Number.isFinite(score) || !str(x.reason, 300)) continue;
-      by[id] = { decision: dec, score: clamp(Math.round(score), 0, 100), reason: str(x.reason, 200) };
+      const id = idOf(x);
+      const decRaw = pick(x, ["decision", "verdict", "vote", "result"]);
+      const dec = typeof decRaw === "string" ? decRaw.trim().toUpperCase() : "";
+      const score = num(pick(x, ["score", "rating", "points"]));
+      const reason = str(pick(x, ["reason", "why", "rationale", "explanation"]), 300);
+      if (!ids.includes(id) || by[id] || !(dec === "IN" || dec === "OUT") || score === null || !reason) continue;
+      by[id] = { decision: dec, score: clamp(Math.round(score), 0, 100), reason: str(reason, 200) };
     }
     return ids.every((id) => by[id]) ? by : null;
   }
@@ -314,14 +365,15 @@ function create(h) {
   const labelOf = (n) => (n >= 80 ? "Pitch-ready (practice)" : n >= 60 ? "Promising" : n >= 40 ? "Developing" : "Early idea");
 
   function validVerdict(raw, decisions) {
-    if (!raw || typeof raw !== "object" || !isNum(Number(raw.overall_score))) return null;
+    if (!raw || typeof raw !== "object" || num(raw.overall_score) === null) return null;
+    // The prompt asks for 3 of each; a model that gives 1 or 2 is still usable.
     const strengths = strList(raw.strengths, 3, 200);
     const risks = strList(raw.risks, 3, 200);
     const nextSteps = strList(raw.next_steps, 3, 200);
-    if (strengths.length < 3 || risks.length < 3 || nextSteps.length < 3) return null;
+    if (!strengths.length || !risks.length || !nextSteps.length) return null;
     const scores = Object.values(decisions).map((d) => d.score);
     // The overall score must lie within the panel's own scores.
-    const overall = clamp(Math.round(Number(raw.overall_score)), Math.min(...scores), Math.max(...scores));
+    const overall = clamp(Math.round(num(raw.overall_score)), Math.min(...scores), Math.max(...scores));
     return { overall_score: overall, summary: str(raw.summary, 500), strengths, risks, next_steps: nextSteps, closing: str(raw.closing, 500) };
   }
 

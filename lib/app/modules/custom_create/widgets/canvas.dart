@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart' hide Trans;
@@ -175,7 +176,7 @@ class CanvasElementWidget extends StatelessWidget {
               Positioned(
                 top: 0,
                 right: 0,
-                child: GestureDetector(
+                child: TapTarget(child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: controller.removeSelectedElement,
                   child: SizedBox(
@@ -197,7 +198,7 @@ class CanvasElementWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
+                )),
               ),
 
             // Move to the other side (front <-> back)
@@ -205,7 +206,7 @@ class CanvasElementWidget extends StatelessWidget {
               Positioned(
                 top: 0,
                 left: 0,
-                child: GestureDetector(
+                child: TapTarget(child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: controller.moveSelectedToOtherSide,
                   child: SizedBox(
@@ -229,7 +230,7 @@ class CanvasElementWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
+                )),
               ),
 
             // Resize handle for stickers and images

@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -66,7 +67,7 @@ class LanguageView extends StatelessWidget {
                 children: [
                   Align(
                     alignment: AlignmentDirectional.centerStart,
-                    child: IconButton(
+                    child: TapTarget(child: IconButton(
                       onPressed: () => Navigator.of(context).pop(),
                       icon: const Icon(
                         Icons.arrow_back_ios_new_rounded,
@@ -75,7 +76,7 @@ class LanguageView extends StatelessWidget {
                       ),
                       padding: const EdgeInsetsDirectional.only(start: 12),
                       constraints: const BoxConstraints(),
-                    ),
+                    )),
                   ),
                   Text(
                     'settings_language_title'.tr,

@@ -1084,6 +1084,7 @@
   "qr_manage_empty_title": "No QR codes yet",
   "qr_manage_menu_edit": "Edit",
   "qr_manage_menu_open": "Open",
+  "qr_manage_menu_preview": "Preview",
   "qr_manage_new": "Create QR code",
   "qr_manage_title": "QR codes",
   "qr_preview_company": "Company • {company}",

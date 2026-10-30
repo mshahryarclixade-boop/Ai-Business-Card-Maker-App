@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/card_shadow.dart';
 import '../model/template_item.dart';
 
 /// Large preview of a single template
@@ -38,13 +39,7 @@ class _Side extends StatelessWidget {
       // since a clipped widget can't cast its own shadow.
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(_cornerRadius),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: kCardPreviewShadow,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(_cornerRadius),

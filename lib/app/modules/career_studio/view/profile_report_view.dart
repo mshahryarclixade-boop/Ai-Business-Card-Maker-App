@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -125,7 +126,7 @@ class _ProfileReportViewState extends State<ProfileReportView> {
                 CareerAppBar(
                   title: 'career_report_title'.tr,
                   onLeading: CareerNav.toHub,
-                  trailing: GestureDetector(
+                  trailing: TapTarget(child: GestureDetector(
                     onTap: () => showScoreBreakdownSheet(context),
                     behavior: HitTestBehavior.opaque,
                     child: Tooltip(
@@ -139,7 +140,7 @@ class _ProfileReportViewState extends State<ProfileReportView> {
                         ),
                       ),
                     ),
-                  ),
+                  )),
                 ),
                 Expanded(
                   child: SingleChildScrollView(

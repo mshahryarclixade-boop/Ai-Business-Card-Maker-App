@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -274,7 +275,7 @@ class BarIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // BarIcon.build
-    return GestureDetector(
+    return TapTarget(child: GestureDetector(
       onTap: enabled ? onTap : null,
       behavior: HitTestBehavior.opaque,
       child: Padding(
@@ -285,6 +286,6 @@ class BarIcon extends StatelessWidget {
           color: enabled ? Colors.white : Colors.white.withOpacity(0.35),
         ),
       ),
-    );
+    ));
   }
 }

@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -177,7 +178,7 @@ class _CardEditorViewState extends State<CardEditorView> {
   }
 
   Widget _devStepButton(IconData icon, double step) {
-    return GestureDetector(
+    return TapTarget(child: GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => controller.nudgeSelectedFontSize(step),
       // long press = half step, for fine tuning
@@ -186,7 +187,7 @@ class _CardEditorViewState extends State<CardEditorView> {
         padding: const EdgeInsets.all(6),
         child: Icon(icon, size: 18),
       ),
-    );
+    ));
   }
 
   /// DEV ONLY: "-  18.0  +" bar, visible when a text element is selected.

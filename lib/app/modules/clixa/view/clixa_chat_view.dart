@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -144,6 +145,8 @@ class _ClixaChatViewState extends State<ClixaChatView> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
+        // The footer handles the bottom inset itself (smaller gap on phones).
+        bottom: false,
         child: Column(
           children: [
             _Header(
@@ -202,7 +205,7 @@ class _Header extends StatelessWidget {
       height: 64,
       child: Row(
         children: [
-          IconButton(
+          TapTarget(child: IconButton(
             onPressed: () => Navigator.of(context).maybePop(),
             icon: const Icon(
               Icons.arrow_back_rounded,
@@ -210,7 +213,7 @@ class _Header extends StatelessWidget {
             ),
             padding: const EdgeInsetsDirectional.only(start: 20, end: 8),
             constraints: const BoxConstraints(),
-          ),
+          )),
           const ClixaAvatar(size: 38),
           const SizedBox(width: 10),
           Expanded(
@@ -219,7 +222,7 @@ class _Header extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Obx(
-                  () => Text(
+                      () => Text(
                     chat.title.value,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -237,7 +240,7 @@ class _Header extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
+          TapTarget(child: IconButton(
             onPressed: onMenu,
             icon: const Icon(
               Icons.more_vert_rounded,
@@ -245,7 +248,7 @@ class _Header extends StatelessWidget {
             ),
             padding: const EdgeInsetsDirectional.only(start: 8, end: 14),
             constraints: const BoxConstraints(),
-          ),
+          )),
         ],
       ),
     );
@@ -301,32 +304,32 @@ class _Bubble extends StatelessWidget {
               children: [
                 message.verdict != null
                     ? SelectionArea(
-                        child: VerdictCard(verdict: message.verdict!),
-                      )
+                  child: VerdictCard(verdict: message.verdict!),
+                )
                     : Container(
-                        constraints: BoxConstraints(maxWidth: maxW),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 10,
-                        ),
-                        decoration: const BoxDecoration(
-                          color: AppColors.scaffoldBg,
-                          border: Border.fromBorderSide(
-                            BorderSide(color: AppColors.pillBorder),
-                          ),
-                          borderRadius: BorderRadiusDirectional.only(
-                            topStart: Radius.circular(4),
-                            topEnd: Radius.circular(16),
-                            bottomStart: Radius.circular(16),
-                            bottomEnd: Radius.circular(16),
-                          ),
-                        ),
-                        // Long-press to select; the native toolbar has Copy / Select all.
-                        child: SelectableText(
-                          message.text,
-                          style: _t(13, AppColors.titleDark, h: 1.4),
-                        ),
-                      ),
+                  constraints: BoxConstraints(maxWidth: maxW),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: AppColors.scaffoldBg,
+                    border: Border.fromBorderSide(
+                      BorderSide(color: AppColors.pillBorder),
+                    ),
+                    borderRadius: BorderRadiusDirectional.only(
+                      topStart: Radius.circular(4),
+                      topEnd: Radius.circular(16),
+                      bottomStart: Radius.circular(16),
+                      bottomEnd: Radius.circular(16),
+                    ),
+                  ),
+                  // Long-press to select; the native toolbar has Copy / Select all.
+                  child: SelectableText(
+                    message.text,
+                    style: _t(13, AppColors.titleDark, h: 1.4),
+                  ),
+                ),
                 ResponseActions(
                   id: id,
                   text: message.verdict?.plainText ?? message.text,
@@ -377,12 +380,20 @@ class _Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = ClixaController.to;
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    final isPhone = MediaQuery.sizeOf(context).shortestSide < 600;
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(top: BorderSide(color: AppColors.pillBorder)),
       ),
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 10, 16, 12),
+      padding: EdgeInsetsDirectional.fromSTEB(
+        16,
+        10,
+        16,
+        // Phone: small gap above the home indicator. Tablet: as before.
+        isPhone ? (bottomInset > 0 ? bottomInset * 0.4 : 6) : 12 + bottomInset,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -438,7 +449,7 @@ class _Footer extends StatelessWidget {
             children: [
               Expanded(
                 child: Obx(
-                  () => TextField(
+                      () => TextField(
                     controller: input,
                     minLines: 1,
                     maxLines: 4,
@@ -447,10 +458,10 @@ class _Footer extends StatelessWidget {
                     style: _t(13, AppColors.titleDark),
                     decoration: InputDecoration(
                       hintText:
-                          (speech.listening.value
-                                  ? 'clixa_mic_listening'
-                                  : 'clixa_message_hint')
-                              .tr,
+                      (speech.listening.value
+                          ? 'clixa_mic_listening'
+                          : 'clixa_message_hint')
+                          .tr,
                       hintStyle: _t(13, AppColors.textGrey),
                       filled: true,
                       fillColor: AppColors.scaffoldBg,

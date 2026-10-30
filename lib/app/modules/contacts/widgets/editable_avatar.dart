@@ -1,3 +1,4 @@
+import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class EditableAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasImage = imagePath != null && File(imagePath!).existsSync();
 
-    return GestureDetector(
+    return TapTarget(child: GestureDetector(
       onTap: onTap,
       child: Stack(
         clipBehavior: Clip.none,
@@ -68,7 +69,7 @@ class EditableAvatar extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }
 
