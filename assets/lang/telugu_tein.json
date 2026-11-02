@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "మార్కెటింగ్",
   "panel_role_marketing_long": "మార్కెటింగ్ మరియు బ్రాండ్",
   "panel_role_product": "ఉత్పత్తి",
-  "panel_role_product_long": "ఉత్పత్తి మరియు రూపకల్పన"
+  "panel_role_product_long": "ఉత్పత్తి మరియు రూపకల్పన",
+  "add_link_add_button": "జోడించండి",
+  "panel_go_to_decision": "నిర్ణయానికి వెళ్లండి",
+  "qr_manage_menu_preview": "ప్రివ్యూ",
+  "career_ai_error_not_profile": "ఇది LinkedIn ప్రొఫైల్ లేదా CV లా కనిపించడం లేదు. మీ ప్రొఫైల్ స్క్రీన్‌షాట్, దాని PDF లేదా అతికించిన ప్రొఫైల్ టెక్స్ట్‌ను ప్రయత్నించండి.",
+  "perm_open_settings": "సెట్టింగ్‌లను తెరవండి",
+  "perm_later": "తర్వాత"
 }

@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "ማርኬቲንግ",
   "panel_role_marketing_long": "ግብይት እና የምርት ስም",
   "panel_role_product": "ምርት",
-  "panel_role_product_long": "ምርት እና ዲዛይን"
+  "panel_role_product_long": "ምርት እና ዲዛይን",
+  "add_link_add_button": "አክል",
+  "panel_go_to_decision": "ወደ ውሳኔ ሂድ",
+  "qr_manage_menu_preview": "ቅድመ እይታ",
+  "career_ai_error_not_profile": "ይህ የLinkedIn መገለጫ ወይም CV አይመስልም። የመገለጫዎን ስክሪንሾት፣ PDF ወይም የተለጠፈ የመገለጫ ጽሑፍ ይሞክሩ።",
+  "perm_open_settings": "ቅንብሮችን ክፈት",
+  "perm_later": "በኋላ"
 }

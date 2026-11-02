@@ -1,3 +1,4 @@
+import '../../../core/widgets/hide_when_pro.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -138,8 +139,7 @@ class _ToolkitCard extends StatelessWidget {
   }
 }
 
-/// The Expert Panel: five AI experts you can pitch an idea to (a Pro feature
-/// later; free for now). UI only.
+/// The Expert Panel: five AI experts you can pitch an idea to (a Pro feature).
 class _ExpertPanelCard extends StatelessWidget {
   const _ExpertPanelCard();
 
@@ -150,8 +150,7 @@ class _ExpertPanelCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(26),
       child: InkWell(
         borderRadius: BorderRadius.circular(26),
-        // TODO: Pro only (showClixaUpgrade for free users). Open to
-        // everyone while the panel is being tested.
+        // Pro only: free users get the upgrade sheet (see openExpertPanel).
         onTap: openExpertPanel,
         child: Container(
           width: double.infinity,
@@ -183,6 +182,7 @@ class _ExpertPanelCard extends StatelessWidget {
                             ),
                           ),
                         ),
+HideWhenPro(child: Row(mainAxisSize: MainAxisSize.min, children: [
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -202,7 +202,7 @@ class _ExpertPanelCard extends StatelessWidget {
                               color: AppColors.crownGold,
                             ),
                           ),
-                        ),
+                        )])),
                       ],
                     ),
                     const SizedBox(height: 4),

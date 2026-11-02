@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "تسويق",
   "panel_role_marketing_long": "التسويق والعلامة التجارية",
   "panel_role_product": "منتج",
-  "panel_role_product_long": "المنتج والتصميم"
+  "panel_role_product_long": "المنتج والتصميم",
+  "add_link_add_button": "إضافة",
+  "panel_go_to_decision": "الانتقال إلى القرار",
+  "qr_manage_menu_preview": "معاينة",
+  "career_ai_error_not_profile": "لا يبدو هذا ملفًا شخصيًا على LinkedIn أو سيرة ذاتية. جرّب لقطة شاشة لملفك الشخصي أو ملف PDF الخاص به أو نص الملف الشخصي الملصوق.",
+  "perm_open_settings": "فتح الإعدادات",
+  "perm_later": "لاحقًا"
 }

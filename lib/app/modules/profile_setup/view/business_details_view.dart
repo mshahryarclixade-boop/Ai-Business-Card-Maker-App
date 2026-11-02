@@ -32,6 +32,7 @@ class BusinessDetailsView extends GetView<BusinessDetailsController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const ProfileBackButton(),
                       const ProfileStepHeader(step: 2),
                       const SizedBox(height: 24),
                       Text(

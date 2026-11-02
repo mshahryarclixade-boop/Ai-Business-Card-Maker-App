@@ -65,6 +65,17 @@ class UserCreditsManager {
     return udid;
   }
 
+  /// This device's id (the one the credit record and the AI usage record are
+  /// kept under), or null if it cannot be read.
+  Future<String?> udidOrNull() async {
+    try {
+      return await _deviceUdid();
+    } catch (e) {
+      log('device id unavailable: $e', name: 'UserCreditsManager');
+      return null;
+    }
+  }
+
   DocumentReference<Map<String, dynamic>> _userDoc(String udid) =>
       firestore.collection(_usersCollection).doc(udid);
 

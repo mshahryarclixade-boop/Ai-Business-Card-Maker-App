@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -17,6 +18,7 @@ class LabeledField extends StatelessWidget {
   final TextCapitalization textCapitalization;
 
   final bool forceErrorBorder;
+  final List<TextInputFormatter>? inputFormatters;
 
   const LabeledField({
     super.key,
@@ -29,8 +31,9 @@ class LabeledField extends StatelessWidget {
     this.textInputAction = TextInputAction.next,
     this.maxLines = 1,
     this.focusNode,
-    this.textCapitalization = TextCapitalization.none,
+    this.textCapitalization = TextCapitalization.sentences,
     this.forceErrorBorder = false,
+    this.inputFormatters,
   });
 
   @override
@@ -57,6 +60,7 @@ class LabeledField extends StatelessWidget {
           controller: controller,
           focusNode: focusNode,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
           validator: validator,
           textInputAction: textInputAction,
           textCapitalization: textCapitalization,

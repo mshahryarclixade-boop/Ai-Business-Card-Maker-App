@@ -1,3 +1,4 @@
+import '../../../core/services/permission_gate.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
@@ -364,6 +365,7 @@ class CardEditorController extends GetxController {
 
   /// "Take a picture" under the Image tool.
   Future<void> addImageFromCamera() async {
+    if (!await PermissionGate.ensure(AppPermission.camera)) return;
     final XFile? picked = await _picker.pickImage(
       source: ImageSource.camera,
       imageQuality: 90,

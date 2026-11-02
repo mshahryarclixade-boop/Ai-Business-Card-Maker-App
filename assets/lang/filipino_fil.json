@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Markkinointi",
   "panel_role_marketing_long": "Markkinointi ja brändi",
   "panel_role_product": "Tuote",
-  "panel_role_product_long": "Tuote ja muotoilu"
+  "panel_role_product_long": "Tuote ja muotoilu",
+  "add_link_add_button": "Idagdag",
+  "panel_go_to_decision": "Pumunta sa desisyon",
+  "qr_manage_menu_preview": "I-preview",
+  "career_ai_error_not_profile": "Hindi ito mukhang LinkedIn profile o CV. Subukan ang screenshot ng iyong profile, ang PDF nito, o na-paste na teksto ng profile.",
+  "perm_open_settings": "Buksan ang Mga Setting",
+  "perm_later": "Mamaya"
 }

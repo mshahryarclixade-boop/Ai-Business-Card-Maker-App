@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "ਮਾਰਕੀਟਿੰਗ",
   "panel_role_marketing_long": "ਮਾਰਕੀਟਿੰਗ ਅਤੇ ਬ੍ਰਾਂਡ",
   "panel_role_product": "ਉਤਪਾਦ",
-  "panel_role_product_long": "ਉਤਪਾਦ ਅਤੇ ਡਿਜ਼ਾਈਨ"
+  "panel_role_product_long": "ਉਤਪਾਦ ਅਤੇ ਡਿਜ਼ਾਈਨ",
+  "add_link_add_button": "ਸ਼ਾਮਲ ਕਰੋ",
+  "panel_go_to_decision": "ਫ਼ੈਸਲੇ ਵੱਲ ਜਾਓ",
+  "qr_manage_menu_preview": "ਪ੍ਰੀਵਿਊ",
+  "career_ai_error_not_profile": "ਇਹ LinkedIn ਪ੍ਰੋਫ਼ਾਈਲ ਜਾਂ CV ਵਰਗਾ ਨਹੀਂ ਲੱਗਦਾ। ਆਪਣੀ ਪ੍ਰੋਫ਼ਾਈਲ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ, ਉਸਦੀ PDF ਜਾਂ ਪੇਸਟ ਕੀਤਾ ਪ੍ਰੋਫ਼ਾਈਲ ਟੈਕਸਟ ਅਜ਼ਮਾਓ।",
+  "perm_open_settings": "ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ",
+  "perm_later": "ਬਾਅਦ ਵਿੱਚ"
 }

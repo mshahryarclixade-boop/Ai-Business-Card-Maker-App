@@ -75,6 +75,7 @@ import 'package:ai_business_card_maker/app/modules/template/model/template_item.
 import 'package:ai_business_card_maker/app/modules/scan%20card%20and%20qr/widgets/extracted_data_warning.dart';
 import 'package:ai_business_card_maker/app/modules/scan%20card%20and%20qr/widgets/scan_frame_overlay.dart';
 import 'package:ai_business_card_maker/app/modules/scan%20card%20and%20qr/widgets/scan_segmented_toggle.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -501,6 +502,9 @@ void main() {
           const MethodChannel('plugins.flutter.io/path_provider'),
           (call) async => Directory.systemTemp.createTempSync('gs').path,
         );
+    // The contacts screen reads SharedPreferences: without this the first test
+    // in the file fails on its own with MissingPluginException.
+    SharedPreferences.setMockInitialValues({});
     await GetStorage.init();
     await _loadFonts();
   });

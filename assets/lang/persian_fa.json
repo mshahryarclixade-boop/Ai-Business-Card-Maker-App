@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "بازاریابی",
   "panel_role_marketing_long": "بازاریابی و برند",
   "panel_role_product": "محصول",
-  "panel_role_product_long": "محصول و طراحی"
+  "panel_role_product_long": "محصول و طراحی",
+  "add_link_add_button": "افزودن",
+  "panel_go_to_decision": "رفتن به تصمیم",
+  "qr_manage_menu_preview": "پیش‌نمایش",
+  "career_ai_error_not_profile": "این شبیه نمایه لینکدین یا رزومه نیست. تصویر صفحه نمایه، فایل PDF آن یا متن چسبانده‌شدهٔ نمایه را امتحان کنید.",
+  "perm_open_settings": "باز کردن تنظیمات",
+  "perm_later": "بعداً"
 }

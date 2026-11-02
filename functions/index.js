@@ -1,8 +1,13 @@
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { initializeApp } = require("firebase-admin/app");
+const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 const { GoogleGenAI } = require("@google/genai");
 const panelEngine = require("./panel/engine");
 const usage = require("./usage");
+
+/** Records one AI query for the app's device id (see usage.trackQuery). */
+const trackUser = (data, task, summary) =>
+  usage.trackQuery({ db: getFirestore(), FieldValue }, data, task, summary);
 
 initializeApp();
 
@@ -71,6 +76,7 @@ exports.generateCard = onCall(OPTIONS, async (request) => {
       if (!img) throw new HttpsError("internal", "No image returned.");
       return { imageBase64: img.inlineData.data };
     });
+    await trackUser(d, "generateCard.image", summary);
     return { ...result, _usage: summary };
   } catch (e) {
     throw wrapGeminiError(e);
@@ -339,6 +345,7 @@ async function runCareerTask(d, allowed = Object.keys(TASKS)) {
   const lang = clip(d.language, 40) || "English";
   try {
     const [result, summary] = await usage.withUsage(task, () => handler(d, lang));
+    await trackUser(d, task, summary);
     return result && typeof result === "object" ? { ...result, _usage: summary } : result;
   } catch (e) {
     throw wrapGeminiError(e);

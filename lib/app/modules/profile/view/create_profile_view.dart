@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+import '../../../core/utils/input_validators.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 import 'dart:ui';
@@ -68,6 +70,9 @@ class _CreateProfileViewState extends State<CreateProfileView> {
     });
   }
 
+  String? _emailError;
+  String? _phoneError;
+
   void _save(BuildContext context) {
     if (controller.isSaving.value || controller.showSuccess.value) return;
 
@@ -81,6 +86,20 @@ class _CreateProfileViewState extends State<CreateProfileView> {
         snackPosition: SnackPosition.BOTTOM,
         margin: const EdgeInsets.all(15),
       );
+      return;
+    }
+
+    final emailError = InputValidators.emailError(
+      controller.emailController.text,
+    );
+    final phoneError = InputValidators.phoneError(
+      controller.phoneController.text,
+    );
+    if (emailError != null || phoneError != null) {
+      setState(() {
+        _emailError = emailError;
+        _phoneError = phoneError;
+      });
       return;
     }
 
@@ -285,6 +304,11 @@ class _CreateProfileViewState extends State<CreateProfileView> {
         hint: 'profile_hint_email'.tr,
         prefixIcon: Icons.email_outlined,
         keyboardType: TextInputType.emailAddress,
+        inputFormatters: InputValidators.emailFormatters,
+        errorText: _emailError,
+        onChanged: (_) {
+          if (_emailError != null) setState(() => _emailError = null);
+        },
       ),
       const SizedBox(height: _fieldGap),
       _ProfileField(
@@ -292,6 +316,11 @@ class _CreateProfileViewState extends State<CreateProfileView> {
         hint: '+92308-5687901',
         prefixIcon: Icons.phone_outlined,
         keyboardType: TextInputType.phone,
+        inputFormatters: InputValidators.phoneFormatters,
+        errorText: _phoneError,
+        onChanged: (_) {
+          if (_phoneError != null) setState(() => _phoneError = null);
+        },
       ),
       const SizedBox(height: _fieldGap),
       _ProfileField(
@@ -434,6 +463,11 @@ class _ProfileField extends StatelessWidget {
   final String? prefixImagePath;
   final TextInputType? keyboardType;
   final TextInputAction textInputAction;
+  final List<TextInputFormatter>? inputFormatters;
+
+  /// Shown under the field (the field itself keeps its fixed height).
+  final String? errorText;
+  final ValueChanged<String>? onChanged;
 
   const _ProfileField({
     required this.controller,
@@ -442,6 +476,9 @@ class _ProfileField extends StatelessWidget {
     this.prefixImagePath,
     this.keyboardType,
     this.textInputAction = TextInputAction.next,
+    this.inputFormatters,
+    this.errorText,
+    this.onChanged,
   });
 
   @override
@@ -456,11 +493,13 @@ class _ProfileField extends StatelessWidget {
       prefix = Icon(prefixIcon, size: 16, color: AppColors.primary);
     }
 
-    return SizedBox(
+    final field = SizedBox(
       height: 46,
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        onChanged: onChanged,
         textInputAction: textInputAction,
         style: const TextStyle(
           fontFamily: AppTextStyles.fontFamily,
@@ -499,6 +538,24 @@ class _ProfileField extends StatelessWidget {
           ),
         ),
       ),
+    );
+    if (errorText == null) return field;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        field,
+        Padding(
+          padding: const EdgeInsetsDirectional.only(start: 14, top: 4),
+          child: Text(
+            errorText!,
+            style: const TextStyle(
+              fontFamily: AppTextStyles.fontFamily,
+              fontSize: 11,
+              color: Color(0xFFD32F2F),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

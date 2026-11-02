@@ -8,6 +8,7 @@ import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 import '../translations/app_strings.dart';
+import 'permission_gate.dart';
 
 /// Why dictation could not start, or why it stopped.
 enum SpeechIssue {
@@ -53,6 +54,15 @@ class SpeechInputService {
   /// otherwise the reason it could not.
   Future<SpeechIssue?> start(void Function(String words) onText) async {
     if (listening.value) return null;
+    // Ask for the microphone first (the system's Allow / Don't Allow). A
+    // refusal that can be asked again is "denied" (nothing is shown, the next
+    // tap asks again); one that cannot is "blocked" (Open Settings / Later).
+    if (!await PermissionGate.request(AppPermission.microphone)) {
+      final mic = await Permission.microphone.status;
+      return mic.isPermanentlyDenied || mic.isRestricted
+          ? SpeechIssue.permissionBlocked
+          : SpeechIssue.permissionDenied;
+    }
     final ready = await _init();
     if (ready != null) return ready;
     _heardAnything = false;
@@ -141,8 +151,10 @@ class SpeechInputService {
   /// without recognition; tell the two apart.
   Future<SpeechIssue> _whyNot() async {
     if (!await _speech.hasPermission) {
+      // The microphone is allowed (checked in start) but speech recognition
+      // is not, and it cannot be asked again: Settings only.
       final mic = await Permission.microphone.status;
-      return mic.isPermanentlyDenied
+      return mic.isGranted || mic.isPermanentlyDenied
           ? SpeechIssue.permissionBlocked
           : SpeechIssue.permissionDenied;
     }
@@ -192,7 +204,7 @@ class SpeechInputService {
         onIssue?.call(SpeechIssue.network);
       case 'error_permission':
         _ready = false;
-        onIssue?.call(SpeechIssue.permissionDenied);
+        onIssue?.call(SpeechIssue.permissionBlocked);
       case 'error_busy':
       case 'error_client':
         break; // a restart race: not worth telling the user

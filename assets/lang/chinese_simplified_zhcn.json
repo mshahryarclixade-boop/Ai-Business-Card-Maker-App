@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "营销",
   "panel_role_marketing_long": "市场营销和品牌",
   "panel_role_product": "产品",
-  "panel_role_product_long": "产品与设计"
+  "panel_role_product_long": "产品与设计",
+  "add_link_add_button": "添加",
+  "panel_go_to_decision": "前往决定",
+  "qr_manage_menu_preview": "预览",
+  "career_ai_error_not_profile": "这看起来不像 LinkedIn 个人资料或简历。请尝试资料页面截图、其 PDF，或粘贴的资料文本。",
+  "perm_open_settings": "打开设置",
+  "perm_later": "稍后"
 }

@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Ukumaketha",
   "panel_role_marketing_long": "Ukumaketha kanye nomkhiqizo",
   "panel_role_product": "Umkhiqizo",
-  "panel_role_product_long": "Umkhiqizo kanye nomklamo"
+  "panel_role_product_long": "Umkhiqizo kanye nomklamo",
+  "add_link_add_button": "Engeza",
+  "panel_go_to_decision": "Yana esinqumweni",
+  "qr_manage_menu_preview": "Buka kuqala",
+  "career_ai_error_not_profile": "Lokhu akubukeki njengephrofayela ye-LinkedIn noma i-CV. Zama isithombe-skrini sephrofayela yakho, i-PDF yayo, noma umbhalo wephrofayela onamathiselwe.",
+  "perm_open_settings": "Vula Izilungiselelo",
+  "perm_later": "Kamuva"
 }

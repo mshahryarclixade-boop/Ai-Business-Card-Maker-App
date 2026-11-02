@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Маркетинг",
   "panel_role_marketing_long": "Маркетинг ба брэнд",
   "panel_role_product": "Бүтээгдэхүүн",
-  "panel_role_product_long": "Бүтээгдэхүүн ба дизайн"
+  "panel_role_product_long": "Бүтээгдэхүүн ба дизайн",
+  "add_link_add_button": "Нэмэх",
+  "panel_go_to_decision": "Шийдвэр рүү очих",
+  "qr_manage_menu_preview": "Урьдчилан харах",
+  "career_ai_error_not_profile": "Энэ нь LinkedIn профайл эсвэл CV шиг харагдахгүй байна. Профайлынхаа дэлгэцийн зураг, түүний PDF эсвэл буулгасан профайл текстийг туршаарай.",
+  "perm_open_settings": "Тохиргоог нээх",
+  "perm_later": "Дараа"
 }

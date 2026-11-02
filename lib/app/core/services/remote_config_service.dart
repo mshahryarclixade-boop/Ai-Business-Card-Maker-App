@@ -18,7 +18,7 @@ class RemoteConfigService {
   static const _creditsEnabledKey = 'credits_enabled';
   static const _creditPoolsKey = 'credit_pools';
   static const _creditCostsKey = 'credit_costs';
-
+  static const _onboardingEnabledKey = 'onboarding_enabled';
   static const _paywallConfigKey = 'paywall_config';
 
   // One JSON parameter per platform: android_version_config /
@@ -58,6 +58,7 @@ class RemoteConfigService {
         _paywallConfigKey: jsonEncode(PaywallConfig.defaultJson),
         'android_version_config': '',
         'ios_version_config': '',
+        _onboardingEnabledKey: true,
       });
       _rc = rc;
       final fetch = rc.fetchAndActivate();
@@ -85,6 +86,9 @@ class RemoteConfigService {
 
   /// Master switch: while false, the credit gate lets everything through.
   bool get creditsEnabled => _rc?.getBool(_creditsEnabledKey) ?? false;
+  /// While false, the app skips onboarding. Defaults to true, so a failed
+  /// or slow fetch keeps the current behaviour.
+  bool get onboardingEnabled => _rc?.getBool(_onboardingEnabledKey) ?? true;
 
   /// Paywall copy + display settings. Never null: falls back to the
   /// built-in defaults when RC is unavailable or the JSON is invalid.

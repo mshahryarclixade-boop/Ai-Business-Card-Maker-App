@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "마케팅",
   "panel_role_marketing_long": "마케팅 및 브랜드",
   "panel_role_product": "제품",
-  "panel_role_product_long": "제품 및 디자인"
+  "panel_role_product_long": "제품 및 디자인",
+  "add_link_add_button": "추가",
+  "panel_go_to_decision": "결정으로 이동",
+  "qr_manage_menu_preview": "미리보기",
+  "career_ai_error_not_profile": "LinkedIn 프로필이나 이력서처럼 보이지 않습니다. 프로필 스크린샷, PDF 또는 붙여넣은 프로필 텍스트를 사용해 보세요.",
+  "perm_open_settings": "설정 열기",
+  "perm_later": "나중에"
 }

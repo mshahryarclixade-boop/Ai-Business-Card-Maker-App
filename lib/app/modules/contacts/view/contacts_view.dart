@@ -1,4 +1,5 @@
   import '../../career_studio/widgets/career_widgets.dart';
+import '../../../core/widgets/hide_when_pro.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -200,12 +201,12 @@ class _ContactsViewState extends State<ContactsView> {
       title: 'contacts_title'.tr,
       showLeading: false,
       // Same size and look as the Clixa AI screen's crown.
-      trailing: CrownUpgradeButton(
+      trailing: HideWhenPro(child: CrownUpgradeButton(
         size: 40,
         iconSize: 22,
         borderRadius: 12,
         onTap: _openPaywall,
-      ),
+      )),
     );
   }
 
@@ -225,6 +226,7 @@ class _ContactsViewState extends State<ContactsView> {
               child: TextField(
                 controller: _searchCtrl,
                 focusNode: _searchFocus,
+                textCapitalization: TextCapitalization.words,
                 onChanged: (v) => controller.updateSearch(v),
                 // Tapping outside the field closes the keyboard.
                 onTapOutside: (_) => _searchFocus.unfocus(),

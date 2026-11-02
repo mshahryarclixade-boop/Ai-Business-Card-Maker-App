@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Маркетинг",
   "panel_role_marketing_long": "Маркетинг және бренд",
   "panel_role_product": "Өнім",
-  "panel_role_product_long": "Өнім және дизайн"
+  "panel_role_product_long": "Өнім және дизайн",
+  "add_link_add_button": "Қосу",
+  "panel_go_to_decision": "Шешімге өту",
+  "qr_manage_menu_preview": "Алдын ала қарау",
+  "career_ai_error_not_profile": "Бұл LinkedIn профилі немесе түйіндемеге ұқсамайды. Профиліңіздің скриншотын, оның PDF файлын немесе қойылған профиль мәтінін байқап көріңіз.",
+  "perm_open_settings": "Параметрлерді ашу",
+  "perm_later": "Кейінірек"
 }

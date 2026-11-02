@@ -1,3 +1,5 @@
+import '../../clixa/widgets/clixa_sheets.dart';
+import '../../paywall/controller/subscription_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -9,9 +11,21 @@ import '../model/expert_models.dart';
 import '../service/panel_history_service.dart';
 import 'expert_panel_chat_view.dart';
 
-/// Opens the Expert panel. Free for now (testing): no Pro check.
-void openExpertPanel() =>
+/// Opens the Expert panel. A Pro feature: free users get the upgrade sheet
+/// (and the panel opens right after they subscribe). The Pro status is read
+/// when the panel is opened, so a purchase or a restore is picked up at once.
+void openExpertPanel() {
+  final pro =
+      Get.isRegistered<SubscriptionController>() &&
+      Get.find<SubscriptionController>().isUserPro.value;
+  if (pro) {
     Get.to(() => const ExpertPanelView(), transition: Transition.rightToLeft);
+    return;
+  }
+  final context = Get.context;
+  if (context == null) return;
+  showClixaUpgrade(context, onUnlocked: openExpertPanel);
+}
 
 TextStyle _t(double size, Color color, {FontWeight? w, double? h}) => TextStyle(
   fontFamily: AppTextStyles.fontFamily,

@@ -1,3 +1,4 @@
+import '../../../core/widgets/hide_when_pro.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -48,14 +49,14 @@ class TemplateCard extends StatelessWidget {
               PositionedDirectional(
                 bottom: 8,
                 end: 8,
-                child: Container(
+                child: HideWhenPro(child: Container(
                   padding: const EdgeInsets.all(5),
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),
                   child: const FaIcon(FontAwesomeIcons.crown, size: 12, color: Color(0xFFF5A623)),
-                ),
+                )),
               ),
             PositionedDirectional(
               top: 8,

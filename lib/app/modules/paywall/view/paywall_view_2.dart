@@ -5,6 +5,7 @@ import '../../../core/services/remote_config_service.dart';
 import '../../../core/utils/legal_links.dart';
 import '../controller/subscription_controller.dart';
 import '../models/paywall_config_model.dart';
+import '../widgets/paywall_canvas.dart';
 import 'paywall_actions.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -45,22 +46,10 @@ class _PaywallView2State extends State<PaywallView2> {
         height: double.infinity,
         decoration: const BoxDecoration(gradient: _kBackgroundGradient),
         child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final scale = constraints.maxWidth / _kDesignWidth;
-              return OverflowBox(
-                alignment: Alignment.topCenter,
-                minWidth: _kDesignWidth,
-                maxWidth: _kDesignWidth,
-                minHeight: _kDesignHeight,
-                maxHeight: _kDesignHeight,
-                child: Transform.scale(
-                  scale: scale,
-                  alignment: Alignment.topCenter,
-                  child: SizedBox(
-                    width: _kDesignWidth,
-                    height: _kDesignHeight,
-                    child: Stack(
+          child: PaywallCanvas(
+            designWidth: _kDesignWidth,
+            designHeight: _kDesignHeight,
+            child: Stack(
                       children: [
                         const _Artwork(),
                         if (cfg.showCloseButton) _CloseButton(pops: widget.pops),
@@ -77,10 +66,6 @@ class _PaywallView2State extends State<PaywallView2> {
                         _Footer(cfg, pops: widget.pops),
                       ],
                     ),
-                  ),
-                ),
-              );
-            },
           ),
         ),
       ),
@@ -337,10 +322,10 @@ class _PillRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _PillBadge(text: left),
+        Flexible(child: _PillBadge(text: left)),
         if (right != null) ...[
           const SizedBox(width: 10),
-          _PillBadge(text: right!),
+          Flexible(child: _PillBadge(text: right!)),
         ],
       ],
     );
@@ -479,13 +464,17 @@ class _MonthlyCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  plan.title,
-                  style: const TextStyle(
-                    fontFamily: AppTextStyles.fontFamily,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.titleDark,
+                Flexible(
+                  child: Text(
+                    plan.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: AppTextStyles.fontFamily,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.titleDark,
+                    ),
                   ),
                 ),
                 _SelectDot(selected: selected, size: 20),
@@ -519,8 +508,12 @@ class _MonthlyCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            Text(
+            // Flexible: a long translation is cut at the card's edge, not overflowed.
+            Flexible(
+              child: Text(
               plan.description,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontFamily: AppTextStyles.fontFamily,
                 fontSize: 12,
@@ -528,6 +521,7 @@ class _MonthlyCard extends StatelessWidget {
                 fontWeight: FontWeight.w400,
                 color: AppColors.textSubtitle,
               ),
+            ),
             ),
           ],
         ),
@@ -599,7 +593,7 @@ class _YearlyCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
+                  Flexible(child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
                       vertical: 5,
@@ -610,6 +604,8 @@ class _YearlyCard extends StatelessWidget {
                     ),
                     child: Text(
                       plan.badge,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 10,
@@ -618,13 +614,15 @@ class _YearlyCard extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                  ),
+                  )),
                   _SelectDot(selected: selected, size: 22),
                 ],
               ),
               const SizedBox(height: 10),
               Text(
                 plan.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
                   fontSize: 15,
@@ -669,6 +667,8 @@ class _YearlyCard extends StatelessWidget {
                   if (plan.originalPrice.isNotEmpty)
                     Text(
                       plan.originalPrice,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontFamily: AppTextStyles.fontFamily,
                         fontSize: 11,
@@ -689,6 +689,8 @@ class _YearlyCard extends StatelessWidget {
                       ),
                       child: Text(
                         plan.saveBadge,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 10,
@@ -832,20 +834,20 @@ class _Footer extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          GestureDetector(
+          Flexible(child: GestureDetector(
             onTap: () => PaywallActions.restore(context, pops: pops),
             child: _FooterLink(text: cfg.restoreLabel),
-          ),
+          )),
           const _FooterDot(),
-          GestureDetector(
+          Flexible(child: GestureDetector(
             onTap: LegalLinks.openTermsOfUse,
             child: _FooterLink(text: cfg.termsLabel),
-          ),
+          )),
           const _FooterDot(),
-          GestureDetector(
+          Flexible(child: GestureDetector(
             onTap: LegalLinks.openPrivacyPolicy,
             child: _FooterLink(text: cfg.privacyLabel),
-          ),
+          )),
         ],
       ),
     );
@@ -861,6 +863,8 @@ class _FooterLink extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
       style: const TextStyle(
         fontFamily: AppTextStyles.fontFamily,
         fontSize: 9,

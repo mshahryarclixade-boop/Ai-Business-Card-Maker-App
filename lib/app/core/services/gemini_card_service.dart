@@ -1,3 +1,4 @@
+import '../../modules/paywall/services/user_credits_manager.dart';
 import '../utils/ai_usage_log.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -39,6 +40,7 @@ class GeminiCardService {
       'logo=${logoBytes?.length ?? 0}B prompt=${prompt.length} chars',
     );
 
+    final udid = await UserCreditsManager().udidOrNull();
     try {
       final callable = _functions.httpsCallable(
         'generateCard',
@@ -52,6 +54,8 @@ class GeminiCardService {
             'referenceMime': referenceMime,
             if (logoBytes != null) 'logoBase64': base64Encode(logoBytes),
             if (logoBytes != null) 'logoMime': logoMime,
+            // The server counts this query for this user (ai_usage/{udid}).
+            'udid': ?udid,
           })
           .timeout(const Duration(seconds: 190));
 

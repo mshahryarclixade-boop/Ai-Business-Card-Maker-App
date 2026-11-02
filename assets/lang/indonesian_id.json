@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Pemasaran",
   "panel_role_marketing_long": "Pemasaran dan merek",
   "panel_role_product": "Produk",
-  "panel_role_product_long": "Produk dan desain"
+  "panel_role_product_long": "Produk dan desain",
+  "add_link_add_button": "Tambah",
+  "panel_go_to_decision": "Lanjut ke keputusan",
+  "qr_manage_menu_preview": "Pratinjau",
+  "career_ai_error_not_profile": "Ini tidak terlihat seperti profil LinkedIn atau CV. Coba tangkapan layar profil Anda, PDF-nya, atau teks profil yang ditempel.",
+  "perm_open_settings": "Buka Pengaturan",
+  "perm_later": "Nanti"
 }

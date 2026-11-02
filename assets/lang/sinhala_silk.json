@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "අලෙවිකරණය",
   "panel_role_marketing_long": "අලෙවිකරණය සහ වෙළඳ නාමය",
   "panel_role_product": "නිෂ්පාදන",
-  "panel_role_product_long": "නිෂ්පාදනය සහ නිර්මාණය"
+  "panel_role_product_long": "නිෂ්පාදනය සහ නිර්මාණය",
+  "add_link_add_button": "එක් කරන්න",
+  "panel_go_to_decision": "තීරණයට යන්න",
+  "qr_manage_menu_preview": "පෙරදසුන",
+  "career_ai_error_not_profile": "මෙය LinkedIn පැතිකඩක් හෝ CV එකක් මෙන් නොපෙනේ. ඔබේ පැතිකඩේ තිර රූපයක්, එහි PDF එකක් හෝ ඇලවූ පැතිකඩ පෙළක් උත්සාහ කරන්න.",
+  "perm_open_settings": "සැකසුම් විවෘත කරන්න",
+  "perm_later": "පසුව"
 }

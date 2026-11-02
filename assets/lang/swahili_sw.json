@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Masoko",
   "panel_role_marketing_long": "Masoko na chapa",
   "panel_role_product": "Bidhaa",
-  "panel_role_product_long": "Bidhaa na muundo"
+  "panel_role_product_long": "Bidhaa na muundo",
+  "add_link_add_button": "Ongeza",
+  "panel_go_to_decision": "Nenda kwenye uamuzi",
+  "qr_manage_menu_preview": "Hakiki",
+  "career_ai_error_not_profile": "Hii haionekani kama wasifu wa LinkedIn au CV. Jaribu picha ya skrini ya wasifu wako, PDF yake, au maandishi ya wasifu yaliyobandikwa.",
+  "perm_open_settings": "Fungua Mipangilio",
+  "perm_later": "Baadaye"
 }

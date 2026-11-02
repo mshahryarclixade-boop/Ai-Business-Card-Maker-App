@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "שיווק",
   "panel_role_marketing_long": "שיווק ומותג",
   "panel_role_product": "מוּצָר",
-  "panel_role_product_long": "מוצר ועיצוב"
+  "panel_role_product_long": "מוצר ועיצוב",
+  "add_link_add_button": "הוסף",
+  "panel_go_to_decision": "עבור להחלטה",
+  "qr_manage_menu_preview": "תצוגה מקדימה",
+  "career_ai_error_not_profile": "זה לא נראה כמו פרופיל LinkedIn או קורות חיים. נסו צילום מסך של הפרופיל, קובץ ה-PDF שלו או טקסט פרופיל מודבק.",
+  "perm_open_settings": "פתח הגדרות",
+  "perm_later": "מאוחר יותר"
 }

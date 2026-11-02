@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Εμπορία",
   "panel_role_marketing_long": "Μάρκετινγκ και μάρκα",
   "panel_role_product": "Προϊόν",
-  "panel_role_product_long": "Προϊόν και σχεδιασμός"
+  "panel_role_product_long": "Προϊόν και σχεδιασμός",
+  "add_link_add_button": "Προσθήκη",
+  "panel_go_to_decision": "Μετάβαση στην απόφαση",
+  "qr_manage_menu_preview": "Προεπισκόπηση",
+  "career_ai_error_not_profile": "Αυτό δεν μοιάζει με προφίλ LinkedIn ή βιογραφικό. Δοκιμάστε στιγμιότυπο του προφίλ σας, το PDF του ή επικολλημένο κείμενο προφίλ.",
+  "perm_open_settings": "Άνοιγμα ρυθμίσεων",
+  "perm_later": "Αργότερα"
 }

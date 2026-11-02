@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Markaðssetning",
   "panel_role_marketing_long": "Markaðssetning og vörumerki",
   "panel_role_product": "Vara",
-  "panel_role_product_long": "Vara og hönnun"
+  "panel_role_product_long": "Vara og hönnun",
+  "add_link_add_button": "Bæta við",
+  "panel_go_to_decision": "Fara í ákvörðun",
+  "qr_manage_menu_preview": "Forskoðun",
+  "career_ai_error_not_profile": "Þetta lítur ekki út eins og LinkedIn-prófíll eða ferilskrá. Prófaðu skjáskot af prófílnum þínum, PDF-skjal hans eða límdan prófíltexta.",
+  "perm_open_settings": "Opna stillingar",
+  "perm_later": "Seinna"
 }

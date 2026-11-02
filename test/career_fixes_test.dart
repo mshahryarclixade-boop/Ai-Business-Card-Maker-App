@@ -289,6 +289,9 @@ void main() {
     t,
   ) async {
     await openHub(t);
+    // Page transitions are skipped under reduce-motion (the test default): turn
+    // it off here, and settle with fixed pumps because the hub's crown wiggles.
+    t.platformDispatcher.clearAccessibilityFeaturesTestValue();
     double dx(Type type) => t.getTopLeft(find.byType(type)).dx;
 
     // Builder from the hub.
@@ -296,7 +299,8 @@ void main() {
     await t.pump();
     await t.pump(const Duration(milliseconds: 80));
     expect(dx(ProfileBuilderView), greaterThan(0), reason: 'mid-slide');
-    await t.pumpAndSettle();
+    await t.pump();
+    await t.pump(const Duration(seconds: 1));
     expect(dx(ProfileBuilderView), 0);
 
     // Loading -> new profile (replaces the loading screen).
@@ -309,17 +313,23 @@ void main() {
     await t.pump(const Duration(milliseconds: 2900)); // last step -> navigate
     await t.pump(const Duration(milliseconds: 80));
     expect(dx(ProfileDraftView), greaterThan(0), reason: 'draft slides in');
-    await t.pumpAndSettle();
+    await t.pump();
+    await t.pump(const Duration(seconds: 1));
     expect(dx(ProfileDraftView), 0);
     await flush(t);
   });
 
   testWidgets('7b. report slides in from the right after analyzing', (t) async {
     await openHub(t);
+    // Page transitions are skipped under reduce-motion (the test default): turn
+    // it off here, and settle with fixed pumps because the hub's crown wiggles.
+    t.platformDispatcher.clearAccessibilityFeaturesTestValue();
     await t.tap(find.text('Profile Optimizer'));
-    await t.pumpAndSettle();
+    await t.pump();
+    await t.pump(const Duration(seconds: 1));
     await t.tap(find.text('Paste sections manually'));
-    await t.pumpAndSettle();
+    await t.pump();
+    await t.pump(const Duration(seconds: 1));
     await t.enterText(find.byType(TextField), 'Designer');
     await t.tap(find.text('Analyze my profile'));
     await t.pump(const Duration(milliseconds: 400));
@@ -332,7 +342,8 @@ void main() {
       greaterThan(0),
       reason: 'report slides in',
     );
-    await t.pumpAndSettle();
+    await t.pump();
+    await t.pump(const Duration(seconds: 1));
     await flush(t);
   });
 }

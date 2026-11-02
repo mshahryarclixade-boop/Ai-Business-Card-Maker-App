@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Marketing",
   "panel_role_marketing_long": "Marketing és márka",
   "panel_role_product": "Termék",
-  "panel_role_product_long": "Termék és design"
+  "panel_role_product_long": "Termék és design",
+  "add_link_add_button": "Hozzáadás",
+  "panel_go_to_decision": "Ugrás a döntéshez",
+  "qr_manage_menu_preview": "Előnézet",
+  "career_ai_error_not_profile": "Ez nem tűnik LinkedIn-profilnak vagy önéletrajznak. Próbálj meg képernyőképet a profilodról, annak PDF-jét vagy beillesztett profilszöveget.",
+  "perm_open_settings": "Beállítások megnyitása",
+  "perm_later": "Később"
 }

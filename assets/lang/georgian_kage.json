@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "მარკეტინგი",
   "panel_role_marketing_long": "მარკეტინგი და ბრენდი",
   "panel_role_product": "პროდუქტი",
-  "panel_role_product_long": "პროდუქტი და დიზაინი"
+  "panel_role_product_long": "პროდუქტი და დიზაინი",
+  "add_link_add_button": "დამატება",
+  "panel_go_to_decision": "გადაწყვეტილებაზე გადასვლა",
+  "qr_manage_menu_preview": "გადახედვა",
+  "career_ai_error_not_profile": "ეს არ ჰგავს LinkedIn-ის პროფილს ან CV-ს. სცადეთ თქვენი პროფილის ეკრანის ანაბეჭდი, მისი PDF ან ჩასმული პროფილის ტექსტი.",
+  "perm_open_settings": "პარამეტრების გახსნა",
+  "perm_later": "მოგვიანებით"
 }

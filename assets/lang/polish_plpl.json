@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Marketing",
   "panel_role_marketing_long": "Marketing i marka",
   "panel_role_product": "Produkt",
-  "panel_role_product_long": "Produkt i projekt"
+  "panel_role_product_long": "Produkt i projekt",
+  "add_link_add_button": "Dodaj",
+  "panel_go_to_decision": "Przejdź do decyzji",
+  "qr_manage_menu_preview": "Podgląd",
+  "career_ai_error_not_profile": "To nie wygląda na profil LinkedIn ani CV. Spróbuj zrzutu ekranu profilu, jego PDF-a lub wklejonego tekstu profilu.",
+  "perm_open_settings": "Otwórz ustawienia",
+  "perm_later": "Później"
 }

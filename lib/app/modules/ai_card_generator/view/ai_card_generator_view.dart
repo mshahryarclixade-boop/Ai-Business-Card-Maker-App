@@ -1,3 +1,4 @@
+import '../../../core/widgets/hide_when_pro.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 
@@ -51,7 +52,7 @@ class AiCardGeneratorView extends StatelessWidget {
             ),
           ),
           actions: [
-            Padding(
+            HideWhenPro(child: Padding(
               padding: const EdgeInsetsDirectional.only(end: 16),
               child: TapTarget(child: GestureDetector(
                 onTap: () {
@@ -72,7 +73,7 @@ class AiCardGeneratorView extends StatelessWidget {
                   ),
                 ),
               )),
-            ),
+            )),
           ],
         ),
         body: SafeArea(

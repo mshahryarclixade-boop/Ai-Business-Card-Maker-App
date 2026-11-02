@@ -11,6 +11,10 @@ import '../../paywall/controller/subscription_controller.dart';
 import '../../paywall/view/paywall_screen.dart';
 import '../../../core/translations/tr_extension.dart';
 
+/// First launch and onboarding switched on in Remote Config.
+bool shouldShowOnboarding({required bool seen, required bool enabled}) =>
+    !seen && enabled;
+
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
 
@@ -65,7 +69,14 @@ class _SplashViewState extends State<SplashView>
   /// paywall for everyone else while Remote Config has it enabled.
   Future<void> _navigate() async {
     final seen = GetStorage().read<bool>(OnboardingController.seenKey) ?? false;
-    if (!seen) {
+    // Remote Config `onboarding_enabled`: while false, first launches go on to
+    // the normal routing below (the force-update check has already run, so it
+    // is not affected). Not marked as seen, so turning it back on shows
+    // onboarding to whoever skipped it.
+    if (shouldShowOnboarding(
+      seen: seen,
+      enabled: RemoteConfigService().onboardingEnabled,
+    )) {
       Get.offAllNamed(Routes.ONBOARDING);
       return;
     }

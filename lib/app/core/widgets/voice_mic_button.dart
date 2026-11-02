@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
+import '../services/permission_gate.dart';
 import '../services/speech_input_service.dart';
 import '../theme/app_colors.dart';
 import '../translations/tr_extension.dart';
@@ -58,13 +59,15 @@ class VoiceMicButton extends StatelessWidget {
 
 /// Tells the user why dictation could not start or stopped.
 void showSpeechIssue(SpeechInputService speech, SpeechIssue issue) {
-  final blocked = issue == SpeechIssue.permissionBlocked;
+  // Refused once but can be asked again: nothing to show, the next tap asks.
+  if (issue == SpeechIssue.permissionDenied) return;
+  // Cannot be asked again: Open Settings / Later, on every try.
+  if (issue == SpeechIssue.permissionBlocked) {
+    PermissionGate.showSettingsDialog(AppPermission.microphone);
+    return;
+  }
   final (title, message) = switch (issue) {
-    SpeechIssue.permissionDenied => (
-      'clixa_mic_denied_title',
-      'clixa_mic_denied_message',
-    ),
-    SpeechIssue.permissionBlocked => (
+    SpeechIssue.permissionDenied || SpeechIssue.permissionBlocked => (
       'clixa_mic_denied_title',
       'clixa_mic_blocked_message',
     ),
@@ -90,14 +93,5 @@ void showSpeechIssue(SpeechInputService speech, SpeechIssue issue) {
     message.tr,
     snackPosition: SnackPosition.BOTTOM,
     margin: const EdgeInsets.all(15),
-    mainButton: blocked
-        ? TextButton(
-            onPressed: speech.openSettings,
-            child: Text(
-              'clixa_mic_settings'.tr,
-              style: const TextStyle(color: Colors.white),
-            ),
-          )
-        : null,
   );
 }

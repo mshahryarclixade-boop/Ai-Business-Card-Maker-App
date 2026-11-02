@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "മാർക്കറ്റിംഗ്",
   "panel_role_marketing_long": "മാർക്കറ്റിംഗും ബ്രാൻഡും",
   "panel_role_product": "ഉൽപ്പന്നം",
-  "panel_role_product_long": "ഉൽപ്പന്നവും രൂപകൽപ്പനയും"
+  "panel_role_product_long": "ഉൽപ്പന്നവും രൂപകൽപ്പനയും",
+  "add_link_add_button": "ചേർക്കുക",
+  "panel_go_to_decision": "തീരുമാനത്തിലേക്ക് പോകുക",
+  "qr_manage_menu_preview": "പ്രിവ്യൂ",
+  "career_ai_error_not_profile": "ഇത് LinkedIn പ്രൊഫൈലോ CV യോ പോലെ തോന്നുന്നില്ല. നിങ്ങളുടെ പ്രൊഫൈലിന്റെ സ്ക്രീൻഷോട്ട്, അതിന്റെ PDF, അല്ലെങ്കിൽ ഒട്ടിച്ച പ്രൊഫൈൽ ടെക്സ്റ്റ് പരീക്ഷിക്കുക.",
+  "perm_open_settings": "ക്രമീകരണങ്ങൾ തുറക്കുക",
+  "perm_later": "പിന്നീട്"
 }

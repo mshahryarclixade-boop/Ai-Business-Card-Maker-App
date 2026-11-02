@@ -2,6 +2,8 @@
 const Map<String, String> careerStudioStrings = {
   'career_ai_error_rejected':
       'The AI couldn\'t use that request. Please try again.',
+  'career_ai_error_not_profile':
+      'That doesn\'t look like a LinkedIn profile or CV. Try a screenshot of your profile, its PDF, or pasted profile text.',
   'career_ai_error_generic':
       'Something went wrong with the AI. Please try again.',
   'career_ai_failed_title': 'AI couldn\'t finish',

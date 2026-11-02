@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "ການຕະຫຼາດ",
   "panel_role_marketing_long": "ການຕະຫຼາດ ແລະ ຍີ່ຫໍ້",
   "panel_role_product": "ຜະລິດຕະພັນ",
-  "panel_role_product_long": "ຜະລິດຕະພັນ ແລະ ການອອກແບບ"
+  "panel_role_product_long": "ຜະລິດຕະພັນ ແລະ ການອອກແບບ",
+  "add_link_add_button": "ເພີ່ມ",
+  "panel_go_to_decision": "ໄປທີ່ການຕັດສິນໃຈ",
+  "qr_manage_menu_preview": "ເບິ່ງຕົວຢ່າງ",
+  "career_ai_error_not_profile": "ນີ້ເບິ່ງຄືບໍ່ແມ່ນໂປຣໄຟລ໌ LinkedIn ຫຼື CV. ລອງໃຊ້ຮູບໜ້າຈໍຂອງໂປຣໄຟລ໌, PDF ຫຼື ຂໍ້ຄວາມໂປຣໄຟລ໌ທີ່ວາງໄວ້.",
+  "perm_open_settings": "ເປີດການຕັ້ງຄ່າ",
+  "perm_later": "ພາຍຫຼັງ"
 }

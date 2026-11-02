@@ -57,17 +57,38 @@ class CreditPools {
 }
 
 /// What each action costs, in credits.
+/// What each action costs, in credits.
 class CreditCosts {
-  const CreditCosts({this.aiCard = 1, this.export = 0});
+  const CreditCosts({
+    this.aiCard = 1,
+    this.export = 0,
+    this.clixa = 0,
+    this.career = 0,
+    this.panel = 0,
+  });
 
   final int aiCard;
   final int export;
+  final int clixa;
+  final int career;
+  final int panel;
+
+  /// Cost of one text-AI call, by task name (see CloudCareerAi.functionFor).
+  int forTask(String task) => switch (task) {
+    'coachReply' => clixa,
+    'panelTurn' || 'panelReport' => panel,
+    'buildProfile' || 'rewrite' || 'analyze' || 'fixSuggestion' => career,
+    _ => 0,
+  };
 
   factory CreditCosts.fromJson(Map<String, dynamic> json) {
     const d = CreditCosts();
     return CreditCosts(
       aiCard: _intValue(json['ai_card'], d.aiCard),
       export: _intValue(json['export'], d.export),
+      clixa: _intValue(json['clixa'], d.clixa),
+      career: _intValue(json['career'], d.career),
+      panel: _intValue(json['panel'], d.panel),
     );
   }
 

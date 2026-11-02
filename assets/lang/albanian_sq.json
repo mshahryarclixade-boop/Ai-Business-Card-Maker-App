@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Marketing",
   "panel_role_marketing_long": "Marketingu dhe marka",
   "panel_role_product": "Produkt",
-  "panel_role_product_long": "Produkti dhe dizajni"
+  "panel_role_product_long": "Produkti dhe dizajni",
+  "add_link_add_button": "Shto",
+  "panel_go_to_decision": "Shko te vendimi",
+  "qr_manage_menu_preview": "Shiko paraprakisht",
+  "career_ai_error_not_profile": "Kjo nuk duket si profil LinkedIn ose CV. Provo një pamje ekrani të profilit tënd, PDF-në e tij ose tekstin e profilit të ngjitur.",
+  "perm_open_settings": "Hap cilësimet",
+  "perm_later": "Më vonë"
 }

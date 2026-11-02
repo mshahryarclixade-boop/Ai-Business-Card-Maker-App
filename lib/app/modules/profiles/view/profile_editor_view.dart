@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+import '../../../core/utils/input_validators.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'dart:typed_data';
 
@@ -41,6 +43,8 @@ class _ProfileEditorViewState extends State<ProfileEditorView> {
   Uint8List? _logo;
   String _logoName = '';
   bool _nameMissing = false;
+  String? _emailError;
+  String? _phoneError;
 
   @override
   void initState() {
@@ -75,6 +79,24 @@ class _ProfileEditorViewState extends State<ProfileEditorView> {
   void _save() {
     if (_name.text.trim().isEmpty) {
       setState(() => _nameMissing = true);
+      return;
+    }
+    final codeOk = RegExp(r'^\+?\d{1,4}$').hasMatch(_code.text.trim()) ||
+        _code.text.trim().isEmpty;
+    final emailError = InputValidators.emailError(_email.text);
+    final phoneError = !codeOk || _phone.text.trim().isNotEmpty
+        ? (codeOk
+              ? InputValidators.phoneError(
+                  _phone.text,
+                  dialCode: _code.text.trim(),
+                )
+              : 'profile_setup_error_phone_invalid'.tr)
+        : null;
+    if (emailError != null || phoneError != null) {
+      setState(() {
+        _emailError = emailError;
+        _phoneError = phoneError;
+      });
       return;
     }
     final data = UserProfileData(
@@ -180,6 +202,15 @@ class _ProfileEditorViewState extends State<ProfileEditorView> {
                             controller: _code,
                             type: TextInputType.phone,
                             hint: '+92',
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp(r'[0-9+]')),
+                              LengthLimitingTextInputFormatter(5),
+                            ],
+                            onChanged: (_) {
+                              if (_phoneError != null) {
+                                setState(() => _phoneError = null);
+                              }
+                            },
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -188,6 +219,13 @@ class _ProfileEditorViewState extends State<ProfileEditorView> {
                             label: 'profiles_field_phone'.tr,
                             controller: _phone,
                             type: TextInputType.phone,
+                            inputFormatters: InputValidators.phoneFormatters,
+                            error: _phoneError,
+                            onChanged: (_) {
+                              if (_phoneError != null) {
+                                setState(() => _phoneError = null);
+                              }
+                            },
                           ),
                         ),
                       ],
@@ -196,6 +234,13 @@ class _ProfileEditorViewState extends State<ProfileEditorView> {
                       label: 'profiles_field_email'.tr,
                       controller: _email,
                       type: TextInputType.emailAddress,
+                      inputFormatters: InputValidators.emailFormatters,
+                      error: _emailError,
+                      onChanged: (_) {
+                        if (_emailError != null) {
+                          setState(() => _emailError = null);
+                        }
+                      },
                     ),
                     _Field(
                       label: 'profiles_field_website'.tr,
@@ -316,6 +361,7 @@ class _Field extends StatelessWidget {
     this.hint,
     this.onChanged,
     this.last = false,
+    this.inputFormatters,
   });
 
   final String label;
@@ -325,6 +371,7 @@ class _Field extends StatelessWidget {
   final String? hint;
   final ValueChanged<String>? onChanged;
   final bool last;
+  final List<TextInputFormatter>? inputFormatters;
 
   @override
   Widget build(BuildContext context) {
@@ -346,6 +393,7 @@ class _Field extends StatelessWidget {
           TextField(
             controller: controller,
             keyboardType: type,
+            inputFormatters: inputFormatters,
             onChanged: onChanged,
             textInputAction: last ? TextInputAction.done : TextInputAction.next,
             style: TextStyle(

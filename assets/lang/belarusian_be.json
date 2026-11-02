@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Маркетынг",
   "panel_role_marketing_long": "Маркетынг і брэнд",
   "panel_role_product": "Прадукт",
-  "panel_role_product_long": "Прадукт і дызайн"
+  "panel_role_product_long": "Прадукт і дызайн",
+  "add_link_add_button": "Дадаць",
+  "panel_go_to_decision": "Перайсці да рашэння",
+  "qr_manage_menu_preview": "Папярэдні прагляд",
+  "career_ai_error_not_profile": "Гэта не падобна на профіль LinkedIn або рэзюмэ. Паспрабуйце здымак экрана вашага профілю, яго PDF або ўстаўлены тэкст профілю.",
+  "perm_open_settings": "Адкрыць налады",
+  "perm_later": "Пазней"
 }

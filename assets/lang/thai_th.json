@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "การตลาด",
   "panel_role_marketing_long": "การตลาดและแบรนด์",
   "panel_role_product": "ผลิตภัณฑ์",
-  "panel_role_product_long": "ผลิตภัณฑ์และการออกแบบ"
+  "panel_role_product_long": "ผลิตภัณฑ์และการออกแบบ",
+  "add_link_add_button": "เพิ่ม",
+  "panel_go_to_decision": "ไปที่การตัดสินใจ",
+  "qr_manage_menu_preview": "ดูตัวอย่าง",
+  "career_ai_error_not_profile": "ดูเหมือนไม่ใช่โปรไฟล์ LinkedIn หรือเรซูเม่ ลองใช้ภาพหน้าจอโปรไฟล์ ไฟล์ PDF หรือข้อความโปรไฟล์ที่วางไว้",
+  "perm_open_settings": "เปิดการตั้งค่า",
+  "perm_later": "ภายหลัง"
 }

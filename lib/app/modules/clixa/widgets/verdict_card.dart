@@ -1,3 +1,4 @@
+import '../../expert_panel/view/expert_panel_view.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -5,7 +6,6 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/translations/tr_extension.dart';
 import '../controller/clixa_controller.dart';
 import '../model/clixa_models.dart';
-import 'clixa_sheets.dart';
 
 /// The "Idea verdict" Clixa gives at the end of a Validate chat. The pitch
 /// button asks for Pro (the expert panel isn't built yet).
@@ -120,7 +120,7 @@ class VerdictCard extends StatelessWidget {
             width: double.infinity,
             height: 46,
             child: ElevatedButton(
-              onPressed: () => showClixaUpgrade(context),
+              onPressed: openExpertPanel,
               style: ElevatedButton.styleFrom(
                 backgroundColor: _blue,
                 foregroundColor: Colors.white,

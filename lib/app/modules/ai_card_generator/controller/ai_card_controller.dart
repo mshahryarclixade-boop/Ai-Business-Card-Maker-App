@@ -1,3 +1,4 @@
+import '../../../core/services/permission_gate.dart';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -71,6 +72,10 @@ class AiCardController extends GetxController {
   Future<void> pickReferenceImage([
     ImageSource source = ImageSource.gallery,
   ]) async {
+    if (source == ImageSource.camera &&
+        !await PermissionGate.ensure(AppPermission.camera)) {
+      return;
+    }
     try {
       final picked = await _picker.pickImage(source: source, imageQuality: 90);
 

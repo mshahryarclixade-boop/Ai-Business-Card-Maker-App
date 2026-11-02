@@ -1,3 +1,4 @@
+import '../../../core/services/permission_gate.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -67,17 +68,40 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
     super.dispose();
   }
 
+  /// The gallery picker (or the next screen) is open: the camera is left as
+  /// it is. Without this, the picker made the app "inactive", which disposed
+  /// the camera while its preview was still on screen, and coming back
+  /// restarted it in the middle of reading the picked photo and opening the
+  /// next screen.
+  bool _externalUiOpen = false;
+  bool _leaving = false;
+  bool _initializing = false;
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (_mode != _ScanMode.card) return; // QR mode: mobile_scanner handles itself
+    if (_externalUiOpen || _leaving || _isProcessing || !mounted) return;
 
     final controller = _cameraController;
-    if (controller == null || !controller.value.isInitialized) return;
+    if (controller == null) {
+      if (state == AppLifecycleState.resumed && !_initializing) {
+        // Back from Settings, or after the app was in the background: start
+        // the camera (if it is allowed).
+        PermissionGate.isGranted(AppPermission.camera).then((ok) {
+          if (ok && mounted && _cameraController == null) _initCamera();
+        });
+      }
+      return;
+    }
 
-    if (state == AppLifecycleState.inactive) {
-      controller.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      _initCamera();
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused) {
+      // Take the preview out of the tree first, then release the camera.
+      setState(() {
+        _cameraController = null;
+        _cameraInitFuture = null;
+      });
+      WidgetsBinding.instance.endOfFrame.then((_) => controller.dispose());
     }
   }
 
@@ -86,8 +110,26 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
   // ---------------------------------------------------------------------
 
   Future<void> _initCamera() async {
-    if (!mounted) return;
+    if (!mounted || _initializing || _leaving) return;
+    _initializing = true;
+    try {
+      await _initCameraInner();
+    } finally {
+      _initializing = false;
+    }
+  }
+
+  Future<void> _initCameraInner() async {
     setState(() => _cameraError = null);
+    // Asks for the camera; if refused, Open Settings / Later is shown, and
+    // "Try again" below asks again.
+    if (!await PermissionGate.ensure(AppPermission.camera)) {
+      if (mounted) {
+        setState(() => _cameraError = 'scan_camera_permission_needed'.tr);
+      }
+      return;
+    }
+    if (!mounted) return;
     try {
       final cameras = await availableCameras();
       if (!mounted || _mode != _ScanMode.card) return;
@@ -107,7 +149,12 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
         _cameraInitFuture = controller.initialize();
       });
       await _cameraInitFuture;
-      if (mounted) setState(() {});
+      if (!mounted || _leaving) {
+        // Left the screen while the camera was starting.
+        if (!identical(_cameraController, controller)) await controller.dispose();
+        return;
+      }
+      setState(() {});
     } catch (e) {
       if (mounted) {
         setState(() => _cameraError = 'scan_camera_permission_needed'.tr);
@@ -117,6 +164,11 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
 
   Future<void> _switchMode(_ScanMode mode) async {
     if (_mode == mode || _isSwitching) return;
+    if (mode == _ScanMode.qr &&
+        !await PermissionGate.ensure(AppPermission.camera)) {
+      return;
+    }
+    if (!mounted) return;
     _isSwitching = true;
 
     try {
@@ -201,11 +253,20 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
   Future<void> _pickFromGallery() async {
     if (_isProcessing) return;
 
-    final picked = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: _mode == _ScanMode.card ? 90 : null,
-    );
-    if (picked == null) return;
+    _externalUiOpen = true;
+    final XFile? picked;
+    try {
+      picked = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: _mode == _ScanMode.card ? 90 : null,
+        // A 48 MP photo is no better for reading text and can exhaust memory.
+        maxWidth: _mode == _ScanMode.card ? 2400 : null,
+        maxHeight: _mode == _ScanMode.card ? 2400 : null,
+      );
+    } finally {
+      _externalUiOpen = false;
+    }
+    if (picked == null || !mounted) return;
 
     setState(() => _isProcessing = true);
     try {
@@ -402,6 +463,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
 
   void _goToCreateContact(ScannedContactData data) {
     if (!mounted) return;
+    _leaving = true; // no camera restart while the next screen opens
     Get.off(
           () => AddContactView(scannedData: data),
       transition: Transition.rightToLeft,
@@ -486,7 +548,15 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
         Positioned.fill(
           child: Container(color: Colors.black.withOpacity(0.25)),
         ),
-        Center(child: _buildOverlayContent()),
+        // Scaled down on short screens instead of overflowing the preview.
+        Center(
+          child: LayoutBuilder(
+            builder: (context, c) => FittedBox(
+              fit: BoxFit.scaleDown,
+              child: SizedBox(width: c.maxWidth, child: _buildOverlayContent()),
+            ),
+          ),
+        ),
         // NEW: link card shown after a web QR is scanned
         if (_scannedLink != null)
           Positioned(

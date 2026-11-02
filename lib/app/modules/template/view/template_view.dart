@@ -1,3 +1,4 @@
+import '../../../core/widgets/hide_when_pro.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -66,7 +67,7 @@ class _TemplateListing extends StatelessWidget {
                     ),
                   ),
                 ),
-                Align(
+                HideWhenPro(child: Align(
                   alignment: AlignmentDirectional.centerEnd,
                   child: TapTarget(child: GestureDetector(
                     onTap: () {
@@ -87,7 +88,7 @@ class _TemplateListing extends StatelessWidget {
                       ),
                     ),
                   )),
-                ),
+                )),
               ],
             ),
           ),
@@ -270,7 +271,7 @@ class _TemplateDetailView extends StatelessWidget {
                     ),
                   ),
                 ),
-                Align(
+                HideWhenPro(child: Align(
                   alignment: AlignmentDirectional.centerEnd,
                   child: Container(
                     width: 36,
@@ -286,7 +287,7 @@ class _TemplateDetailView extends StatelessWidget {
                       color: Color(0xFFF5A623),
                     ),
                   ),
-                ),
+                )),
               ],
             ),
           ),

@@ -1,3 +1,4 @@
+import '../../../core/utils/input_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:image_picker/image_picker.dart';
@@ -239,6 +240,12 @@ class _AddContactViewState extends State<AddContactView> {
   }
 
   Future<void> _save() async {
+    // The company email sits under "show more": open it so its error is seen.
+    if (!_showMoreFields &&
+        InputValidators.emailError(_companyEmail.text) != null) {
+      setState(() => _showMoreFields = true);
+      await WidgetsBinding.instance.endOfFrame;
+    }
     if (!_formKey.currentState!.validate()) return;
 
     if (_isEditing) {
@@ -462,7 +469,7 @@ class _AddContactViewState extends State<AddContactView> {
                           hint: 'contacts_field_first_name'.tr,
                           controller: _firstName,
                           focusNode: _firstNameFocus,
-                          textCapitalization: TextCapitalization.sentences,
+                          textCapitalization: TextCapitalization.words,
                           forceErrorBorder: _isFromScan &&
                               widget.scannedData!.isMissingName &&
                               _firstName.text.trim().isEmpty,
@@ -477,7 +484,7 @@ class _AddContactViewState extends State<AddContactView> {
                           label: 'contacts_field_last_name'.tr,
                           hint: 'contacts_field_last_name'.tr,
                           controller: _lastName,
-                          textCapitalization: TextCapitalization.sentences,
+                          textCapitalization: TextCapitalization.words,
                         ),
                       ),
                     ],
@@ -518,8 +525,11 @@ class _AddContactViewState extends State<AddContactView> {
                     label: 'contacts_field_email'.tr,
                     hint: 'contacts_hint_email'.tr,
                     controller: _email,
+                    textCapitalization: TextCapitalization.none,
                     icon: Icons.mail_outline,
                     keyboardType: TextInputType.emailAddress,
+                    inputFormatters: InputValidators.emailFormatters,
+                    validator: (v) => InputValidators.emailError(v ?? ''),
                   ),
                   const SizedBox(height: 14),
                   LabeledField(
@@ -528,12 +538,15 @@ class _AddContactViewState extends State<AddContactView> {
                     controller: _phone,
                     icon: Icons.call_outlined,
                     keyboardType: TextInputType.phone,
+                    inputFormatters: InputValidators.phoneFormatters,
+                    validator: (v) => InputValidators.phoneError(v ?? ''),
                   ),
                   const SizedBox(height: 14),
                   LabeledField(
                     label: 'contacts_field_linkedin'.tr,
                     hint: 'contacts_hint_linkedin'.tr,
                     controller: _linkedin,
+                    textCapitalization: TextCapitalization.none,
                     icon: Icons.link,
                   ),
                   const SizedBox(height: 14),
@@ -541,6 +554,7 @@ class _AddContactViewState extends State<AddContactView> {
                     label: 'contacts_field_website'.tr,
                     hint: 'contacts_hint_website'.tr,
                     controller: _website,
+                    textCapitalization: TextCapitalization.none,
                     icon: Icons.language,
                     textInputAction: TextInputAction.done,
                   ),
@@ -619,14 +633,18 @@ class _AddContactViewState extends State<AddContactView> {
                       label: 'contacts_field_company_email'.tr,
                       hint: 'contacts_hint_company_email'.tr,
                       controller: _companyEmail,
+                      textCapitalization: TextCapitalization.none,
                       icon: Icons.mail_outline,
                       keyboardType: TextInputType.emailAddress,
+                      inputFormatters: InputValidators.emailFormatters,
+                      validator: (v) => InputValidators.emailError(v ?? ''),
                     ),
                     const SizedBox(height: 14),
                     LabeledField(
                       label: 'contacts_field_company_linkedin'.tr,
                       hint: 'contacts_hint_linkedin'.tr,
                       controller: _companyLinkedin,
+                      textCapitalization: TextCapitalization.none,
                       icon: Icons.link,
                     ),
                     const SizedBox(height: 14),

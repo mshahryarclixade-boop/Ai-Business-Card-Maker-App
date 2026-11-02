@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "စျေးကွက်ရှာဖွေရေး",
   "panel_role_marketing_long": "စျေးကွက်ရှာဖွေရေးနှင့် အမှတ်တံဆိပ်",
   "panel_role_product": "ထုတ်ကုန်",
-  "panel_role_product_long": "ထုတ်ကုန်နှင့် ဒီဇိုင်း"
+  "panel_role_product_long": "ထုတ်ကုန်နှင့် ဒီဇိုင်း",
+  "add_link_add_button": "ထည့်ရန်",
+  "panel_go_to_decision": "ဆုံးဖြတ်ချက်သို့သွားရန်",
+  "qr_manage_menu_preview": "ကြိုတင်ကြည့်ရန်",
+  "career_ai_error_not_profile": "၎င်းသည် LinkedIn ပရိုဖိုင် သို့မဟုတ် CV နှင့် မတူပါ။ သင့်ပရိုဖိုင်၏ ဖန်သားပြင်ပုံ၊ PDF သို့မဟုတ် ကူးထည့်ထားသော ပရိုဖိုင်စာသားကို စမ်းကြည့်ပါ။",
+  "perm_open_settings": "ဆက်တင်များကိုဖွင့်ရန်",
+  "perm_later": "နောက်မှ"
 }

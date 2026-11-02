@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "マーケティング",
   "panel_role_marketing_long": "マーケティングとブランド",
   "panel_role_product": "製品",
-  "panel_role_product_long": "製品とデザイン"
+  "panel_role_product_long": "製品とデザイン",
+  "add_link_add_button": "追加",
+  "panel_go_to_decision": "決定へ進む",
+  "qr_manage_menu_preview": "プレビュー",
+  "career_ai_error_not_profile": "LinkedInプロフィールや履歴書には見えません。プロフィールのスクリーンショット、そのPDF、または貼り付けたプロフィールテキストをお試しください。",
+  "perm_open_settings": "設定を開く",
+  "perm_later": "後で"
 }

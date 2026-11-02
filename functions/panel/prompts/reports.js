@@ -8,11 +8,6 @@
 // written: do not edit, reword or reorder it. engine.js only fills the
 // {{placeholders}} and decides when each prompt runs. Pitch and Consultation
 // each keep their own pair; they are never mixed.
-//
-// NOTE: since the staged Pitch flow (pitch.js) the Pitch pair below
-// (PITCH_NOTEBOOK_UPDATE, PITCH_REPORT) is no longer called: Pitch has no
-// notebooks, and its report is built from the Deal and Verdict steps. The
-// texts are kept here unchanged. The Consultation pair is still used.
 // ---------------------------------------------------------------------------
 
 // ---- PITCH ----------------------------------------------------------------

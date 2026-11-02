@@ -1,3 +1,4 @@
+import '../../profile_setup/widgets/profile_step_header.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -88,7 +89,10 @@ class CreateFirstCardSection extends StatelessWidget {
           height: 44,
           child: ElevatedButton.icon(
             // toNamed (not offAllNamed) so Back returns to Home.
-            onPressed: () => Get.toNamed(Routes.PERSONAL_DETAILS),
+            onPressed: () => Get.toNamed(
+              Routes.PERSONAL_DETAILS,
+              arguments: profileSetupFromHome,
+            ),
             icon: const Icon(Icons.auto_awesome, size: 16),
             label: Text(
               'home_first_card_create_button'.tr,

@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Marketinq",
   "panel_role_marketing_long": "Marketinq və brend",
   "panel_role_product": "Məhsul",
-  "panel_role_product_long": "Məhsul və dizayn"
+  "panel_role_product_long": "Məhsul və dizayn",
+  "add_link_add_button": "Əlavə et",
+  "panel_go_to_decision": "Qərara keç",
+  "qr_manage_menu_preview": "Önbaxış",
+  "career_ai_error_not_profile": "Bu, LinkedIn profili və ya CV-yə oxşamır. Profilinizin ekran görüntüsünü, PDF-ni və ya yapışdırılmış profil mətnini sınayın.",
+  "perm_open_settings": "Parametrləri aç",
+  "perm_later": "Sonra"
 }

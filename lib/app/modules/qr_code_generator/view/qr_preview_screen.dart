@@ -1,3 +1,4 @@
+import '../../../core/widgets/hide_when_pro.dart';
 import '../../career_studio/widgets/career_widgets.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -150,12 +151,12 @@ class QrPreviewScreen extends StatelessWidget {
           children: [
             CareerAppBar(
               title: 'qr_preview_title'.tr,
-              trailing: CrownUpgradeButton(
+              trailing: HideWhenPro(child: CrownUpgradeButton(
                 size: 40,
                 iconSize: 22,
                 borderRadius: 12,
                 onTap: () => showUpgradeSheet(context),
-              ),
+              )),
             ),
             Expanded(
               child: SingleChildScrollView(

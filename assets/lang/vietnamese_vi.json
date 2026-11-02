@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Tiếp thị",
   "panel_role_marketing_long": "Tiếp thị và thương hiệu",
   "panel_role_product": "Sản phẩm",
-  "panel_role_product_long": "Sản phẩm và thiết kế"
+  "panel_role_product_long": "Sản phẩm và thiết kế",
+  "add_link_add_button": "Thêm",
+  "panel_go_to_decision": "Đến phần quyết định",
+  "qr_manage_menu_preview": "Xem trước",
+  "career_ai_error_not_profile": "Có vẻ đây không phải hồ sơ LinkedIn hay CV. Hãy thử ảnh chụp màn hình hồ sơ, tệp PDF của hồ sơ hoặc văn bản hồ sơ đã dán.",
+  "perm_open_settings": "Mở Cài đặt",
+  "perm_later": "Để sau"
 }

@@ -86,7 +86,7 @@ void main() {
     await t.pumpWidget(_app(const Scaffold(body: AiToolkitSection())));
     expect(find.text('Your Business ToolKit'), findsOneWidget);
     expect(find.text('Career Studio'), findsOneWidget);
-    expect(find.text('AI Business Analyst'), findsOneWidget);
+    expect(find.text('Expert panel'), findsOneWidget);
     await t.tap(find.text('Career Studio'));
     await t.pumpAndSettle();
     expect(find.byType(CareerStudioView), findsOneWidget);

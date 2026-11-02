@@ -1,3 +1,4 @@
+import '../../../core/utils/input_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -32,6 +33,7 @@ class PersonalDetailsView extends GetView<ProfileSetupController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const ProfileBackButton(),
                       const ProfileStepHeader(step: 1),
                       const SizedBox(height: 24),
                       Text(
@@ -68,6 +70,7 @@ class PersonalDetailsView extends GetView<ProfileSetupController> {
                           controller: controller.emailController,
                           focusNode: controller.emailFocus,
                           keyboardType: TextInputType.emailAddress,
+                          inputFormatters: InputValidators.emailFormatters,
                           textInputAction: TextInputAction.next,
                           errorText: controller.emailError.value,
                           onChanged: (_) => controller.emailError.value = null,

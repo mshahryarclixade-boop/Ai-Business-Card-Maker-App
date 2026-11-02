@@ -1,3 +1,6 @@
+import 'package:flutter/services.dart';
+import '../../../core/utils/input_validators.dart';
+import '../../../core/widgets/hide_when_pro.dart';
 import '../../career_studio/widgets/career_widgets.dart';
 import 'dart:convert';
 
@@ -59,6 +62,8 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
   final _fullName = TextEditingController();
   final _phone = TextEditingController();
   final _email = TextEditingController();
+  String? _phoneError;
+  String? _emailError;
   final _company = TextEditingController();
   final _designation = TextEditingController();
   final _website = TextEditingController();
@@ -224,6 +229,16 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
     // Dismiss the keyboard before generating.
     FocusScope.of(context).unfocus();
 
+    final phoneError = InputValidators.phoneError(_phone.text);
+    final emailError = InputValidators.emailError(_email.text);
+    if (phoneError != null || emailError != null) {
+      setState(() {
+        _phoneError = phoneError;
+        _emailError = emailError;
+      });
+      return;
+    }
+
     final profile = _collectProfile();
 
     if (!profile.isValid) {
@@ -280,12 +295,12 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
             children: [
               CareerAppBar(
                 title: 'qr_screen_title'.tr,
-                trailing: CrownUpgradeButton(
+                trailing: HideWhenPro(child: CrownUpgradeButton(
                   size: 40,
                   iconSize: 22,
                   borderRadius: 12,
                   onTap: () => showUpgradeSheet(context),
-                ),
+                )),
               ),
               Expanded(
                 child: Column(
@@ -345,6 +360,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                             _SectionLabel('qr_screen_section_personal'.tr),
                             _Field(
                               label: 'qr_screen_label_full_name'.tr,
+                              textCapitalization: TextCapitalization.words,
                               controller: _fullName,
                               textInputAction: TextInputAction.next,
                             ),
@@ -357,15 +373,32 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                                     controller: _phone,
                                     textInputAction: TextInputAction.next,
                                     keyboardType: TextInputType.phone,
+                                    inputFormatters:
+                                        InputValidators.phoneFormatters,
+                                    errorText: _phoneError,
+                                    onChanged: (_) {
+                                      if (_phoneError != null) {
+                                        setState(() => _phoneError = null);
+                                      }
+                                    },
                                   ),
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: _Field(
                                     label: 'qr_screen_label_email'.tr,
-                                    controller: _email,
+                                    textCapitalization: TextCapitalization.none,
+                              controller: _email,
                                     textInputAction: TextInputAction.next,
                                     keyboardType: TextInputType.emailAddress,
+                                    inputFormatters:
+                                        InputValidators.emailFormatters,
+                                    errorText: _emailError,
+                                    onChanged: (_) {
+                                      if (_emailError != null) {
+                                        setState(() => _emailError = null);
+                                      }
+                                    },
                                   ),
                                 ),
                               ],
@@ -377,7 +410,8 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                                 Expanded(
                                   child: _Field(
                                     label: 'qr_screen_label_company'.tr,
-                                    controller: _company,
+                                    textCapitalization: TextCapitalization.words,
+                              controller: _company,
                                     textInputAction: TextInputAction.next,
                                   ),
                                 ),
@@ -385,7 +419,8 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                                 Expanded(
                                   child: _Field(
                                     label: 'qr_screen_label_designation'.tr,
-                                    controller: _designation,
+                                    textCapitalization: TextCapitalization.words,
+                              controller: _designation,
                                     textInputAction: TextInputAction.next,
                                   ),
                                 ),
@@ -394,6 +429,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                             const SizedBox(height: 10),
                             _Field(
                               label: 'qr_screen_label_website'.tr,
+                              textCapitalization: TextCapitalization.none,
                               controller: _website,
                               textInputAction: TextInputAction.next,
                             ),
@@ -494,7 +530,8 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                                 Expanded(
                                   child: _Field(
                                     label: 'qr_screen_label_country'.tr,
-                                    controller: _country,
+                                    textCapitalization: TextCapitalization.words,
+                              controller: _country,
                                     textInputAction: TextInputAction.next,
                                   ),
                                 ),
@@ -502,7 +539,8 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                                 Expanded(
                                   child: _Field(
                                     label: 'qr_screen_label_city'.tr,
-                                    controller: _city,
+                                    textCapitalization: TextCapitalization.words,
+                              controller: _city,
                                     textInputAction: TextInputAction.done,
                                   ),
                                 ),
@@ -581,12 +619,20 @@ class _Field extends StatelessWidget {
   final TextEditingController controller;
   final TextInputAction textInputAction;
   final TextInputType? keyboardType;
+  final TextCapitalization textCapitalization;
+  final List<TextInputFormatter>? inputFormatters;
+  final String? errorText;
+  final ValueChanged<String>? onChanged;
 
   const _Field({
     required this.label,
     required this.controller,
     this.textInputAction = TextInputAction.next,
     this.keyboardType,
+    this.textCapitalization = TextCapitalization.sentences,
+    this.inputFormatters,
+    this.errorText,
+    this.onChanged,
   });
 
   @override
@@ -608,6 +654,9 @@ class _Field extends StatelessWidget {
           controller: controller,
           textInputAction: textInputAction,
           keyboardType: keyboardType,
+          textCapitalization: textCapitalization,
+          inputFormatters: inputFormatters,
+          onChanged: onChanged,
           style: AppTextStyles.splashSubtitle.copyWith(
             fontSize: 12,
             color: Colors.black,
@@ -626,6 +675,8 @@ class _Field extends StatelessWidget {
             }
           },
           decoration: InputDecoration(
+            errorText: errorText,
+            errorMaxLines: 2,
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 12,

@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Marketing",
   "panel_role_marketing_long": "Marketing și brand",
   "panel_role_product": "Produs",
-  "panel_role_product_long": "Produs și design"
+  "panel_role_product_long": "Produs și design",
+  "add_link_add_button": "Adaugă",
+  "panel_go_to_decision": "Mergi la decizie",
+  "qr_manage_menu_preview": "Previzualizare",
+  "career_ai_error_not_profile": "Nu pare un profil LinkedIn sau un CV. Încearcă o captură de ecran a profilului, PDF-ul acestuia sau textul profilului lipit.",
+  "perm_open_settings": "Deschide setările",
+  "perm_later": "Mai târziu"
 }

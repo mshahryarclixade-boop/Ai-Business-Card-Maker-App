@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import '../../../core/widgets/hide_when_pro.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -68,9 +69,9 @@ class SettingsView extends StatelessWidget {
                         const SizedBox(height: 4),
 
                         // Pro banner.
-                        const _ProBanner(),
-
-                        const SizedBox(height: 14),
+                        // The upgrade banner is for free users only.
+                        const HideWhenPro(child: _ProBanner()),
+                        const HideWhenPro(child: SizedBox(height: 14)),
 
                         // Settings options.
                         _SettingsTile(

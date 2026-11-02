@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "مارکیٹنگ",
   "panel_role_marketing_long": "مارکیٹنگ اور برانڈ",
   "panel_role_product": "پروڈکٹ",
-  "panel_role_product_long": "پروڈکٹ اور ڈیزائن"
+  "panel_role_product_long": "پروڈکٹ اور ڈیزائن",
+  "add_link_add_button": "شامل کریں",
+  "panel_go_to_decision": "فیصلے پر جائیں",
+  "qr_manage_menu_preview": "پیش منظر",
+  "career_ai_error_not_profile": "یہ لنکڈ اِن پروفائل یا سی وی جیسا نہیں لگتا۔ اپنے پروفائل کا اسکرین شاٹ، اس کی PDF یا چسپاں کیا ہوا پروفائل متن آزمائیں۔",
+  "perm_open_settings": "سیٹنگز کھولیں",
+  "perm_later": "بعد میں"
 }

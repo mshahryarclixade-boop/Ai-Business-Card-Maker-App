@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "ការធ្វើទីផ្សារ",
   "panel_role_marketing_long": "ទីផ្សារ និងម៉ាកយីហោ",
   "panel_role_product": "ផលិតផល",
-  "panel_role_product_long": "ផលិតផល និងការរចនា"
+  "panel_role_product_long": "ផលិតផល និងការរចនា",
+  "add_link_add_button": "បន្ថែម",
+  "panel_go_to_decision": "ទៅកាន់ការសម្រេចចិត្ត",
+  "qr_manage_menu_preview": "មើលជាមុន",
+  "career_ai_error_not_profile": "នេះមើលទៅមិនដូចជាប្រវត្តិរូប LinkedIn ឬ CV ទេ។ សូមសាកល្បងរូបថតអេក្រង់នៃប្រវត្តិរូប PDF របស់វា ឬអត្ថបទប្រវត្តិរូបដែលបានបិទភ្ជាប់។",
+  "perm_open_settings": "បើកការកំណត់",
+  "perm_later": "ពេលក្រោយ"
 }

@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+import '../../../core/utils/input_validators.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -89,6 +91,7 @@ class ProfileTextField extends StatelessWidget {
     this.onSubmitted,
     this.focusNode,
     this.textColor,
+    this.inputFormatters,
   });
 
   final String label;
@@ -102,6 +105,7 @@ class ProfileTextField extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final FocusNode? focusNode;
   final Color? textColor;
+  final List<TextInputFormatter>? inputFormatters;
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +120,7 @@ class ProfileTextField extends StatelessWidget {
         controller: controller,
         focusNode: focusNode,
         keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
         textInputAction: textInputAction,
         textCapitalization: textCapitalization,
         onChanged: onChanged,
@@ -198,6 +203,7 @@ class ProfilePhoneField extends StatelessWidget {
                 controller: controller,
                 focusNode: focusNode,
                 keyboardType: TextInputType.phone,
+                inputFormatters: InputValidators.phoneFormatters,
                 textInputAction: TextInputAction.done,
                 onChanged: onChanged,
                 style: _inputTextStyle,

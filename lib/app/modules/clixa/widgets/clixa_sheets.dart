@@ -53,8 +53,12 @@ Future<bool> _buy(BuildContext context, {required bool yearly}) =>
     );
 
 /// "Unlock the expert panel": the Go Pro sheet with the five experts.
-Future<void> showClixaUpgrade(BuildContext context) => showUpgradeSheet(
+Future<void> showClixaUpgrade(
+  BuildContext context, {
+  VoidCallback? onUnlocked,
+}) => showUpgradeSheet(
   context,
+  onUnlocked: onUnlocked,
   title: 'clixa_unlock_title'.tr,
   header: const ExpertAvatars(size: 40, overlap: 12),
   perkKeys: const [

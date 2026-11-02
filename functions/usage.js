@@ -103,4 +103,73 @@ function record({ label, model, res, ms }) {
   return entry;
 }
 
-module.exports = { withUsage, record, costOf, prices };
+// ---------------------------------------------------------------------------
+// Per-user AI query tracking, kept in Firestore (`ai_usage/{udid}`) by the
+// server itself: it sees every real AI result, so the counts cannot be
+// skipped, double counted by a retry in the app, or lost on a reinstall (the
+// id is the app's device UDID, the same one the credit balance uses).
+// Fields (merged, incremented atomically):
+//   udid, updatedAt, lastFeature
+//   total.queries / total.tokens / total.costUsd
+//   features.<feature>.queries / .tokens / .costUsd / .lastAt
+//   days.<YYYY-MM-DD>.<feature>   queries that day (UTC)
+// ---------------------------------------------------------------------------
+
+const FEATURE_OF = {
+  coachReply: "clixa",
+  buildProfile: "career",
+  rewrite: "career",
+  analyze: "career",
+  fixSuggestion: "career",
+  panelTurn: "panel",
+  panelReport: "panel",
+  "generateCard.image": "ai_card",
+};
+
+const UDID_RE = /^[A-Za-z0-9._-]{8,128}$/;
+
+/** The app's device id from a request, or null when missing or not plausible. */
+function udidOf(data) {
+  const v = data && typeof data.udid === "string" ? data.udid.trim() : "";
+  return UDID_RE.test(v) ? v : null;
+}
+
+/** UTC day key, e.g. "2026-11-02". */
+const dayKey = (d = new Date()) => d.toISOString().slice(0, 10);
+
+/**
+ * Adds one query to the user's record. Never throws and never delays an
+ * answer for long: a failure is logged and the AI result is still returned.
+ * [env] = { db, FieldValue } (injected so it can be tested).
+ */
+async function trackQuery(env, data, task, summary, { now = new Date(), timeoutMs = 2500 } = {}) {
+  const feature = FEATURE_OF[task];
+  const udid = udidOf(data);
+  if (!feature || !udid) return false;
+  try {
+    const { db, FieldValue } = env;
+    const inc = (n) => FieldValue.increment(n);
+    const tokens = Number(summary?.totalTokens) || 0;
+    const cost = Number(summary?.estimatedCostUsd) || 0;
+    const write = db.collection("ai_usage").doc(udid).set(
+      {
+        udid,
+        updatedAt: FieldValue.serverTimestamp(),
+        lastFeature: feature,
+        total: { queries: inc(1), tokens: inc(tokens), costUsd: inc(cost) },
+        features: {
+          [feature]: { queries: inc(1), tokens: inc(tokens), costUsd: inc(cost), lastAt: FieldValue.serverTimestamp() },
+        },
+        days: { [dayKey(now)]: { [feature]: inc(1) } },
+      },
+      { merge: true },
+    );
+    await Promise.race([write, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), timeoutMs).unref?.())]);
+    return true;
+  } catch (e) {
+    console.error("AI usage tracking failed", e?.message || e);
+    return false;
+  }
+}
+
+module.exports = { withUsage, record, costOf, prices, FEATURE_OF, udidOf, dayKey, trackQuery };

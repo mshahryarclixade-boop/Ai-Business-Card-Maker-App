@@ -1,3 +1,4 @@
+import '../../../core/utils/input_validators.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
@@ -18,8 +19,6 @@ class ProfileSetupController extends GetxController {
   final RxnString phoneError = RxnString();
   final FocusNode emailFocus = FocusNode();
   final FocusNode phoneFocus = FocusNode();
-
-  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
   String get fullName => fullNameController.text.trim();
   String get email => emailController.text.trim();
@@ -62,11 +61,12 @@ class ProfileSetupController extends GetxController {
       phoneError.value = 'profile_setup_error_email_or_phone'.tr;
       ok = false;
     } else {
-      if (hasEmail && !_emailRegex.hasMatch(email)) {
+      if (hasEmail && !InputValidators.isValidEmail(email)) {
         emailError.value = 'profile_setup_error_email_invalid'.tr;
         ok = false;
       }
-      if (hasPhone && number.replaceAll(RegExp(r'\D'), '').length < 6) {
+      if (hasPhone &&
+          !InputValidators.isValidPhone(number, dialCode: dialCode.value)) {
         phoneError.value = 'profile_setup_error_phone_invalid'.tr;
         ok = false;
       }
@@ -87,7 +87,8 @@ class ProfileSetupController extends GetxController {
 
     FirebaseAnalytics.instance.logEvent(name: 'profile_saved');
 
-    Get.toNamed(Routes.BUSINESS_DETAILS);
+    // Keep "came from Home" for the next screen's back button.
+    Get.toNamed(Routes.BUSINESS_DETAILS, arguments: Get.arguments);
   }
 
   @override

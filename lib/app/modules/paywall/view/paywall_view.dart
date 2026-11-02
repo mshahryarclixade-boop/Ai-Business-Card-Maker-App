@@ -7,6 +7,7 @@ import '../../../core/services/remote_config_service.dart';
 import '../../../core/utils/legal_links.dart';
 import '../controller/subscription_controller.dart';
 import '../models/paywall_config_model.dart';
+import '../widgets/paywall_canvas.dart';
 import 'paywall_actions.dart';
 import 'paywall_view_2.dart';
 import '../../../core/theme/app_colors.dart';
@@ -33,22 +34,10 @@ class PaywallView extends StatelessWidget {
         height: double.infinity,
         decoration: const BoxDecoration(gradient: _kBackgroundGradient),
         child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final scale = constraints.maxWidth / _kDesignWidth;
-              return OverflowBox(
-                alignment: Alignment.topCenter,
-                minWidth: _kDesignWidth,
-                maxWidth: _kDesignWidth,
-                minHeight: _kDesignHeight,
-                maxHeight: _kDesignHeight,
-                child: Transform.scale(
-                  scale: scale,
-                  alignment: Alignment.topCenter,
-                  child: SizedBox(
-                    width: _kDesignWidth,
-                    height: _kDesignHeight,
-                    child: Stack(
+          child: PaywallCanvas(
+            designWidth: _kDesignWidth,
+            designHeight: _kDesignHeight,
+            child: Stack(
                       children: [
                         const _ArtworkCards(),
                         if (cfg.showCloseButton) _CloseButton(),
@@ -61,10 +50,6 @@ class PaywallView extends StatelessWidget {
                         _Footer(cfg),
                       ],
                     ),
-                  ),
-                ),
-              );
-            },
           ),
         ),
       ),
@@ -358,13 +343,16 @@ class _FeatureRow extends StatelessWidget {
           child: Icon(icon, size: 14, color: AppColors.primary),
         ),
         const SizedBox(width: 10),
-        Text(
-          text,
-          style: const TextStyle(
-            fontFamily: AppTextStyles.fontFamily,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textBody,
+        // Expanded: a long translation wraps instead of overflowing.
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontFamily: AppTextStyles.fontFamily,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textBody,
+            ),
           ),
         ),
       ],
@@ -667,20 +655,20 @@ class _Footer extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          GestureDetector(
+          Flexible(child: GestureDetector(
             onTap: () => PaywallActions.restore(context),
             child: _FooterLink(text: cfg.restoreLabel),
-          ),
+          )),
           const _FooterDot(),
-          GestureDetector(
+          Flexible(child: GestureDetector(
             onTap: LegalLinks.openTermsOfUse,
             child: _FooterLink(text: cfg.termsLabel),
-          ),
+          )),
           const _FooterDot(),
-          GestureDetector(
+          Flexible(child: GestureDetector(
             onTap: LegalLinks.openPrivacyPolicy,
             child: _FooterLink(text: cfg.privacyLabel),
-          ),
+          )),
         ],
       ),
     );
@@ -696,6 +684,8 @@ class _FooterLink extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
       style: const TextStyle(
         fontFamily: AppTextStyles.fontFamily,
         fontSize: 9,

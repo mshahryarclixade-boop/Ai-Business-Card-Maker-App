@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Маркетинг",
   "panel_role_marketing_long": "Маркетинг и бранд",
   "panel_role_product": "Продукт",
-  "panel_role_product_long": "Продукт и дизайн"
+  "panel_role_product_long": "Продукт и дизайн",
+  "add_link_add_button": "Добави",
+  "panel_go_to_decision": "Към решението",
+  "qr_manage_menu_preview": "Преглед",
+  "career_ai_error_not_profile": "Това не прилича на LinkedIn профил или CV. Опитайте със снимка на екрана на профила си, неговия PDF или поставен текст от профила.",
+  "perm_open_settings": "Отвори настройките",
+  "perm_later": "По-късно"
 }

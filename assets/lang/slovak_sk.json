@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Marketing",
   "panel_role_marketing_long": "Marketing a značka",
   "panel_role_product": "Produkt",
-  "panel_role_product_long": "Produkt a dizajn"
+  "panel_role_product_long": "Produkt a dizajn",
+  "add_link_add_button": "Pridať",
+  "panel_go_to_decision": "Prejsť na rozhodnutie",
+  "qr_manage_menu_preview": "Náhľad",
+  "career_ai_error_not_profile": "Toto nevyzerá ako profil LinkedIn ani životopis. Skúste snímku obrazovky profilu, jeho PDF alebo vložený text profilu.",
+  "perm_open_settings": "Otvoriť nastavenia",
+  "perm_later": "Neskôr"
 }

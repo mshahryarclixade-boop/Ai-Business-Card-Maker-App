@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "বিপণন",
   "panel_role_marketing_long": "বিপণন এবং ব্র্যান্ড",
   "panel_role_product": "পণ্য",
-  "panel_role_product_long": "পণ্য এবং ডিজাইন"
+  "panel_role_product_long": "পণ্য এবং ডিজাইন",
+  "add_link_add_button": "যোগ করুন",
+  "panel_go_to_decision": "সিদ্ধান্তে যান",
+  "qr_manage_menu_preview": "প্রিভিউ",
+  "career_ai_error_not_profile": "এটি LinkedIn প্রোফাইল বা CV বলে মনে হচ্ছে না। আপনার প্রোফাইলের স্ক্রিনশট, এর PDF বা পেস্ট করা প্রোফাইল টেক্সট চেষ্টা করুন।",
+  "perm_open_settings": "সেটিংস খুলুন",
+  "perm_later": "পরে"
 }

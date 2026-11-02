@@ -6,6 +6,7 @@ import 'package:ai_business_card_maker/app/modules/clixa/model/clixa_models.dart
 import 'package:ai_business_card_maker/app/modules/clixa/service/clixa_ai_service.dart';
 import 'package:ai_business_card_maker/app/modules/clixa/view/clixa_chat_view.dart';
 import 'package:ai_business_card_maker/app/modules/clixa/view/clixa_view.dart';
+import 'package:ai_business_card_maker/app/modules/expert_panel/view/expert_panel_view.dart';
 import 'package:ai_business_card_maker/app/modules/home/widgets/ai_toolkit_section.dart';
 import 'package:ai_business_card_maker/app/modules/main_nav/controller/main_nav_controller.dart';
 import 'package:ai_business_card_maker/app/modules/paywall/controller/subscription_controller.dart';
@@ -70,7 +71,7 @@ void main() {
   group('start screen', () {
     testWidgets('greeting card, prompts and the free-chats counter', (t) async {
       await boot(t);
-      expect(find.text('AI Coach'), findsOneWidget);
+      expect(find.text('Clixa AI'), findsOneWidget);
       expect(find.text('Hi Ayesha, I\'m Clixa'), findsOneWidget);
       expect(
         find.text('Your AI business coach. What shall we work on today?'),
@@ -90,19 +91,12 @@ void main() {
       await flush(t);
     });
 
-    testWidgets('the prompt box opens "Start a new chat"', (t) async {
+    testWidgets('the prompt box opens a new chat', (t) async {
       await boot(t);
       await t.tap(find.text('Type an idea or a question…'));
       await settle(t);
-      expect(find.text('Start a new chat'), findsOneWidget);
-      expect(find.textContaining('A new chat starts fresh'), findsOneWidget);
-      expect(find.byIcon(Icons.chevron_right_rounded), findsNWidgets(5));
-      // Picking one opens that chat.
-      await t.tap(find.text('Numbers and pricing').last);
-      await settle(t);
       expect(find.byType(ClixaChatView), findsOneWidget);
-      expect(find.text('New chat · Numbers and pricing'), findsOneWidget);
-      expect(c.freeChatsLeft, 2);
+      expect(find.text('New chat · Discuss an idea'), findsOneWidget);
       await flush(t);
     });
 
@@ -149,7 +143,7 @@ void main() {
         findsOneWidget, // the ready-made answer
       );
       expect(
-        find.text('0 of 10 free messages used in this chat'),
+        find.text('0 of ${ClixaController.freeMessagesPerChat} free messages used in this chat'),
         findsOneWidget,
       );
       expect(find.text('Message Clixa'), findsOneWidget);
@@ -171,7 +165,7 @@ void main() {
       await t.pump(const Duration(milliseconds: 100));
       await t.pump(const Duration(milliseconds: 400));
       expect(
-        find.text('1 of 10 free messages used in this chat'),
+        find.text('1 of ${ClixaController.freeMessagesPerChat} free messages used in this chat'),
         findsOneWidget,
       );
       expect(
@@ -236,12 +230,15 @@ void main() {
       ); // the box only
       expect(find.text('The AI took too long.'), findsOneWidget);
       expect(
-        find.text('0 of 10 free messages used in this chat'),
+        find.text('0 of ${ClixaController.freeMessagesPerChat} free messages used in this chat'),
         findsOneWidget,
       );
 
       // Trying again works.
       ai.error = null;
+      // Let the error snackbar go so it isn't over the send button.
+      await t.pump(const Duration(seconds: 5));
+      await t.pump(const Duration(seconds: 1));
       await t.tap(find.byIcon(Icons.arrow_upward_rounded));
       await settle(t);
       expect(chat.userMessages, 1);
@@ -272,9 +269,13 @@ void main() {
     ) async {
       await boot(t);
       final chat = c.startChat(ClixaMode.validate);
+      // The verdict comes on the 4th answer, past the free per-chat limit, so
+      // the chat is run as Pro and the screen is then opened as Free.
+      sub.isUserPro.value = true;
       for (final m in ['a', 'b', 'c', 'd']) {
         await t.runAsync(() => c.send(chat, m));
       }
+      sub.isUserPro.value = false;
       await t.pumpWidget(GetMaterialApp(home: ClixaChatView(chat: chat)));
       await settle(t);
       await t.scrollUntilVisible(
@@ -334,6 +335,8 @@ void main() {
       await settle(t);
       await t.tap(find.text('Delete chat'));
       await settle(t);
+      await t.tap(find.text('Delete'));
+      await settle(t);
       expect(c.chats, isEmpty);
       expect(find.byType(ClixaChatView), findsNothing);
       expect(find.byType(ClixaView), findsOneWidget);
@@ -344,8 +347,10 @@ void main() {
   group('free limits', () {
     testWidgets('after three chats a fourth asks for Pro', (t) async {
       await boot(t);
+      // A chat uses one of today's free chats once its first message is answered.
+      var n = 0;
       for (final m in [ClixaMode.discuss, ClixaMode.plan, ClixaMode.numbers]) {
-        c.startChat(m);
+        await t.runAsync(() => c.send(c.startChat(m), 'saved chat ${n++}'));
       }
       await t.pump();
       expect(find.text('0 of 3 free chats left today'), findsOneWidget);
@@ -360,22 +365,22 @@ void main() {
       await t.tap(find.text('Continue a saved chat'));
       await settle(t);
       expect(find.text('Saved chats'), findsOneWidget);
-      await t.tap(find.textContaining('New chat · Discuss an idea').last);
+      await t.tap(find.text('saved chat 0').last);
       await settle(t);
       expect(find.byType(ClixaChatView), findsOneWidget);
       await flush(t);
     });
 
-    testWidgets('a free chat stops at 10 messages', (t) async {
+    testWidgets('a free chat stops at the free limit', (t) async {
       await boot(t);
       final chat = c.startChat(ClixaMode.talk);
-      for (var i = 0; i < 9; i++) {
+      for (var i = 0; i < ClixaController.freeMessagesPerChat - 1; i++) {
         await t.runAsync(() => c.send(chat, 'm$i'));
       }
       await t.pumpWidget(GetMaterialApp(home: ClixaChatView(chat: chat)));
       await settle(t);
       expect(
-        find.text('9 of 10 free messages used in this chat'),
+        find.text('${ClixaController.freeMessagesPerChat - 1} of ${ClixaController.freeMessagesPerChat} free messages used in this chat'),
         findsOneWidget,
       );
       await t.enterText(find.byType(TextField), 'the tenth');
@@ -397,7 +402,7 @@ void main() {
       await t.enterText(find.byType(TextField), 'one more');
       await t.tap(find.byIcon(Icons.arrow_upward_rounded));
       await settle(t);
-      expect(chat.userMessages, 10);
+      expect(chat.userMessages, ClixaController.freeMessagesPerChat);
       expect(find.text('This chat reached the free limit'), findsOneWidget);
       await flush(t);
     });
@@ -443,7 +448,27 @@ void main() {
 
       await t.tap(find.text('Expert panel'));
       await settle(t);
+      // The panel is Pro only: a free user gets the upgrade sheet.
       expect(find.text('Unlock the expert panel'), findsOneWidget);
+      expect(find.byType(ExpertPanelView), findsNothing);
+      await flush(t);
+    });
+
+    testWidgets('Pro: the Expert panel opens with no upgrade sheet or badge', (
+      t,
+    ) async {
+      await boot(
+        t,
+        pro: true,
+        home: const Scaffold(
+          body: SingleChildScrollView(child: AiToolkitSection()),
+        ),
+      );
+      expect(find.text('PRO'), findsNothing);
+      await t.tap(find.text('Expert panel'));
+      await settle(t);
+      expect(find.text('Unlock the expert panel'), findsNothing);
+      expect(find.byType(ExpertPanelView), findsOneWidget);
       await flush(t);
     });
 

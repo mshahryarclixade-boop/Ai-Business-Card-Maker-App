@@ -11,7 +11,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ai_business_card_maker/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  // Left over from the Flutter template: MyApp needs Firebase and has no
+  // counter, so this can't pass. Skipped, not deleted.
+  testWidgets('Counter increments smoke test', skip: true, (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
 

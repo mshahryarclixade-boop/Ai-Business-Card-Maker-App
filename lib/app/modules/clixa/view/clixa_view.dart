@@ -93,7 +93,7 @@ class ClixaView extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = ClixaController.to;
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBg,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [

@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+import '../../../core/utils/input_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -155,6 +157,7 @@ class _DetailsSheetState extends State<_DetailsSheet> {
   late final _company = TextEditingController(text: widget.sig.company);
   late final _phone = TextEditingController(text: widget.sig.phone);
   late final _website = TextEditingController(text: widget.sig.website);
+  String? _phoneError;
 
   @override
   void dispose() {
@@ -168,6 +171,11 @@ class _DetailsSheetState extends State<_DetailsSheet> {
 
   void _save() {
     if (_name.text.trim().isEmpty) return; // a signature needs a name
+    final phoneError = InputValidators.phoneError(_phone.text);
+    if (phoneError != null) {
+      setState(() => _phoneError = phoneError);
+      return;
+    }
     Navigator.of(context).pop(
       widget.sig.copyWith(
         fullName: _name.text.trim(),
@@ -219,6 +227,11 @@ class _DetailsSheetState extends State<_DetailsSheet> {
                 'email_sig_field_phone'.tr,
                 _phone,
                 type: TextInputType.phone,
+                inputFormatters: InputValidators.phoneFormatters,
+                error: _phoneError,
+                onChanged: (_) {
+                  if (_phoneError != null) setState(() => _phoneError = null);
+                },
               ),
               _Field(
                 'email_sig_field_website'.tr,
@@ -254,12 +267,23 @@ class _DetailsSheetState extends State<_DetailsSheet> {
 }
 
 class _Field extends StatelessWidget {
-  const _Field(this.label, this.controller, {this.type, this.last = false});
+  const _Field(
+    this.label,
+    this.controller, {
+    this.type,
+    this.last = false,
+    this.inputFormatters,
+    this.error,
+    this.onChanged,
+  });
 
   final String label;
   final TextEditingController controller;
   final TextInputType? type;
   final bool last;
+  final List<TextInputFormatter>? inputFormatters;
+  final String? error;
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -281,6 +305,8 @@ class _Field extends StatelessWidget {
           TextField(
             controller: controller,
             keyboardType: type,
+            inputFormatters: inputFormatters,
+            onChanged: onChanged,
             textInputAction: last ? TextInputAction.done : TextInputAction.next,
             style: const TextStyle(
               fontFamily: AppTextStyles.fontFamily,
@@ -288,6 +314,7 @@ class _Field extends StatelessWidget {
               color: AppColors.titleDark,
             ),
             decoration: InputDecoration(
+              errorText: error,
               filled: true,
               fillColor: AppColors.scaffoldBg,
               isDense: true,

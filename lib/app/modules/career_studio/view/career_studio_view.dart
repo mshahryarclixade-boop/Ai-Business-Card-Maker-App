@@ -143,7 +143,7 @@ class _CareerStudioViewState extends State<CareerStudioView> {
               CareerAppBar(
                 title: 'career_hub_title'.tr,
                 trailing: s.isPro
-                    ? const _ProBadge()
+                    ? const SizedBox.shrink() // Pro users see no Pro badge
                     // Same crown, size and spacing as Clixa's app bar.
                     : CrownUpgradeButton(
                         size: 40,
@@ -255,30 +255,6 @@ class _CareerStudioViewState extends State<CareerStudioView> {
   String _badge(CareerHubState s, {required bool used}) {
     if (s.isPro) return 'career_hub_badge_unlimited'.tr;
     return used ? 'career_hub_badge_used'.tr : 'career_hub_badge_free'.tr;
-  }
-}
-
-class _ProBadge extends StatelessWidget {
-  const _ProBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.primaryDark,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        'career_hub_pro_badge'.tr,
-        style: const TextStyle(
-          fontFamily: AppTextStyles.fontFamily,
-          fontSize: 11,
-          fontWeight: FontWeight.w800,
-          color: AppColors.crownGold,
-        ),
-      ),
-    );
   }
 }
 

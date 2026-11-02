@@ -1,3 +1,4 @@
+import '../../../core/widgets/hide_when_pro.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 
@@ -75,7 +76,7 @@ class AiCardPreviewView extends StatelessWidget {
             ),
           ),
           actions: [
-            Padding(
+            HideWhenPro(child: Padding(
               padding: const EdgeInsetsDirectional.only(end: 16),
               child: Container(
                 width: 36,
@@ -91,7 +92,7 @@ class AiCardPreviewView extends StatelessWidget {
                   color: Color(0xFFF5A623),
                 ),
               ),
-            ),
+            )),
           ],
         ),
         body: SafeArea(

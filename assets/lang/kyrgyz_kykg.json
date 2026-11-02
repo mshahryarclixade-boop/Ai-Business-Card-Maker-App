@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Маркетинг",
   "panel_role_marketing_long": "Маркетинг жана бренд",
   "panel_role_product": "Продукт",
-  "panel_role_product_long": "Продукт жана дизайн"
+  "panel_role_product_long": "Продукт жана дизайн",
+  "add_link_add_button": "Кошуу",
+  "panel_go_to_decision": "Чечимге өтүү",
+  "qr_manage_menu_preview": "Алдын ала көрүү",
+  "career_ai_error_not_profile": "Бул LinkedIn профилине же резюмеге окшобойт. Профилиңиздин скриншотун, анын PDF файлын же коюлган профиль текстин сынап көрүңүз.",
+  "perm_open_settings": "Жөндөөлөрдү ачуу",
+  "perm_later": "Кийинчерээк"
 }

@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Pazarlama",
   "panel_role_marketing_long": "Pazarlama ve marka",
   "panel_role_product": "Ürün",
-  "panel_role_product_long": "Ürün ve tasarım"
+  "panel_role_product_long": "Ürün ve tasarım",
+  "add_link_add_button": "新增",
+  "panel_go_to_decision": "前往決定",
+  "qr_manage_menu_preview": "預覽",
+  "career_ai_error_not_profile": "這看起來不像 LinkedIn 個人檔案或履歷。請嘗試檔案頁面截圖、其 PDF，或貼上的檔案文字。",
+  "perm_open_settings": "開啟設定",
+  "perm_later": "稍後"
 }

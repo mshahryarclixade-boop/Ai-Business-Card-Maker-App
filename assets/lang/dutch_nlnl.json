@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Marketing",
   "panel_role_marketing_long": "Marketing en merk",
   "panel_role_product": "Product",
-  "panel_role_product_long": "Product en ontwerp"
+  "panel_role_product_long": "Product en ontwerp",
+  "add_link_add_button": "Toevoegen",
+  "panel_go_to_decision": "Ga naar de beslissing",
+  "qr_manage_menu_preview": "Voorbeeld",
+  "career_ai_error_not_profile": "Dit lijkt niet op een LinkedIn-profiel of cv. Probeer een schermafbeelding van je profiel, de pdf ervan of geplakte profieltekst.",
+  "perm_open_settings": "Instellingen openen",
+  "perm_later": "Later"
 }

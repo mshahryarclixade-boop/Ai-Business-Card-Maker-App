@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Marketing",
   "panel_role_marketing_long": "Marketing i brend",
   "panel_role_product": "Proizvod",
-  "panel_role_product_long": "Proizvod i dizajn"
+  "panel_role_product_long": "Proizvod i dizajn",
+  "add_link_add_button": "Dodaj",
+  "panel_go_to_decision": "Idi na odluku",
+  "qr_manage_menu_preview": "Pregled",
+  "career_ai_error_not_profile": "Ovo ne izgleda kao LinkedIn profil ili životopis. Isprobajte snimku zaslona svog profila, njegov PDF ili zalijepljeni tekst profila.",
+  "perm_open_settings": "Otvori postavke",
+  "perm_later": "Kasnije"
 }

@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Màrqueting",
   "panel_role_marketing_long": "Màrqueting i marca",
   "panel_role_product": "Producte",
-  "panel_role_product_long": "Producte i disseny"
+  "panel_role_product_long": "Producte i disseny",
+  "add_link_add_button": "Afegeix",
+  "panel_go_to_decision": "Ves a la decisió",
+  "qr_manage_menu_preview": "Previsualitza",
+  "career_ai_error_not_profile": "Això no sembla un perfil de LinkedIn ni un currículum. Prova amb una captura de pantalla del teu perfil, el seu PDF o el text del perfil enganxat.",
+  "perm_open_settings": "Obre la configuració",
+  "perm_later": "Més tard"
 }

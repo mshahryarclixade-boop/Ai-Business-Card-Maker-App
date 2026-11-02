@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Marknadsföring",
   "panel_role_marketing_long": "Marknadsföring och varumärke",
   "panel_role_product": "Produkt",
-  "panel_role_product_long": "Produkt och design"
+  "panel_role_product_long": "Produkt och design",
+  "add_link_add_button": "Lägg till",
+  "panel_go_to_decision": "Gå till beslutet",
+  "qr_manage_menu_preview": "Förhandsgranska",
+  "career_ai_error_not_profile": "Det här ser inte ut som en LinkedIn-profil eller ett CV. Prova en skärmdump av din profil, dess PDF eller inklistrad profiltext.",
+  "perm_open_settings": "Öppna inställningar",
+  "perm_later": "Senare"
 }

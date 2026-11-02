@@ -110,9 +110,9 @@ void main() {
     await shot(t, 'cs01_free');
   });
 
-  testWidgets('CS02 Pro: PRO badge, unlimited', (t) async {
+  testWidgets('CS02 Pro: no PRO badge, unlimited', (t) async {
     await pump(t, _pro);
-    expect(find.text('PRO'), findsOneWidget);
+    expect(find.text('PRO'), findsNothing); // Pro users see no Pro badge
     expect(find.text('Pro plan'), findsOneWidget);
     expect(find.text('Unlimited'), findsOneWidget);
     expect(find.text('UNLIMITED'), findsNWidgets(2));

@@ -1,3 +1,4 @@
+import '../../../core/widgets/hide_when_pro.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
@@ -60,13 +61,13 @@ class HomeView extends GetView<HomeController> {
                         const SizedBox(width: 12),
                         Row(
                           children: [
-                            CrownUpgradeButton(
+                            HideWhenPro(child: CrownUpgradeButton(
                               size: 36,
                               iconSize: 22,
                               borderRadius: 10,
                               onTap: () => showUpgradeSheet(context),
-                            ),
-                            const SizedBox(width: 6),
+                            )),
+                            const HideWhenPro(child: SizedBox(width: 6)),
                             _RoundIconButton(
                               icon: Icons.settings_outlined,
                               iconColor: AppColors.titleDark,

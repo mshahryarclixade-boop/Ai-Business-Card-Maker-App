@@ -1,3 +1,4 @@
+import '../../../core/widgets/hide_when_pro.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'package:ai_business_card_maker/app/modules/custom_create/controller/card_editor_controller.dart';
 import 'package:ai_business_card_maker/app/modules/custom_create/view/card_editor_view.dart';
@@ -60,7 +61,7 @@ class MyCardsView extends StatelessWidget {
                       ),
                     )),
                   ),
-                  Align(
+                  HideWhenPro(child: Align(
                     alignment: AlignmentDirectional.centerEnd,
                     child: TapTarget(child: GestureDetector(
                       onTap: () {
@@ -81,7 +82,7 @@ class MyCardsView extends StatelessWidget {
                         ),
                       ),
                     )),
-                  ),
+                  )),
                 ],
               ),
             ),

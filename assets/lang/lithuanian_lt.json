@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Rinkodara",
   "panel_role_marketing_long": "Rinkodara ir prekės ženklas",
   "panel_role_product": "Produktas",
-  "panel_role_product_long": "Produktas ir dizainas"
+  "panel_role_product_long": "Produktas ir dizainas",
+  "add_link_add_button": "Pridėti",
+  "panel_go_to_decision": "Pereiti prie sprendimo",
+  "qr_manage_menu_preview": "Peržiūra",
+  "career_ai_error_not_profile": "Tai neatrodo kaip „LinkedIn“ profilis ar CV. Išbandykite profilio ekrano nuotrauką, jo PDF arba įklijuotą profilio tekstą.",
+  "perm_open_settings": "Atidaryti nustatymus",
+  "perm_later": "Vėliau"
 }

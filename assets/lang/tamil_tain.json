@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "சந்தைப்படுத்தல்",
   "panel_role_marketing_long": "சந்தைப்படுத்தல் மற்றும் பிராண்ட்",
   "panel_role_product": "தயாரிப்பு",
-  "panel_role_product_long": "தயாரிப்பு மற்றும் வடிவமைப்பு"
+  "panel_role_product_long": "தயாரிப்பு மற்றும் வடிவமைப்பு",
+  "add_link_add_button": "சேர்",
+  "panel_go_to_decision": "முடிவுக்குச் செல்",
+  "qr_manage_menu_preview": "முன்னோட்டம்",
+  "career_ai_error_not_profile": "இது LinkedIn சுயவிவரம் அல்லது CV போல் தெரியவில்லை. உங்கள் சுயவிவரத்தின் ஸ்கிரீன்ஷாட், அதன் PDF அல்லது ஒட்டிய சுயவிவர உரையை முயற்சிக்கவும்.",
+  "perm_open_settings": "அமைப்புகளைத் திற",
+  "perm_later": "பின்னர்"
 }

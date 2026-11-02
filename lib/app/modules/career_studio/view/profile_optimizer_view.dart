@@ -74,15 +74,15 @@ class ProfileOptimizerView extends GetView<ProfileOptimizerController> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      'career_optimizer_free_scan_note'.tr,
-                      style: TextStyle(
-                        fontFamily: AppTextStyles.fontFamily,
-                        fontSize: 12,
-                        color: AppColors.textGrey,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
+                    // childrenText(
+                    //   'career_optimizer_free_scan_note'.tr,
+                    //   style: TextStyle(
+                    //     fontFamily: AppTextStyles.fontFamily,
+                    //     fontSize: 12,
+                    //     color: AppColors.textGrey,
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 10),
                     CareerPrimaryButton(
                       label: 'career_optimizer_analyze_button'.tr,
                       onTap: controller.analyze,

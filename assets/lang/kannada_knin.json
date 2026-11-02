@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "ಮಾರ್ಕೆಟಿಂಗ್",
   "panel_role_marketing_long": "ಮಾರ್ಕೆಟಿಂಗ್ ಮತ್ತು ಬ್ರ್ಯಾಂಡ್",
   "panel_role_product": "ಉತ್ಪನ್ನ",
-  "panel_role_product_long": "ಉತ್ಪನ್ನ ಮತ್ತು ವಿನ್ಯಾಸ"
+  "panel_role_product_long": "ಉತ್ಪನ್ನ ಮತ್ತು ವಿನ್ಯಾಸ",
+  "add_link_add_button": "ಸೇರಿಸಿ",
+  "panel_go_to_decision": "ನಿರ್ಧಾರಕ್ಕೆ ಹೋಗಿ",
+  "qr_manage_menu_preview": "ಪೂರ್ವವೀಕ್ಷಣೆ",
+  "career_ai_error_not_profile": "ಇದು LinkedIn ಪ್ರೊಫೈಲ್ ಅಥವಾ CV ಯಂತೆ ಕಾಣುವುದಿಲ್ಲ. ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನ ಸ್ಕ್ರೀನ್‌ಶಾಟ್, ಅದರ PDF ಅಥವಾ ಅಂಟಿಸಿದ ಪ್ರೊಫೈಲ್ ಪಠ್ಯವನ್ನು ಪ್ರಯತ್ನಿಸಿ.",
+  "perm_open_settings": "ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ",
+  "perm_later": "ನಂತರ"
 }

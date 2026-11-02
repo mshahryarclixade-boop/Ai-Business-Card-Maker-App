@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Márketing",
   "panel_role_marketing_long": "Márketing e marca",
   "panel_role_product": "Produto",
-  "panel_role_product_long": "Produto e deseño"
+  "panel_role_product_long": "Produto e deseño",
+  "add_link_add_button": "Engadir",
+  "panel_go_to_decision": "Ir á decisión",
+  "qr_manage_menu_preview": "Vista previa",
+  "career_ai_error_not_profile": "Isto non parece un perfil de LinkedIn nin un currículo. Proba cunha captura de pantalla do teu perfil, o seu PDF ou o texto do perfil pegado.",
+  "perm_open_settings": "Abrir configuración",
+  "perm_later": "Máis tarde"
 }

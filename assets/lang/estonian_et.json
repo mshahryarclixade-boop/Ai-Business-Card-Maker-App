@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Turundus",
   "panel_role_marketing_long": "Turundus ja bränd",
   "panel_role_product": "Toode",
-  "panel_role_product_long": "Toode ja disain"
+  "panel_role_product_long": "Toode ja disain",
+  "add_link_add_button": "Lisa",
+  "panel_go_to_decision": "Mine otsuse juurde",
+  "qr_manage_menu_preview": "Eelvaade",
+  "career_ai_error_not_profile": "See ei näe välja nagu LinkedIni profiil ega CV. Proovi oma profiili ekraanipilti, selle PDF-i või kleebitud profiiliteksti.",
+  "perm_open_settings": "Ava seaded",
+  "perm_later": "Hiljem"
 }

@@ -1,3 +1,4 @@
+import '../../../core/services/permission_gate.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -32,8 +33,12 @@ class ContactExportService {
       final granted = status == fc.PermissionStatus.granted ||
           status == fc.PermissionStatus.limited;
       if (!granted) {
-        _snack('contacts_permission_title'.tr,
-            'contacts_permission_message'.tr);
+        // The system prompt was just shown (request above). Only when it can't
+        // be asked again is Open Settings / Later offered.
+        if (status == fc.PermissionStatus.permanentlyDenied ||
+            status == fc.PermissionStatus.restricted) {
+          await PermissionGate.showSettingsDialog(AppPermission.contacts);
+        }
         return;
       }
 

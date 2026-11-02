@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Mārketings",
   "panel_role_marketing_long": "Mārketings un zīmols",
   "panel_role_product": "Produkts",
-  "panel_role_product_long": "Produkts un dizains"
+  "panel_role_product_long": "Produkts un dizains",
+  "add_link_add_button": "Pievienot",
+  "panel_go_to_decision": "Pāriet uz lēmumu",
+  "qr_manage_menu_preview": "Priekšskatījums",
+  "career_ai_error_not_profile": "Šķiet, ka tas nav LinkedIn profils vai CV. Mēģiniet profila ekrānuzņēmumu, tā PDF vai ielīmētu profila tekstu.",
+  "perm_open_settings": "Atvērt iestatījumus",
+  "perm_later": "Vēlāk"
 }

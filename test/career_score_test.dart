@@ -356,7 +356,7 @@ void main() {
     expect(find.text('LinkedIn score: 90'), findsOneWidget);
     expect(find.text('Up from 54 · tap to see the report'), findsOneWidget);
     expect(find.text('Pro plan'), findsOneWidget);
-    expect(find.text('PRO'), findsOneWidget);
+    expect(find.text('PRO'), findsNothing);
 
     // The report agrees with the hub.
     await t.tap(find.text('LinkedIn score: 90'));

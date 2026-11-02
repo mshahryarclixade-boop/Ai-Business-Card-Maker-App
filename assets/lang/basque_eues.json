@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Marketina",
   "panel_role_marketing_long": "Marketina eta marka",
   "panel_role_product": "Produktua",
-  "panel_role_product_long": "Produktua eta diseinua"
+  "panel_role_product_long": "Produktua eta diseinua",
+  "add_link_add_button": "Gehitu",
+  "panel_go_to_decision": "Joan erabakira",
+  "qr_manage_menu_preview": "Aurrebista",
+  "career_ai_error_not_profile": "Hori ez dirudi LinkedIn profil edo CV bat. Saiatu zure profilaren pantaila-argazki batekin, haren PDFarekin edo itsatsitako profil-testuarekin.",
+  "perm_open_settings": "Ireki ezarpenak",
+  "perm_later": "Geroago"
 }

@@ -26,6 +26,8 @@ void main() {
   });
 
   testWidgets('the shared crown keeps its tap action and wiggles', (t) async {
+    // The suite runs with reduce-motion on; the wiggle needs it off.
+    t.platformDispatcher.clearAccessibilityFeaturesTestValue();
     var taps = 0;
     await t.pumpWidget(MaterialApp(home: Center(child: CrownUpgradeButton(size: 40, iconSize: 22, borderRadius: 12, onTap: () => taps++))));
     expect(t.getSize(find.byType(CrownUpgradeButton)), const Size(40, 40));

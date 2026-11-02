@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Մարքեթինգ",
   "panel_role_marketing_long": "Մարքեթինգ և ապրանքանիշ",
   "panel_role_product": "Արտադրանք",
-  "panel_role_product_long": "Արտադրանք և դիզայն"
+  "panel_role_product_long": "Արտադրանք և դիզայն",
+  "add_link_add_button": "Ավելացնել",
+  "panel_go_to_decision": "Անցնել որոշմանը",
+  "qr_manage_menu_preview": "Նախադիտում",
+  "career_ai_error_not_profile": "Սա նման չէ LinkedIn պրոֆիլի կամ CV-ի։ Փորձեք ձեր պրոֆիլի սքրինշոթը, դրա PDF-ը կամ տեղադրված պրոֆիլի տեքստը։",
+  "perm_open_settings": "Բացել կարգավորումները",
+  "perm_later": "Հետո"
 }

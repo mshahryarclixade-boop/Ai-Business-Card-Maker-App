@@ -42,6 +42,10 @@ const Map<String, String> coreStrings = {
       "You already own this subscription, but we couldn't confirm it "
       'right now. Try Restore Purchase.',
 
+  // Permissions
+  'perm_open_settings': 'Open Settings',
+  'perm_later': 'Later',
+
   // App
   'app_title': 'AI Business Card Maker',
 };

@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Bemarking",
   "panel_role_marketing_long": "Bemarking en handelsmerk",
   "panel_role_product": "Produk",
-  "panel_role_product_long": "Produk en ontwerp"
+  "panel_role_product_long": "Produk en ontwerp",
+  "add_link_add_button": "Voeg by",
+  "panel_go_to_decision": "Gaan na besluit",
+  "qr_manage_menu_preview": "Voorskou",
+  "career_ai_error_not_profile": "Dit lyk nie soos 'n LinkedIn-profiel of CV nie. Probeer 'n skermkiekie van jou profiel, die PDF daarvan, of geplakte profielteks.",
+  "perm_open_settings": "Maak instellings oop",
+  "perm_later": "Later"
 }

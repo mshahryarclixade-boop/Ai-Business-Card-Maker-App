@@ -7,7 +7,9 @@ import '../../../core/services/gemini_card_service.dart' show GeminiException;
 import '../../../core/translations/app_strings.dart';
 import '../../../core/utils/ai_usage_log.dart';
 import '../../../core/translations/tr_extension.dart';
-
+import '../../../core/services/remote_config_service.dart';
+import '../../paywall/services/credits_gate.dart';
+import '../../paywall/services/user_credits_manager.dart';
 export '../../../core/services/gemini_card_service.dart' show GeminiException;
 
 /// The three generated sections of the Profile Builder.
@@ -90,6 +92,12 @@ class CloudCareerAi extends CareerAi {
     Map<String, dynamic> data, {
     Duration timeout = const Duration(seconds: 90),
   }) async {
+    final cost = RemoteConfigService().creditCosts.forTask(task);
+    if (!await CreditGate.canUse(cost: cost, source: 'ai_$task')) {
+      throw GeminiException('credit_gate_out_of_credits_title'.tr);
+    }
+    // The server counts this query for this user (ai_usage/{udid}).
+    final udid = await UserCreditsManager().udidOrNull();
     try {
       final result = await _functions
           .httpsCallable(
@@ -99,12 +107,16 @@ class CloudCareerAi extends CareerAi {
           .call(<String, dynamic>{
             'task': task,
             'language': AppStrings.locale.languageCode,
+            'udid': ?udid,
             ...data,
           })
           .timeout(timeout + const Duration(seconds: 5));
       final d = result.data;
       if (d is! Map) throw GeminiException('career_ai_error_generic'.tr);
       logAiUsage(task, d['_usage']);
+      // Charged only now that the answer arrived (0 unless Remote Config sets
+      // a cost for this feature).
+      await CreditGate.spend(cost: cost, source: 'ai_$task');
       return Map<String, dynamic>.from(d);
     } on TimeoutException {
       throw GeminiException('gemini_error_timeout'.tr);

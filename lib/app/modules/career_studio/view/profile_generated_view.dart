@@ -1,3 +1,4 @@
+import '../../../core/services/permission_gate.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 
@@ -90,6 +91,10 @@ class _ProfileGeneratedViewState extends State<ProfileGeneratedView> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
+    if (source == ImageSource.camera &&
+        !await PermissionGate.ensure(AppPermission.camera)) {
+      return;
+    }
     try {
       final XFile? pickedFile = await _imagePicker.pickImage(
         source: source,

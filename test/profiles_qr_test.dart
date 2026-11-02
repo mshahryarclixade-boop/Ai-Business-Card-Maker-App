@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:ai_business_card_maker/app/core/services/profile_scope.dart';
 import 'package:ai_business_card_maker/app/core/services/recent_designs_service.dart';
 import 'package:ai_business_card_maker/app/modules/clixa/view/clixa_view.dart';
+import 'package:ai_business_card_maker/app/modules/clixa/view/clixa_chat_view.dart';
 import 'package:ai_business_card_maker/app/modules/email_signature/model/email_signature.dart';
 import 'package:ai_business_card_maker/app/modules/paywall/controller/subscription_controller.dart';
 import 'package:ai_business_card_maker/app/modules/email_signature/service/email_signature_store.dart';
@@ -535,11 +536,11 @@ void main() {
       expect(find.text('Hi, I\'m Clixa'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back_rounded), findsNothing);
       expect(find.byType(MainBottomNavBar), findsOneWidget);
-      // Tapping the blue card carries on: "Start a new chat".
+      // Tapping the blue card starts a chat.
       await t.tap(find.text('Hi, I\'m Clixa'));
       await t.pump();
       await t.pump(const Duration(milliseconds: 600));
-      expect(find.text('Start a new chat'), findsOneWidget);
+      expect(find.byType(ClixaChatView), findsOneWidget);
       await t.pumpWidget(const SizedBox());
     });
 

@@ -1239,5 +1239,11 @@
   "panel_role_marketing": "Pazarlama",
   "panel_role_marketing_long": "Pazarlama ve marka",
   "panel_role_product": "Ürün",
-  "panel_role_product_long": "Ürün ve tasarım"
+  "panel_role_product_long": "Ürün ve tasarım",
+  "add_link_add_button": "Ekle",
+  "panel_go_to_decision": "Karara git",
+  "qr_manage_menu_preview": "Önizleme",
+  "career_ai_error_not_profile": "Bu bir LinkedIn profiline veya özgeçmişe benzemiyor. Profilinizin ekran görüntüsünü, PDF'sini veya yapıştırılmış profil metnini deneyin.",
+  "perm_open_settings": "Ayarları Aç",
+  "perm_later": "Daha sonra"
 }

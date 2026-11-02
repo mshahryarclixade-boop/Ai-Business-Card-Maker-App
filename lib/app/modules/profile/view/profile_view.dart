@@ -1,3 +1,4 @@
+import '../../../core/widgets/hide_when_pro.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'dart:ui';
 
@@ -115,7 +116,7 @@ class _EmptyProfile extends StatelessWidget {
                   ),
                 ),
 
-                Align(
+                HideWhenPro(child: Align(
                   alignment: AlignmentDirectional.centerEnd,
                   child: TapTarget(child: GestureDetector(
                     onTap: () {
@@ -136,7 +137,7 @@ class _EmptyProfile extends StatelessWidget {
                       ),
                     ),
                   )),
-                ),
+                )),
               ],
             ),
           ),
@@ -270,7 +271,7 @@ class _SavedProfile extends StatelessWidget {
                       ),
                     ),
 
-                    Align(
+                    HideWhenPro(child: Align(
                       alignment: AlignmentDirectional.centerEnd,
                       child: Container(
                         width: 36,
@@ -286,7 +287,7 @@ class _SavedProfile extends StatelessWidget {
                           color: Color(0xFFF5A623),
                         ),
                       ),
-                    ),
+                    )),
                   ],
                 ),
               ),
