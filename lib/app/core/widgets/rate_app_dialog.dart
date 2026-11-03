@@ -110,7 +110,9 @@ class _RateAppDialogState extends State<RateAppDialog> {
                         ),
                       ),
                       const SizedBox(height: 18),
-                      Row(
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(5, (i) {
                           final filled = i < _rating;
@@ -129,7 +131,7 @@ class _RateAppDialogState extends State<RateAppDialog> {
                             ),
                           );
                         }),
-                      ),
+                      )),
                       const SizedBox(height: 26),
                       Row(
                         children: [

@@ -392,7 +392,7 @@ class _Footer extends StatelessWidget {
         10,
         16,
         // Phone: small gap above the home indicator. Tablet: as before.
-        isPhone ? (bottomInset > 0 ? bottomInset * 0.4 : 6) : 12 + bottomInset,
+        isPhone ? (bottomInset > 0 ? bottomInset * 0.4 : 6) + 10 : 22 + bottomInset,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

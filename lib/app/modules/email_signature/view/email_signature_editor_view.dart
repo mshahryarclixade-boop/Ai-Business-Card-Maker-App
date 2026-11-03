@@ -145,6 +145,7 @@ class _EmailSignatureEditorViewState extends State<EmailSignatureEditorView> {
                   title: _editing
                       ? 'email_sig_edit_title'.tr
                       : 'email_sig_new_title'.tr,
+                  ellipsize: true,
                 ),
                 Expanded(
                   child: ListView(

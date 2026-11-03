@@ -226,7 +226,11 @@ class _NavItemContent extends StatelessWidget {
     // Scan icon is larger than Home and Contacts.
     final double iconSize = item.label == 'main_nav_tab_scan' ? 22 : 16;
 
-    return SizedBox(
+    // The bar has a fixed height: its labels follow the system text size only
+    // up to 1.15x (at 1.4x they overflowed).
+    return MediaQuery.withClampedTextScaling(
+      maxScaleFactor: 1.15,
+      child: SizedBox(
       width: 65,
       height: 46,
       child: Column(
@@ -274,6 +278,7 @@ class _NavItemContent extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

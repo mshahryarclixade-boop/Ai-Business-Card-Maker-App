@@ -66,10 +66,14 @@ class PaywallCanvas extends StatelessWidget {
                 height: h,
                 child: FittedBox(
                   fit: BoxFit.fill,
-                  child: SizedBox(
-                    width: designWidth,
-                    height: designHeight,
-                    child: child,
+                  // The canvas is laid out in pixels: the system text size must
+                  // not enlarge its text (it overflowed at 1.4x).
+                  child: MediaQuery.withNoTextScaling(
+                    child: SizedBox(
+                      width: designWidth,
+                      height: designHeight,
+                      child: child,
+                    ),
                   ),
                 ),
               ),

@@ -169,7 +169,7 @@ class EmailSignatureSavedView extends StatelessWidget {
         body: SafeArea(
           child: Column(
             children: [
-              CareerAppBar(title: 'email_sig_saved_title'.tr, onLeading: _done),
+              CareerAppBar(title: 'email_sig_saved_title'.tr, onLeading: _done, ellipsize: true),
               Expanded(
                 child: Obx(() {
                   final pro = signatureIsPro();

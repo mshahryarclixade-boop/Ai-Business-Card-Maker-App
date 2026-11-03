@@ -309,7 +309,12 @@ class _ReferenceImagePicker extends StatelessWidget {
                 : EdgeInsets.zero,
             alignment: Alignment.center,
             child: image == null
-                ? Column(
+                ? LayoutBuilder(
+                    builder: (context, c) => FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: SizedBox(
+                    width: c.maxWidth,
+                    child: Column(
                     children: [
                       Image.asset(
                         'assets/icons/add_image.png',
@@ -356,7 +361,7 @@ class _ReferenceImagePicker extends StatelessWidget {
                         ),
                       ),
                     ],
-                  )
+                  ))))
                 /// UPLOAD IMAGE BOX FIT
                 : Stack(
                     alignment: AlignmentDirectional.topEnd,

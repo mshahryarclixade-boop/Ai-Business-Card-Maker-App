@@ -151,8 +151,12 @@ class _ContactsViewState extends State<ContactsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.contactsScaffoldBg,
+      // Keeps the FAB fixed; the content is lifted by the keyboard below.
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: GestureDetector(
+        child: Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+          child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           // Tapping anywhere outside the search field closes the keyboard.
           onTap: _unfocusSearch,
@@ -184,7 +188,7 @@ class _ContactsViewState extends State<ContactsView> {
               ],
             );
           }),
-        ),
+        )),
       ),
 
       // Separate FAB widget.

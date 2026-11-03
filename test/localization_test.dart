@@ -244,13 +244,11 @@ void main() {
       },
     );
 
-    test('a broken translated placeholder falls back to English', () async {
+    test('translated placeholders keep their English names', () async {
       await AppStrings.setLanguage('fr');
-      // The shipped French file translated {goal} -> {objectif}.
-      expect(
-        'career_generated_headline_focus'.trParams({'goal': 'X'}),
-        enStrings['career_generated_headline_focus']!.replaceAll('{goal}', 'X'),
-      );
+      final out = 'career_generated_headline_focus'.trParams({'goal': 'X'});
+      expect(out, contains('X'));
+      expect(out, isNot(contains('{')));
     });
   });
 }

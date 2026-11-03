@@ -128,7 +128,9 @@ class _NoInternetDialogState extends State<NoInternetDialog> {
                     ),
                   ],
                   const SizedBox(height: _kSectionGap),
-                  Row(
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
@@ -197,7 +199,7 @@ class _NoInternetDialogState extends State<NoInternetDialog> {
                         ),
                       ),
                     ],
-                  ),
+                  )),
                 ],
               ),
             ),

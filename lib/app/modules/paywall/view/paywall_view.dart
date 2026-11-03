@@ -575,13 +575,20 @@ class _TrialButton extends StatelessWidget {
                           color: Colors.white,
                         ),
                         const SizedBox(width: 10),
-                        Text(
-                          cfg.trialButtonLabel,
-                          style: const TextStyle(
-                            fontFamily: AppTextStyles.fontFamily,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
+                        // Long translations shrink instead of overflowing.
+                        Flexible(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              cfg.trialButtonLabel,
+                              maxLines: 1,
+                              style: const TextStyle(
+                                fontFamily: AppTextStyles.fontFamily,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ],

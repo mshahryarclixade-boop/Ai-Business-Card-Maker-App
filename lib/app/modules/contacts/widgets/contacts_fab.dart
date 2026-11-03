@@ -18,7 +18,7 @@ class ContactsFab extends StatelessWidget {
       child: FloatingActionButton(
         onPressed: onTap,
         backgroundColor: AppColors.primary,
-        shape: const CircleBorder(),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         child: const Icon(
           Icons.add,
           color: AppColors.white,

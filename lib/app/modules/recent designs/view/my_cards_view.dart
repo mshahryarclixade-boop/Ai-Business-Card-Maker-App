@@ -1,13 +1,12 @@
+import '../../../core/widgets/crown_upgrade_button.dart';
+import '../../career_studio/widgets/career_widgets.dart';
 import '../../../core/widgets/hide_when_pro.dart';
-import '../../../core/widgets/tap_target.dart';
 import 'package:ai_business_card_maker/app/modules/custom_create/controller/card_editor_controller.dart';
 import 'package:ai_business_card_maker/app/modules/custom_create/view/card_editor_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
 import '../../../core/services/recent_designs_service.dart';
 import '../../ai_card_generator/view/ai_card_generator_view.dart';
 import '../../../routes/app_routes.dart';
@@ -30,60 +29,18 @@ class MyCardsView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
-      body: Column(
+      body: SafeArea(
+        child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 50, 24, 0),
-            child: SizedBox(
-              height: 36,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Center(
-                    child: Text(
-                      'my_cards_title'.tr,
-                      style: TextStyle(
-                        fontFamily: AppTextStyles.fontFamily,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.titleDark,
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: TapTarget(child: GestureDetector(
-                      onTap: () => Get.back(),
-                      child: const Icon(
-                        Icons.arrow_back,
-                        color: AppColors.textDark,
-                        size: 20,
-                      ),
-                    )),
-                  ),
-                  HideWhenPro(child: Align(
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: TapTarget(child: GestureDetector(
-                      onTap: () {
-                        openPaywall(source: 'my_cards', plans: true);
-                      },
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryDark,
-                          borderRadius: BorderRadius.circular(22),
-                        ),
-                        alignment: Alignment.center,
-                        child: const FaIcon(
-                          FontAwesomeIcons.crown,
-                          size: 18,
-                          color: AppColors.crownGold,
-                        ),
-                      ),
-                    )),
-                  )),
-                ],
+          // The same app bar and crown as the rest of the app.
+          CareerAppBar(
+            title: 'my_cards_title'.tr,
+            trailing: HideWhenPro(
+              child: CrownUpgradeButton(
+                size: 40,
+                iconSize: 22,
+                borderRadius: 12,
+                onTap: () => openPaywall(source: 'my_cards', plans: true),
               ),
             ),
           ),
@@ -113,6 +70,7 @@ class MyCardsView extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

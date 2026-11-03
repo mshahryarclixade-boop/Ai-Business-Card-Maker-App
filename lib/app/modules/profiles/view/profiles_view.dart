@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
+import '../../contacts/widgets/contacts_fab.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/translations/tr_extension.dart';
 import '../../profile_setup/model/user_profile_data.dart';
@@ -80,12 +81,14 @@ class ProfilesView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
-      floatingActionButton: FloatingActionButton(
-        onPressed: _add,
-        tooltip: 'profiles_add'.tr,
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.add_rounded, size: 28),
+      // The same button as on Contacts and the saved QR codes (shape, size and
+      // right / bottom spacing).
+      floatingActionButton: Tooltip(
+        message: 'profiles_add'.tr,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 108),
+          child: ContactsFab(onTap: _add),
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -127,7 +130,7 @@ class ProfilesView extends StatelessWidget {
                 // Re-draw when the active profile's details change.
                 ProfilesManager.infoOf(active);
                 return ListView(
-                  padding: const EdgeInsetsDirectional.fromSTEB(20, 4, 20, 96),
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 4, 20, 190),
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),

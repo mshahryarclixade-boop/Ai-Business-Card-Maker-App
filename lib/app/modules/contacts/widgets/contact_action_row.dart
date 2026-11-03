@@ -78,9 +78,19 @@ class ContactActionRow extends StatelessWidget {
     final canMessage = ContactFollowUpService.smsNumber(contact) != null;
     final canEmail = ContactFollowUpService.email(contact) != null;
 
+    // Each item is at most 76 wide but may shrink: four of them overflowed a
+    // 320 wide screen by 30 px.
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
+        for (final item in _items(context, canMessage, canEmail))
+          Flexible(child: item),
+      ],
+    );
+  }
+
+  List<Widget> _items(BuildContext context, bool canMessage, bool canEmail) {
+    return [
         if (canMessage)
           _ActionItem(
             icon: Icons.chat_bubble_outline_rounded,
@@ -103,8 +113,7 @@ class ContactActionRow extends StatelessWidget {
           label: 'contacts_save_to_phone'.tr,
           onTap: () => ContactExportService.saveToDevice(contact),
         ),
-      ],
-    );
+    ];
   }
 }
 

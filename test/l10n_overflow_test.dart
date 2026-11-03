@@ -33,7 +33,6 @@ import 'package:ai_business_card_maker/app/modules/settings/view/settings_view.d
 import 'package:ai_business_card_maker/app/core/theme/app_colors.dart';
 import 'package:ai_business_card_maker/app/core/translations/tr_extension.dart';
 import 'package:ai_business_card_maker/app/core/widgets/app_dialog.dart';
-import 'package:ai_business_card_maker/app/core/widgets/force_update_view.dart';
 import 'package:ai_business_card_maker/app/core/widgets/no_internet_dialog.dart';
 import 'package:ai_business_card_maker/app/core/widgets/rate_app_dialog.dart';
 import 'package:ai_business_card_maker/app/modules/contacts/widgets/contacts_empty_state.dart';
@@ -401,7 +400,6 @@ final _screens = <String, Widget Function()>{
     ['app_update_dialog_title_optional', 'app_update_dialog_message_optional'],
     ['force_update_button'],
   ),
-  'force_update_view': () => const ForceUpdateView(),
   'rate_app': () => const Scaffold(body: Center(child: RateAppDialog())),
   'no_internet': () => Scaffold(
     body: Center(

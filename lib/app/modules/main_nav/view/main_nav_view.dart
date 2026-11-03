@@ -198,6 +198,9 @@ class MainNavView extends GetView<MainNavController> {
       },
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBg,
+        // The keyboard must not push the floating nav pill up; tabs with
+        // inputs (Contacts, Clixa) have their own Scaffold that resizes.
+        resizeToAvoidBottomInset: false,
 
         // No bottomNavigationBar here.
         // The navigation pill is placed directly over the body

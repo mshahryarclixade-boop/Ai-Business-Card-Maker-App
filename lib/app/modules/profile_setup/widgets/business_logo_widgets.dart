@@ -26,7 +26,8 @@ class LogoOptionCard extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        height: 92,
+        // At least 92 high, taller with large system text (it overflowed).
+        constraints: const BoxConstraints(minHeight: 92),
         decoration: BoxDecoration(
           color: selected ? AppColors.profileOptionSelectedBg : AppColors.white,
           borderRadius: BorderRadius.circular(16),

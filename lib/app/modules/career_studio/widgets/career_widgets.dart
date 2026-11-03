@@ -49,9 +49,14 @@ class CareerAppBar extends StatelessWidget {
     this.onLeading,
     this.titleInset = 0,
     this.showLeading = true,
+    this.ellipsize = false,
   });
 
   final String title;
+
+  /// One line, cut with an ellipsis between the back arrow and the trailing
+  /// widget (long translations).
+  final bool ellipsize;
   final Widget? trailing;
 
   /// Gap kept between the title and its neighbours (back arrow, trailing
@@ -70,7 +75,8 @@ class CareerAppBar extends StatelessWidget {
 
   Widget get _title => Text(
     title,
-    maxLines: titleInset > 0 ? 1 : null,
+    maxLines: titleInset > 0 || ellipsize ? 1 : null,
+    overflow: ellipsize ? TextOverflow.ellipsis : null,
     style: const TextStyle(
       fontFamily: AppTextStyles.fontFamily,
       fontSize: 18,
@@ -120,7 +126,13 @@ class CareerAppBar extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           Align(alignment: AlignmentDirectional.centerStart, child: back),
-          _title,
+          if (ellipsize)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 64),
+              child: _title,
+            )
+          else
+            _title,
           if (trailing != null)
             Align(
               alignment: AlignmentDirectional.centerEnd,

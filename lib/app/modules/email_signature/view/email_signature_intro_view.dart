@@ -56,6 +56,7 @@ class EmailSignatureIntroView extends StatelessWidget {
           children: [
             CareerAppBar(
               title: 'email_sig_intro_title'.tr,
+              ellipsize: true,
               trailing: Obx(
                 () => signatureIsPro()
                     ? const SizedBox.shrink()
