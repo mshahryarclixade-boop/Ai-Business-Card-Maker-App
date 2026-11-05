@@ -23,7 +23,7 @@ class LogoFinder {
   static const _maxBytes = 5 * 1024 * 1024;
   static const _headers = {
     'User-Agent':
-    'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36',
+        'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36',
   };
 
   /// Returns the site's logo, or null if none could be found.
@@ -71,8 +71,10 @@ class LogoFinder {
     final icons = <_Candidate>[];
     String? ogImage;
 
-    for (final m
-    in RegExp(r'<link\b[^>]*>', caseSensitive: false).allMatches(html)) {
+    for (final m in RegExp(
+      r'<link\b[^>]*>',
+      caseSensitive: false,
+    ).allMatches(html)) {
       final tag = m.group(0)!;
       final rel = (_attr(tag, 'rel') ?? '').toLowerCase();
       final href = _attr(tag, 'href');
@@ -82,18 +84,22 @@ class LogoFinder {
       final path = Uri.tryParse(href)?.path.toLowerCase() ?? '';
       if (path.endsWith('.svg') || path.endsWith('.ico')) continue;
 
-      final size = int.tryParse(
-          (_attr(tag, 'sizes') ?? '').toLowerCase().split('x').first) ??
+      final size =
+          int.tryParse(
+            (_attr(tag, 'sizes') ?? '').toLowerCase().split('x').first,
+          ) ??
           0;
       final item = _Candidate(base.resolve(href).toString(), size);
       (rel.contains('apple') ? apple : icons).add(item);
     }
 
-    for (final m
-    in RegExp(r'<meta\b[^>]*>', caseSensitive: false).allMatches(html)) {
+    for (final m in RegExp(
+      r'<meta\b[^>]*>',
+      caseSensitive: false,
+    ).allMatches(html)) {
       final tag = m.group(0)!;
-      final key =
-      (_attr(tag, 'property') ?? _attr(tag, 'name') ?? '').toLowerCase();
+      final key = (_attr(tag, 'property') ?? _attr(tag, 'name') ?? '')
+          .toLowerCase();
       final content = _attr(tag, 'content');
       if (key == 'og:image' && content != null) {
         ogImage = base.resolve(content).toString();
@@ -113,8 +119,9 @@ class LogoFinder {
 
   static Future<FoundLogo?> _download(String url, Uri site) async {
     try {
-      final res =
-      await http.get(Uri.parse(url), headers: _headers).timeout(_timeout);
+      final res = await http
+          .get(Uri.parse(url), headers: _headers)
+          .timeout(_timeout);
       if (res.statusCode != 200) return null;
 
       final ext = _extension((res.headers['content-type'] ?? '').toLowerCase());

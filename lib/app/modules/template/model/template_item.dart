@@ -1,7 +1,6 @@
 enum TemplateOrientation { horizontal, vertical }
 
 class TemplateItem {
-
   final String id;
 
   final String name;
@@ -61,3 +60,18 @@ class TemplateTextField {
     required this.fontSize,
   });
 }
+
+
+/// The AI-style first card (purple wave design), shown first in Home's Free
+/// Templates. It is drawn live from its own layout like the other templates
+/// (see TemplateData.jsonPathFor).
+const kAiCardTemplateId = 'ai_first_card';
+
+const kAiCardTemplate = TemplateItem(
+  id: kAiCardTemplateId,
+  name: 'AI Card',
+  category: 'AI',
+  orientation: TemplateOrientation.horizontal,
+  frontImagePath: 'assets/images/first_card_template.png',
+  backImagePath: 'assets/images/first_card_template.png',
+);

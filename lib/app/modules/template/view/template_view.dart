@@ -29,7 +29,7 @@ class TemplateView extends GetView<TemplateController> {
       child: Container(
         color: AppColors.scaffoldBg,
         child: Obx(
-              () => controller.selectedTemplate.value != null
+          () => controller.selectedTemplate.value != null
               ? _TemplateDetailView(controller: controller)
               : _TemplateListing(controller: controller),
         ),
@@ -67,28 +67,32 @@ class _TemplateListing extends StatelessWidget {
                     ),
                   ),
                 ),
-                HideWhenPro(child: Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: TapTarget(child: GestureDetector(
-                    onTap: () {
-                      openPaywall(source: 'templates', plans: true);
-                    },
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: const FaIcon(
-                        FontAwesomeIcons.crown,
-                        size: 18,
-                        color: Color(0xFFF5A623),
+                HideWhenPro(
+                  child: Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: TapTarget(
+                      child: GestureDetector(
+                        onTap: () {
+                          openPaywall(source: 'templates', plans: true);
+                        },
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          alignment: Alignment.center,
+                          child: const FaIcon(
+                            FontAwesomeIcons.crown,
+                            size: 18,
+                            color: Color(0xFFF5A623),
+                          ),
+                        ),
                       ),
                     ),
-                  )),
-                )),
+                  ),
+                ),
               ],
             ),
           ),
@@ -102,19 +106,19 @@ class _TemplateListing extends StatelessWidget {
 
         // Orientation tabs + filter chips
         Obx(
-              () => controller.isSearching.value
+          () => controller.isSearching.value
               ? const SizedBox.shrink()
               : Padding(
-            padding: const EdgeInsets.fromLTRB(18, 16, 18, 7),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                OrientationTabs(controller: controller),
-                const SizedBox(height: 14),
-                FilterChipsRow(controller: controller),
-              ],
-            ),
-          ),
+                  padding: const EdgeInsets.fromLTRB(18, 16, 18, 7),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      OrientationTabs(controller: controller),
+                      const SizedBox(height: 14),
+                      FilterChipsRow(controller: controller),
+                    ],
+                  ),
+                ),
         ),
 
         // ── Scrollable body
@@ -124,7 +128,7 @@ class _TemplateListing extends StatelessWidget {
             child: Column(
               children: [
                 Obx(
-                      () => controller.isSearching.value
+                  () => controller.isSearching.value
                       ? PopularTagsView(controller: controller)
                       : _TemplatesGrid(controller: controller),
                 ),
@@ -190,7 +194,7 @@ class _TemplatesGrid extends StatelessWidget {
           itemBuilder: (context, index) {
             final item = items[index];
             return Obx(
-                  () => TemplateCard(
+              () => TemplateCard(
                 item: item,
                 isSaved: controller.savedIds.contains(item.id),
                 onHeartTap: () => controller.toggleSaved(item.id),
@@ -215,7 +219,7 @@ class _TemplatesGrid extends StatelessWidget {
               return SizedBox(
                 width: cardWidth,
                 child: Obx(
-                      () => TemplateCard(
+                  () => TemplateCard(
                     item: item,
                     isSaved: controller.savedIds.contains(item.id),
                     onHeartTap: () => controller.toggleSaved(item.id),
@@ -255,10 +259,16 @@ class _TemplateDetailView extends StatelessWidget {
               children: [
                 Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: TapTarget(child: GestureDetector(
-                    onTap: controller.closeTemplateDetail,
-                    child: const Icon(Icons.arrow_back, size: 22, color: AppColors.titleDark),
-                  )),
+                  child: TapTarget(
+                    child: GestureDetector(
+                      onTap: controller.closeTemplateDetail,
+                      child: const Icon(
+                        Icons.arrow_back,
+                        size: 22,
+                        color: AppColors.titleDark,
+                      ),
+                    ),
+                  ),
                 ),
                 Center(
                   child: Text(
@@ -271,23 +281,25 @@ class _TemplateDetailView extends StatelessWidget {
                     ),
                   ),
                 ),
-                HideWhenPro(child: Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: const FaIcon(
-                      FontAwesomeIcons.crown,
-                      size: 18,
-                      color: Color(0xFFF5A623),
+                HideWhenPro(
+                  child: Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: const FaIcon(
+                        FontAwesomeIcons.crown,
+                        size: 18,
+                        color: Color(0xFFF5A623),
+                      ),
                     ),
                   ),
-                )),
+                ),
               ],
             ),
           ),
@@ -318,12 +330,12 @@ class _TemplateDetailView extends StatelessWidget {
                           child: FittedBox(
                             fit: BoxFit.contain,
                             child: Obx(
-                                  () => Switch(
+                              () => Switch(
                                 value: controller.autoFillProfile.value,
                                 onChanged: controller.toggleAutoFill,
                                 activeColor: AppColors.primary,
                                 materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
+                                    MaterialTapTargetSize.shrinkWrap,
                               ),
                             ),
                           ),

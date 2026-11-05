@@ -14,27 +14,37 @@ class TemplateSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-          () => Container(
+      () => Container(
         height: 43,
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: controller.isSearching.value ? AppColors.primary : AppColors.pillBorder,
+            color: controller.isSearching.value
+                ? AppColors.primary
+                : AppColors.pillBorder,
             width: controller.isSearching.value ? 1.5 : 1,
           ),
         ),
         child: Row(
           children: [
-            TapTarget(child: GestureDetector(
-              onTap: controller.isSearching.value ? controller.exitSearch : null,
-              child: Icon(
-                controller.isSearching.value ? Icons.arrow_back : Icons.search,
-                size: 20,
-                color: controller.isSearching.value ? AppColors.titleDark : AppColors.pillLabelGrey,
+            TapTarget(
+              child: GestureDetector(
+                onTap: controller.isSearching.value
+                    ? controller.exitSearch
+                    : null,
+                child: Icon(
+                  controller.isSearching.value
+                      ? Icons.arrow_back
+                      : Icons.search,
+                  size: 20,
+                  color: controller.isSearching.value
+                      ? AppColors.titleDark
+                      : AppColors.pillLabelGrey,
+                ),
               ),
-            )),
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: TextField(

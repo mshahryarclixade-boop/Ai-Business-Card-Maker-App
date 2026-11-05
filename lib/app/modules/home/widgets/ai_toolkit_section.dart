@@ -182,27 +182,33 @@ class _ExpertPanelCard extends StatelessWidget {
                             ),
                           ),
                         ),
-HideWhenPro(child: Row(mainAxisSize: MainAxisSize.min, children: [
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 3,
+                        HideWhenPro(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryDark,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  'clixa_pro'.tr,
+                                  style: const TextStyle(
+                                    fontFamily: AppTextStyles.fontFamily,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.crownGold,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryDark,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'clixa_pro'.tr,
-                            style: const TextStyle(
-                              fontFamily: AppTextStyles.fontFamily,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.crownGold,
-                            ),
-                          ),
-                        )])),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),

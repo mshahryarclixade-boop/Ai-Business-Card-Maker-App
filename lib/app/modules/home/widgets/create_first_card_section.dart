@@ -22,7 +22,9 @@ class CreateFirstCardSection extends StatelessWidget {
           final name = ProfileStore.to.profile.value.fullName.trim();
           final first = name.isEmpty ? '' : name.split(' ').first;
           return Text(
-            first.isEmpty ? 'home_welcome'.tr : 'home_welcome_name'.trParams({'name': first}),
+            first.isEmpty
+                ? 'home_welcome'.tr
+                : 'home_welcome_name'.trParams({'name': first}),
             style: const TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 20,

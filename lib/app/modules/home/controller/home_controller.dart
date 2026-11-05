@@ -4,8 +4,10 @@ import 'dart:ui' as ui;
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import '../../../core/services/ai_frame_card_builder.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart' hide Trans;
+import 'package:get_storage/get_storage.dart';
 import '../../../core/services/connectivity_service.dart';
 import '../../../core/services/gemini_card_service.dart';
 import '../../../core/services/notification_service.dart';
@@ -39,6 +41,31 @@ class HomeController extends GetxController {
   final GlobalKey frontCaptureKey = GlobalKey();
   final GlobalKey backCaptureKey = GlobalKey();
 
+  /// Ids of the templates the user applied, the latest first. They lead the
+  /// Free Templates list; the AI card is first until something else is applied.
+  final RxList<String> templateOrder = <String>[].obs;
+  static const _orderKey = 'home_template_order';
+  final _box = GetStorage();
+
+  /// [items] in the order Home shows them: the AI card, then the rest, with
+  /// the applied templates moved to the front (latest applied first).
+  List<TemplateItem> orderedTemplates(List<TemplateItem> items) {
+    final all = [kAiCardTemplate, ...items];
+    final rank = {
+      for (var i = 0; i < templateOrder.length; i++) templateOrder[i]: i,
+    };
+    final applied = all.where((t) => rank.containsKey(t.id)).toList()
+      ..sort((a, b) => rank[a.id]!.compareTo(rank[b.id]!));
+    return [...applied, ...all.where((t) => !rank.containsKey(t.id))];
+  }
+
+  /// A template was applied: it becomes the first in the list.
+  void _promote(String id) {
+    templateOrder.remove(id);
+    templateOrder.insert(0, id);
+    _box.write(_orderKey, templateOrder.toList());
+  }
+
   int _tapSeq = 0;
   Worker? _proWorker;
 
@@ -48,6 +75,13 @@ class HomeController extends GetxController {
   TemplateController get templates => Get.isRegistered<TemplateController>()
       ? Get.find<TemplateController>()
       : Get.put(TemplateController());
+
+  @override
+  void onInit() {
+    super.onInit();
+    final saved = _box.read<List<dynamic>>(_orderKey);
+    if (saved != null) templateOrder.assignAll(saved.whereType<String>());
+  }
 
   @override
   void onReady() {
@@ -90,7 +124,14 @@ class HomeController extends GetxController {
     final base = await TemplateData.load(item);
     TemplateData? live;
     if (base != null) {
-      live = base.filled(TemplateData.currentProfileValues());
+      // Fonts first, so the texts are measured (and fitted) with the real ones.
+      await AiFrameCardBuilder.loadFonts([
+        ...base.front.elements,
+        ...base.back.elements,
+      ]);
+      live = base
+          .filled(await TemplateData.currentProfileValuesWithLogo())
+          .fitted();
       await _precache(live);
     }
 
@@ -172,6 +213,7 @@ class HomeController extends GetxController {
       _tapSeq++;
       previewTemplate.value = null;
       previewData.value = null;
+      _promote(item.id);
 
       FirebaseAnalytics.instance.logEvent(
         name: 'template_applied',
@@ -224,6 +266,7 @@ class HomeController extends GetxController {
       await CreditGate.spend(cost: aiCardCost, source: 'template_ai');
       previewTemplate.value = null;
       previewData.value = null;
+      _promote(item.id);
 
       FirebaseAnalytics.instance.logEvent(
         name: 'template_applied',
@@ -291,6 +334,18 @@ class HomeController extends GetxController {
       try {
         await precacheImage(AssetImage(p), ctx);
       } catch (_) {}
+    }
+
+    // The user's logo (a file), so it is there with the first paint.
+    for (final side in [data.front, data.back]) {
+      for (final e in side.elements) {
+        final file = e.imageFile;
+        if (file == null) continue;
+        try {
+          if (!ctx.mounted) return;
+          await precacheImage(FileImage(file), ctx);
+        } catch (_) {}
+      }
     }
   }
 

@@ -60,8 +60,11 @@ class OnboardingBottomActions extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 10),
-                    Icon(Icons.arrow_forward_rounded,
-                        size: 18, color: AppColors.white),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 18,
+                      color: AppColors.white,
+                    ),
                   ],
                 ),
               ),
@@ -71,7 +74,10 @@ class OnboardingBottomActions extends StatelessWidget {
               behavior: HitTestBehavior.opaque,
               onTap: onSecondary,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 6,
+                  horizontal: 12,
+                ),
                 child: Text(
                   'onboarding_do_it_later'.tr,
                   textAlign: TextAlign.center,

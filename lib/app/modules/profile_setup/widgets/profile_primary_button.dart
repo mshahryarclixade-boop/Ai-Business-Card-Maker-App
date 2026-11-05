@@ -54,8 +54,11 @@ class ProfilePrimaryButton extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            const Icon(Icons.arrow_forward_rounded,
-                size: 18, color: AppColors.white),
+            const Icon(
+              Icons.arrow_forward_rounded,
+              size: 18,
+              color: AppColors.white,
+            ),
           ],
         ),
       ),

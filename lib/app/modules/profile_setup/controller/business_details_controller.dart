@@ -2,15 +2,19 @@ import 'dart:typed_data';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:image_picker/image_picker.dart';
 
+import '../../../core/translations/tr_extension.dart';
 import '../../../routes/app_routes.dart';
 import '../service/logo_finder.dart';
+import '../widgets/logo_background_sheet.dart';
 import '../service/profile_store.dart';
 
-enum LogoMode { gallery, website }
+/// [none]: the user has not picked a logo source yet (the default).
+enum LogoMode { none, gallery, website }
 
 class BusinessDetailsController extends GetxController {
   final companyController = TextEditingController();
@@ -18,11 +22,17 @@ class BusinessDetailsController extends GetxController {
   final websiteController = TextEditingController();
   final websiteFocus = FocusNode();
 
-  final Rx<LogoMode> mode = LogoMode.website.obs;
+  final Rx<LogoMode> mode = LogoMode.none.obs;
+  final RxnString companyError = RxnString();
+  final RxnString designationError = RxnString();
   final Rxn<Uint8List> logoBytes = Rxn<Uint8List>();
   final RxString logoName = ''.obs;
   final RxBool isFetching = false.obs;
   final RxBool logoNotFound = false.obs;
+
+  /// The logo as it was before its background was removed; null when the
+  /// current logo is untouched. Lets the user undo the removal.
+  final Rxn<Uint8List> originalLogoBytes = Rxn<Uint8List>();
 
   final _picker = ImagePicker();
   String _lastLookup = '';
@@ -43,12 +53,37 @@ class BusinessDetailsController extends GetxController {
       logoBytes.value = p.logoBytes;
       logoName.value = p.logoName;
       _lastLookup = p.website; // already have its logo, don't fetch again
-      if (p.website.isEmpty) mode.value = LogoMode.gallery;
+      mode.value = p.website.isEmpty ? LogoMode.gallery : LogoMode.website;
+    } else if (p.website.isNotEmpty) {
+      // A website was typed but no logo was found: its field must still show.
+      mode.value = LogoMode.website;
     }
     // Look for the logo when the user leaves the website field.
     websiteFocus.addListener(() {
       if (!websiteFocus.hasFocus) findLogoFromWebsite();
     });
+  }
+
+  /// Keeps what the user typed when they leave the screen (swipe back,
+  /// back button) so it is still there when they return.
+  void _saveDraft() {
+    ProfileStore.to.saveBusiness(
+      companyName: companyName,
+      designation: designation,
+      website: website,
+      logoBytes: logoBytes.value,
+      logoName: logoName.value,
+    );
+  }
+
+  @override
+  void onClose() {
+    _saveDraft(); // must run before the text controllers are disposed
+    companyController.dispose();
+    designationController.dispose();
+    websiteController.dispose();
+    websiteFocus.dispose();
+    super.onClose();
   }
 
   void selectWebsite() => mode.value = LogoMode.website;
@@ -67,11 +102,16 @@ class BusinessDetailsController extends GetxController {
       if (file == null) return;
 
       logoBytes.value = await file.readAsBytes();
+      originalLogoBytes.value = null;
       logoName.value = file.name;
       _logoFromWebsite = false;
+      await offerBackgroundRemoval();
     } catch (e, st) {
-      FirebaseCrashlytics.instance
-          .recordError(e, st, reason: 'pick logo from gallery');
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'pick logo from gallery',
+      );
     }
   }
 
@@ -93,8 +133,11 @@ class BusinessDetailsController extends GetxController {
     try {
       result = await LogoFinder.find(url);
     } catch (e, st) {
-      FirebaseCrashlytics.instance
-          .recordError(e, st, reason: 'logo finder failed');
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'logo finder failed',
+      );
       result = null;
     }
 
@@ -108,8 +151,32 @@ class BusinessDetailsController extends GetxController {
       return;
     }
     logoBytes.value = result.bytes;
+    originalLogoBytes.value = null;
     logoName.value = result.name;
     _logoFromWebsite = true;
+    await offerBackgroundRemoval();
+  }
+
+  /// Bottom sheet: remove the logo's background or keep it as it is. Only the
+  /// company logo of this screen goes through it.
+  @visibleForTesting
+  Future<void> offerBackgroundRemoval() async {
+    final bytes = logoBytes.value;
+    final context = Get.context;
+    if (bytes == null || context == null) return;
+    final processed = await showLogoBackgroundSheet(context, bytes);
+    // Applied, and the logo was not replaced or removed in the meantime.
+    if (processed == null || !identical(logoBytes.value, bytes)) return;
+    originalLogoBytes.value = bytes;
+    logoBytes.value = processed;
+  }
+
+  /// Undo: bring back the logo as it was before the background was removed.
+  void restoreOriginalLogo() {
+    final original = originalLogoBytes.value;
+    if (original == null) return;
+    logoBytes.value = original;
+    originalLogoBytes.value = null;
   }
 
   /// "X" on the preview card: the user rejects the logo.
@@ -125,12 +192,25 @@ class BusinessDetailsController extends GetxController {
 
   void _clearLogo() {
     logoBytes.value = null;
+    originalLogoBytes.value = null;
     logoName.value = '';
     _logoFromWebsite = false;
   }
 
+  bool _validate() {
+    companyError.value = companyName.isEmpty
+        ? 'profile_setup_error_company'.tr
+        : null;
+    designationError.value = designation.isEmpty
+        ? 'profile_setup_error_designation'.tr
+        : null;
+    return companyError.value == null && designationError.value == null;
+  }
+
   Future<void> onCreateCard() async {
     FocusManager.instance.primaryFocus?.unfocus();
+    // The logo stays optional; the company and the designation do not.
+    if (!_validate()) return;
 
     // Make sure a logo lookup the user just triggered has finished.
     await findLogoFromWebsite();
@@ -155,14 +235,5 @@ class BusinessDetailsController extends GetxController {
     );
 
     Get.offAllNamed(Routes.FIRST_CARD);
-  }
-
-  @override
-  void onClose() {
-    companyController.dispose();
-    designationController.dispose();
-    websiteController.dispose();
-    websiteFocus.dispose();
-    super.onClose();
   }
 }

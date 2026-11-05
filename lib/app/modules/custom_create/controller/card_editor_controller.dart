@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../../../core/services/ai_frame_card_builder.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -54,11 +55,7 @@ class _Snap {
 
 /// An element sent to the other side, and where it sat in the layer order.
 class _SideMove {
-  _SideMove({
-    required this.element,
-    required this.index,
-    required this.toSide,
-  });
+  _SideMove({required this.element, required this.index, required this.toSide});
 
   final CardElement element;
   final int index;
@@ -302,6 +299,16 @@ class CardEditorController extends GetxController {
     selectedElementId.value = id;
   }
 
+  /// A tap on a text: select it and open Text -> Edit Text for it straight
+  /// away (font, size, colour), so no tool has to be opened first.
+  void selectAndEditText(String id) {
+    selectedElementId.value = id;
+    activeTool.value = CardTool.text;
+    expandedStylePanel.value = '';
+    colorPickerTarget.value = null;
+    textStyleBarOpen.value = true;
+  }
+
   CardElement? get selectedElement {
     final id = selectedElementId.value;
 
@@ -388,7 +395,10 @@ class CardEditorController extends GetxController {
           activeControlsWidgetColor: AppColors.primary,
           lockAspectRatio: false,
         ),
-        IOSUiSettings(title: 'custom_create_crop_photo'.tr, aspectRatioLockEnabled: false),
+        IOSUiSettings(
+          title: 'custom_create_crop_photo'.tr,
+          aspectRatioLockEnabled: false,
+        ),
       ],
     );
 
@@ -690,7 +700,9 @@ class CardEditorController extends GetxController {
     _syncFlags();
 
     Get.snackbar(
-      toSide == 1 ? 'custom_create_moved_to_back'.tr : 'custom_create_moved_to_front'.tr,
+      toSide == 1
+          ? 'custom_create_moved_to_back'.tr
+          : 'custom_create_moved_to_front'.tr,
       'custom_create_switch_sides_message'.tr,
       snackPosition: SnackPosition.BOTTOM,
       margin: const EdgeInsets.all(15),
@@ -834,11 +846,19 @@ class CardEditorController extends GetxController {
     try {
       final raw = await rootBundle.loadString(jsonAssetPath);
       final data = jsonDecode(raw) as Map<String, dynamic>;
-      final values = fieldValues ?? TemplateData.currentProfileValues();
+      final values =
+          fieldValues ?? await TemplateData.currentProfileValuesWithLogo();
 
       orientation.value = CardOrientation.values.byName(
         data['orientation'] as String,
       );
+
+      // The texts are measured to fit the card, so their fonts come first.
+      await AiFrameCardBuilder.loadFonts([
+        for (final side in ['front', 'back'])
+          for (final e in (data[side]['elements'] as List? ?? const []))
+            CardElement.fromJson(e as Map<String, dynamic>),
+      ]);
 
       _sides[0] = _templateSide(data['front'] as Map<String, dynamic>, values);
       _sides[1] = _templateSide(data['back'] as Map<String, dynamic>, values);
@@ -859,7 +879,11 @@ class CardEditorController extends GetxController {
       currentSide.value = 0;
       _showSide(_sides[0]);
     } catch (e, st) {
-      FirebaseCrashlytics.instance.recordError(e, st, reason: 'template json load');
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'template json load',
+      );
       debugPrint('TEMPLATE JSON load failed ($jsonAssetPath): $e');
       debugPrint('$st');
     }
@@ -870,7 +894,10 @@ class CardEditorController extends GetxController {
         .map((e) => CardElement.fromJson(e as Map<String, dynamic>))
         .toList();
     return _SideData(
-      elements: TemplateData.fillElements(els, values),
+      elements: TemplateData.fitTexts(
+        TemplateData.fillElements(els, values),
+        canvasWidth: orientation.value.canvasSize.width,
+      ),
       backgroundTemplate: d['background'] as String?,
     );
   }
@@ -1056,7 +1083,11 @@ class CardEditorController extends GetxController {
         },
       );
     } catch (e, st) {
-      FirebaseCrashlytics.instance.recordError(e, st, reason: 'card editor save');
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'card editor save',
+      );
       debugPrint('CARD SAVE ERROR: $e');
       debugPrint('$st');
 

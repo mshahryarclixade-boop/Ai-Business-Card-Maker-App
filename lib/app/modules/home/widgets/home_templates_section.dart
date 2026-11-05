@@ -21,10 +21,12 @@ class HomeTemplatesSection extends GetView<HomeController> {
       if (service.designs.isEmpty) return const SizedBox.shrink();
       if (templates.isLoading.value) return const SizedBox.shrink();
 
-      final list = templates.allTemplates
+      final horizontal = templates.allTemplates
           .where((t) => t.orientation == TemplateOrientation.horizontal)
           .toList();
-      if (list.isEmpty) return const SizedBox.shrink();
+      if (horizontal.isEmpty) return const SizedBox.shrink();
+      // The AI card first; an applied template moves to the front.
+      final list = controller.orderedTemplates(horizontal);
 
       final selected = controller.previewTemplate.value;
 
@@ -56,7 +58,9 @@ class HomeTemplatesSection extends GetView<HomeController> {
                   child: Container(
                     foregroundDecoration: BoxDecoration(
                       border: Border.all(
-                        color: isSelected ? AppColors.primary : Colors.transparent,
+                        color: isSelected
+                            ? AppColors.primary
+                            : Colors.transparent,
                         width: 2,
                       ),
                     ),

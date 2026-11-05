@@ -6,6 +6,10 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/translations/tr_extension.dart';
 
+/// Longest text allowed in the name, email, company, designation and website
+/// fields.
+const int kProfileFieldMaxLength = 20;
+
 const _inputTextStyle = TextStyle(
   fontFamily: 'Inter',
   fontSize: 16,
@@ -78,7 +82,7 @@ OutlineInputBorder _border(Color color) => OutlineInputBorder(
 );
 
 class ProfileTextField extends StatelessWidget {
-  const      ProfileTextField({
+  const ProfileTextField({
     super.key,
     required this.label,
     required this.hint,
@@ -92,6 +96,7 @@ class ProfileTextField extends StatelessWidget {
     this.focusNode,
     this.textColor,
     this.inputFormatters,
+    this.maxLength = kProfileFieldMaxLength,
   });
 
   final String label;
@@ -106,12 +111,14 @@ class ProfileTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final Color? textColor;
   final List<TextInputFormatter>? inputFormatters;
+  final int maxLength;
 
   @override
   Widget build(BuildContext context) {
     final hasError = errorText != null;
-    final borderColor =
-    hasError ? AppColors.profileError : AppColors.profileFieldBorder;
+    final borderColor = hasError
+        ? AppColors.profileError
+        : AppColors.profileFieldBorder;
 
     return ProfileFieldShell(
       label: label,
@@ -120,7 +127,10 @@ class ProfileTextField extends StatelessWidget {
         controller: controller,
         focusNode: focusNode,
         keyboardType: keyboardType,
-        inputFormatters: inputFormatters,
+        inputFormatters: [
+          ...?inputFormatters,
+          LengthLimitingTextInputFormatter(maxLength),
+        ],
         textInputAction: textInputAction,
         textCapitalization: textCapitalization,
         onChanged: onChanged,
@@ -132,8 +142,10 @@ class ProfileTextField extends StatelessWidget {
           hintStyle: _hintTextStyle,
           filled: true,
           fillColor: AppColors.white,
-          contentPadding:
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
           enabledBorder: _border(borderColor),
           focusedBorder: _border(
             hasError ? AppColors.profileError : AppColors.profileStepActive,
@@ -214,8 +226,10 @@ class ProfilePhoneField extends StatelessWidget {
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
-                  contentPadding:
-                  EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                 ),
               ),
             ),

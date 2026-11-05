@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -7,18 +8,22 @@ import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:share_plus/share_plus.dart';
+
 import '../../../core/utils/share_origin.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../../core/translations/tr_extension.dart';
+
+import '../../profile_setup/model/user_profile_data.dart';
+import '../../profile_setup/service/profile_store.dart';
+
 import '../../qr_code_generator/model/qr_style.dart';
 import '../../qr_code_generator/service/qr_store.dart';
 import '../../qr_code_generator/view/qr_preview_screen.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
-import '../../profile_setup/model/user_profile_data.dart';
-import '../../profile_setup/service/profile_store.dart';
 import '../../qr_code_generator/view/qr_code_screen.dart';
-import '../../../core/translations/tr_extension.dart';
 
-const String kCardPageUrl = 'https://ai-business-card-e1cde.web.app/card.html';
+const String kCardPageUrl =
+    'https://ai-business-card-e1cde.web.app/card.html';
 
 void _snack(String title, String message) {
   Get.snackbar(
@@ -30,114 +35,200 @@ void _snack(String title, String message) {
 }
 
 /// The four options shown when the user taps Share Card.
-void showShareCardSheet(File cardImage) {
+void showShareCardSheet({
+  required File frontImage,
+  File? backImage,
+}) {
   Get.bottomSheet(
-    _ShareCardSheet(cardImage: cardImage),
+    _ShareCardSheet(
+      frontImage: frontImage,
+      backImage: backImage,
+    ),
     backgroundColor: Colors.white,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(24),
+      ),
     ),
   );
 }
 
 class _ShareCardSheet extends StatelessWidget {
-  const _ShareCardSheet({required this.cardImage});
+  const _ShareCardSheet({
+    required this.frontImage,
+    this.backImage,
+  });
 
-  final File cardImage;
+  final File frontImage;
+  final File? backImage;
 
-  /// Builds the link: card details are packed into the part after '#',
-  /// which the web page reads. Empty fields are left out.
-  String _buildCardLink(UserProfileData d) {
+  /// Returns front and back images when available.
+  List<File> get cardImages => [
+        frontImage,
+        if (backImage != null) backImage!,
+      ];
+
+  /// Builds the link: card details are packed into the part after '#'.
+  String _buildCardLink(UserProfileData data) {
     final map = <String, String>{
-      if (d.fullName.trim().isNotEmpty) 'n': d.fullName.trim(),
-      if (d.companyName.trim().isNotEmpty) 'c': d.companyName.trim(),
-      if (d.designation.trim().isNotEmpty) 'd': d.designation.trim(),
-      if (d.phone.trim().isNotEmpty) 'p': d.phone.trim(),
-      if (d.email.trim().isNotEmpty) 'e': d.email.trim(),
-      if (d.website.trim().isNotEmpty) 'w': d.website.trim(),
+      if (data.fullName.trim().isNotEmpty)
+        'n': data.fullName.trim(),
+      if (data.companyName.trim().isNotEmpty)
+        'c': data.companyName.trim(),
+      if (data.designation.trim().isNotEmpty)
+        'd': data.designation.trim(),
+      if (data.phone.trim().isNotEmpty)
+        'p': data.phone.trim(),
+      if (data.email.trim().isNotEmpty)
+        'e': data.email.trim(),
+      if (data.website.trim().isNotEmpty)
+        'w': data.website.trim(),
     };
+
     final encoded = base64Url
         .encode(utf8.encode(jsonEncode(map)))
         .replaceAll('=', '');
+
     return '$kCardPageUrl#$encoded';
   }
 
   Future<void> _shareContact() async {
     Get.back();
+
     try {
       final data = ProfileStore.to.profile.value;
+
       if (data.fullName.trim().isEmpty) {
-        _snack('home_share_no_details_title'.tr, 'home_share_no_details_link'.tr);
+        _snack(
+          'home_share_no_details_title'.tr,
+          'home_share_no_details_link'.tr,
+        );
         return;
       }
+
       final link = _buildCardLink(data);
 
       await SharePlus.instance.share(
         ShareParams(
-          text: 'home_share_text'.trParams({'link': link}),
-          subject: 'home_share_subject'.trParams({'name': data.fullName.trim()}),
+          text: 'home_share_text'.trParams({
+            'link': link,
+          }),
+          subject: 'home_share_subject'.trParams({
+            'name': data.fullName.trim(),
+          }),
           sharePositionOrigin: shareOrigin(),
         ),
       );
-      FirebaseAnalytics.instance.logEvent(
+
+      await FirebaseAnalytics.instance.logEvent(
         name: 'card_shared',
         parameters: {'method': 'link'},
       );
     } catch (e, st) {
-      FirebaseCrashlytics.instance.recordError(e, st, reason: 'share link');
-      _snack('home_share_failed_title'.tr, 'home_try_again'.tr);
+      await FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'share link',
+      );
+
+      _snack(
+        'home_share_failed_title'.tr,
+        'home_try_again'.tr,
+      );
     }
   }
 
   Future<void> _shareImage() async {
     Get.back();
+
     try {
       await SharePlus.instance.share(
         ShareParams(
-          files: [XFile(cardImage.path)],
+          files: cardImages
+              .map((file) => XFile(file.path))
+              .toList(),
           sharePositionOrigin: shareOrigin(),
         ),
       );
-      FirebaseAnalytics.instance.logEvent(
+
+      await FirebaseAnalytics.instance.logEvent(
         name: 'card_shared',
         parameters: {'method': 'image'},
       );
     } catch (e, st) {
-      FirebaseCrashlytics.instance.recordError(e, st, reason: 'share image');
-      _snack('home_share_failed_title'.tr, 'home_try_again'.tr);
+      await FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'share image',
+      );
+
+      _snack(
+        'home_share_failed_title'.tr,
+        'home_try_again'.tr,
+      );
     }
   }
 
   Future<void> _saveToGallery() async {
     Get.back();
+
     try {
       if (!await Gal.hasAccess()) {
         if (!await Gal.requestAccess()) {
-          _snack('home_share_permission_title'.tr, 'home_share_permission_message'.tr);
+          _snack(
+            'home_share_permission_title'.tr,
+            'home_share_permission_message'.tr,
+          );
           return;
         }
       }
-      await Gal.putImage(cardImage.path);
-      FirebaseAnalytics.instance.logEvent(name: 'card_saved_to_gallery');
-      _snack('home_share_saved_title'.tr, 'home_share_saved_message'.tr);
+
+      for (final image in cardImages) {
+        await Gal.putImage(image.path);
+      }
+
+      await FirebaseAnalytics.instance.logEvent(
+        name: 'card_saved_to_gallery',
+      );
+
+      _snack(
+        'home_share_saved_title'.tr,
+        'home_share_saved_message'.tr,
+      );
     } catch (e, st) {
-      FirebaseCrashlytics.instance
-          .recordError(e, st, reason: 'save card to gallery');
-      _snack('home_share_save_failed_title'.tr, 'home_try_again'.tr);
+      await FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'save card to gallery',
+      );
+
+      _snack(
+        'home_share_save_failed_title'.tr,
+        'home_try_again'.tr,
+      );
     }
   }
 
   void _showQr() {
     Get.back();
+
     final entry = QrStore.defaultEntry;
     final profile = loadSavedQrProfile();
+
     if (profile == null) {
-      _snack('home_share_no_details_title'.tr, 'home_share_no_details_qr'.tr);
+      _snack(
+        'home_share_no_details_title'.tr,
+        'home_share_no_details_qr'.tr,
+      );
       return;
     }
-    FirebaseAnalytics.instance.logEvent(name: 'qr_shown');
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'qr_shown',
+    );
+
     Get.to(
-          () => QrPreviewScreen(
+      () => QrPreviewScreen(
         profile: profile,
         qrOnly: true,
         style: entry?.style ?? QrStyles.classic,
@@ -220,10 +311,17 @@ class _Option extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+        padding: const EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 4,
+        ),
         child: Row(
           children: [
-            Icon(icon, size: 22, color: AppColors.titleDark),
+            Icon(
+              icon,
+              size: 22,
+              color: AppColors.titleDark,
+            ),
             const SizedBox(width: 14),
             Text(
               label,

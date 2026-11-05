@@ -7,6 +7,7 @@ import '../controller/profile_setup_controller.dart';
 import '../widgets/profile_fields.dart';
 import '../widgets/profile_hint_card.dart';
 import '../widgets/profile_primary_button.dart';
+import '../widgets/profile_setup_layout.dart';
 import '../widgets/profile_step_header.dart';
 import '../../../core/translations/tr_extension.dart';
 
@@ -23,90 +24,77 @@ class PersonalDetailsView extends GetView<ProfileSetupController> {
       child: Scaffold(
         backgroundColor: AppColors.splashBg,
         body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  keyboardDismissBehavior:
-                  ScrollViewKeyboardDismissBehavior.onDrag,
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const ProfileBackButton(),
-                      const ProfileStepHeader(step: 1),
-                      const SizedBox(height: 24),
-                      Text(
-                        'profile_setup_personal_title'.tr,
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 40,
-                          fontWeight: FontWeight.w700,
-                          height: 1.2,
-                          letterSpacing: 0,
-                          color: AppColors.splashTextPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 26),
-                      Obx(
-                            () => ProfileTextField(
-                          label: 'profile_setup_personal_full_name'.tr,
-                          hint: 'profile_setup_personal_full_name_hint'.tr,
-                          controller: controller.fullNameController,
-                          keyboardType: TextInputType.name,
-                          textInputAction: TextInputAction.next,
-                          textCapitalization: TextCapitalization.words,
-                          errorText: controller.nameError.value,
-                          onChanged: (_) => controller.nameError.value = null,
-                          onSubmitted: (_) =>
-                              controller.emailFocus.requestFocus(),
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-                      Obx(
-                            () => ProfileTextField(
-                          label: 'profile_setup_personal_email'.tr,
-                          hint: 'profile_setup_personal_email_hint'.tr,
-                          controller: controller.emailController,
-                          focusNode: controller.emailFocus,
-                          keyboardType: TextInputType.emailAddress,
-                          inputFormatters: InputValidators.emailFormatters,
-                          textInputAction: TextInputAction.next,
-                          errorText: controller.emailError.value,
-                          onChanged: (_) => controller.emailError.value = null,
-                          onSubmitted: (_) =>
-                              controller.phoneFocus.requestFocus(),
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-                      Obx(
-                            () => ProfilePhoneField(
-                          controller: controller.phoneController,
-                          focusNode: controller.phoneFocus,
-                          initialDialCode: controller.dialCode.value,
-                          onCountryChanged: (c) =>
-                          controller.dialCode.value = c.dialCode ?? '+92',
-                          errorText: controller.phoneError.value,
-                          onChanged: (_) => controller.phoneError.value = null,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ProfileHintCard(
-                        text:
-                        'profile_setup_personal_phone_hint'.tr,
-                      ),
-                    ],
+          // Swipe left: on to Business (the required fields are checked first).
+          child: ProfileSwipeNav(
+            onNext: controller.onContinue,
+            child: ProfileSetupLayout(
+              scroll: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const ProfileBackButton(),
+                  const ProfileStepHeader(step: 1),
+                  const SizedBox(height: 24),
+                  Text(
+                    'profile_setup_personal_title'.tr,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 40,
+                      fontWeight: FontWeight.w700,
+                      height: 1.2,
+                      letterSpacing: 0,
+                      color: AppColors.splashTextPrimary,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 26),
+                  Obx(
+                    () => ProfileTextField(
+                      label: 'profile_setup_personal_full_name'.tr,
+                      hint: 'profile_setup_personal_full_name_hint'.tr,
+                      controller: controller.fullNameController,
+                      keyboardType: TextInputType.name,
+                      textInputAction: TextInputAction.next,
+                      textCapitalization: TextCapitalization.words,
+                      errorText: controller.nameError.value,
+                      onChanged: (_) => controller.nameError.value = null,
+                      onSubmitted: (_) => controller.emailFocus.requestFocus(),
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  Obx(
+                    () => ProfileTextField(
+                      label: 'profile_setup_personal_email'.tr,
+                      hint: 'profile_setup_personal_email_hint'.tr,
+                      controller: controller.emailController,
+                      focusNode: controller.emailFocus,
+                      keyboardType: TextInputType.emailAddress,
+                      inputFormatters: InputValidators.emailFormatters,
+                      textInputAction: TextInputAction.next,
+                      errorText: controller.emailError.value,
+                      onChanged: (_) => controller.emailError.value = null,
+                      onSubmitted: (_) => controller.phoneFocus.requestFocus(),
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  Obx(
+                    () => ProfilePhoneField(
+                      controller: controller.phoneController,
+                      focusNode: controller.phoneFocus,
+                      initialDialCode: controller.dialCode.value,
+                      onCountryChanged: (c) =>
+                          controller.dialCode.value = c.dialCode ?? '+92',
+                      errorText: controller.phoneError.value,
+                      onChanged: (_) => controller.phoneError.value = null,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ProfileHintCard(text: 'profile_setup_personal_phone_hint'.tr),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-                child: ProfilePrimaryButton(
-                  label: 'profile_setup_personal_continue'.tr,
-                  onTap: controller.onContinue,
-                ),
+              footer: ProfilePrimaryButton(
+                label: 'profile_setup_personal_continue'.tr,
+                onTap: controller.onContinue,
               ),
-            ],
+            ),
           ),
         ),
       ),

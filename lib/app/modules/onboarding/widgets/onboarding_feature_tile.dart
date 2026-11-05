@@ -5,31 +5,35 @@ import '../../../core/translations/tr_extension.dart';
 
 class OnboardingFeature {
   const OnboardingFeature({
-    required this.icon,
+    this.icon,
+    this.iconData,
     required this.title,
     required this.description,
   });
 
-  final String icon;
+  /// Asset image, or [iconData] when there is no asset for it.
+  final String? icon;
+  final IconData? iconData;
   final String title;
   final String description;
 }
 
-const onboardingFeatures = [
+/// Page 1: what the app makes.
+const onboardingPage1Features = [
   OnboardingFeature(
     icon: 'assets/icons/onboarding1_icon1.png',
     title: 'onboarding_feature_create_ai_title',
-    description: 'onboarding_feature_description',
+    description: 'onboarding_feature_create_ai_desc',
   ),
   OnboardingFeature(
     icon: 'assets/icons/onboarding1_icon2.png',
     title: 'onboarding_feature_templates_title',
-    description: 'onboarding_feature_description',
+    description: 'onboarding_feature_templates_desc',
   ),
   OnboardingFeature(
     icon: 'assets/icons/onboarding1_icon3.png',
     title: 'onboarding_feature_qr_title',
-    description: 'onboarding_feature_description',
+    description: 'onboarding_feature_qr_desc',
   ),
 ];
 
@@ -52,16 +56,16 @@ class OnboardingFeatureTile extends StatelessWidget {
           : const EdgeInsets.symmetric(vertical: 18),
       decoration: boxed
           ? BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.onboardingCardShadow,
-            offset: Offset(0, 0.74),
-            blurRadius: 32.53,
-          ),
-        ],
-      )
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: const [
+                BoxShadow(
+                  color: AppColors.onboardingCardShadow,
+                  offset: Offset(0, 0.74),
+                  blurRadius: 32.53,
+                ),
+              ],
+            )
           : null,
       child: Row(
         children: [
@@ -73,7 +77,13 @@ class OnboardingFeatureTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(14.22),
             ),
             alignment: Alignment.center,
-            child: Image.asset(feature.icon, width: 27, height: 27),
+            child: feature.iconData != null
+                ? Icon(
+                    feature.iconData,
+                    size: 27,
+                    color: AppColors.onboardingAccent,
+                  )
+                : Image.asset(feature.icon!, width: 27, height: 27),
           ),
           const SizedBox(width: 13),
           Expanded(

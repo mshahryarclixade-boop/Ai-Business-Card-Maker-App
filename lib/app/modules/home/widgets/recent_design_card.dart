@@ -32,71 +32,73 @@ class RecentDesignCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TapTarget(child: GestureDetector(
-      onTap: onTap,
-      onLongPress: onLongPress,
-      child: AspectRatio(
-        aspectRatio: aspectRatio,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                gradient: thumbnailFile == null
-                    ? (gradient ??
-                    const LinearGradient(
-                      colors: [Colors.transparent, Colors.transparent],
-                    ))
-                    : null,
-                borderRadius: BorderRadius.circular(3),
-                image: thumbnailFile != null
-                    ? DecorationImage(
-                  image: FileImage(thumbnailFile!),
-                  fit: BoxFit.cover,
-                )
-                    : null,
-                boxShadow: const [
-                  BoxShadow(
-                    color: AppColors.cardShadow,
-                    blurRadius: 8,
-                    offset: Offset(0, 3),
-                  ),
-                ],
-              ),
-            ),
-            if (showFavoriteBadge)
-              PositionedDirectional(
-                top: 8,
-                end: 8,
-                child: GestureDetector(
-                  onTap: onFavoriteTap,
-                  child: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: const BoxDecoration(
-                      color: AppColors.favorite,
-                      shape: BoxShape.circle,
+    return TapTarget(
+      child: GestureDetector(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        child: AspectRatio(
+          aspectRatio: aspectRatio,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  gradient: thumbnailFile == null
+                      ? (gradient ??
+                            const LinearGradient(
+                              colors: [Colors.transparent, Colors.transparent],
+                            ))
+                      : null,
+                  borderRadius: BorderRadius.circular(3),
+                  image: thumbnailFile != null
+                      ? DecorationImage(
+                          image: FileImage(thumbnailFile!),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: AppColors.cardShadow,
+                      blurRadius: 8,
+                      offset: Offset(0, 3),
                     ),
-                    child: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: Colors.white,
-                      size: 14,
+                  ],
+                ),
+              ),
+              if (showFavoriteBadge)
+                PositionedDirectional(
+                  top: 8,
+                  end: 8,
+                  child: GestureDetector(
+                    onTap: onFavoriteTap,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                        color: AppColors.favorite,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: Colors.white,
+                        size: 14,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            if (isPremium)
-              const PositionedDirectional(
-                bottom: 8,
-                end: 8,
-                child: Icon(
-                  Icons.emoji_events, // swap for the crown asset icon
-                  color: AppColors.crownGold,
-                  size: 18,
+              if (isPremium)
+                const PositionedDirectional(
+                  bottom: 8,
+                  end: 8,
+                  child: Icon(
+                    Icons.emoji_events, // swap for the crown asset icon
+                    color: AppColors.crownGold,
+                    size: 18,
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 }

@@ -49,24 +49,24 @@ class _FirstCardLoadingVideoState extends State<FirstCardLoadingVideo> {
       height: 263,
       child: _ready
           ? FittedBox(
-        fit: BoxFit.cover,
-        clipBehavior: Clip.hardEdge,
-        child: SizedBox(
-          width: _video.value.size.width,
-          height: _video.value.size.height,
-          child: VideoPlayer(_video),
-        ),
-      )
+              fit: BoxFit.cover,
+              clipBehavior: Clip.hardEdge,
+              child: SizedBox(
+                width: _video.value.size.width,
+                height: _video.value.size.height,
+                child: VideoPlayer(_video),
+              ),
+            )
           : const Center(
-        child: SizedBox(
-          width: 28,
-          height: 28,
-          child: CircularProgressIndicator(
-            strokeWidth: 3,
-            color: AppColors.firstCardCheck,
-          ),
-        ),
-      ),
+              child: SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                  color: AppColors.firstCardCheck,
+                ),
+              ),
+            ),
     );
   }
 }

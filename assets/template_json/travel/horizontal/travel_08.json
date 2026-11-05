@@ -135,6 +135,28 @@
         "opacity": 1.0,
         "field": "email",
         "italic": false
+      },
+      {
+        "id": "logo_f",
+        "type": "image",
+        "position": {
+          "dx": 280,
+          "dy": 154
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 44,
+        "height": 44,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4279505963,
+        "opacity": 1.0,
+        "field": "logo",
+        "italic": false
       }
     ]
   },
@@ -205,6 +227,28 @@
         "tintColor": 4280163876,
         "opacity": 1.0,
         "field": "website",
+        "italic": false
+      },
+      {
+        "id": "logo_b",
+        "type": "image",
+        "position": {
+          "dx": 280,
+          "dy": 8
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 44,
+        "height": 44,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4279505963,
+        "opacity": 1.0,
+        "field": "logo",
         "italic": false
       }
     ]

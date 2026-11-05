@@ -42,40 +42,54 @@ class TemplateCard extends StatelessWidget {
                 height: 160,
                 color: const Color(0xFFE4E2F2),
                 alignment: Alignment.center,
-                child: const Icon(Icons.image_outlined, color: AppColors.pillLabelGrey, size: 28),
+                child: const Icon(
+                  Icons.image_outlined,
+                  color: AppColors.pillLabelGrey,
+                  size: 28,
+                ),
               ),
             ),
             if (item.isPremium)
               PositionedDirectional(
                 bottom: 8,
                 end: 8,
-                child: HideWhenPro(child: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
+                child: HideWhenPro(
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const FaIcon(
+                      FontAwesomeIcons.crown,
+                      size: 12,
+                      color: Color(0xFFF5A623),
+                    ),
                   ),
-                  child: const FaIcon(FontAwesomeIcons.crown, size: 12, color: Color(0xFFF5A623)),
-                )),
+                ),
               ),
             PositionedDirectional(
               top: 8,
               end: 8,
-              child: TapTarget(child: GestureDetector(
-                onTap: onHeartTap,
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    isSaved ? Icons.favorite : Icons.favorite_border,
-                    size: 14,
-                    color: isSaved ? Colors.redAccent : AppColors.pillLabelGrey,
+              child: TapTarget(
+                child: GestureDetector(
+                  onTap: onHeartTap,
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isSaved ? Icons.favorite : Icons.favorite_border,
+                      size: 14,
+                      color: isSaved
+                          ? Colors.redAccent
+                          : AppColors.pillLabelGrey,
+                    ),
                   ),
                 ),
-              )),
+              ),
             ),
           ],
         ),

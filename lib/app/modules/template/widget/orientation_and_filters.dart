@@ -20,44 +20,57 @@ class OrientationTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-          () => FittedBox(
+      () => FittedBox(
         fit: BoxFit.scaleDown,
         alignment: AlignmentDirectional.centerStart,
         child: Row(
-        children: List.generate(_labelKeys.length, (index) {
-          final isActive = controller.tabIndex.value == index;
-          return Padding(
-            padding: const EdgeInsetsDirectional.only(end: 16),
-            child: GestureDetector(
-              onTap: () => controller.changeTab(index),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20.2, vertical: 10),
-                decoration: BoxDecoration(
-                  color: isActive ? AppColors.buttonDark : const Color(0xFFEDEDF2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    if (_icons[index] != null) ...[
-                      Icon(_icons[index], size: 14, color: isActive ? Colors.white : AppColors.pillLabelGrey),
-                      const SizedBox(width: 6),
-                    ],
-                    Text(
-                      _labelKeys[index].tr,
-                      style: TextStyle(
-                        fontFamily: AppTextStyles.fontFamily,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: isActive ? Colors.white : AppColors.pillLabelGrey,
+          children: List.generate(_labelKeys.length, (index) {
+            final isActive = controller.tabIndex.value == index;
+            return Padding(
+              padding: const EdgeInsetsDirectional.only(end: 16),
+              child: GestureDetector(
+                onTap: () => controller.changeTab(index),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.2,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? AppColors.buttonDark
+                        : const Color(0xFFEDEDF2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      if (_icons[index] != null) ...[
+                        Icon(
+                          _icons[index],
+                          size: 14,
+                          color: isActive
+                              ? Colors.white
+                              : AppColors.pillLabelGrey,
+                        ),
+                        const SizedBox(width: 6),
+                      ],
+                      Text(
+                        _labelKeys[index].tr,
+                        style: TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: isActive
+                              ? Colors.white
+                              : AppColors.pillLabelGrey,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        }),
-      ),
+            );
+          }),
+        ),
       ),
     );
   }
@@ -71,7 +84,7 @@ class FilterChipsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-          () => SingleChildScrollView(
+      () => SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: controller.filters.map((filter) {
@@ -81,12 +94,17 @@ class FilterChipsRow extends StatelessWidget {
               child: GestureDetector(
                 onTap: () => controller.selectFilter(filter),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: isActive ? AppColors.primary : Colors.white,
                     borderRadius: BorderRadius.circular(30),
                     border: Border.all(
-                      color: isActive ? AppColors.primary : AppColors.pillBorder,
+                      color: isActive
+                          ? AppColors.primary
+                          : AppColors.pillBorder,
                     ),
                   ),
                   child: Text(

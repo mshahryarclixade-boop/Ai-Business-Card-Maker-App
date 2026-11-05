@@ -15,7 +15,9 @@ class TemplateEditView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TemplateItem? item = Get.arguments is TemplateItem ? Get.arguments as TemplateItem : null;
+    final TemplateItem? item = Get.arguments is TemplateItem
+        ? Get.arguments as TemplateItem
+        : null;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
@@ -78,9 +80,13 @@ class TemplateEditView extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
           child: Column(
             children: [
-              Image.asset('assets/images/empty_templates/travel/horizontal/travel_01_front.png'),
+              Image.asset(
+                'assets/images/empty_templates/travel/horizontal/travel_01_front.png',
+              ),
               const SizedBox(height: 12),
-              Image.asset('assets/images/empty_templates/travel/horizontal/travel_01_back.png'),
+              Image.asset(
+                'assets/images/empty_templates/travel/horizontal/travel_01_back.png',
+              ),
               const SizedBox(height: 12),
               Image.asset(
                 'assets/images/template_logos/travel/horizontal/travel_01_logo.png',

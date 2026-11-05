@@ -52,76 +52,72 @@ class MyCardSection extends StatelessWidget {
           : canvas.width / canvas.height;
 
       void editCard() => Get.to(
-            () => CardEditorView(design: design),
+        () => CardEditorView(design: design),
         transition: Transition.rightToLeft,
       );
 
       final cardTile = GestureDetector(
-            onTap: preview == null ? editCard : null,
-            // The shadow follows the card itself (as on the live templates),
-            // not the padded box around it, and is not clipped.
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 1),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(kCardPreviewRadius),
-                  boxShadow: kCardPreviewShadow,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(kCardPreviewRadius),
-                  child: AspectRatio(
-                    aspectRatio: liveData != null
-                        ? previewAspect
-                        : (preview == null ? _designAspect(design) : 7 / 4),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        if (preview == null)
-                          Image.file(
-                            design.file,
-                            fit: BoxFit.contain,
-                          )
-                        else if (liveData != null)
-                        // Draw the template at its real canvas size and
-                        // scale the complete design down to fit.
-                          FittedBox(
-                            fit: BoxFit.contain,
-                            child: SizedBox(
-                              width: canvas!.width,
-                              height: canvas.height,
-                              child: TemplateLivePreview(
-                                side: liveData.front,
-                                orientation: liveData.orientation,
-                                repaintKey: home.frontCaptureKey,
-                              ),
-                            ),
-                          )
-                        else
-                          Image.asset(
-                            preview.frontImagePath,
-                            fit: BoxFit.contain,
+        onTap: preview == null ? editCard : null,
+        // The shadow follows the card itself (as on the live templates),
+        // not the padded box around it, and is not clipped.
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 1),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(kCardPreviewRadius),
+              boxShadow: kCardPreviewShadow,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(kCardPreviewRadius),
+              child: AspectRatio(
+                aspectRatio: liveData != null
+                    ? previewAspect
+                    : (preview == null ? _designAspect(design) : 7 / 4),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (preview == null)
+                      Image.file(design.file, fit: BoxFit.contain)
+                    else if (liveData != null)
+                      // Draw the template at its real canvas size and
+                      // scale the complete design down to fit.
+                      FittedBox(
+                        fit: BoxFit.contain,
+                        child: SizedBox(
+                          width: canvas!.width,
+                          height: canvas.height,
+                          child: TemplateLivePreview(
+                            side: liveData.front,
+                            orientation: liveData.orientation,
+                            repaintKey: home.frontCaptureKey,
                           ),
-                        if (applying)
-                          Container(
-                            color: const Color(0x99FFFFFF),
-                            alignment: Alignment.center,
-                            child: const CircularProgressIndicator(
-                              color: AppColors.primary,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
+                        ),
+                      )
+                    else
+                      Image.asset(preview.frontImagePath, fit: BoxFit.contain),
+                    if (applying)
+                      Container(
+                        color: const Color(0x99FFFFFF),
+                        alignment: Alignment.center,
+                        child: const CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
-          );
+          ),
+        ),
+      );
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            firstName.isEmpty ? 'home_welcome'.tr : 'home_welcome_name'.trParams({'name': firstName}),
+            firstName.isEmpty
+                ? 'home_welcome'.tr
+                : 'home_welcome_name'.trParams({'name': firstName}),
             style: const TextStyle(
               fontFamily: AppTextStyles.fontFamily,
               fontSize: 18,
@@ -174,7 +170,10 @@ class MyCardSection extends StatelessWidget {
                   child: _ActionButton(
                     label: 'home_card_share'.tr,
                     filled: true,
-                    onTap: () => showShareCardSheet(design.file),
+                    onTap: () => showShareCardSheet(
+                      frontImage: design.file,
+                      backImage: design.backFile,
+                      ),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -202,7 +201,9 @@ class MyCardSection extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _ActionButton(
-                    label: applying ? 'home_card_applying'.tr : 'home_card_apply_template'.tr,
+                    label: applying
+                        ? 'home_card_applying'.tr
+                        : 'home_card_apply_template'.tr,
                     filled: true,
                     onTap: applying ? null : home.applyTemplate,
                   ),
@@ -210,7 +211,7 @@ class MyCardSection extends StatelessWidget {
               ],
             )
           else
-          // Template without an empty version yet: old AI flow.
+            // Template without an empty version yet: old AI flow.
             Row(
               children: [
                 Expanded(
@@ -223,7 +224,9 @@ class MyCardSection extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _ActionButton(
-                    label: applying ? 'home_card_applying'.tr : 'home_card_apply_template'.tr,
+                    label: applying
+                        ? 'home_card_applying'.tr
+                        : 'home_card_apply_template'.tr,
                     filled: true,
                     onTap: applying ? null : home.applyTemplate,
                   ),
@@ -259,13 +262,18 @@ class _ActionButton extends StatelessWidget {
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontFamily: AppTextStyles.fontFamily,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: filled ? Colors.white : AppColors.titleDark,
+        // A little larger than before; a long translation shrinks to fit.
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            label,
+            maxLines: 1,
+            style: TextStyle(
+              fontFamily: AppTextStyles.fontFamily,
+              fontSize: 15.5,
+              fontWeight: FontWeight.w600,
+              color: filled ? Colors.white : AppColors.titleDark,
+            ),
           ),
         ),
       ),

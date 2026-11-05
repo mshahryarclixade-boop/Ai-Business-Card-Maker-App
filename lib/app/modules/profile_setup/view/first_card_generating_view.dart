@@ -18,7 +18,9 @@ class FirstCardGeneratingView extends GetView<FirstCardController> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(gradient: AppColors.firstCardBackground),
+        decoration: const BoxDecoration(
+          gradient: AppColors.firstCardBackground,
+        ),
         child: SafeArea(
           child: Column(
             children: [
@@ -56,7 +58,7 @@ class FirstCardGeneratingView extends GetView<FirstCardController> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 36),
                 child: Obx(
-                      () => controller.status.value == FirstCardStatus.failed
+                  () => controller.status.value == FirstCardStatus.failed
                       ? _FailureBlock(controller: controller)
                       : _ProgressRows(controller: controller),
                 ),
@@ -161,7 +163,7 @@ class _FailureBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-          () => Column(
+      () => Column(
         children: [
           Text(
             controller.errorMessage.value,

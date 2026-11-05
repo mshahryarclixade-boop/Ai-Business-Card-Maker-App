@@ -33,10 +33,10 @@ class FirstCardGenerator {
   /// [templateAssetPath] (a template chosen on Home that has no layout of
   /// its own) makes an AI card in that template's style instead.
   Future<List<Uint8List>> generate(
-      UserProfileData data, {
-        String? templateAssetPath,
-        String? title,
-      }) async {
+    UserProfileData data, {
+    String? templateAssetPath,
+    String? title,
+  }) async {
     final cardTitle = title ?? 'profile_setup_first_card_default_title'.tr;
     final logo = data.hasLogo ? data.logoBytes : null;
     final details = CardDetails.fromUserProfile(data);
@@ -48,8 +48,9 @@ class FirstCardGenerator {
         title: cardTitle,
       );
     } else {
-      final style = (await rootBundle.load(templateAssetPath)).buffer
-          .asUint8List();
+      final style = (await rootBundle.load(
+        templateAssetPath,
+      )).buffer.asUint8List();
       design = await AiFrameCardBuilder.create(
         style: style,
         styleMime: _mimeOf(style),
@@ -152,8 +153,9 @@ class FirstCardGenerator {
 
     final slot = els.where((e) => e.field == 'logo').firstOrNull;
     final shift = logo == null && slot != null ? slot.height / 2 : 0.0;
-    final webText = els.where((e) => e.field == 'website' &&
-        e.type == CardElementType.text).firstOrNull;
+    final webText = els
+        .where((e) => e.field == 'website' && e.type == CardElementType.text)
+        .firstOrNull;
     const gap = 5.0;
 
     final out = <CardElement>[];
@@ -173,7 +175,9 @@ class FirstCardGenerator {
       if (e.field == 'website' && webText != null) {
         // Icon + text centered as one row.
         final iconW = els
-            .where((i) => i.field == 'website' && i.type != CardElementType.text)
+            .where(
+              (i) => i.field == 'website' && i.type != CardElementType.text,
+            )
             .map((i) => i.width)
             .fold(0.0, (a, b) => a + b);
         final rowX = centeredX(iconW + gap + textWidth(webText));

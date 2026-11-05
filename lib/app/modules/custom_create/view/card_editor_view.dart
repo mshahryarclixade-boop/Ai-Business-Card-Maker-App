@@ -1,6 +1,8 @@
+import 'dart:math' as math;
 import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../template/model/template_live_data.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart' hide Trans;
 import 'dart:io';
@@ -36,14 +38,16 @@ class CardEditorView extends StatefulWidget {
 class _CardEditorViewState extends State<CardEditorView> {
   late final CardEditorController controller;
 
+  /// Lives in the State (not in build) so a rebuild, e.g. when the keyboard
+  /// opens or closes, can never swap the key out from under a running save.
+  final GlobalKey _canvasRepaintKey = GlobalKey();
+
   String _emptyBgPath(String previewPath) => previewPath.replaceFirst(
     'assets/images/templates/',
     'assets/images/empty_templates/',
   );
 
-  String _templateJsonPath(TemplateItem t) => t.frontImagePath
-      .replaceFirst('assets/images/templates/', 'assets/template_json/')
-      .replaceFirst('_front.png', '.json');
+  String _templateJsonPath(TemplateItem t) => TemplateData.jsonPathFor(t);
 
   /// Adds the generated QR after the design/template has finished loading,
   /// so nothing can reset the canvas after the QR is placed.
@@ -178,16 +182,18 @@ class _CardEditorViewState extends State<CardEditorView> {
   }
 
   Widget _devStepButton(IconData icon, double step) {
-    return TapTarget(child: GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => controller.nudgeSelectedFontSize(step),
-      // long press = half step, for fine tuning
-      onLongPress: () => controller.nudgeSelectedFontSize(step / 2),
-      child: Padding(
-        padding: const EdgeInsets.all(6),
-        child: Icon(icon, size: 18),
+    return TapTarget(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => controller.nudgeSelectedFontSize(step),
+        // long press = half step, for fine tuning
+        onLongPress: () => controller.nudgeSelectedFontSize(step / 2),
+        child: Padding(
+          padding: const EdgeInsets.all(6),
+          child: Icon(icon, size: 18),
+        ),
       ),
-    ));
+    );
   }
 
   /// DEV ONLY: "-  18.0  +" bar, visible when a text element is selected.
@@ -230,8 +236,6 @@ class _CardEditorViewState extends State<CardEditorView> {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey canvasRepaintKey = GlobalKey();
-
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
       body: SafeArea(
@@ -240,7 +244,7 @@ class _CardEditorViewState extends State<CardEditorView> {
           children: [
             Column(
               children: [
-                TopBar(controller: controller, repaintKey: canvasRepaintKey),
+                TopBar(controller: controller, repaintKey: _canvasRepaintKey),
                 // The canvas and the open tool panel share the space between
                 // the top bar and the toolbar. The panel keeps its natural
                 // height; only when it would not fit (a small screen with the
@@ -250,36 +254,9 @@ class _CardEditorViewState extends State<CardEditorView> {
                     builder: (context, box) => Column(
                       children: [
                         Expanded(
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Obx(() {
-                                  final size =
-                                      controller.orientation.value.canvasSize;
-                                  return Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SizedBox(
-                                        width: size.width,
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: SideSwitcher(
-                                            controller: controller,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      CardCanvas(
-                                        controller: controller,
-                                        repaintKey: canvasRepaintKey,
-                                      ),
-                                    ],
-                                  );
-                                }),
-                              ),
-                            ),
+                          child: _CanvasArea(
+                            controller: controller,
+                            repaintKey: _canvasRepaintKey,
                           ),
                         ),
                         ConstrainedBox(
@@ -394,5 +371,82 @@ class _CardEditorViewState extends State<CardEditorView> {
         ),
       ),
     );
+  }
+}
+
+/// The card, scaled down to fit (never up), with the working margin around it
+/// so elements can be edited outside the card. The side switcher sits above
+/// the card's top-right corner.
+class _CanvasArea extends StatelessWidget {
+  const _CanvasArea({required this.controller, required this.repaintKey});
+
+  final CardEditorController controller;
+  final GlobalKey repaintKey;
+
+  /// Side switcher + the gap under it.
+  static const double _header = 38;
+  static const double _gutter = 8;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final card = controller.orientation.value.canvasSize;
+
+      return LayoutBuilder(
+        builder: (context, box) {
+          final availW = box.maxWidth - _gutter * 2;
+          // With little room (a small screen with the keyboard open) the card
+          // just gets very small; nothing may overflow.
+          final availH = box.maxHeight - _header - _gutter * 2;
+          final scale = [
+            1.0,
+            availW / card.width,
+            availH / card.height,
+          ].reduce((a, b) => a < b ? a : b).clamp(0.01, 1.0);
+
+          return Stack(
+            children: [
+              Positioned(
+                top: _gutter,
+                left: 0,
+                right: 0,
+                height: _header,
+                child: ClipRect(
+                  child: Center(
+                    child: SizedBox(
+                      width: math.max(card.width * scale, 110),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: SideSwitcher(controller: controller),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                top: _gutter + _header,
+                // Painted beyond its edge on purpose (elements outside the
+                // card), but never over the neighbouring panels.
+                child: ClipRect(
+                  child: OverflowBox(
+                    minWidth: 0,
+                    minHeight: 0,
+                    maxWidth: double.infinity,
+                    maxHeight: double.infinity,
+                    child: Transform.scale(
+                      scale: scale,
+                      child: CardCanvas(
+                        controller: controller,
+                        repaintKey: repaintKey,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    });
   }
 }

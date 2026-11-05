@@ -80,8 +80,14 @@ class QrPreviewScreen extends StatelessWidget {
     this.style = QrStyles.classic,
   });
 
-  Future<Uint8List> _pngBytes() =>
-      QrGeneratorService().generatePngBytes(profile, size: 1024, style: style);
+// 1. Let _pngBytes take a border value (default keeps the border)
+Future<Uint8List> _pngBytes({double borderFraction = 0.08}) =>
+    QrGeneratorService().generatePngBytes(
+      profile,
+      size: 1024,
+      style: style,
+      borderFraction: borderFraction,
+    );
 
   Future<void> _download(BuildContext context) async {
     final bytes = await _pngBytes();
@@ -267,7 +273,7 @@ class QrPreviewScreen extends StatelessWidget {
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () async {
                             // Same QR as shown on this preview.
-                            final bytes = await _pngBytes();
+                            final bytes = await _pngBytes(borderFraction: 0);
                             final dir =
                                 await getApplicationDocumentsDirectory();
                             final file = await _writeBytes(dir.path, bytes);

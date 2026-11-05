@@ -8,6 +8,7 @@ import 'package:collection/collection.dart';
 import 'card_editor_controller.dart';
 import '../model/card_element_model.dart';
 import '../model/symbol_asset_items.dart';
+import '../widgets/canvas.dart';
 import '../../../core/services/recent_designs_service.dart';
 
 extension CardEditorSymbolsX on CardEditorController {
@@ -86,24 +87,15 @@ extension CardEditorSymbolsX on CardEditorController {
     final selectedId = selectedElementId.value;
     final selectedImage = selectedId != null
         ? elements.firstWhereOrNull(
-            (e) => e.id == selectedId && e.type == CardElementType.image)
+            (e) => e.id == selectedId && e.type == CardElementType.image,
+          )
         : null;
-    final target = selectedImage ??
+    final target =
+        selectedImage ??
         elements.lastWhereOrNull((e) => e.type == CardElementType.image);
     if (target == null) return;
     final idx = elements.indexWhere((e) => e.id == target.id);
     elements[idx] = target.copyWith(imageMask: mask);
-  }
-
-  // ---------------------------------------------------- Save to Recent Designs
-  Map<String, dynamic> _buildDesignData() {
-    return {
-      'orientation': orientation.value.name,
-      'backgroundColor': backgroundColor.value.toARGB32(),
-      'backgroundImagePath': backgroundImage.value?.path,
-      'backgroundTemplate': backgroundTemplate.value,
-      'elements': elements.map((e) => e.toJson()).toList(),
-    };
   }
 
   // ---------------------------------------------------- Save to Recent Designs
@@ -137,8 +129,26 @@ extension CardEditorSymbolsX on CardEditorController {
     final boundary =
         repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
     if (boundary == null) return null;
-    final image = await boundary.toImage(pixelRatio: 3);
+    const ratio = 3.0;
+    final whole = await boundary.toImage(pixelRatio: ratio);
+    // The picture is of the working area; the card is what gets saved, so
+    // anything outside the card is left out.
+    final cardSize = orientation.value.canvasSize;
+    final rect = CardCanvas.cardRectIn(cardSize, ratio);
+    final recorder = ui.PictureRecorder();
+    Canvas(recorder).drawImageRect(
+      whole,
+      rect,
+      Rect.fromLTWH(0, 0, rect.width, rect.height),
+      Paint()..filterQuality = FilterQuality.high,
+    );
+    final image = await recorder.endRecording().toImage(
+      rect.width.round(),
+      rect.height.round(),
+    );
+    whole.dispose();
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    image.dispose();
     return byteData?.buffer.asUint8List();
   }
 
@@ -153,7 +163,11 @@ extension CardEditorSymbolsX on CardEditorController {
       // 1. The side on screen is captured where it is, and that picture is
       //    laid over the canvas...
       final shown = await _captureCurrent(repaintKey);
-      if (shown == null) return;
+      if (shown == null) {
+        // Thrown (not returned) so save() reports the failure instead of
+        // showing "saved" for a card that was never stored.
+        throw StateError('Card capture failed: current side not ready');
+      }
       final ctx = Get.context;
       if (ctx != null) {
         try {
@@ -167,7 +181,9 @@ extension CardEditorSymbolsX on CardEditorController {
       //    without ever being seen.
       switchToSide(otherSide);
       final hidden = await _captureCurrent(repaintKey);
-      if (hidden == null) return;
+      if (hidden == null) {
+        throw StateError('Card capture failed: other side not ready');
+      }
 
       await Get.find<RecentDesignsService>().save(
         startSide == 0 ? shown : hidden,

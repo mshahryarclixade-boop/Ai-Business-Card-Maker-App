@@ -58,7 +58,11 @@ class _Side extends StatelessWidget {
               height: 160,
               color: const Color(0xFFE4E2F2),
               alignment: Alignment.center,
-              child: const Icon(Icons.image_outlined, color: AppColors.pillLabelGrey, size: 40),
+              child: const Icon(
+                Icons.image_outlined,
+                color: AppColors.pillLabelGrey,
+                size: 40,
+              ),
             ),
           ),
         ),

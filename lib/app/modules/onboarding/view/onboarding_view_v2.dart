@@ -4,9 +4,10 @@ import 'package:get/get.dart';
 import '../../../core/theme/app_colors.dart';
 import '../controller/onboarding_controller.dart';
 import '../widgets/onboarding_bottom_actions.dart';
+import '../widgets/onboarding_constrained.dart';
 import '../widgets/onboarding_page_one.dart';
-import '../widgets/onboarding_page_two.dart';
 
+/// Onboarding is a single screen: no pages, no swiping, no scrolling.
 class OnboardingViewV2 extends GetView<OnboardingController> {
   const OnboardingViewV2({super.key});
 
@@ -14,24 +15,12 @@ class OnboardingViewV2 extends GetView<OnboardingController> {
   Widget build(BuildContext context) {
     Get.put(OnboardingController());
 
-    const pages = [
-      OnboardingPageOne(),
-      OnboardingPageTwo(),
-    ];
-
     return Scaffold(
       backgroundColor: AppColors.splashBg,
       body: SafeArea(
         child: Column(
           children: [
-            Expanded(
-              child: PageView.builder(
-                controller: controller.pageController,
-                onPageChanged: controller.onPageChanged,
-                itemCount: pages.length,
-                itemBuilder: (context, index) => pages[index],
-              ),
-            ),
+            const Expanded(child: OnboardingFit(child: OnboardingPageOne())),
             OnboardingBottomActions(
               onPrimary: controller.next,
               onSecondary: controller.skip,

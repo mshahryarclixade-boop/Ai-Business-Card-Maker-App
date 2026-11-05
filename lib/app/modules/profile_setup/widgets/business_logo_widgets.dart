@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import 'checker_painter.dart';
 import '../../../core/translations/tr_extension.dart';
 
 class LogoOptionCard extends StatelessWidget {
@@ -94,11 +95,20 @@ class LogoPreviewCard extends StatelessWidget {
     required this.bytes,
     required this.name,
     required this.onRemove,
+    this.onRestore,
+    this.transparent = false,
   });
 
   final Uint8List bytes;
   final String name;
   final VoidCallback onRemove;
+
+  /// The background was removed: the thumbnail sits on a checkerboard so the
+  /// transparency can be seen.
+  final bool transparent;
+
+  /// Set when the background was removed: shows "Restore original".
+  final VoidCallback? onRestore;
 
   @override
   Widget build(BuildContext context) {
@@ -111,37 +121,70 @@ class LogoPreviewCard extends StatelessWidget {
               width: 56,
               height: 56,
               color: AppColors.profileHintBg,
-              child: Image.memory(bytes, fit: BoxFit.contain),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (transparent) const CustomPaint(painter: CheckerPainter()),
+                  Image.memory(bytes, fit: BoxFit.contain),
+                ],
+              ),
             ),
           ),
           const SizedBox(width: 13),
           Expanded(
-            child: Text(
-              name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                height: 22 / 18,
-                letterSpacing: 0,
-                color: AppColors.splashTextPrimary,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    height: 22 / 18,
+                    letterSpacing: 0,
+                    color: AppColors.splashTextPrimary,
+                  ),
+                ),
+                if (onRestore != null)
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onRestore,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Text(
+                        'logo_bg_restore'.tr,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.profileStepActive,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          TapTarget(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onRemove,
+              child: const Padding(
+                padding: EdgeInsets.all(6),
+                child: Icon(
+                  Icons.close_rounded,
+                  size: 20,
+                  color: AppColors.profileHintText,
+                ),
               ),
             ),
           ),
-          TapTarget(child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: onRemove,
-            child: const Padding(
-              padding: EdgeInsets.all(6),
-              child: Icon(
-                Icons.close_rounded,
-                size: 20,
-                color: AppColors.profileHintText,
-              ),
-            ),
-          )),
         ],
       ),
     );
@@ -229,7 +272,10 @@ class LogoNotFoundNotice extends StatelessWidget {
             TextButton(
               onPressed: onContinueWithout,
               style: TextButton.styleFrom(padding: EdgeInsets.zero),
-              child: Text('profile_setup_logo_continue_without'.tr, style: _linkStyle),
+              child: Text(
+                'profile_setup_logo_continue_without'.tr,
+                style: _linkStyle,
+              ),
             ),
           ],
         ),

@@ -59,7 +59,10 @@ abstract final class AiFrameCardBuilder {
     final id = DateTime.now().microsecondsSinceEpoch;
 
     // The logo goes into a free corner of the front.
-    var frontElements = filled.front.elements;
+    // The layouts' own logo slots are not used here: the logo goes into a
+    // free corner, below.
+    bool notLogoSlot(CardElement e) => e.field != 'logo';
+    var frontElements = filled.front.elements.where(notLogoSlot).toList();
     if (logo != null && logo.isNotEmpty) {
       final logoFile = File('${dir.path}/ai_logo_$id.png');
       await logoFile.writeAsBytes(logo, flush: true);
@@ -68,7 +71,7 @@ abstract final class AiFrameCardBuilder {
         _logoElement(logoFile, frontElements, size),
       ];
     }
-    final backElements = filled.back.elements;
+    final backElements = filled.back.elements.where(notLogoSlot).toList();
 
     // ---- the two frames (the only Gemini calls) ----
     final gemini = GeminiCardService();

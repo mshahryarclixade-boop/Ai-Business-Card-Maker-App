@@ -12,62 +12,58 @@ class OnboardingPageOne extends StatelessWidget {
   Widget build(BuildContext context) {
     final tablet = isTabletWidth(context);
 
-    return SingleChildScrollView(
-      child: OnboardingConstrained(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 12),
-              Container(
-                height: 182,
-                width: double.infinity,
-                clipBehavior: Clip.hardEdge,
-                decoration: BoxDecoration(
-                  color: AppColors.onboardingTopCardBg,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Stack(
-                      children: [
-                        Positioned(
-                          top: -7,
-                          left: tablet ? (constraints.maxWidth - 308) / 2 : 22,
-                          width: 308,
-                          height: 196,
-                          child: Image.asset(
-                            'assets/images/onboarding1_image.png',
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'onboarding_page1_heading'.tr,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 35,
-                  fontWeight: FontWeight.w700,
-                  height: 1.2,
-                  letterSpacing: 0,
-                  color: AppColors.splashTextPrimary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              for (int i = 0; i < onboardingFeatures.length; i++) ...[
-                OnboardingFeatureTile(feature: onboardingFeatures[i]),
-                if (i != onboardingFeatures.length - 1)
-                  const SizedBox(height: 2),
-              ],
-            ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: tablet ? 24 : 12),
+          Container(
+            height: tablet ? 300 : 182,
+            width: double.infinity,
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+              color: AppColors.onboardingTopCardBg,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Stack(
+                  children: [
+                    Positioned(
+                      top: tablet ? -11 : -7,
+                      left: tablet ? (constraints.maxWidth - 462) / 2 : 22,
+                      width: tablet ? 462 : 308,
+                      height: tablet ? 294 : 196,
+                      child: Image.asset(
+                        'assets/images/onboarding1_image.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
-        ),
+          const SizedBox(height: 24),
+          Text(
+            'onboarding_page1_heading'.tr,
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 35,
+              fontWeight: FontWeight.w700,
+              height: 1.2,
+              letterSpacing: 0,
+              color: AppColors.splashTextPrimary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          for (int i = 0; i < onboardingPage1Features.length; i++) ...[
+            OnboardingFeatureTile(feature: onboardingPage1Features[i]),
+            if (i != onboardingPage1Features.length - 1)
+              const SizedBox(height: 2),
+          ],
+        ],
       ),
     );
   }

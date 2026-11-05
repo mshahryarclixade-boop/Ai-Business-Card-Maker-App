@@ -87,16 +87,22 @@ class FirstCardController extends GetxController {
     } on GeminiException catch (e, st) {
       debugPrint('FirstCard GeminiException: ${e.message}');
       debugPrintStack(stackTrace: st);
-      FirebaseCrashlytics.instance
-          .recordError(e, st, reason: 'first card gemini error');
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'first card gemini error',
+      );
       FirebaseAnalytics.instance.logEvent(name: 'first_card_failed');
       errorMessage.value = e.message;
       status.value = FirstCardStatus.failed;
     } catch (e, st) {
       debugPrint('FirstCard ERROR: $e');
       debugPrintStack(stackTrace: st);
-      FirebaseCrashlytics.instance
-          .recordError(e, st, reason: 'first card unknown error');
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        st,
+        reason: 'first card unknown error',
+      );
       FirebaseAnalytics.instance.logEvent(name: 'first_card_failed');
       // Debug builds show the real error on screen. Release builds show
       // the friendly message.

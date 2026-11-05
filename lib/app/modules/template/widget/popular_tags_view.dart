@@ -30,26 +30,31 @@ class PopularTagsView extends StatelessWidget {
             spacing: 10,
             runSpacing: 10,
             children: controller.popularTags
-                .map((tag) => GestureDetector(
-              onTap: () => controller.onTagTap(tag),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: AppColors.pillBorder),
-                ),
-                child: Text(
-                  controller.categoryLabel(tag),
-                  style: const TextStyle(
-                    fontFamily: AppTextStyles.fontFamily,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSubtitle,
+                .map(
+                  (tag) => GestureDetector(
+                    onTap: () => controller.onTagTap(tag),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(color: AppColors.pillBorder),
+                      ),
+                      child: Text(
+                        controller.categoryLabel(tag),
+                        style: const TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textSubtitle,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ))
+                )
                 .toList(),
           ),
         ],

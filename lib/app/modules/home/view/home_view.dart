@@ -38,7 +38,12 @@ class HomeView extends GetView<HomeController> {
                 children: [
                   // Fixed top bar
                   Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(20, 12, 15, 0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      20,
+                      12,
+                      15,
+                      0,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -61,19 +66,21 @@ class HomeView extends GetView<HomeController> {
                         const SizedBox(width: 12),
                         Row(
                           children: [
-                            HideWhenPro(child: CrownUpgradeButton(
-                              size: 36,
-                              iconSize: 22,
-                              borderRadius: 10,
-                              onTap: () => showUpgradeSheet(context),
-                            )),
+                            HideWhenPro(
+                              child: CrownUpgradeButton(
+                                size: 36,
+                                iconSize: 22,
+                                borderRadius: 10,
+                                onTap: () => showUpgradeSheet(context),
+                              ),
+                            ),
                             const HideWhenPro(child: SizedBox(width: 6)),
                             _RoundIconButton(
                               icon: Icons.settings_outlined,
                               iconColor: AppColors.titleDark,
                               onTap: () {
                                 Get.to(
-                                      () => const SettingsView(),
+                                  () => const SettingsView(),
                                   transition: Transition.rightToLeft,
                                 );
                               },
@@ -134,21 +141,19 @@ class _RoundIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TapTarget(child: GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: const BoxDecoration(
-          color: AppColors.cardWhite,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          icon,
-          size: 18,
-          color: iconColor,
+    return TapTarget(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 36,
+          height: 36,
+          decoration: const BoxDecoration(
+            color: AppColors.cardWhite,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 18, color: iconColor),
         ),
       ),
-    ));
+    );
   }
 }

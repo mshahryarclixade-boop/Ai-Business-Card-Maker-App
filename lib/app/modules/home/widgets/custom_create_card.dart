@@ -79,11 +79,7 @@ class CustomCreateCard extends StatelessWidget {
                     color: AppColors.primary,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.add,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  child: const Icon(Icons.add, color: Colors.white, size: 24),
                 ),
               ),
 
@@ -122,9 +118,7 @@ void openOrientationSheet(BuildContext context) {
     context: context,
     backgroundColor: Colors.white,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20),
-      ),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (_) => const _OrientationSheet(),
   );
@@ -231,9 +225,8 @@ class _OrientationSheetState extends State<_OrientationSheet> {
                     child: _OrientationOption(
                       orientation: CardOrientation.landscape,
                       isSelected: _selected == CardOrientation.landscape,
-                      onTap: () => setState(
-                            () => _selected = CardOrientation.landscape,
-                      ),
+                      onTap: () =>
+                          setState(() => _selected = CardOrientation.landscape),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -241,9 +234,8 @@ class _OrientationSheetState extends State<_OrientationSheet> {
                     child: _OrientationOption(
                       orientation: CardOrientation.portrait,
                       isSelected: _selected == CardOrientation.portrait,
-                      onTap: () => setState(
-                            () => _selected = CardOrientation.portrait,
-                      ),
+                      onTap: () =>
+                          setState(() => _selected = CardOrientation.portrait),
                     ),
                   ),
                 ],
@@ -295,11 +287,7 @@ class _OrientationSheetState extends State<_OrientationSheet> {
     );
   }
 
-
-  void _choose(
-      BuildContext context,
-      CardOrientation orientation,
-      ) {
+  void _choose(BuildContext context, CardOrientation orientation) {
     Navigator.of(context).pop();
 
     // Fresh controller per editing session so nothing leaks between cards.
@@ -307,14 +295,10 @@ class _OrientationSheetState extends State<_OrientationSheet> {
       Get.delete<CardEditorController>();
     }
 
-    Get.put(
-      CardEditorController(
-        initialOrientation: orientation,
-      ),
-    );
+    Get.put(CardEditorController(initialOrientation: orientation));
 
     Get.to(
-          () => const CardEditorView(),
+      () => const CardEditorView(),
       transition: Transition.rightToLeft,
     )?.then((_) {
       if (Get.isRegistered<CardEditorController>()) {
@@ -368,12 +352,12 @@ class _OrientationOption extends StatelessWidget {
                     ),
                     boxShadow: isSelected
                         ? [
-                      BoxShadow(
-                        color: AppColors.primary.withOpacity(0.25),
-                        blurRadius: 14,
-                        spreadRadius: 1,
-                      ),
-                    ]
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.25),
+                              blurRadius: 14,
+                              spreadRadius: 1,
+                            ),
+                          ]
                         : null,
                   ),
                   child: _CardMockPreview(isPortrait: _isPortrait),
@@ -433,10 +417,7 @@ class _OrientationOption extends StatelessWidget {
 
           // "Standard" badge.
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 4,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: const Color(0xFFE3F6EA),
               borderRadius: BorderRadius.circular(5),
@@ -444,11 +425,7 @@ class _OrientationOption extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.check,
-                  size: 12,
-                  color: Color(0xFF1F9254),
-                ),
+                const Icon(Icons.check, size: 12, color: Color(0xFF1F9254)),
                 const SizedBox(width: 4),
                 Text(
                   'home_orientation_standard'.tr,
@@ -581,20 +558,12 @@ class _DashedBorderPainter extends CustomPainter {
     final path = Path()..addRRect(rrect);
 
     // Converts the solid border path into a dashed path.
-    final dashedPath = _dashPath(
-      path,
-      dashWidth,
-      dashGap,
-    );
+    final dashedPath = _dashPath(path, dashWidth, dashGap);
 
     canvas.drawPath(dashedPath, paint);
   }
 
-  Path _dashPath(
-      Path source,
-      double dashWidth,
-      double dashGap,
-      ) {
+  Path _dashPath(Path source, double dashWidth, double dashGap) {
     final Path dest = Path();
 
     for (final metric in source.computeMetrics()) {
@@ -604,10 +573,7 @@ class _DashedBorderPainter extends CustomPainter {
         final next = distance + dashWidth;
 
         dest.addPath(
-          metric.extractPath(
-            distance,
-            next.clamp(0, metric.length),
-          ),
+          metric.extractPath(distance, next.clamp(0, metric.length)),
           Offset.zero,
         );
 
@@ -619,8 +585,5 @@ class _DashedBorderPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(
-      covariant CustomPainter oldDelegate,
-      ) =>
-      false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -52,24 +52,21 @@ class ProfileSetupController extends GetxController {
       ok = false;
     }
 
-    final hasEmail = email.isNotEmpty;
     final number = phoneController.text.trim();
     final hasPhone = number.isNotEmpty;
 
-    if (!hasEmail && !hasPhone) {
-      emailError.value = 'profile_setup_error_email_or_phone'.tr;
-      phoneError.value = 'profile_setup_error_email_or_phone'.tr;
+    if (email.isEmpty) {
+      emailError.value = 'profile_setup_error_email_required'.tr;
       ok = false;
-    } else {
-      if (hasEmail && !InputValidators.isValidEmail(email)) {
-        emailError.value = 'profile_setup_error_email_invalid'.tr;
-        ok = false;
-      }
-      if (hasPhone &&
-          !InputValidators.isValidPhone(number, dialCode: dialCode.value)) {
-        phoneError.value = 'profile_setup_error_phone_invalid'.tr;
-        ok = false;
-      }
+    } else if (!InputValidators.isValidEmail(email)) {
+      emailError.value = 'profile_setup_error_email_invalid'.tr;
+      ok = false;
+    }
+    // The phone number is optional, but a number that is entered must be valid.
+    if (hasPhone &&
+        !InputValidators.isValidPhone(number, dialCode: dialCode.value)) {
+      phoneError.value = 'profile_setup_error_phone_invalid'.tr;
+      ok = false;
     }
     return ok;
   }
