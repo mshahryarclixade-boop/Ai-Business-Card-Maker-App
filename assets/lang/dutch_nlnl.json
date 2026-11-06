@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR-codes",
   "qr_preview_company": "Bedrijf • {company}",
   "qr_preview_create_card_subtitle": "Gebruik deze informatie om je kaart te ontwerpen.",
-  "qr_preview_create_card_title": "Maak een visitekaartje",
+  "qr_preview_create_card_title": "Toevoegen aan visitekaartje",
   "qr_preview_download": "Download",
   "qr_preview_save_failed_message": "De QR-code kon niet worden opgeslagen. Probeer het opnieuw.",
   "qr_preview_save_permission_message": "Geef toestemming voor toegang tot de foto om de QR-code op te slaan.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Achtergrond verwijderen",
   "logo_bg_restore": "Origineel herstellen",
   "logo_bg_subtitle": "De achtergrond verwijderen zodat je logo opgaat in je kaartje?",
-  "logo_bg_title": "Bedrijfslogo"
+  "logo_bg_title": "Bedrijfslogo",
+  "card_detail_delete": "Sjabloon verwijderen",
+  "card_detail_delete_confirm": "Verwijderen",
+  "card_detail_delete_message": "Deze kaart wordt verwijderd uit Mijn kaarten. Dit kan niet ongedaan worden gemaakt.",
+  "card_detail_delete_title": "Dit sjabloon verwijderen?"
 }

@@ -1085,7 +1085,7 @@
   "qr_manage_title": "क्यूआर कोड",
   "qr_preview_company": "कंपनी • {company}",
   "qr_preview_create_card_subtitle": "इस जानकारी का उपयोग करके अपना कार्ड डिज़ाइन करें",
-  "qr_preview_create_card_title": "बिजनेस कार्ड बनाएं",
+  "qr_preview_create_card_title": "बिज़नेस कार्ड में जोड़ें",
   "qr_preview_download": "डाउनलोड करना",
   "qr_preview_save_failed_message": "क्यूआर कोड सहेजा नहीं जा सका। कृपया पुनः प्रयास करें।",
   "qr_preview_save_permission_message": "क्यूआर कोड को सहेजने के लिए फोटो एक्सेस की अनुमति दें।",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "बैकग्राउंड हटाएं",
   "logo_bg_restore": "मूल वापस लाएं",
   "logo_bg_subtitle": "बैकग्राउंड हटाएं ताकि आपका लोगो कार्ड में घुल-मिल जाए?",
-  "logo_bg_title": "कंपनी लोगो"
+  "logo_bg_title": "कंपनी लोगो",
+  "card_detail_delete": "टेम्पलेट हटाएँ",
+  "card_detail_delete_confirm": "हटाएँ",
+  "card_detail_delete_message": "यह कार्ड मेरे कार्ड से हटा दिया जाएगा। इसे वापस नहीं किया जा सकता।",
+  "card_detail_delete_title": "यह टेम्पलेट हटाएँ?"
 }

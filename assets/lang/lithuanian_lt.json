@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR kodai",
   "qr_preview_company": "Įmonė • {company}",
   "qr_preview_create_card_subtitle": "Naudokite šią informaciją kurdami savo kortelę",
-  "qr_preview_create_card_title": "Sukurkite vizitinę kortelę",
+  "qr_preview_create_card_title": "Pridėti prie vizitinės kortelės",
   "qr_preview_download": "Atsisiųsti",
   "qr_preview_save_failed_message": "Nepavyko išsaugoti QR kodo. Bandykite dar kartą.",
   "qr_preview_save_permission_message": "Leiskite prieigą prie nuotraukų, kad galėtumėte išsaugoti QR kodą.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Pašalinti foną",
   "logo_bg_restore": "Atkurti originalą",
   "logo_bg_subtitle": "Pašalinti foną, kad logotipas susilietų su jūsų kortele?",
-  "logo_bg_title": "Įmonės logotipas"
+  "logo_bg_title": "Įmonės logotipas",
+  "card_detail_delete": "Ištrinti šabloną",
+  "card_detail_delete_confirm": "Ištrinti",
+  "card_detail_delete_message": "Ši kortelė bus pašalinta iš Mano kortelių. Šio veiksmo atšaukti negalima.",
+  "card_detail_delete_title": "Ištrinti šį šabloną?"
 }

@@ -1085,7 +1085,7 @@
   "qr_manage_title": "Coduri QR",
   "qr_preview_company": "Companie • {company}",
   "qr_preview_create_card_subtitle": "Folosește aceste informații pentru a-ți crea cardul",
-  "qr_preview_create_card_title": "Creați o carte de vizită",
+  "qr_preview_create_card_title": "Adaugă pe cartea de vizită",
   "qr_preview_download": "Descărcare",
   "qr_preview_save_failed_message": "Nu s-a putut salva codul QR. Vă rugăm să încercați din nou.",
   "qr_preview_save_permission_message": "Permiteți accesul la fotografii pentru a salva codul QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Elimină fundalul",
   "logo_bg_restore": "Restabilește originalul",
   "logo_bg_subtitle": "Eliminați fundalul pentru ca logoul să se integreze în cardul dvs.?",
-  "logo_bg_title": "Logoul companiei"
+  "logo_bg_title": "Logoul companiei",
+  "card_detail_delete": "Șterge șablonul",
+  "card_detail_delete_confirm": "Șterge",
+  "card_detail_delete_message": "Această carte va fi eliminată din Cărțile mele. Acțiunea nu poate fi anulată.",
+  "card_detail_delete_title": "Ștergi acest șablon?"
 }

@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR kodeak",
   "qr_preview_company": "Enpresa • {company}",
   "qr_preview_create_card_subtitle": "Erabili informazio hau zure txartela diseinatzeko",
-  "qr_preview_create_card_title": "Sortu bisita-txartel bat",
+  "qr_preview_create_card_title": "Gehitu bisita-txartelean",
   "qr_preview_download": "Deskargatu",
   "qr_preview_save_failed_message": "Ezin izan da QR kodea gorde. Saiatu berriro.",
   "qr_preview_save_permission_message": "Eman argazkietarako sarbidea QR kodea gordetzeko.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Kendu atzeko planoa",
   "logo_bg_restore": "Berrezarri jatorrizkoa",
   "logo_bg_subtitle": "Atzeko planoa kendu nahi duzu, logotipoa txartelarekin uztartzeko?",
-  "logo_bg_title": "Enpresaren logotipoa"
+  "logo_bg_title": "Enpresaren logotipoa",
+  "card_detail_delete": "Ezabatu txantiloia",
+  "card_detail_delete_confirm": "Ezabatu",
+  "card_detail_delete_message": "Txartel hau Nire txartelak ataletik kenduko da. Ezin da desegin.",
+  "card_detail_delete_title": "Txantiloi hau ezabatu?"
 }

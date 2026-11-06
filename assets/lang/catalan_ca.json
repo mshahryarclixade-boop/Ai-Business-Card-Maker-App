@@ -1085,7 +1085,7 @@
   "qr_manage_title": "Codis QR",
   "qr_preview_company": "Empresa • {company}",
   "qr_preview_create_card_subtitle": "Utilitza aquesta informació per dissenyar la teva targeta",
-  "qr_preview_create_card_title": "Crea una targeta de visita",
+  "qr_preview_create_card_title": "Afegeix a la targeta de visita",
   "qr_preview_download": "Descarrega",
   "qr_preview_save_failed_message": "No s'ha pogut desar el codi QR. Torna-ho a provar.",
   "qr_preview_save_permission_message": "Permet l'accés a la foto per desar el codi QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Elimina el fons",
   "logo_bg_restore": "Restaura l'original",
   "logo_bg_subtitle": "Vols eliminar el fons perquè el logotip s'integri a la teva targeta?",
-  "logo_bg_title": "Logotip de l'empresa"
+  "logo_bg_title": "Logotip de l'empresa",
+  "card_detail_delete": "Suprimeix la plantilla",
+  "card_detail_delete_confirm": "Suprimeix",
+  "card_detail_delete_message": "Aquesta targeta s'eliminarà de Les meves targetes. Aquesta acció no es pot desfer.",
+  "card_detail_delete_title": "Vols suprimir aquesta plantilla?"
 }

@@ -27,7 +27,62 @@ extension CardOrientationSize on CardOrientation {
   }
 }
 
-enum CardElementType { text, image, symbol }
+enum CardElementType { text, image, symbol, shape }
+
+/// What a `shape` element draws. It is kept in the element's `symbol` string
+/// (so the JSON format is unchanged):
+///
+///  * `rect`, `ellipse`: filled with the element's tint colour;
+///  * `dashed:<dash>,<gap>`: a vertical dashed line, as wide as the element,
+///    as tall as the element, dash and gap in card units;
+///  * `poly:x,y;x,y;...|x,y;...`: a filled polygon, points as 0-1 fractions
+///    of the element's box (so it scales and recolours like any other
+///    element). Several contours (separated by `|`) are filled even-odd, so
+///    a contour inside another cuts a hole.
+class CardShape {
+  const CardShape._();
+
+  static const rect = 'rect';
+  static const ellipse = 'ellipse';
+
+  static String dashed(double dash, double gap) => 'dashed:$dash,$gap';
+
+  static String polygon(List<Offset> points) =>
+      'poly:${points.map((p) => '${p.dx},${p.dy}').join(';')}';
+
+  /// The contours of a `poly:` shape ('|' separates them; a contour inside
+  /// another is a hole), or null when [kind] is not one.
+  static List<List<Offset>>? polygonContours(String kind) {
+    if (!kind.startsWith('poly:')) return null;
+    final contours = <List<Offset>>[];
+    for (final part in kind.substring(5).split('|')) {
+      final out = <Offset>[];
+      for (final pair in part.split(';')) {
+        final xy = pair.split(',');
+        if (xy.length != 2) continue;
+        final x = double.tryParse(xy[0]);
+        final y = double.tryParse(xy[1]);
+        if (x != null && y != null) out.add(Offset(x, y));
+      }
+      if (out.length >= 3) contours.add(out);
+    }
+    return contours.isEmpty ? null : contours;
+  }
+
+  /// The points of a `poly:` shape's first contour, or null.
+  static List<Offset>? polygonPoints(String kind) =>
+      polygonContours(kind)?.first;
+
+  /// (dash, gap) of a `dashed:` shape, or null when [kind] is not one.
+  static (double, double)? dashes(String kind) {
+    if (!kind.startsWith('dashed:')) return null;
+    final v = kind.substring(7).split(',');
+    if (v.length != 2) return null;
+    final dash = double.tryParse(v[0]);
+    final gap = double.tryParse(v[1]);
+    return dash == null || gap == null || dash <= 0 ? null : (dash, gap);
+  }
+}
 
 enum CardImageMask {
   none,
@@ -167,6 +222,28 @@ class CardElement {
       imageAsset: asset,
       width: width,
       height: height,
+    );
+  }
+
+  /// A plain coloured shape (see [CardShape]), drawn with [tintColor].
+  factory CardElement.shape({
+    required String id,
+    required Offset position,
+    required double width,
+    required double height,
+    String kind = CardShape.rect,
+    Color color = const Color(0xFF1E1E24),
+    double opacity = 1,
+  }) {
+    return CardElement(
+      id: id,
+      type: CardElementType.shape,
+      position: position,
+      symbol: kind,
+      width: width,
+      height: height,
+      tintColor: color,
+      opacity: opacity,
     );
   }
 

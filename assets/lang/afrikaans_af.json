@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR-kodes",
   "qr_preview_company": "Maatskappy • {company}",
   "qr_preview_create_card_subtitle": "Gebruik hierdie inligting om jou kaart te ontwerp",
-  "qr_preview_create_card_title": "Skep 'n besigheidskaartjie",
+  "qr_preview_create_card_title": "Voeg by visitekaartjie",
   "qr_preview_download": "Laai af",
   "qr_preview_save_failed_message": "Kon nie die QR-kode stoor nie. Probeer asseblief weer.",
   "qr_preview_save_permission_message": "Laat fototoegang toe om die QR-kode te stoor.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Verwyder agtergrond",
   "logo_bg_restore": "Herstel oorspronklike",
   "logo_bg_subtitle": "Verwyder die agtergrond sodat jou logo met jou kaartjie versmelt?",
-  "logo_bg_title": "Maatskappylogo"
+  "logo_bg_title": "Maatskappylogo",
+  "card_detail_delete": "Vee sjabloon uit",
+  "card_detail_delete_confirm": "Vee uit",
+  "card_detail_delete_message": "Hierdie kaart sal uit My Kaarte verwyder word. Dit kan nie ongedaan gemaak word nie.",
+  "card_detail_delete_title": "Vee hierdie sjabloon uit?"
 }

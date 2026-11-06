@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR குறியீடுகள்",
   "qr_preview_company": "நிறுவனம் • {company}",
   "qr_preview_create_card_subtitle": "உங்கள் அட்டையை வடிவமைக்க இந்தத் தகவலைப் பயன்படுத்தவும்.",
-  "qr_preview_create_card_title": "வணிக அட்டை ஒன்றை உருவாக்குங்கள்",
+  "qr_preview_create_card_title": "வணிக அட்டையில் சேர்",
   "qr_preview_download": "பதிவிறக்கம்",
   "qr_preview_save_failed_message": "QR குறியீட்டைச் சேமிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
   "qr_preview_save_permission_message": "QR குறியீட்டைச் சேமிக்க, புகைப்பட அணுகலை அனுமதிக்கவும்.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "பின்னணியை அகற்று",
   "logo_bg_restore": "அசலை மீட்டமை",
   "logo_bg_subtitle": "உங்கள் லோகோ கார்டுடன் இணைய பின்னணியை அகற்றவா?",
-  "logo_bg_title": "நிறுவன லோகோ"
+  "logo_bg_title": "நிறுவன லோகோ",
+  "card_detail_delete": "டெம்ப்ளேட்டை நீக்கு",
+  "card_detail_delete_confirm": "நீக்கு",
+  "card_detail_delete_message": "இந்த அட்டை எனது அட்டைகளிலிருந்து நீக்கப்படும். இதைச் செயல்தவிர்க்க முடியாது.",
+  "card_detail_delete_title": "இந்த டெம்ப்ளேட்டை நீக்கவா?"
 }

@@ -84,8 +84,15 @@ class _SavedTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<RecentDesign> designs = controller.savedDesigns;
+    // Reads the service's list inside Obx: a card saved, edited, synced with
+    // the profile or deleted changes what this shows at once.
+    return Obx(() {
+      final List<RecentDesign> designs = controller.savedDesigns;
+      return _grid(designs);
+    });
+  }
 
+  Widget _grid(List<RecentDesign> designs) {
     if (designs.isEmpty) {
       return EmptyStateView(
         iconAsset: 'assets/icons/mycardicon.png',
@@ -133,8 +140,13 @@ class _AiCardsTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<RecentDesign> designs = controller.aiDesigns;
+    return Obx(() {
+      final List<RecentDesign> designs = controller.aiDesigns;
+      return _grid(designs);
+    });
+  }
 
+  Widget _grid(List<RecentDesign> designs) {
     if (designs.isEmpty) {
       return EmptyStateView(
         iconAsset: 'assets/icons/mycardicon.png',

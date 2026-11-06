@@ -1085,7 +1085,7 @@
   "qr_manage_title": "Misimbo ya QR",
   "qr_preview_company": "Kampuni • {company}",
   "qr_preview_create_card_subtitle": "Tumia taarifa hii kubuni kadi yako",
-  "qr_preview_create_card_title": "Unda Kadi ya Biashara",
+  "qr_preview_create_card_title": "Ongeza kwenye Kadi ya Biashara",
   "qr_preview_download": "Pakua",
   "qr_preview_save_failed_message": "Haikuweza kuhifadhi msimbo wa QR. Tafadhali jaribu tena.",
   "qr_preview_save_permission_message": "Ruhusu ufikiaji wa picha ili kuhifadhi msimbo wa QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Ondoa mandharinyuma",
   "logo_bg_restore": "Rejesha asili",
   "logo_bg_subtitle": "Ungependa kuondoa mandharinyuma ili nembo yako ichanganyike na kadi yako?",
-  "logo_bg_title": "Nembo ya kampuni"
+  "logo_bg_title": "Nembo ya kampuni",
+  "card_detail_delete": "Futa kiolezo",
+  "card_detail_delete_confirm": "Futa",
+  "card_detail_delete_message": "Kadi hii itaondolewa kutoka Kadi Zangu. Hii haiwezi kutenduliwa.",
+  "card_detail_delete_title": "Futa kiolezo hiki?"
 }

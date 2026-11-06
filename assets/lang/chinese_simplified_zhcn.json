@@ -1085,7 +1085,7 @@
   "qr_manage_title": "二维码",
   "qr_preview_company": "公司 • {company}",
   "qr_preview_create_card_subtitle": "利用这些信息设计你的卡片",
-  "qr_preview_create_card_title": "制作名片",
+  "qr_preview_create_card_title": "添加到名片",
   "qr_preview_download": "下载",
   "qr_preview_save_failed_message": "二维码保存失败，请重试。",
   "qr_preview_save_permission_message": "允许照片访问权限以保存二维码。",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "移除背景",
   "logo_bg_restore": "恢复原图",
   "logo_bg_subtitle": "移除背景，让标志与名片融为一体？",
-  "logo_bg_title": "公司标志"
+  "logo_bg_title": "公司标志",
+  "card_detail_delete": "删除模板",
+  "card_detail_delete_confirm": "删除",
+  "card_detail_delete_message": "此名片将从“我的名片”中移除，且无法撤销。",
+  "card_detail_delete_title": "删除此模板？"
 }

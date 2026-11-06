@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR-koder",
   "qr_preview_company": "Företag • {company}",
   "qr_preview_create_card_subtitle": "Använd den här informationen för att designa ditt kort",
-  "qr_preview_create_card_title": "Skapa ett visitkort",
+  "qr_preview_create_card_title": "Lägg till på visitkort",
   "qr_preview_download": "Ladda ner",
   "qr_preview_save_failed_message": "Det gick inte att spara QR-koden. Försök igen.",
   "qr_preview_save_permission_message": "Tillåt fotoåtkomst för att spara QR-koden.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Ta bort bakgrund",
   "logo_bg_restore": "Återställ original",
   "logo_bg_subtitle": "Vill du ta bort bakgrunden så att logotypen smälter in i ditt kort?",
-  "logo_bg_title": "Företagslogotyp"
+  "logo_bg_title": "Företagslogotyp",
+  "card_detail_delete": "Ta bort mall",
+  "card_detail_delete_confirm": "Ta bort",
+  "card_detail_delete_message": "Det här kortet tas bort från Mina kort. Det går inte att ångra.",
+  "card_detail_delete_title": "Ta bort den här mallen?"
 }

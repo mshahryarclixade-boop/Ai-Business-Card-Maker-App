@@ -13,6 +13,7 @@ import '../model/expert_models.dart';
 import '../service/panel_ai_service.dart';
 import '../service/panel_history_service.dart';
 import 'panel_report_view.dart';
+import '../../../core/widgets/app_dialog.dart';
 
 TextStyle _t(double size, Color color, {FontWeight? w, double? h}) => TextStyle(
   fontFamily: AppTextStyles.fontFamily,
@@ -167,7 +168,7 @@ class _ExpertPanelChatViewState extends State<ExpertPanelChatView> {
     }
   }
 
-  /// End: says it in the chat. Clixa asks to confirm, and only a "yes" ends it.
+  /// End: asks the user to confirm in a themed dialog, then ends the session.
   Future<void> _end() async {
     if (_c.thinking.value || _c.over.value) return;
     if (!session.hasUserMessage) {
@@ -179,31 +180,36 @@ class _ExpertPanelChatViewState extends State<ExpertPanelChatView> {
       );
       return;
     }
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'panel_end_title'.tr,
-          style: _t(16, AppColors.titleDark, w: FontWeight.w800),
-        ),
-        content: Text(
-          'panel_end_message'.tr,
-          style: _t(13, AppColors.textGrey, h: 1.4),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text('panel_keep_chatting'.tr),
+    final ok = await showBlurredDialog<bool>(
+      context,
+      AppDialogCard(
+        children: [
+          const AppDialogIcon(Icons.flag_outlined),
+          const SizedBox(height: 18),
+          AppDialogText(
+            title: 'panel_end_title'.tr,
+            message: 'panel_end_message'.tr,
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text('panel_end_confirm'.tr),
+          const SizedBox(height: 22),
+          Builder(
+            builder: (ctx) => AppDialogButton(
+              label: 'panel_end_confirm'.tr,
+              color: AppColors.primary,
+              onTap: () => Navigator.of(ctx).pop(true),
+            ),
+          ),
+          const SizedBox(height: 11),
+          Builder(
+            builder: (ctx) => AppDialogButton(
+              label: 'panel_keep_chatting'.tr,
+              color: const Color(0xFF3A3A3C),
+              onTap: () => Navigator.of(ctx).pop(false),
+            ),
           ),
         ],
       ),
     );
+
     // Ending needs no model call: the report page opens as soon as it is set.
     if (ok == true && mounted) await _c.endNow();
   }

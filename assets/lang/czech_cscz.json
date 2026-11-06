@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR kódy",
   "qr_preview_company": "Společnost • {company}",
   "qr_preview_create_card_subtitle": "Použijte tyto informace k návrhu vaší karty",
-  "qr_preview_create_card_title": "Vytvořte vizitku",
+  "qr_preview_create_card_title": "Přidat na vizitku",
   "qr_preview_download": "Stáhnout",
   "qr_preview_save_failed_message": "QR kód se nepodařilo uložit. Zkuste to prosím znovu.",
   "qr_preview_save_permission_message": "Povolte přístup k fotce pro uložení QR kódu.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Odstranit pozadí",
   "logo_bg_restore": "Obnovit původní",
   "logo_bg_subtitle": "Odstranit pozadí, aby logo splynulo s vaší vizitkou?",
-  "logo_bg_title": "Logo firmy"
+  "logo_bg_title": "Logo firmy",
+  "card_detail_delete": "Smazat šablonu",
+  "card_detail_delete_confirm": "Smazat",
+  "card_detail_delete_message": "Tato vizitka bude odebrána z Mých vizitek. Tuto akci nelze vrátit zpět.",
+  "card_detail_delete_title": "Smazat tuto šablonu?"
 }

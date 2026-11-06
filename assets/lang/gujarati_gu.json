@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR કોડ્સ",
   "qr_preview_company": "કંપની • {company}",
   "qr_preview_create_card_subtitle": "તમારા કાર્ડને ડિઝાઇન કરવા માટે આ માહિતીનો ઉપયોગ કરો",
-  "qr_preview_create_card_title": "બિઝનેસ કાર્ડ બનાવો",
+  "qr_preview_create_card_title": "બિઝનેસ કાર્ડમાં ઉમેરો",
   "qr_preview_download": "ડાઉનલોડ કરો",
   "qr_preview_save_failed_message": "QR કોડ સાચવી શકાયો નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
   "qr_preview_save_permission_message": "QR કોડ સાચવવા માટે ફોટો ઍક્સેસની મંજૂરી આપો.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "બેકગ્રાઉન્ડ દૂર કરો",
   "logo_bg_restore": "મૂળ પાછું લાવો",
   "logo_bg_subtitle": "તમારો લોગો કાર્ડમાં સરસ રીતે ભળી જાય તે માટે બેકગ્રાઉન્ડ દૂર કરવું છે?",
-  "logo_bg_title": "કંપનીનો લોગો"
+  "logo_bg_title": "કંપનીનો લોગો",
+  "card_detail_delete": "ટેમ્પલેટ કાઢી નાખો",
+  "card_detail_delete_confirm": "કાઢી નાખો",
+  "card_detail_delete_message": "આ કાર્ડ મારા કાર્ડ્સમાંથી દૂર કરવામાં આવશે. આ પૂર્વવત્ કરી શકાતું નથી.",
+  "card_detail_delete_title": "આ ટેમ્પલેટ કાઢી નાખવું?"
 }

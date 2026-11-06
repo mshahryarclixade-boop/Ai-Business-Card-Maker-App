@@ -1085,7 +1085,7 @@
   "qr_manage_title": "क्यूआर कोड",
   "qr_preview_company": "कंपनी • {company}",
   "qr_preview_create_card_subtitle": "तुमचे कार्ड डिझाइन करण्यासाठी या माहितीचा वापर करा.",
-  "qr_preview_create_card_title": "बिझनेस कार्ड तयार करा",
+  "qr_preview_create_card_title": "बिझनेस कार्डमध्ये जोडा",
   "qr_preview_download": "डाउनलोड करा",
   "qr_preview_save_failed_message": "QR कोड जतन करता आला नाही. कृपया पुन्हा प्रयत्न करा.",
   "qr_preview_save_permission_message": "QR कोड सेव्ह करण्यासाठी फोटो ऍक्सेसला परवानगी द्या.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "बॅकग्राउंड काढा",
   "logo_bg_restore": "मूळ पुनर्संचयित करा",
   "logo_bg_subtitle": "तुमचा लोगो कार्डमध्ये मिसळण्यासाठी बॅकग्राउंड काढायचे का?",
-  "logo_bg_title": "कंपनी लोगो"
+  "logo_bg_title": "कंपनी लोगो",
+  "card_detail_delete": "टेम्पलेट हटवा",
+  "card_detail_delete_confirm": "हटवा",
+  "card_detail_delete_message": "हे कार्ड माझ्या कार्ड्समधून काढून टाकले जाईल. हे पूर्ववत करता येणार नाही.",
+  "card_detail_delete_title": "हे टेम्पलेट हटवायचे?"
 }

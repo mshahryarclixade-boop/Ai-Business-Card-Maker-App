@@ -6,6 +6,8 @@ import 'dart:typed_data';
 
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart' hide Trans;
+import 'connectivity_service.dart';
 import '../../core/translations/tr_extension.dart';
 
 /// Error with a message that is safe to show to the user.
@@ -40,6 +42,10 @@ class GeminiCardService {
       'logo=${logoBytes?.length ?? 0}B prompt=${prompt.length} chars',
     );
 
+    if (Get.isRegistered<ConnectivityService>() &&
+        !await Get.find<ConnectivityService>().ensureInternet()) {
+      throw GeminiException('no_internet_title'.tr);
+    }
     final udid = await UserCreditsManager().udidOrNull();
     try {
       final callable = _functions.httpsCallable(

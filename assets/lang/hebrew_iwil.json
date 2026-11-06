@@ -1085,7 +1085,7 @@
   "qr_manage_title": "קודי QR",
   "qr_preview_company": "חברה • {company}",
   "qr_preview_create_card_subtitle": "השתמשו במידע זה כדי לעצב את הכרטיס שלכם",
-  "qr_preview_create_card_title": "צור כרטיס ביקור",
+  "qr_preview_create_card_title": "הוסף לכרטיס ביקור",
   "qr_preview_download": "הורדה",
   "qr_preview_save_failed_message": "לא ניתן היה לשמור את קוד ה-QR. אנא נסה שוב.",
   "qr_preview_save_permission_message": "אפשר גישה לתמונה כדי לשמור את קוד ה-QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "הסר רקע",
   "logo_bg_restore": "שחזר מקור",
   "logo_bg_subtitle": "להסיר את הרקע כדי שהלוגו ישתלב בכרטיס שלך?",
-  "logo_bg_title": "לוגו החברה"
+  "logo_bg_title": "לוגו החברה",
+  "card_detail_delete": "מחק תבנית",
+  "card_detail_delete_confirm": "מחק",
+  "card_detail_delete_message": "הכרטיס יוסר מהכרטיסים שלי. לא ניתן לבטל פעולה זו.",
+  "card_detail_delete_title": "למחוק את התבנית הזו?"
 }

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart' hide Trans;
+import '../../../core/services/connectivity_service.dart';
 
 import '../../../core/services/gemini_card_service.dart' show GeminiException;
 import '../../../core/translations/app_strings.dart';
@@ -92,6 +94,12 @@ class CloudCareerAi extends CareerAi {
     Map<String, dynamic> data, {
     Duration timeout = const Duration(seconds: 90),
   }) async {
+    // Needs the network: offline, the No Internet dialog opens and nothing is
+    // charged or sent.
+    if (Get.isRegistered<ConnectivityService>() &&
+        !await Get.find<ConnectivityService>().ensureInternet()) {
+      throw GeminiException('no_internet_title'.tr);
+    }
     final cost = RemoteConfigService().creditCosts.forTask(task);
     if (!await CreditGate.canUse(cost: cost, source: 'ai_$task')) {
       throw GeminiException('credit_gate_out_of_credits_title'.tr);

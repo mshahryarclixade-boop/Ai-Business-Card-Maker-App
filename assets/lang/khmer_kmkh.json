@@ -1085,7 +1085,7 @@
   "qr_manage_title": "លេខកូដ QR",
   "qr_preview_company": "ក្រុមហ៊ុន • {company}",
   "qr_preview_create_card_subtitle": "ប្រើប្រាស់ព័ត៌មាននេះដើម្បីរចនាកាតរបស់អ្នក",
-  "qr_preview_create_card_title": "បង្កើតកាតអាជីវកម្ម",
+  "qr_preview_create_card_title": "បន្ថែមទៅកាតអាជីវកម្ម",
   "qr_preview_download": "ទាញយក",
   "qr_preview_save_failed_message": "មិនអាចរក្សាទុកលេខកូដ QR បានទេ។ សូមព្យាយាមម្តងទៀត។",
   "qr_preview_save_permission_message": "អនុញ្ញាតឱ្យចូលប្រើរូបថត ដើម្បីរក្សាទុកលេខកូដ QR។",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "លុបផ្ទៃខាងក្រោយ",
   "logo_bg_restore": "ស្ដារដើមវិញ",
   "logo_bg_subtitle": "លុបផ្ទៃខាងក្រោយ ដើម្បីឱ្យឡូហ្គោរបស់អ្នកចូលគ្នានឹងកាតរបស់អ្នកឬ?",
-  "logo_bg_title": "ឡូហ្គោក្រុមហ៊ុន"
+  "logo_bg_title": "ឡូហ្គោក្រុមហ៊ុន",
+  "card_detail_delete": "លុបគំរូ",
+  "card_detail_delete_confirm": "លុប",
+  "card_detail_delete_message": "កាតនេះនឹងត្រូវដកចេញពីកាតរបស់ខ្ញុំ។ មិនអាចត្រឡប់វិញបានទេ។",
+  "card_detail_delete_title": "លុបគំរូនេះឬ?"
 }

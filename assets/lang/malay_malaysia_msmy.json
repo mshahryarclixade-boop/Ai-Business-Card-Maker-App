@@ -1085,7 +1085,7 @@
   "qr_manage_title": "Kod QR",
   "qr_preview_company": "Syarikat • {company}",
   "qr_preview_create_card_subtitle": "Gunakan maklumat ini untuk mereka bentuk kad anda",
-  "qr_preview_create_card_title": "Cipta Kad Perniagaan",
+  "qr_preview_create_card_title": "Tambah ke Kad Perniagaan",
   "qr_preview_download": "Muat turun",
   "qr_preview_save_failed_message": "Tidak dapat menyimpan kod QR. Sila cuba lagi.",
   "qr_preview_save_permission_message": "Benarkan akses foto untuk menyimpan kod QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Buang Latar Belakang",
   "logo_bg_restore": "Pulihkan asal",
   "logo_bg_subtitle": "Buang latar belakang supaya logo anda sebati dengan kad anda?",
-  "logo_bg_title": "Logo syarikat"
+  "logo_bg_title": "Logo syarikat",
+  "card_detail_delete": "Padam Templat",
+  "card_detail_delete_confirm": "Padam",
+  "card_detail_delete_message": "Kad ini akan dialih keluar daripada Kad Saya. Tindakan ini tidak boleh dibatalkan.",
+  "card_detail_delete_title": "Padam templat ini?"
 }

@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR-koodid",
   "qr_preview_company": "Ettevõte • {company}",
   "qr_preview_create_card_subtitle": "Kasutage seda teavet oma kaardi kujundamiseks",
-  "qr_preview_create_card_title": "Loo visiitkaart",
+  "qr_preview_create_card_title": "Lisa visiitkaardile",
   "qr_preview_download": "Laadi alla",
   "qr_preview_save_failed_message": "QR-koodi salvestamine ebaõnnestus. Palun proovige uuesti.",
   "qr_preview_save_permission_message": "QR-koodi salvestamiseks luba fotodele juurdepääs.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Eemalda taust",
   "logo_bg_restore": "Taasta originaal",
   "logo_bg_subtitle": "Kas eemaldada taust, et logo sulanduks sinu kaardiga?",
-  "logo_bg_title": "Ettevõtte logo"
+  "logo_bg_title": "Ettevõtte logo",
+  "card_detail_delete": "Kustuta mall",
+  "card_detail_delete_confirm": "Kustuta",
+  "card_detail_delete_message": "See kaart eemaldatakse jaotisest Minu kaardid. Seda ei saa tagasi võtta.",
+  "card_detail_delete_title": "Kas kustutada see mall?"
 }

@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR кодове",
   "qr_preview_company": "Компания • {company}",
   "qr_preview_create_card_subtitle": "Използвайте тази информация, за да проектирате вашата карта",
-  "qr_preview_create_card_title": "Създайте визитна картичка",
+  "qr_preview_create_card_title": "Добави към визитка",
   "qr_preview_download": "Изтегляне",
   "qr_preview_save_failed_message": "QR кодът не можа да бъде запазен. Моля, опитайте отново.",
   "qr_preview_save_permission_message": "Разрешете достъп до снимката, за да запазите QR кода.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Премахни фона",
   "logo_bg_restore": "Върни оригинала",
   "logo_bg_subtitle": "Да премахнем ли фона, за да се слее логото с визитката ви?",
-  "logo_bg_title": "Лого на фирмата"
+  "logo_bg_title": "Лого на фирмата",
+  "card_detail_delete": "Изтриване на шаблона",
+  "card_detail_delete_confirm": "Изтрий",
+  "card_detail_delete_message": "Тази визитка ще бъде премахната от Моите визитки. Действието не може да бъде отменено.",
+  "card_detail_delete_title": "Да се изтрие ли този шаблон?"
 }

@@ -47,7 +47,7 @@ class ExpertPanelView extends StatefulWidget {
 }
 
 class _ExpertPanelViewState extends State<ExpertPanelView> {
-  final _picked = <int>{0, 3, 4};
+  final _picked = <int>{};
   // Nothing is picked by default: the user chooses Consult or Pitch.
   PanelMode? _mode;
   List<SavedPanel> _saved = [];

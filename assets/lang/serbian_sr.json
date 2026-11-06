@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR кодови",
   "qr_preview_company": "Компанија • {company}",
   "qr_preview_create_card_subtitle": "Користите ове информације за дизајнирање ваше картице",
-  "qr_preview_create_card_title": "Направите визит карту",
+  "qr_preview_create_card_title": "Додај на визит-карту",
   "qr_preview_download": "Преузми",
   "qr_preview_save_failed_message": "Није могуће сачувати QR код. Молимо покушајте поново.",
   "qr_preview_save_permission_message": "Дозволите приступ фотографији да бисте сачували QR код.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Ukloni pozadinu",
   "logo_bg_restore": "Vrati original",
   "logo_bg_subtitle": "Ukloniti pozadinu da se logo uklopi u vašu karticu?",
-  "logo_bg_title": "Logo kompanije"
+  "logo_bg_title": "Logo kompanije",
+  "card_detail_delete": "Обриши шаблон",
+  "card_detail_delete_confirm": "Обриши",
+  "card_detail_delete_message": "Ова картица ће бити уклоњена из Мојих картица. Ово се не може опозвати.",
+  "card_detail_delete_title": "Обрисати овај шаблон?"
 }

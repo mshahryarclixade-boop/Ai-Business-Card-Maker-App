@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR kodi",
   "qr_preview_company": "Uzņēmums • {company}",
   "qr_preview_create_card_subtitle": "Izmantojiet šo informāciju, lai izveidotu savu karti",
-  "qr_preview_create_card_title": "Izveidojiet vizītkarti",
+  "qr_preview_create_card_title": "Pievienot vizītkartei",
   "qr_preview_download": "Lejupielādēt",
   "qr_preview_save_failed_message": "Nevarēja saglabāt QR kodu. Lūdzu, mēģiniet vēlreiz.",
   "qr_preview_save_permission_message": "Atļaujiet piekļuvi fotoattēliem, lai saglabātu QR kodu.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Noņemt fonu",
   "logo_bg_restore": "Atjaunot oriģinālu",
   "logo_bg_subtitle": "Vai noņemt fonu, lai logotips saplūstu ar jūsu vizītkarti?",
-  "logo_bg_title": "Uzņēmuma logotips"
+  "logo_bg_title": "Uzņēmuma logotips",
+  "card_detail_delete": "Dzēst veidni",
+  "card_detail_delete_confirm": "Dzēst",
+  "card_detail_delete_message": "Šī kartīte tiks noņemta no sadaļas Manas kartītes. Šo darbību nevar atsaukt.",
+  "card_detail_delete_title": "Vai dzēst šo veidni?"
 }

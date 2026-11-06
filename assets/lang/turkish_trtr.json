@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR kodları",
   "qr_preview_company": "Şirket • {company}",
   "qr_preview_create_card_subtitle": "Kartınızı tasarlamak için bu bilgileri kullanın.",
-  "qr_preview_create_card_title": "Kartvizit Oluşturun",
+  "qr_preview_create_card_title": "Kartvizite Ekle",
   "qr_preview_download": "İndirmek",
   "qr_preview_save_failed_message": "QR kodunu kaydedemediniz. Lütfen tekrar deneyin.",
   "qr_preview_save_permission_message": "QR kodunu kaydetmek için fotoğraf erişimine izin verin.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Arka Planı Kaldır",
   "logo_bg_restore": "Orijinali geri yükle",
   "logo_bg_subtitle": "Logonuz kartınızla uyumlu olsun diye arka plan kaldırılsın mı?",
-  "logo_bg_title": "Şirket logosu"
+  "logo_bg_title": "Şirket logosu",
+  "card_detail_delete": "Şablonu sil",
+  "card_detail_delete_confirm": "Sil",
+  "card_detail_delete_message": "Bu kart Kartlarım'dan kaldırılacak. Bu işlem geri alınamaz.",
+  "card_detail_delete_title": "Bu şablon silinsin mi?"
 }

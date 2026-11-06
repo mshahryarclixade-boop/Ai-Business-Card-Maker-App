@@ -346,7 +346,9 @@ final _screens = <String, Widget Function()>{
       CardDetailView(design: Get.find<RecentDesignsService>().designs.first),
   'share_sheet': () => _Opener(
     (_) =>
-        showShareCardSheet(File('${Directory.systemTemp.path}/l10n_card.png')),
+        showShareCardSheet(
+          frontImage: File('${Directory.systemTemp.path}/l10n_card.png'),
+        ),
   ),
   'add_link_sheet': () => _Opener((c) => showAddLinkSheet(c)),
   'scan_card': () => const ScanCardView(),

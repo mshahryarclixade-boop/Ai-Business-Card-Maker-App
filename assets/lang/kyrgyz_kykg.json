@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR коддору",
   "qr_preview_company": "Компания • {company}",
   "qr_preview_create_card_subtitle": "Картаңыздын дизайнын түзүү үчүн бул маалыматты колдонуңуз",
-  "qr_preview_create_card_title": "Визиттик карта түзүү",
+  "qr_preview_create_card_title": "Визиткага кошуу",
   "qr_preview_download": "Жүктөп алуу",
   "qr_preview_save_failed_message": "QR кодун сактоо мүмкүн болгон жок. Кайра аракет кылып көрүңүз.",
   "qr_preview_save_permission_message": "QR кодун сактоо үчүн сүрөткө кирүүгө уруксат бериңиз.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Фонду өчүрүү",
   "logo_bg_restore": "Баштапкыны калыбына келтирүү",
   "logo_bg_subtitle": "Логотип картаңыз менен жуурулушу үчүн фонду өчүрөсүзбү?",
-  "logo_bg_title": "Компаниянын логотиби"
+  "logo_bg_title": "Компаниянын логотиби",
+  "card_detail_delete": "Үлгүнү өчүрүү",
+  "card_detail_delete_confirm": "Өчүрүү",
+  "card_detail_delete_message": "Бул карта «Менин карталарым» бөлүмүнөн өчүрүлөт. Муну кайтаруу мүмкүн эмес.",
+  "card_detail_delete_title": "Бул үлгүнү өчүрөсүзбү?"
 }

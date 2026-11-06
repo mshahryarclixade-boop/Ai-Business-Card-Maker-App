@@ -323,7 +323,10 @@ class HomeController extends GetxController {
     final ctx = Get.context;
     if (ctx == null) return;
 
-    final paths = <String>{data.front.background, data.back.background};
+    final paths = <String>{
+      if (data.front.hasBackgroundImage) data.front.background,
+      if (data.back.hasBackgroundImage) data.back.background,
+    };
     for (final side in [data.front, data.back]) {
       for (final e in side.elements) {
         if (e.imageAsset != null) paths.add(e.imageAsset!);

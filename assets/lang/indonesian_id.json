@@ -1085,7 +1085,7 @@
   "qr_manage_title": "Kode QR",
   "qr_preview_company": "Perusahaan • {company}",
   "qr_preview_create_card_subtitle": "Gunakan informasi ini untuk mendesain kartu Anda.",
-  "qr_preview_create_card_title": "Buat Kartu Nama",
+  "qr_preview_create_card_title": "Tambahkan ke Kartu Nama",
   "qr_preview_download": "Unduh",
   "qr_preview_save_failed_message": "Kode QR tidak dapat disimpan. Silakan coba lagi.",
   "qr_preview_save_permission_message": "Izinkan akses foto untuk menyimpan kode QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Hapus Latar Belakang",
   "logo_bg_restore": "Pulihkan asli",
   "logo_bg_subtitle": "Hapus latar belakang agar logo menyatu dengan kartu Anda?",
-  "logo_bg_title": "Logo perusahaan"
+  "logo_bg_title": "Logo perusahaan",
+  "card_detail_delete": "Hapus Templat",
+  "card_detail_delete_confirm": "Hapus",
+  "card_detail_delete_message": "Kartu ini akan dihapus dari Kartu Saya. Tindakan ini tidak dapat dibatalkan.",
+  "card_detail_delete_title": "Hapus templat ini?"
 }

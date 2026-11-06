@@ -23,6 +23,12 @@ class ProfileLogoFile {
     return fromBytes(p.logoBytes!);
   }
 
+  /// Where [fromBytes] would put this logo (nothing is written).
+  static Future<String> pathOf(Uint8List bytes) async {
+    final dir = await getApplicationDocumentsDirectory();
+    return '${dir.path}/profile_logo_${_hash(bytes)}.png';
+  }
+
   static Future<ProfileLogoFile?> fromBytes(Uint8List bytes) async {
     try {
       final dir = await getApplicationDocumentsDirectory();
@@ -42,6 +48,9 @@ class ProfileLogoFile {
     codec.dispose();
     return ratio <= 0 ? 1 : ratio;
   }
+
+  /// A short name for the logo's content (the same logo, the same key).
+  static String contentKey(Uint8List bytes) => _hash(bytes);
 
   /// FNV-1a over the bytes: the same logo always gets the same file name.
   static String _hash(Uint8List bytes) {

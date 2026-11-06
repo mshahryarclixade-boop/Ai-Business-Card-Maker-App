@@ -1085,7 +1085,7 @@
   "qr_manage_title": "የQR ኮዶች",
   "qr_preview_company": "ኩባንያ • {company}",
   "qr_preview_create_card_subtitle": "ካርድዎን ለመንደፍ ይህንን መረጃ ይጠቀሙ",
-  "qr_preview_create_card_title": "የንግድ ካርድ ይፍጠሩ",
+  "qr_preview_create_card_title": "ወደ ቢዝነስ ካርድ ጨምር",
   "qr_preview_download": "አውርድ",
   "qr_preview_save_failed_message": "የQR ኮዱን ማስቀመጥ አልተቻለም። እባክዎ እንደገና ይሞክሩ።",
   "qr_preview_save_permission_message": "የQR ኮዱን ለማስቀመጥ የፎቶ መዳረሻ ይፍቀዱ።",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "ዳራን አስወግድ",
   "logo_bg_restore": "ዋናውን መልስ",
   "logo_bg_subtitle": "አርማዎ ከካርድዎ ጋር እንዲዋሃድ ዳራውን ማስወገድ ይፈልጋሉ?",
-  "logo_bg_title": "የኩባንያ አርማ"
+  "logo_bg_title": "የኩባንያ አርማ",
+  "card_detail_delete": "አብነት ሰርዝ",
+  "card_detail_delete_confirm": "ሰርዝ",
+  "card_detail_delete_message": "ይህ ካርድ ከካርዶቼ ይወገዳል። ይህ ሊቀለበስ አይችልም።",
+  "card_detail_delete_title": "ይህ አብነት ይሰረዝ?"
 }

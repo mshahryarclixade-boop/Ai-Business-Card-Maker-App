@@ -1085,7 +1085,7 @@
   "qr_manage_title": "Amakhodi e-QR",
   "qr_preview_company": "Inkampani • {company}",
   "qr_preview_create_card_subtitle": "Sebenzisa lolu lwazi ukuklama ikhadi lakho",
-  "qr_preview_create_card_title": "Dala Ikhadi Lebhizinisi",
+  "qr_preview_create_card_title": "Engeza Ekhadini Lebhizinisi",
   "qr_preview_download": "Landa",
   "qr_preview_save_failed_message": "Ayikwazanga ukulondoloza ikhodi ye-QR. Sicela uzame futhi.",
   "qr_preview_save_permission_message": "Vumela ukufinyelela kwesithombe ukuze ulondoloze ikhodi ye-QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Susa ingemuva",
   "logo_bg_restore": "Buyisela eyoqobo",
   "logo_bg_subtitle": "Susa ingemuva ukuze ilogo yakho ixube nekhadi lakho?",
-  "logo_bg_title": "Ilogo yenkampani"
+  "logo_bg_title": "Ilogo yenkampani",
+  "card_detail_delete": "Susa isifanekiso",
+  "card_detail_delete_confirm": "Susa",
+  "card_detail_delete_message": "Leli khadi lizosuswa ku-Amakhadi Ami. Lokhu akunakubuyiswa.",
+  "card_detail_delete_title": "Susa lesi sifanekiso?"
 }

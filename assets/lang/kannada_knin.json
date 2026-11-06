@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR ಕೋಡ್‌ಗಳು",
   "qr_preview_company": "ಕಂಪನಿ • {company}",
   "qr_preview_create_card_subtitle": "ನಿಮ್ಮ ಕಾರ್ಡ್ ವಿನ್ಯಾಸಗೊಳಿಸಲು ಈ ಮಾಹಿತಿಯನ್ನು ಬಳಸಿ.",
-  "qr_preview_create_card_title": "ವ್ಯಾಪಾರ ಕಾರ್ಡ್ ರಚಿಸಿ",
+  "qr_preview_create_card_title": "ಬಿಸಿನೆಸ್ ಕಾರ್ಡ್‌ಗೆ ಸೇರಿಸಿ",
   "qr_preview_download": "ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ",
   "qr_preview_save_failed_message": "QR ಕೋಡ್ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
   "qr_preview_save_permission_message": "QR ಕೋಡ್ ಉಳಿಸಲು ಫೋಟೋ ಪ್ರವೇಶವನ್ನು ಅನುಮತಿಸಿ.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "ಹಿನ್ನೆಲೆ ತೆಗೆದುಹಾಕಿ",
   "logo_bg_restore": "ಮೂಲವನ್ನು ಮರುಸ್ಥಾಪಿಸಿ",
   "logo_bg_subtitle": "ನಿಮ್ಮ ಲೋಗೋ ಕಾರ್ಡ್‌ನೊಂದಿಗೆ ಬೆರೆಯಲು ಹಿನ್ನೆಲೆ ತೆಗೆದುಹಾಕಬೇಕೆ?",
-  "logo_bg_title": "ಕಂಪನಿ ಲೋಗೋ"
+  "logo_bg_title": "ಕಂಪನಿ ಲೋಗೋ",
+  "card_detail_delete": "ಟೆಂಪ್ಲೇಟ್ ಅಳಿಸಿ",
+  "card_detail_delete_confirm": "ಅಳಿಸಿ",
+  "card_detail_delete_message": "ಈ ಕಾರ್ಡ್ ನನ್ನ ಕಾರ್ಡ್‌ಗಳಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ. ಇದನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.",
+  "card_detail_delete_title": "ಈ ಟೆಂಪ್ಲೇಟ್ ಅಳಿಸಬೇಕೇ?"
 }

@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR कोडहरू",
   "qr_preview_company": "कम्पनी • {company}",
   "qr_preview_create_card_subtitle": "आफ्नो कार्ड डिजाइन गर्न यो जानकारी प्रयोग गर्नुहोस्",
-  "qr_preview_create_card_title": "व्यापार कार्ड बनाउनुहोस्",
+  "qr_preview_create_card_title": "व्यवसाय कार्डमा थप्नुहोस्",
   "qr_preview_download": "डाउनलोड गर्नुहोस्",
   "qr_preview_save_failed_message": "QR कोड सुरक्षित गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।",
   "qr_preview_save_permission_message": "QR कोड बचत गर्न फोटो पहुँच अनुमति दिनुहोस्।",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "पृष्ठभूमि हटाउनुहोस्",
   "logo_bg_restore": "मूल पुनर्स्थापना गर्नुहोस्",
   "logo_bg_subtitle": "तपाईंको लोगो कार्डमा मिसिनको लागि पृष्ठभूमि हटाउने?",
-  "logo_bg_title": "कम्पनीको लोगो"
+  "logo_bg_title": "कम्पनीको लोगो",
+  "card_detail_delete": "टेम्पलेट मेटाउनुहोस्",
+  "card_detail_delete_confirm": "मेटाउनुहोस्",
+  "card_detail_delete_message": "यो कार्ड मेरा कार्डहरूबाट हटाइनेछ। यो पूर्ववत गर्न सकिँदैन।",
+  "card_detail_delete_title": "यो टेम्पलेट मेटाउने?"
 }

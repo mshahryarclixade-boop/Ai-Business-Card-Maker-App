@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR ကုဒ်များ",
   "qr_preview_company": "ကုမ္ပဏီ • {company}",
   "qr_preview_create_card_subtitle": "သင့်ကတ်ကို ဒီဇိုင်းဆွဲရန် ဤအချက်အလက်ကို အသုံးပြုပါ",
-  "qr_preview_create_card_title": "စီးပွားရေးကတ်တစ်ခု ဖန်တီးပါ",
+  "qr_preview_create_card_title": "ဘိုက်ဇ်နက်ကတ်သို့ ထည့်ရန်",
   "qr_preview_download": "ဒေါင်းလုဒ်လုပ်ပါ",
   "qr_preview_save_failed_message": "QR ကုဒ်ကို သိမ်းဆည်း၍မရပါ။ ထပ်မံကြိုးစားပါ။",
   "qr_preview_save_permission_message": "QR ကုဒ်ကို သိမ်းဆည်းရန် ဓာတ်ပုံကြည့်ရှုခွင့်ပေးပါ။",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "နောက်ခံဖယ်ရှားရန်",
   "logo_bg_restore": "မူလပြန်ယူရန်",
   "logo_bg_subtitle": "သင့်လိုဂိုသည် ကတ်နှင့် ကိုက်ညီစေရန် နောက်ခံကို ဖယ်ရှားမလား။",
-  "logo_bg_title": "ကုမ္ပဏီလိုဂို"
+  "logo_bg_title": "ကုမ္ပဏီလိုဂို",
+  "card_detail_delete": "တမ်းပလိတ် ဖျက်ရန်",
+  "card_detail_delete_confirm": "ဖျက်ရန်",
+  "card_detail_delete_message": "ဤကတ်ကို ကျွန်ုပ်၏ကတ်များမှ ဖယ်ရှားမည်။ ၎င်းကို ပြန်ပြင်၍ မရပါ။",
+  "card_detail_delete_title": "ဤတမ်းပလိတ်ကို ဖျက်မလား။"
 }

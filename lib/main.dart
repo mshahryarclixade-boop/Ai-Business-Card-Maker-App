@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:ai_business_card_maker/app/core/services/offline_gate.dart';
 import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
@@ -149,10 +150,13 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
-      // Cards, contacts and scans are personal data: mask the whole app in
-      // Clarity recordings. Individual screens opt out with ClarityUnmask.
-      builder: (context, child) =>
-          ClarityMask(child: child ?? const SizedBox.shrink()),
+      // Offline lock (touches blocked + No Internet dialog on every tap) wraps
+      // the whole app. Cards, contacts and scans are personal data: mask the
+      // whole app in Clarity recordings. Individual screens opt out with
+      // ClarityUnmask.
+      builder: (context, child) => OfflineGate(
+        child: ClarityMask(child: child ?? const SizedBox.shrink()),
+      ),
       // Analytics: logs screen views automatically.
       navigatorObservers: [
         FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),

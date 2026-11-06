@@ -1085,7 +1085,7 @@
   "qr_manage_title": "رموز الاستجابة السريعة",
   "qr_preview_company": "شركة • {company}",
   "qr_preview_create_card_subtitle": "استخدم هذه المعلومات لتصميم بطاقتك",
-  "qr_preview_create_card_title": "أنشئ بطاقة عمل",
+  "qr_preview_create_card_title": "أضف إلى بطاقة العمل",
   "qr_preview_download": "تحميل",
   "qr_preview_save_failed_message": "تعذر حفظ رمز الاستجابة السريعة. يرجى المحاولة مرة أخرى.",
   "qr_preview_save_permission_message": "اسمح بالوصول إلى الصورة لحفظ رمز الاستجابة السريعة.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "إزالة الخلفية",
   "logo_bg_restore": "استعادة الأصلي",
   "logo_bg_subtitle": "هل تريد إزالة الخلفية ليندمج شعارك مع بطاقتك؟",
-  "logo_bg_title": "شعار الشركة"
+  "logo_bg_title": "شعار الشركة",
+  "card_detail_delete": "حذف القالب",
+  "card_detail_delete_confirm": "حذف",
+  "card_detail_delete_message": "ستتم إزالة هذه البطاقة من بطاقاتي. لا يمكن التراجع عن هذا الإجراء.",
+  "card_detail_delete_title": "حذف هذا القالب؟"
 }

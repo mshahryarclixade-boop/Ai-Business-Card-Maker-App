@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR-koder",
   "qr_preview_company": "Selskap • {company}",
   "qr_preview_create_card_subtitle": "Bruk denne informasjonen til å designe kortet ditt",
-  "qr_preview_create_card_title": "Lag et visittkort",
+  "qr_preview_create_card_title": "Legg til på visittkort",
   "qr_preview_download": "Last ned",
   "qr_preview_save_failed_message": "Kunne ikke lagre QR-koden. Prøv på nytt.",
   "qr_preview_save_permission_message": "Gi tilgang til bildet for å lagre QR-koden.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Fjern bakgrunn",
   "logo_bg_restore": "Gjenopprett original",
   "logo_bg_subtitle": "Vil du fjerne bakgrunnen slik at logoen smelter inn i kortet ditt?",
-  "logo_bg_title": "Firmalogo"
+  "logo_bg_title": "Firmalogo",
+  "card_detail_delete": "Slett mal",
+  "card_detail_delete_confirm": "Slett",
+  "card_detail_delete_message": "Dette kortet fjernes fra Mine kort. Dette kan ikke angres.",
+  "card_detail_delete_title": "Slette denne malen?"
 }

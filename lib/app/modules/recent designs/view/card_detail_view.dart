@@ -7,6 +7,8 @@ import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/services/recent_designs_service.dart';
+import '../../../core/widgets/app_dialog.dart';
+import '../../career_studio/widgets/career_widgets.dart';
 import '../../ai_card_generator/view/ai_card_generator_view.dart';
 import '../../custom_create/view/card_editor_view.dart';
 import '../../../core/translations/tr_extension.dart';
@@ -25,7 +27,7 @@ class CardDetailView extends StatelessWidget {
     this.onEdit,
   });
 
-  Future<void> _downloadCard() async {
+  Future<void> _downloadCard(RecentDesign design) async {
     try {
       final hasAccess = await Gal.hasAccess();
       if (!hasAccess) {
@@ -62,10 +64,7 @@ class CardDetailView extends StatelessWidget {
     }
   }
 
-  void _editCard() {
-    debugPrint('EDIT TAPPED: id=${design.id}, isAi=${design.isAiGenerated}, '
-        'hasData=${design.designData != null}');
-
+  void _editCard(RecentDesign design) {
     // AI generated cards re-open in the AI Card Generator with the card's
     // image already placed in the reference image section, so it can be
     // edited with AI again. Normal cards keep using the manual editor.
@@ -77,95 +76,144 @@ class CardDetailView extends StatelessWidget {
     Get.to(() => CardEditorView(design: design));
   }
 
+  Future<void> _deleteCard(BuildContext context, RecentDesign current) async {
+    final ok = await showBlurredDialog<bool>(
+      context,
+      AppDialogCard(
+        children: [
+          const AppDialogIcon(Icons.delete_outline_rounded),
+          const SizedBox(height: 18),
+          AppDialogText(
+            title: 'card_detail_delete_title'.tr,
+            message: 'card_detail_delete_message'.tr,
+          ),
+          const SizedBox(height: 22),
+          Builder(
+            builder: (ctx) => AppDialogButton(
+              label: 'card_detail_delete_confirm'.tr,
+              color: const Color(0xFFD32F2F),
+              onTap: () => Navigator.of(ctx).pop(true),
+            ),
+          ),
+          const SizedBox(height: 11),
+          Builder(
+            builder: (ctx) => AppDialogButton(
+              label: 'custom_create_cancel'.tr,
+              color: const Color(0xFF3A3A3C),
+              onTap: () => Navigator.of(ctx).pop(false),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    // The service forgets the card (and its pictures); My Cards and Home follow
+    // it, so nothing has to be refreshed by hand.
+    await Get.find<RecentDesignsService>().delete(current.id);
+    Get.back();
+  }
+
   @override
   Widget build(BuildContext context) {
-    debugPrint('DETAIL BUILD: onEdit passed? ${onEdit != null}');
-    final downloadAction = onDownload ?? _downloadCard;
-    final editAction = onEdit ?? _editCard;
+    final service = Get.find<RecentDesignsService>();
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBg,
       body: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 120, 20, 20),
-                    child: Column(
-                      children: [
-                        _DesignPreviewCard(file: design.file),
-                        const SizedBox(height: 16),
-                        _DesignPreviewCard(
-                          file: design.backFile ?? design.file,
-                        ),
-                      ],
+        // The card as it is NOW: editing it, or a change to the profile,
+        // updates this screen too.
+        child: Obx(() {
+          final current = service.byId(design.id) ?? design;
+          final downloadAction = onDownload ?? () => _downloadCard(current);
+          final editAction = onEdit ?? () => _editCard(current);
+
+          return Column(
+            children: [
+              // Back on the left, Delete on the right.
+              CareerAppBar(
+                title: '',
+                trailing: TapTarget(
+                  child: IconButton(
+                    tooltip: 'card_detail_delete'.tr,
+                    onPressed: () => _deleteCard(context, current),
+                    icon: const Icon(
+                      Icons.delete_outline_rounded,
+                      size: 24,
+                      color: Color(0xFFD32F2F),
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
                   child: Column(
                     children: [
+                      _DesignPreviewCard(file: current.file),
+                      const SizedBox(height: 16),
+                      _DesignPreviewCard(
+                        file: current.backFile ?? current.file,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: downloadAction,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          'card_detail_download'.tr,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (!current.isAiGenerated) ...[
+                      const SizedBox(height: 12),
                       SizedBox(
                         width: double.infinity,
                         height: 50,
-                        child: ElevatedButton(
-                          onPressed: downloadAction,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            elevation: 0,
+                        child: OutlinedButton(
+                          onPressed: editAction,
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: AppColors.primary),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                           child: Text(
-                            'card_detail_download'.tr,
+                            'card_detail_edit'.tr,
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppColors.primary,
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
-                      if (!design.isAiGenerated) ...[
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: OutlinedButton(
-                            onPressed: editAction,
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: AppColors.primary),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              'card_detail_edit'.tr,
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
                     ],
-                  ),
+                  ],
                 ),
-              ],
-            ),
-            PositionedDirectional(
-              top: 8,
-              start: 20,
-              child: _CircleBackButton(onTap: () => Get.back()),
-            ),
-          ],
-        ),
+              ),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -193,22 +241,5 @@ class _DesignPreviewCard extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _CircleBackButton extends StatelessWidget {
-  final VoidCallback onTap;
-  const _CircleBackButton({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return TapTarget(child: GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        child: const Icon(Icons.arrow_back,
-            color: Colors.black, size: 20),
-      ),
-    ));
   }
 }

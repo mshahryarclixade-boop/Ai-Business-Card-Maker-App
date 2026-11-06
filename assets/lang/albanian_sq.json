@@ -1085,7 +1085,7 @@
   "qr_manage_title": "Kodet QR",
   "qr_preview_company": "Kompania • {company}",
   "qr_preview_create_card_subtitle": "Përdoreni këtë informacion për të hartuar kartën tuaj",
-  "qr_preview_create_card_title": "Krijo një kartëvizitë",
+  "qr_preview_create_card_title": "Shto në kartëvizitë",
   "qr_preview_download": "Shkarko",
   "qr_preview_save_failed_message": "Kodi QR nuk mund të ruhej. Provo përsëri.",
   "qr_preview_save_permission_message": "Lejo qasjen te fotot për të ruajtur kodin QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Hiq sfondin",
   "logo_bg_restore": "Rikthe origjinalin",
   "logo_bg_subtitle": "Ta heqim sfondin që logoja të përzihet me kartën tënde?",
-  "logo_bg_title": "Logoja e kompanisë"
+  "logo_bg_title": "Logoja e kompanisë",
+  "card_detail_delete": "Fshi shabllonin",
+  "card_detail_delete_confirm": "Fshi",
+  "card_detail_delete_message": "Kjo kartë do të hiqet nga Kartat e mia. Kjo nuk mund të zhbëhet.",
+  "card_detail_delete_title": "Të fshihet ky shabllon?"
 }

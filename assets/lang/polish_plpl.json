@@ -1085,7 +1085,7 @@
   "qr_manage_title": "Kody QR",
   "qr_preview_company": "Firma • {company}",
   "qr_preview_create_card_subtitle": "Użyj tych informacji, aby zaprojektować swoją kartę",
-  "qr_preview_create_card_title": "Utwórz wizytówkę",
+  "qr_preview_create_card_title": "Dodaj do wizytówki",
   "qr_preview_download": "Pobierać",
   "qr_preview_save_failed_message": "Nie udało się zapisać kodu QR. Spróbuj ponownie.",
   "qr_preview_save_permission_message": "Zezwól na dostęp do zdjęcia, aby zapisać kod QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Usuń tło",
   "logo_bg_restore": "Przywróć oryginał",
   "logo_bg_subtitle": "Usunąć tło, aby logo wtopiło się w wizytówkę?",
-  "logo_bg_title": "Logo firmy"
+  "logo_bg_title": "Logo firmy",
+  "card_detail_delete": "Usuń szablon",
+  "card_detail_delete_confirm": "Usuń",
+  "card_detail_delete_message": "Ta wizytówka zostanie usunięta z Moich wizytówek. Tej operacji nie można cofnąć.",
+  "card_detail_delete_title": "Usunąć ten szablon?"
 }

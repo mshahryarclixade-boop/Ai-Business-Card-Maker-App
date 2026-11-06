@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR kodovi",
   "qr_preview_company": "Tvrtka • {company}",
   "qr_preview_create_card_subtitle": "Koristite ove informacije za dizajniranje svoje kartice",
-  "qr_preview_create_card_title": "Izradite posjetnicu",
+  "qr_preview_create_card_title": "Dodaj na posjetnicu",
   "qr_preview_download": "Preuzmi",
   "qr_preview_save_failed_message": "Nije moguće spremiti QR kod. Pokušajte ponovno.",
   "qr_preview_save_permission_message": "Dopustite pristup fotografiji da biste spremili QR kod.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Ukloni pozadinu",
   "logo_bg_restore": "Vrati original",
   "logo_bg_subtitle": "Ukloniti pozadinu kako bi se logotip stopio s vašom karticom?",
-  "logo_bg_title": "Logotip tvrtke"
+  "logo_bg_title": "Logotip tvrtke",
+  "card_detail_delete": "Izbriši predložak",
+  "card_detail_delete_confirm": "Izbriši",
+  "card_detail_delete_message": "Ova kartica bit će uklonjena iz Mojih kartica. Ovo se ne može poništiti.",
+  "card_detail_delete_title": "Izbrisati ovaj predložak?"
 }

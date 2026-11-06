@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR ਕੋਡ",
   "qr_preview_company": "ਕੰਪਨੀ • {company}",
   "qr_preview_create_card_subtitle": "ਆਪਣਾ ਕਾਰਡ ਡਿਜ਼ਾਈਨ ਕਰਨ ਲਈ ਇਸ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰੋ",
-  "qr_preview_create_card_title": "ਇੱਕ ਕਾਰੋਬਾਰੀ ਕਾਰਡ ਬਣਾਓ",
+  "qr_preview_create_card_title": "ਬਿਜ਼ਨਸ ਕਾਰਡ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ",
   "qr_preview_download": "ਡਾਊਨਲੋਡ",
   "qr_preview_save_failed_message": "QR ਕੋਡ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
   "qr_preview_save_permission_message": "QR ਕੋਡ ਨੂੰ ਸੇਵ ਕਰਨ ਲਈ ਫੋਟੋ ਐਕਸੈਸ ਦੀ ਆਗਿਆ ਦਿਓ।",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "ਬੈਕਗ੍ਰਾਊਂਡ ਹਟਾਓ",
   "logo_bg_restore": "ਅਸਲ ਬਹਾਲ ਕਰੋ",
   "logo_bg_subtitle": "ਕੀ ਬੈਕਗ੍ਰਾਊਂਡ ਹਟਾਉਣਾ ਹੈ ਤਾਂ ਜੋ ਤੁਹਾਡਾ ਲੋਗੋ ਕਾਰਡ ਵਿੱਚ ਰਲ ਜਾਵੇ?",
-  "logo_bg_title": "ਕੰਪਨੀ ਲੋਗੋ"
+  "logo_bg_title": "ਕੰਪਨੀ ਲੋਗੋ",
+  "card_detail_delete": "ਟੈਂਪਲੇਟ ਮਿਟਾਓ",
+  "card_detail_delete_confirm": "ਮਿਟਾਓ",
+  "card_detail_delete_message": "ਇਹ ਕਾਰਡ ਮੇਰੇ ਕਾਰਡਾਂ ਵਿੱਚੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਇਸਨੂੰ ਵਾਪਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।",
+  "card_detail_delete_title": "ਇਹ ਟੈਂਪਲੇਟ ਮਿਟਾਉਣਾ ਹੈ?"
 }

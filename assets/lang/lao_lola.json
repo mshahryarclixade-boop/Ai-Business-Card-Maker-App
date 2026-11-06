@@ -1085,7 +1085,7 @@
   "qr_manage_title": "ລະຫັດ QR",
   "qr_preview_company": "ບໍລິສັດ • {company}",
   "qr_preview_create_card_subtitle": "ໃຊ້ຂໍ້ມູນນີ້ເພື່ອອອກແບບບັດຂອງທ່ານ",
-  "qr_preview_create_card_title": "ສ້າງນາມບັດ",
+  "qr_preview_create_card_title": "ເພີ່ມໃສ່ນາມບັດ",
   "qr_preview_download": "ດາວໂຫຼດ",
   "qr_preview_save_failed_message": "ບໍ່ສາມາດບັນທຶກລະຫັດ QR ໄດ້. ກະລຸນາລອງໃໝ່ອີກຄັ້ງ.",
   "qr_preview_save_permission_message": "ອະນຸຍາດໃຫ້ເຂົ້າເຖິງຮູບພາບເພື່ອບັນທຶກລະຫັດ QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "ລຶບພື້ນຫຼັງ",
   "logo_bg_restore": "ກູ້ຄືນຕົ້ນສະບັບ",
   "logo_bg_subtitle": "ລຶບພື້ນຫຼັງເພື່ອໃຫ້ໂລໂກ້ຂອງທ່ານກົມກືນກັບບັດຂອງທ່ານບໍ?",
-  "logo_bg_title": "ໂລໂກ້ບໍລິສັດ"
+  "logo_bg_title": "ໂລໂກ້ບໍລິສັດ",
+  "card_detail_delete": "ລຶບແມ່ແບບ",
+  "card_detail_delete_confirm": "ລຶບ",
+  "card_detail_delete_message": "ບັດນີ້ຈະຖືກລຶບອອກຈາກບັດຂອງຂ້ອຍ. ບໍ່ສາມາດຍົກເລີກໄດ້.",
+  "card_detail_delete_title": "ລຶບແມ່ແບບນີ້ບໍ?"
 }

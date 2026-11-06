@@ -1085,7 +1085,7 @@
   "qr_manage_title": "códigos QR",
   "qr_preview_company": "Empresa • {company}",
   "qr_preview_create_card_subtitle": "Utiliza esta información para diseñar tu tarjeta.",
-  "qr_preview_create_card_title": "Crea una tarjeta de presentación",
+  "qr_preview_create_card_title": "Añadir a la tarjeta de visita",
   "qr_preview_download": "Descargar",
   "qr_preview_save_failed_message": "No se pudo guardar el código QR. Inténtelo de nuevo.",
   "qr_preview_save_permission_message": "Permitir el acceso a la foto para guardar el código QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Quitar fondo",
   "logo_bg_restore": "Restaurar original",
   "logo_bg_subtitle": "¿Quitar el fondo para que tu logotipo se integre en tu tarjeta?",
-  "logo_bg_title": "Logotipo de la empresa"
+  "logo_bg_title": "Logotipo de la empresa",
+  "card_detail_delete": "Eliminar plantilla",
+  "card_detail_delete_confirm": "Eliminar",
+  "card_detail_delete_message": "Esta tarjeta se quitará de Mis tarjetas. No se puede deshacer.",
+  "card_detail_delete_title": "¿Eliminar esta plantilla?"
 }

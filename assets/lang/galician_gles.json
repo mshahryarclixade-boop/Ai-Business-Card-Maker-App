@@ -1085,7 +1085,7 @@
   "qr_manage_title": "Códigos QR",
   "qr_preview_company": "Empresa • {company}",
   "qr_preview_create_card_subtitle": "Usa esta información para deseñar a túa tarxeta",
-  "qr_preview_create_card_title": "Crear unha tarxeta de visita",
+  "qr_preview_create_card_title": "Engadir á tarxeta de visita",
   "qr_preview_download": "Descargar",
   "qr_preview_save_failed_message": "Non se puido gardar o código QR. Téntao de novo.",
   "qr_preview_save_permission_message": "Permite o acceso á foto para gardar o código QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Eliminar o fondo",
   "logo_bg_restore": "Restaurar orixinal",
   "logo_bg_subtitle": "Queres eliminar o fondo para que o logotipo se integre na túa tarxeta?",
-  "logo_bg_title": "Logotipo da empresa"
+  "logo_bg_title": "Logotipo da empresa",
+  "card_detail_delete": "Eliminar modelo",
+  "card_detail_delete_confirm": "Eliminar",
+  "card_detail_delete_message": "Esta tarxeta eliminarase de As miñas tarxetas. Non se pode desfacer.",
+  "card_detail_delete_title": "Eliminar este modelo?"
 }

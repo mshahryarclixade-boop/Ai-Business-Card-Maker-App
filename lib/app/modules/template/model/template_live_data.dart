@@ -9,16 +9,44 @@ import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 
 import '../../custom_create/model/card_element_model.dart';
 import '../../../core/utils/app_fonts.dart';
+import '../../profile_setup/model/user_profile_data.dart';
 import '../../profile_setup/service/profile_logo_file.dart';
 import '../../profile_setup/service/profile_store.dart';
 import 'template_item.dart';
 
-/// One side (front or back) of a template: empty background + elements.
+/// One side (front or back) of a template: a background + elements.
+///
+/// The background is a picture ([background], empty for none) or just a
+/// colour ([backgroundColor]). A template built entirely from elements (see
+/// travel_01) has no picture at all.
 class TemplateSideData {
   final String background;
+  final int? backgroundColor;
   final List<CardElement> elements;
 
-  const TemplateSideData({required this.background, required this.elements});
+  const TemplateSideData({
+    this.background = '',
+    this.backgroundColor,
+    required this.elements,
+  });
+
+  /// A side as the editor saves it in `designData` (a background colour, a
+  /// background picture as a file or an asset, and the elements).
+  factory TemplateSideData.fromDesign(Map<String, dynamic> d) {
+    final image = d['backgroundImagePath'] as String?;
+    final asset = d['backgroundTemplate'] as String?;
+    return TemplateSideData(
+      background: image ?? asset ?? '',
+      backgroundColor: (d['backgroundColor'] as num?)?.toInt(),
+      elements: [
+        for (final e in (d['elements'] as List? ?? const []))
+          CardElement.fromJson(e as Map<String, dynamic>),
+      ],
+    );
+  }
+
+  /// There is a background picture (otherwise only the colour).
+  bool get hasBackgroundImage => background.isNotEmpty;
 
   /// [background] is a file on disk (an AI frame), not a bundled asset.
   bool get isFileBackground => background.startsWith('/');
@@ -85,8 +113,8 @@ class TemplateData {
       final back = _side(m['back'] as Map<String, dynamic>);
 
       // Make sure the empty backgrounds really exist in the bundle.
-      await rootBundle.load(front.background);
-      await rootBundle.load(back.background);
+      if (front.hasBackgroundImage) await rootBundle.load(front.background);
+      if (back.hasBackgroundImage) await rootBundle.load(back.background);
 
       result = TemplateData._(
         id: (m['id'] as String?) ?? fallbackId,
@@ -108,7 +136,8 @@ class TemplateData {
         .map((e) => CardElement.fromJson(e as Map<String, dynamic>))
         .toList();
     return TemplateSideData(
-      background: d['background'] as String,
+      background: d['background'] as String? ?? '',
+      backgroundColor: (d['backgroundColor'] as num?)?.toInt(),
       elements: els,
     );
   }
@@ -116,16 +145,24 @@ class TemplateData {
   /// JSON "field" key -> value from the user's profile.
   /// Fields the profile does not have (slogan, tagline, address1, address2,
   /// phone2) are left empty, so those texts are hidden.
-  static Map<String, String> currentProfileValues() {
-    final p = ProfileStore.to.profile.value;
-    return {
-      'name': p.fullName,
-      'title': p.designation,
-      'company': p.companyName,
-      'phone': p.phone,
-      'email': p.email,
-      'website': p.website,
-    };
+  static Map<String, String> currentProfileValues() =>
+      valuesOf(ProfileStore.to.profile.value);
+
+  /// JSON "field" key -> value, for any profile (not only the active one).
+  static Map<String, String> valuesOf(UserProfileData p) => {
+    'name': p.fullName,
+    'title': p.designation,
+    'company': p.companyName,
+    'phone': p.phone,
+    'email': p.email,
+    'website': p.website,
+    'initial': initialOf(p.companyName.isNotEmpty ? p.companyName : p.fullName),
+  };
+
+  /// The first letter of [name], for a template's monogram ('' when none).
+  static String initialOf(String name) {
+    final t = name.trim();
+    return t.isEmpty ? '' : String.fromCharCode(t.runes.first).toUpperCase();
   }
 
   /// [currentProfileValues] plus the company logo: `logo` is the file's path
@@ -211,6 +248,7 @@ class TemplateData {
     orientation: orientation,
     front: TemplateSideData(
       background: front.background,
+      backgroundColor: front.backgroundColor,
       elements: fitTexts(
         front.elements,
         canvasWidth: orientation.canvasSize.width,
@@ -218,6 +256,7 @@ class TemplateData {
     ),
     back: TemplateSideData(
       background: back.background,
+      backgroundColor: back.backgroundColor,
       elements: fitTexts(
         back.elements,
         canvasWidth: orientation.canvasSize.width,
@@ -269,10 +308,12 @@ class TemplateData {
     orientation: orientation,
     front: TemplateSideData(
       background: front.background,
+      backgroundColor: front.backgroundColor,
       elements: fillElements(front.elements, values),
     ),
     back: TemplateSideData(
       background: back.background,
+      backgroundColor: back.backgroundColor,
       elements: fillElements(back.elements, values),
     ),
   );
@@ -293,9 +334,11 @@ class TemplateData {
   /// reopens in the editor with everything editable.
   Map<String, dynamic> toDesignData() {
     Map<String, dynamic> side(TemplateSideData s) => {
-      'backgroundColor': 0xFFFFFFFF,
+      'backgroundColor': s.backgroundColor ?? 0xFFFFFFFF,
       'backgroundImagePath': s.isFileBackground ? s.background : null,
-      'backgroundTemplate': s.isFileBackground ? null : s.background,
+      'backgroundTemplate': s.isFileBackground || !s.hasBackgroundImage
+          ? null
+          : s.background,
       'elements': s.elements.map((e) => e.toJson()).toList(),
     };
 

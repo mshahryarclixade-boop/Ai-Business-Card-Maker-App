@@ -2,8 +2,227 @@
   "id": "horizontal_travel_01",
   "orientation": "landscape",
   "front": {
-    "background": "assets/images/empty_templates/travel/horizontal/travel_01_front.png",
     "elements": [
+      {
+        "id": "travel_01_f_panel",
+        "type": "shape",
+        "position": {
+          "dx": 257.4,
+          "dy": -4
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 78.6,
+        "height": 214,
+        "imageMask": "none",
+        "symbol": "rect",
+        "tintColor": 4279577162,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_01_f_dashes",
+        "type": "shape",
+        "position": {
+          "dx": 256.7,
+          "dy": 2.2
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 1.2,
+        "height": 201,
+        "imageMask": "none",
+        "symbol": "dashed:3.4,4.5",
+        "tintColor": 4286093519,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_01_f_plane",
+        "type": "shape",
+        "position": {
+          "dx": 275.9,
+          "dy": 24.1
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 32.9,
+        "height": 30.6,
+        "imageMask": "none",
+        "symbol": "poly:0.84,0.01;0.99,0.04;0.72,0.55;0.98,0.78;0.93,0.86;0.89,0.86;0.53,0.72;0.3,0.99;0.2,0.93;0.3,0.66;0.28,0.64;0.01,0.64;0.44,0.49",
+        "tintColor": 4294101849,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_01_f_line1",
+        "type": "shape",
+        "position": {
+          "dx": 277.25,
+          "dy": 162.7
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 0.9,
+        "height": 28,
+        "imageMask": "none",
+        "symbol": "rect",
+        "tintColor": 4294101849,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_01_f_line2",
+        "type": "shape",
+        "position": {
+          "dx": 283.45,
+          "dy": 162.7
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 0.9,
+        "height": 28,
+        "imageMask": "none",
+        "symbol": "rect",
+        "tintColor": 4294101849,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_01_f_line3",
+        "type": "shape",
+        "position": {
+          "dx": 289.65,
+          "dy": 162.7
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 0.9,
+        "height": 28,
+        "imageMask": "none",
+        "symbol": "rect",
+        "tintColor": 4294101849,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_01_f_line4",
+        "type": "shape",
+        "position": {
+          "dx": 296.05,
+          "dy": 162.7
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 0.9,
+        "height": 28,
+        "imageMask": "none",
+        "symbol": "rect",
+        "tintColor": 4294101849,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_01_f_line5",
+        "type": "shape",
+        "position": {
+          "dx": 302.35,
+          "dy": 162.7
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 0.9,
+        "height": 28,
+        "imageMask": "none",
+        "symbol": "rect",
+        "tintColor": 4294101849,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_01_f_line6",
+        "type": "shape",
+        "position": {
+          "dx": 308.55,
+          "dy": 162.7
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 0.9,
+        "height": 28,
+        "imageMask": "none",
+        "symbol": "rect",
+        "tintColor": 4294101849,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_01_f_divider",
+        "type": "shape",
+        "position": {
+          "dx": 19.8,
+          "dy": 131.0
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 210.8,
+        "height": 0.8,
+        "imageMask": "none",
+        "symbol": "rect",
+        "tintColor": 4292268742,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
       {
         "id": "travel_01_f_company",
         "type": "text",
@@ -158,11 +377,99 @@
         "field": "logo",
         "italic": false
       }
-    ]
+    ],
+    "backgroundColor": 4294242792
   },
   "back": {
-    "background": "assets/images/empty_templates/travel/horizontal/travel_01_back.png",
     "elements": [
+      {
+        "id": "travel_01_b_panel",
+        "type": "shape",
+        "position": {
+          "dx": 257.4,
+          "dy": -4
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 78.6,
+        "height": 214,
+        "imageMask": "none",
+        "symbol": "rect",
+        "tintColor": 4279577162,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_01_b_dashes",
+        "type": "shape",
+        "position": {
+          "dx": 256.7,
+          "dy": 2.2
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 1.2,
+        "height": 201,
+        "imageMask": "none",
+        "symbol": "dashed:3.4,4.5",
+        "tintColor": 4286093519,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_01_b_plane",
+        "type": "shape",
+        "position": {
+          "dx": 269.1,
+          "dy": 84.2
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 42.7,
+        "height": 40.0,
+        "imageMask": "none",
+        "symbol": "poly:0.84,0.01;0.99,0.04;0.72,0.55;0.98,0.78;0.93,0.86;0.89,0.86;0.53,0.72;0.3,0.99;0.2,0.93;0.3,0.66;0.28,0.64;0.01,0.64;0.44,0.49",
+        "tintColor": 4294101849,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_01_b_divider",
+        "type": "shape",
+        "position": {
+          "dx": 24.3,
+          "dy": 142.3
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 203.3,
+        "height": 0.8,
+        "imageMask": "none",
+        "symbol": "rect",
+        "tintColor": 4286028529,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
       {
         "id": "travel_01_b_company",
         "type": "text",
@@ -251,6 +558,7 @@
         "field": "logo",
         "italic": false
       }
-    ]
+    ],
+    "backgroundColor": 4280771797
   }
 }

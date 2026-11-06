@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR കോഡുകൾ",
   "qr_preview_company": "കമ്പനി • {company}",
   "qr_preview_create_card_subtitle": "നിങ്ങളുടെ കാർഡ് രൂപകൽപ്പന ചെയ്യാൻ ഈ വിവരങ്ങൾ ഉപയോഗിക്കുക.",
-  "qr_preview_create_card_title": "ഒരു ബിസിനസ് കാർഡ് സൃഷ്ടിക്കുക",
+  "qr_preview_create_card_title": "ബിസിനസ് കാർഡിലേക്ക് ചേർക്കുക",
   "qr_preview_download": "ഇറക്കുമതി",
   "qr_preview_save_failed_message": "QR കോഡ് സംരക്ഷിക്കാൻ കഴിഞ്ഞില്ല. വീണ്ടും ശ്രമിക്കുക.",
   "qr_preview_save_permission_message": "QR കോഡ് സംരക്ഷിക്കാൻ ഫോട്ടോ ആക്‌സസ് അനുവദിക്കുക.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "പശ്ചാത്തലം നീക്കം ചെയ്യുക",
   "logo_bg_restore": "യഥാർത്ഥം പുനഃസ്ഥാപിക്കുക",
   "logo_bg_subtitle": "ലോഗോ കാർഡിൽ ഇണങ്ങിച്ചേരാൻ പശ്ചാത്തലം നീക്കം ചെയ്യണോ?",
-  "logo_bg_title": "കമ്പനി ലോഗോ"
+  "logo_bg_title": "കമ്പനി ലോഗോ",
+  "card_detail_delete": "ടെംപ്ലേറ്റ് ഇല്ലാതാക്കുക",
+  "card_detail_delete_confirm": "ഇല്ലാതാക്കുക",
+  "card_detail_delete_message": "ഈ കാർഡ് എന്റെ കാർഡുകളിൽ നിന്ന് നീക്കം ചെയ്യും. ഇത് പഴയപടിയാക്കാൻ കഴിയില്ല.",
+  "card_detail_delete_title": "ഈ ടെംപ്ലേറ്റ് ഇല്ലാതാക്കണോ?"
 }

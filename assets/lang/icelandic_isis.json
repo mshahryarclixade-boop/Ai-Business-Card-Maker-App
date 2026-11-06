@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR kóðar",
   "qr_preview_company": "Fyrirtæki • {company}",
   "qr_preview_create_card_subtitle": "Notaðu þessar upplýsingar til að hanna kortið þitt",
-  "qr_preview_create_card_title": "Búa til nafnspjald",
+  "qr_preview_create_card_title": "Bæta við nafnspjald",
   "qr_preview_download": "Sækja",
   "qr_preview_save_failed_message": "Gat ekki vistað QR kóðann. Reyndu aftur.",
   "qr_preview_save_permission_message": "Leyfðu aðgang að myndinni til að vista QR kóðann.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Fjarlægja bakgrunn",
   "logo_bg_restore": "Endurheimta upprunalegt",
   "logo_bg_subtitle": "Fjarlægja bakgrunninn svo merkið falli vel að kortinu þínu?",
-  "logo_bg_title": "Fyrirtækismerki"
+  "logo_bg_title": "Fyrirtækismerki",
+  "card_detail_delete": "Eyða sniðmáti",
+  "card_detail_delete_confirm": "Eyða",
+  "card_detail_delete_message": "Þetta kort verður fjarlægt úr Mínum kortum. Ekki er hægt að afturkalla þetta.",
+  "card_detail_delete_title": "Eyða þessu sniðmáti?"
 }

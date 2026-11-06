@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR 코드",
   "qr_preview_company": "회사 • {company}",
   "qr_preview_create_card_subtitle": "이 정보를 활용하여 카드를 디자인하세요.",
-  "qr_preview_create_card_title": "명함 만들기",
+  "qr_preview_create_card_title": "명함에 추가",
   "qr_preview_download": "다운로드",
   "qr_preview_save_failed_message": "QR 코드를 저장할 수 없습니다. 다시 시도해 주세요.",
   "qr_preview_save_permission_message": "QR 코드를 저장하려면 사진 접근 권한을 허용해 주세요.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "배경 제거",
   "logo_bg_restore": "원본 복원",
   "logo_bg_subtitle": "로고가 명함에 자연스럽게 어우러지도록 배경을 제거할까요?",
-  "logo_bg_title": "회사 로고"
+  "logo_bg_title": "회사 로고",
+  "card_detail_delete": "템플릿 삭제",
+  "card_detail_delete_confirm": "삭제",
+  "card_detail_delete_message": "이 카드는 내 카드에서 삭제됩니다. 이 작업은 되돌릴 수 없습니다.",
+  "card_detail_delete_title": "이 템플릿을 삭제할까요?"
 }

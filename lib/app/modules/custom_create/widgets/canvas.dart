@@ -9,6 +9,8 @@ import '../../../core/theme/app_colors.dart';
 import '../controller/card_editor_controller.dart';
 import '../controller/card_editor_symbols_controller_ext.dart';
 import '../model/card_element_model.dart';
+import 'card_shape.dart';
+import 'edit_text_dialog.dart';
 import 'image_mask_clipper.dart';
 import '../../../core/translations/tr_extension.dart';
 
@@ -49,61 +51,68 @@ class CardCanvas extends StatelessWidget {
 
       return Directionality(
         textDirection: TextDirection.ltr, // cards always render left-to-right
-        child: RepaintBoundary(
-          key: repaintKey,
-          child: SizedBox(
-            width: size.width + margin * 2,
-            height: size.height + margin * 2,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                // Tapping anywhere that is not an element, card or not.
-                Positioned.fill(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => controller.selectElement(null),
-                  ),
-                ),
-                Positioned(left: margin, top: margin, child: _card(size)),
-                for (final el in controller.elements)
-                  CanvasElementWidget(controller: controller, element: el),
-                // While saving, the picture of the card as it was: the other
-                // side is switched in and captured underneath it.
-                if (controller.captureFreeze.value != null)
-                  Positioned(
-                    left: margin,
-                    top: margin,
-                    width: size.width,
-                    height: size.height,
-                    child: IgnorePointer(
-                      child: Image.memory(
-                        controller.captureFreeze.value!,
-                        fit: BoxFit.fill,
-                        gaplessPlayback: true,
-                        filterQuality: FilterQuality.high,
-                      ),
-                    ),
-                  ),
-                // While saving, hide everything outside the card so the other
-                // side's outside-card elements are never seen. This is cropped
-                // away from the saved picture anyway.
-                if (controller.isCapturing.value)
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: CustomPaint(
-                        painter: _OutsideCardMask(
-                          Rect.fromLTWH(
-                            margin,
-                            margin,
-                            size.width,
-                            size.height,
-                          ),
+        // The overlays (frozen picture, outside mask) are NOT inside the
+        // RepaintBoundary: they must never end up in the saved picture.
+        child: SizedBox(
+          width: size.width + margin * 2,
+          height: size.height + margin * 2,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned.fill(
+                child: RepaintBoundary(
+                  key: repaintKey,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Tapping anywhere that is not an element, card or not.
+                      Positioned.fill(
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => controller.selectElement(null),
                         ),
                       ),
+                      Positioned(left: margin, top: margin, child: _card(size)),
+                      for (final el in controller.elements)
+                        CanvasElementWidget(
+                          controller: controller,
+                          element: el,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              // While saving, the picture of the card as it was: the other
+              // side is switched in and captured underneath it.
+              if (controller.captureFreeze.value != null)
+                Positioned(
+                  left: margin,
+                  top: margin,
+                  width: size.width,
+                  height: size.height,
+                  child: IgnorePointer(
+                    child: Image.memory(
+                      controller.captureFreeze.value!,
+                      fit: BoxFit.fill,
+                      gaplessPlayback: true,
+                      filterQuality: FilterQuality.high,
                     ),
                   ),
-              ],
-            ),
+                ),
+              // While saving, hide everything outside the card so the other
+              // side's outside-card elements are never seen. This is cropped
+              // away from the saved picture anyway.
+              if (controller.isCapturing.value)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: CustomPaint(
+                      painter: _OutsideCardMask(
+                        Rect.fromLTWH(margin, margin, size.width, size.height),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       );
@@ -220,6 +229,8 @@ class CanvasElementWidget extends StatelessWidget {
                   // ends the drag, so the element can always be grabbed again.
                   final size = _elementSize();
                   const m = CardCanvas.margin;
+                  // [details.delta] is already in card units: the card is drawn
+                  // inside the scaled (fit-to-screen) transform.
                   final next = element.position + details.delta;
                   controller.updateDragPosition(
                     element.id,
@@ -317,7 +328,9 @@ class CanvasElementWidget extends StatelessWidget {
 
             // Resize handle for stickers and images
             if (isSelected &&
-                (_isIconSticker || element.type == CardElementType.image))
+                (_isIconSticker ||
+                    element.type == CardElementType.image ||
+                    element.type == CardElementType.shape))
               Positioned(
                 bottom: 0,
                 right: 0,
@@ -327,7 +340,13 @@ class CanvasElementWidget extends StatelessWidget {
                   onPanStart: (_) => controller.startDrag(element.id),
                   onPanEnd: (_) => controller.endDrag(),
                   onPanUpdate: (details) {
-                    final delta = (details.delta.dx + details.delta.dy) / 2;
+                    final d = details.delta; // card units (see above)
+                    if (element.type == CardElementType.shape) {
+                      // A shape is resized freely, width and height apart.
+                      controller.resizeSelectedShapeBy(d.dx, d.dy);
+                      return;
+                    }
+                    final delta = (d.dx + d.dy) / 2;
                     if (element.type == CardElementType.image) {
                       controller.resizeSelectedImageBy(delta);
                     } else {
@@ -370,6 +389,7 @@ class CanvasElementWidget extends StatelessWidget {
         );
       case CardElementType.image:
       case CardElementType.symbol:
+      case CardElementType.shape:
         return Size(element.width, element.height);
     }
   }
@@ -420,6 +440,9 @@ class CanvasElementWidget extends StatelessWidget {
                 child: image,
               );
 
+      case CardElementType.shape:
+        return CardShapeView(element: element);
+
       case CardElementType.symbol:
         if (element.iconData != null) {
           return Opacity(
@@ -450,32 +473,10 @@ class CanvasElementWidget extends StatelessWidget {
     }
   }
 
-  void _editTextContent(BuildContext context) {
-    final textController = TextEditingController(text: element.text);
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text('custom_create_edit_text_title'.tr),
-        content: TextField(
-          controller: textController,
-          autofocus: true,
-          maxLines: 3,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('custom_create_cancel'.tr),
-          ),
-          TextButton(
-            onPressed: () {
-              controller.beginStyleEdit();
-              controller.updateSelectedText(text: textController.text);
-              Navigator.of(context).pop();
-            },
-            child: Text('custom_create_done'.tr),
-          ),
-        ],
-      ),
-    );
+  Future<void> _editTextContent(BuildContext context) async {
+    final text = await showEditTextDialog(context, element.text);
+    if (text == null) return; // cancelled
+    controller.beginStyleEdit();
+    controller.updateSelectedText(text: text);
   }
 }

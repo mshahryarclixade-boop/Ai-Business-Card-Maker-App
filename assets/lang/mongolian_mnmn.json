@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR кодууд",
   "qr_preview_company": "Компани • {company}",
   "qr_preview_create_card_subtitle": "Энэ мэдээллийг ашиглан картаа зохиоорой",
-  "qr_preview_create_card_title": "Бизнес карт үүсгэх",
+  "qr_preview_create_card_title": "Нэрийн хуудсанд нэмэх",
   "qr_preview_download": "Татаж авах",
   "qr_preview_save_failed_message": "QR кодыг хадгалж чадсангүй. Дахин оролдоно уу.",
   "qr_preview_save_permission_message": "QR кодыг хадгалахын тулд зурагт хандахыг зөвшөөрнө үү.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Дэвсгэр устгах",
   "logo_bg_restore": "Эхнийхийг сэргээх",
   "logo_bg_subtitle": "Лого картанд тань уусан харагдахын тулд дэвсгэрийг устгах уу?",
-  "logo_bg_title": "Компанийн лого"
+  "logo_bg_title": "Компанийн лого",
+  "card_detail_delete": "Загвар устгах",
+  "card_detail_delete_confirm": "Устгах",
+  "card_detail_delete_message": "Энэ картыг «Миний картууд»-аас устгана. Үүнийг буцаах боломжгүй.",
+  "card_detail_delete_title": "Энэ загварыг устгах уу?"
 }

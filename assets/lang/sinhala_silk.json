@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR කේත",
   "qr_preview_company": "සමාගම • {company}",
   "qr_preview_create_card_subtitle": "ඔබේ කාඩ්පත නිර්මාණය කිරීමට මෙම තොරතුරු භාවිතා කරන්න.",
-  "qr_preview_create_card_title": "ව්‍යාපාර කාඩ්පතක් සාදන්න",
+  "qr_preview_create_card_title": "ව්‍යාපාරික කාඩ්පතට එක් කරන්න",
   "qr_preview_download": "බාගත කරන්න",
   "qr_preview_save_failed_message": "QR කේතය සුරැකීමට නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න.",
   "qr_preview_save_permission_message": "QR කේතය සුරැකීමට ඡායාරූප ප්‍රවේශයට ඉඩ දෙන්න.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "පසුබිම ඉවත් කරන්න",
   "logo_bg_restore": "මුල් එක ප්‍රතිස්ථාපනය කරන්න",
   "logo_bg_subtitle": "ඔබේ ලාංඡනය කාඩ්පතට මුසු වීමට පසුබිම ඉවත් කරන්නද?",
-  "logo_bg_title": "සමාගම් ලාංඡනය"
+  "logo_bg_title": "සමාගම් ලාංඡනය",
+  "card_detail_delete": "අච්චුව මකන්න",
+  "card_detail_delete_confirm": "මකන්න",
+  "card_detail_delete_message": "මෙම කාඩ්පත මගේ කාඩ්පත් වලින් ඉවත් කරනු ඇත. මෙය අහෝසි කළ නොහැක.",
+  "card_detail_delete_title": "මෙම අච්චුව මකන්නද?"
 }

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../../../core/utils/app_fonts.dart';
 import '../../custom_create/model/card_element_model.dart';
+import '../../custom_create/widgets/card_shape.dart';
+import '../../custom_create/widgets/image_mask_clipper.dart';
 import '../model/template_live_data.dart';
 
 class TemplateCardCanvas extends StatelessWidget {
@@ -33,13 +35,15 @@ class TemplateCardCanvas extends StatelessWidget {
           height: size.height,
           clipBehavior: Clip.hardEdge,
           decoration: BoxDecoration(
-            color: Colors.white,
-            image: DecorationImage(
-              image: side.isFileBackground
-                  ? FileImage(File(side.background))
-                  : AssetImage(side.background),
-              fit: BoxFit.cover,
-            ),
+            color: Color(side.backgroundColor ?? 0xFFFFFFFF),
+            image: side.hasBackgroundImage
+                ? DecorationImage(
+                    image: side.isFileBackground
+                        ? FileImage(File(side.background))
+                        : AssetImage(side.background),
+                    fit: BoxFit.cover,
+                  )
+                : null,
           ),
           child: Stack(
             children: [
@@ -82,15 +86,19 @@ class TemplateCardCanvas extends StatelessWidget {
         if (el.imageFile == null) {
           return const SizedBox(width: 60, height: 60);
         }
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: Image.file(
-            el.imageFile!,
-            width: el.width,
-            height: el.height,
-            fit: BoxFit.cover,
-          ),
+        final image = Image.file(
+          el.imageFile!,
+          width: el.width,
+          height: el.height,
+          fit: BoxFit.cover,
         );
+        // Same clipping as the editor, so a redrawn card matches the original.
+        return el.imageMask == CardImageMask.none
+            ? ClipRRect(borderRadius: BorderRadius.circular(6), child: image)
+            : ClipPath(clipper: ImageMaskClipper(el.imageMask), child: image);
+
+      case CardElementType.shape:
+        return CardShapeView(element: el);
 
       case CardElementType.symbol:
         if (el.iconData != null) {

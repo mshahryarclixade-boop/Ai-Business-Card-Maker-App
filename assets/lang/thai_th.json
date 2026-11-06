@@ -1085,7 +1085,7 @@
   "qr_manage_title": "รหัส QR",
   "qr_preview_company": "บริษัท • {company}",
   "qr_preview_create_card_subtitle": "ใช้ข้อมูลนี้ในการออกแบบการ์ดของคุณ",
-  "qr_preview_create_card_title": "สร้างนามบัตร",
+  "qr_preview_create_card_title": "เพิ่มลงในนามบัตร",
   "qr_preview_download": "ดาวน์โหลด",
   "qr_preview_save_failed_message": "ไม่สามารถบันทึกรหัส QR ได้ โปรดลองใหม่อีกครั้ง",
   "qr_preview_save_permission_message": "อนุญาตให้เข้าถึงรูปภาพเพื่อบันทึกรหัส QR",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "ลบพื้นหลัง",
   "logo_bg_restore": "กู้คืนต้นฉบับ",
   "logo_bg_subtitle": "ลบพื้นหลังเพื่อให้โลโก้กลมกลืนกับนามบัตรของคุณไหม",
-  "logo_bg_title": "โลโก้บริษัท"
+  "logo_bg_title": "โลโก้บริษัท",
+  "card_detail_delete": "ลบเทมเพลต",
+  "card_detail_delete_confirm": "ลบ",
+  "card_detail_delete_message": "นามบัตรนี้จะถูกลบออกจากนามบัตรของฉัน ไม่สามารถเลิกทำได้",
+  "card_detail_delete_title": "ลบเทมเพลตนี้ไหม"
 }

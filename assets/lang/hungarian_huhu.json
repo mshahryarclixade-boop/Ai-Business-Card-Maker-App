@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR-kódok",
   "qr_preview_company": "Cég • {company}",
   "qr_preview_create_card_subtitle": "Használd ezt az információt a kártyád megtervezéséhez",
-  "qr_preview_create_card_title": "Névjegykártya létrehozása",
+  "qr_preview_create_card_title": "Hozzáadás a névjegykártyához",
   "qr_preview_download": "Letöltés",
   "qr_preview_save_failed_message": "Nem sikerült menteni a QR-kódot. Próbáld újra.",
   "qr_preview_save_permission_message": "Engedélyezze a fotóhozzáférést a QR-kód mentéséhez.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Háttér eltávolítása",
   "logo_bg_restore": "Eredeti visszaállítása",
   "logo_bg_subtitle": "Eltávolítod a hátteret, hogy a logó beleolvadjon a kártyádba?",
-  "logo_bg_title": "Céglogó"
+  "logo_bg_title": "Céglogó",
+  "card_detail_delete": "Sablon törlése",
+  "card_detail_delete_confirm": "Törlés",
+  "card_detail_delete_message": "Ez a kártya el lesz távolítva a Kártyáim közül. Ez nem vonható vissza.",
+  "card_detail_delete_title": "Törlöd ezt a sablont?"
 }

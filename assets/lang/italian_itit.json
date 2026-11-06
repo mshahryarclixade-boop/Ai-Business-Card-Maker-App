@@ -1085,7 +1085,7 @@
   "qr_manage_title": "codici QR",
   "qr_preview_company": "Azienda • {company}",
   "qr_preview_create_card_subtitle": "Utilizza queste informazioni per progettare il tuo biglietto",
-  "qr_preview_create_card_title": "Crea un biglietto da visita",
+  "qr_preview_create_card_title": "Aggiungi al biglietto da visita",
   "qr_preview_download": "Scaricamento",
   "qr_preview_save_failed_message": "Impossibile salvare il codice QR. Riprova.",
   "qr_preview_save_permission_message": "Consenti l'accesso alla foto per salvare il codice QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Rimuovi sfondo",
   "logo_bg_restore": "Ripristina originale",
   "logo_bg_subtitle": "Rimuovere lo sfondo per far fondere il logo con il tuo biglietto?",
-  "logo_bg_title": "Logo aziendale"
+  "logo_bg_title": "Logo aziendale",
+  "card_detail_delete": "Elimina modello",
+  "card_detail_delete_confirm": "Elimina",
+  "card_detail_delete_message": "Questo biglietto verrà rimosso da I miei biglietti. L'operazione non può essere annullata.",
+  "card_detail_delete_title": "Eliminare questo modello?"
 }

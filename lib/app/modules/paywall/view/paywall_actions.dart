@@ -19,6 +19,7 @@ abstract final class PaywallActions {
     if (_args.isLaunch) {
       Get.offAllNamed(Routes.MAIN);
     } else {
+      Get.closeAllSnackbars();
       for (var i = 0; i < pops; i++) {
         Get.back();
       }

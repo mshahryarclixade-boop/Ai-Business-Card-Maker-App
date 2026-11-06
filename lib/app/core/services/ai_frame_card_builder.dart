@@ -131,9 +131,10 @@ abstract final class AiFrameCardBuilder {
           TemplateCardCanvas(side: side, orientation: card.orientation),
           size: card.orientation.canvasSize,
           images: <ImageProvider>[
-            side.isFileBackground
-                ? FileImage(File(side.background))
-                : AssetImage(side.background),
+            if (side.hasBackgroundImage)
+              side.isFileBackground
+                  ? FileImage(File(side.background))
+                  : AssetImage(side.background),
             for (final e in side.elements)
               if (e.imageFile != null) FileImage(e.imageFile!),
           ],
@@ -163,7 +164,13 @@ abstract final class AiFrameCardBuilder {
       ..shuffle(_random);
     for (final path in paths) {
       final layout = await TemplateData.loadPath(path);
-      if (layout != null) return layout;
+      // AI frames restyle a layout's background picture, so a layout made of
+      // elements only (no picture) cannot be used here.
+      if (layout != null &&
+          layout.front.hasBackgroundImage &&
+          layout.back.hasBackgroundImage) {
+        return layout;
+      }
     }
     throw GeminiException('ai_frame_error_no_layout'.tr);
   }

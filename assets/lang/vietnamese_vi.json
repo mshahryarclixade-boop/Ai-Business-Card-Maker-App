@@ -1085,7 +1085,7 @@
   "qr_manage_title": "Mã QR",
   "qr_preview_company": "Công ty • {company}",
   "qr_preview_create_card_subtitle": "Sử dụng thông tin này để thiết kế thiệp của bạn.",
-  "qr_preview_create_card_title": "Tạo danh thiếp",
+  "qr_preview_create_card_title": "Thêm vào danh thiếp",
   "qr_preview_download": "Tải xuống",
   "qr_preview_save_failed_message": "Không thể lưu mã QR. Vui lòng thử lại.",
   "qr_preview_save_permission_message": "Cho phép truy cập ảnh để lưu mã QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Xóa nền",
   "logo_bg_restore": "Khôi phục bản gốc",
   "logo_bg_subtitle": "Xóa nền để logo hòa vào danh thiếp của bạn?",
-  "logo_bg_title": "Logo công ty"
+  "logo_bg_title": "Logo công ty",
+  "card_detail_delete": "Xóa mẫu",
+  "card_detail_delete_confirm": "Xóa",
+  "card_detail_delete_message": "Thẻ này sẽ bị xóa khỏi Thẻ của tôi. Không thể hoàn tác.",
+  "card_detail_delete_title": "Xóa mẫu này?"
 }

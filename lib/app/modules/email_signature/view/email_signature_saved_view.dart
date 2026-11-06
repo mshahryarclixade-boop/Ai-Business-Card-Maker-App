@@ -1,12 +1,9 @@
-import 'dart:io' show File;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart' hide Trans;
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:super_clipboard/super_clipboard.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -63,10 +60,15 @@ class EmailSignatureSavedView extends StatelessWidget {
       final image = await boundary.toImage(pixelRatio: 3);
       final data = await image.toByteData(format: ui.ImageByteFormat.png);
       if (data == null) return;
-      final dir = await getTemporaryDirectory();
-      final file = File('${dir.path}/signature.png');
-      await file.writeAsBytes(data.buffer.asUint8List());
-      await Share.shareXFiles([XFile(file.path)]);
+      // On the clipboard itself (not the share sheet): it pastes as a
+      // picture into an email, a chat or a document.
+      final clipboard = SystemClipboard.instance;
+      if (clipboard == null) {
+        throw UnsupportedError('Copying a picture is not supported here');
+      }
+      final item = DataWriterItem()..add(Formats.png(data.buffer.asUint8List()));
+      await clipboard.write([item]);
+      _copiedSnack();
     } catch (e) {
       Get.snackbar('email_signature_error_title'.tr, '$e');
     }

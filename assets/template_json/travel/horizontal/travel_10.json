@@ -2,8 +2,73 @@
   "id": "horizontal_travel_10",
   "orientation": "landscape",
   "front": {
-    "background": "assets/images/empty_templates/travel/horizontal/travel_10_front.png",
     "elements": [
+      {
+        "id": "travel_10_f_0",
+        "type": "shape",
+        "position": {
+          "dx": 170.16,
+          "dy": 14.9
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 1.13,
+        "height": 176.19,
+        "imageMask": "none",
+        "symbol": "rect",
+        "tintColor": 4291478970,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_10_f_1",
+        "type": "shape",
+        "position": {
+          "dx": 22.82,
+          "dy": 70.48
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 50.24,
+        "height": 2.27,
+        "imageMask": "none",
+        "symbol": "rect",
+        "tintColor": 4290603085,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_10_f_monogram",
+        "type": "text",
+        "position": {
+          "dx": 18.4,
+          "dy": 5.9
+        },
+        "rotation": 0,
+        "text": "A",
+        "fontFamily": "Merriweather",
+        "fontSize": 53,
+        "color": 4280103242,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4279505963,
+        "opacity": 1.0,
+        "field": "initial",
+        "italic": false
+      },
       {
         "id": "travel_10_f_company",
         "type": "text",
@@ -158,11 +223,55 @@
         "field": "logo",
         "italic": false
       }
-    ]
+    ],
+    "backgroundColor": 4294110691
   },
   "back": {
-    "background": "assets/images/empty_templates/travel/horizontal/travel_10_back.png",
     "elements": [
+      {
+        "id": "travel_10_b_0",
+        "type": "shape",
+        "position": {
+          "dx": 246.47,
+          "dy": 20.95
+        },
+        "rotation": 0,
+        "text": "",
+        "fontFamily": "SF Pro",
+        "fontSize": 18,
+        "color": 4279505963,
+        "fontWeight": 3,
+        "width": 66.11,
+        "height": 3.4,
+        "imageMask": "none",
+        "symbol": "rect",
+        "tintColor": 4290603085,
+        "opacity": 1.0,
+        "field": null,
+        "italic": false
+      },
+      {
+        "id": "travel_10_b_monogram",
+        "type": "text",
+        "position": {
+          "dx": 13.6,
+          "dy": -33
+        },
+        "rotation": 0,
+        "text": "A",
+        "fontFamily": "Merriweather",
+        "fontSize": 213,
+        "color": 4281222242,
+        "fontWeight": 3,
+        "width": 80,
+        "height": 80,
+        "imageMask": "none",
+        "symbol": "",
+        "tintColor": 4279505963,
+        "opacity": 1.0,
+        "field": "initial",
+        "italic": false
+      },
       {
         "id": "travel_10_b_company",
         "type": "text",
@@ -251,6 +360,7 @@
         "field": "logo",
         "italic": false
       }
-    ]
+    ],
+    "backgroundColor": 4280103242
   }
 }

@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR kodları",
   "qr_preview_company": "Şirkət • {company}",
   "qr_preview_create_card_subtitle": "Kartınızı dizayn etmək üçün bu məlumatdan istifadə edin",
-  "qr_preview_create_card_title": "Vizit kartı yaradın",
+  "qr_preview_create_card_title": "Vizit kartına əlavə et",
   "qr_preview_download": "Yükləyin",
   "qr_preview_save_failed_message": "QR kodunu yadda saxlamaq mümkün olmadı. Yenidən cəhd edin.",
   "qr_preview_save_permission_message": "QR kodunu yadda saxlamaq üçün fotoya girişə icazə verin.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Fonu sil",
   "logo_bg_restore": "Orijinalı bərpa et",
   "logo_bg_subtitle": "Loqonuz vizit kartınıza uyğunlaşsın deyə fon silinsin?",
-  "logo_bg_title": "Şirkət loqosu"
+  "logo_bg_title": "Şirkət loqosu",
+  "card_detail_delete": "Şablonu sil",
+  "card_detail_delete_confirm": "Sil",
+  "card_detail_delete_message": "Bu kart Kartlarımdan silinəcək. Bu əməliyyat geri qaytarıla bilməz.",
+  "card_detail_delete_title": "Bu şablon silinsin?"
 }

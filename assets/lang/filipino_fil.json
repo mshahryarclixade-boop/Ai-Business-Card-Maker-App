@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR-koodit",
   "qr_preview_company": "Yritys • {company}",
   "qr_preview_create_card_subtitle": "Käytä näitä tietoja korttisi suunnittelussa",
-  "qr_preview_create_card_title": "Luo käyntikortti",
+  "qr_preview_create_card_title": "Idagdag sa Business Card",
   "qr_preview_download": "Lataa",
   "qr_preview_save_failed_message": "QR-koodia ei voitu tallentaa. Yritä uudelleen.",
   "qr_preview_save_permission_message": "Salli kuvien käyttöoikeus QR-koodin tallentamiseksi.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Alisin ang background",
   "logo_bg_restore": "Ibalik ang orihinal",
   "logo_bg_subtitle": "Alisin ang background para maghalo ang logo sa iyong card?",
-  "logo_bg_title": "Logo ng kumpanya"
+  "logo_bg_title": "Logo ng kumpanya",
+  "card_detail_delete": "Tanggalin ang template",
+  "card_detail_delete_confirm": "Tanggalin",
+  "card_detail_delete_message": "Aalisin ang card na ito sa Aking Mga Card. Hindi na ito maaaring ibalik.",
+  "card_detail_delete_title": "Tanggalin ang template na ito?"
 }

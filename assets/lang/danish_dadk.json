@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR-koder",
   "qr_preview_company": "Virksomhed • {company}",
   "qr_preview_create_card_subtitle": "Brug disse oplysninger til at designe dit kort",
-  "qr_preview_create_card_title": "Opret et visitkort",
+  "qr_preview_create_card_title": "Føj til visitkort",
   "qr_preview_download": "Download",
   "qr_preview_save_failed_message": "QR-koden kunne ikke gemmes. Prøv igen.",
   "qr_preview_save_permission_message": "Tillad adgang til billedet for at gemme QR-koden.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Fjern baggrund",
   "logo_bg_restore": "Gendan original",
   "logo_bg_subtitle": "Vil du fjerne baggrunden, så dit logo smelter sammen med dit kort?",
-  "logo_bg_title": "Virksomhedslogo"
+  "logo_bg_title": "Virksomhedslogo",
+  "card_detail_delete": "Slet skabelon",
+  "card_detail_delete_confirm": "Slet",
+  "card_detail_delete_message": "Dette kort fjernes fra Mine kort. Det kan ikke fortrydes.",
+  "card_detail_delete_title": "Vil du slette denne skabelon?"
 }

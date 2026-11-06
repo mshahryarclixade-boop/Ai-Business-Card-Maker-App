@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR కోడ్‌లు",
   "qr_preview_company": "కంపెనీ • {company}",
   "qr_preview_create_card_subtitle": "మీ కార్డును డిజైన్ చేయడానికి ఈ సమాచారాన్ని ఉపయోగించండి",
-  "qr_preview_create_card_title": "వ్యాపార కార్డును సృష్టించండి",
+  "qr_preview_create_card_title": "బిజినెస్ కార్డ్‌కు జోడించండి",
   "qr_preview_download": "డౌన్‌లోడ్",
   "qr_preview_save_failed_message": "QR కోడ్‌ను సేవ్ చేయలేకపోయాము. దయచేసి మళ్ళీ ప్రయత్నించండి.",
   "qr_preview_save_permission_message": "QR కోడ్‌ను సేవ్ చేయడానికి ఫోటో యాక్సెస్‌ను అనుమతించండి.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "నేపథ్యాన్ని తొలగించు",
   "logo_bg_restore": "అసలును పునరుద్ధరించు",
   "logo_bg_subtitle": "మీ లోగో కార్డ్‌లో కలిసిపోయేలా నేపథ్యాన్ని తొలగించాలా?",
-  "logo_bg_title": "కంపెనీ లోగో"
+  "logo_bg_title": "కంపెనీ లోగో",
+  "card_detail_delete": "టెంప్లేట్‌ను తొలగించు",
+  "card_detail_delete_confirm": "తొలగించు",
+  "card_detail_delete_message": "ఈ కార్డ్ నా కార్డ్‌ల నుండి తీసివేయబడుతుంది. దీన్ని రద్దు చేయలేరు.",
+  "card_detail_delete_title": "ఈ టెంప్లేట్‌ను తొలగించాలా?"
 }

@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR-koodit",
   "qr_preview_company": "Yritys • {company}",
   "qr_preview_create_card_subtitle": "Käytä näitä tietoja korttisi suunnittelussa",
-  "qr_preview_create_card_title": "Luo käyntikortti",
+  "qr_preview_create_card_title": "Lisää käyntikorttiin",
   "qr_preview_download": "Lataa",
   "qr_preview_save_failed_message": "QR-koodia ei voitu tallentaa. Yritä uudelleen.",
   "qr_preview_save_permission_message": "Salli kuvien käyttöoikeus QR-koodin tallentamiseksi.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Poista tausta",
   "logo_bg_restore": "Palauta alkuperäinen",
   "logo_bg_subtitle": "Poistetaanko tausta, jotta logo sulautuu korttiisi?",
-  "logo_bg_title": "Yrityksen logo"
+  "logo_bg_title": "Yrityksen logo",
+  "card_detail_delete": "Poista malli",
+  "card_detail_delete_confirm": "Poista",
+  "card_detail_delete_message": "Tämä kortti poistetaan Omat kortit -näkymästä. Tätä ei voi kumota.",
+  "card_detail_delete_title": "Poistetaanko tämä malli?"
 }

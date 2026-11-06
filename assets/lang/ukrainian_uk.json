@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR-коди",
   "qr_preview_company": "Компанія • {company}",
   "qr_preview_create_card_subtitle": "Використайте цю інформацію для розробки дизайну вашої картки",
-  "qr_preview_create_card_title": "Створіть візитну картку",
+  "qr_preview_create_card_title": "Додати на візитівку",
   "qr_preview_download": "Завантажити",
   "qr_preview_save_failed_message": "Не вдалося зберегти QR-код. Спробуйте ще раз.",
   "qr_preview_save_permission_message": "Надайте доступ до фотографії, щоб зберегти QR-код.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Видалити фон",
   "logo_bg_restore": "Відновити оригінал",
   "logo_bg_subtitle": "Видалити фон, щоб логотип гармонійно виглядав на візитівці?",
-  "logo_bg_title": "Логотип компанії"
+  "logo_bg_title": "Логотип компанії",
+  "card_detail_delete": "Видалити шаблон",
+  "card_detail_delete_confirm": "Видалити",
+  "card_detail_delete_message": "Цю картку буде видалено з розділу «Мої картки». Цю дію не можна скасувати.",
+  "card_detail_delete_title": "Видалити цей шаблон?"
 }

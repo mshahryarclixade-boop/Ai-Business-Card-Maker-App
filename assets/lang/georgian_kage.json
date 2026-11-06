@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR კოდები",
   "qr_preview_company": "კომპანია • {company}",
   "qr_preview_create_card_subtitle": "გამოიყენეთ ეს ინფორმაცია თქვენი ბარათის დიზაინის შესაქმნელად",
-  "qr_preview_create_card_title": "შექმენით სავიზიტო ბარათი",
+  "qr_preview_create_card_title": "სავიზიტო ბარათზე დამატება",
   "qr_preview_download": "ჩამოტვირთვა",
   "qr_preview_save_failed_message": "QR კოდის შენახვა ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
   "qr_preview_save_permission_message": "QR კოდის შესანახად ფოტოებზე წვდომის დაშვება.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "ფონის მოშორება",
   "logo_bg_restore": "ორიგინალის აღდგენა",
   "logo_bg_subtitle": "მოვაშოროთ ფონი, რომ ლოგო თქვენს ბარათს შეერწყას?",
-  "logo_bg_title": "კომპანიის ლოგო"
+  "logo_bg_title": "კომპანიის ლოგო",
+  "card_detail_delete": "შაბლონის წაშლა",
+  "card_detail_delete_confirm": "წაშლა",
+  "card_detail_delete_message": "ეს ბარათი ამოიშლება „ჩემი ბარათებიდან“. ამის გაუქმება შეუძლებელია.",
+  "card_detail_delete_title": "წაიშალოს ეს შაბლონი?"
 }

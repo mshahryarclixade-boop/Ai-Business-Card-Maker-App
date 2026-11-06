@@ -8,7 +8,7 @@ const Map<String, String> qrCodeStrings = {
   'qr_preview_share_text': 'Scan this QR code to save my contact.',
   'qr_preview_share_failed_title': 'Could not share',
   'qr_preview_share_failed_message': 'Please try again.',
-  'qr_preview_create_card_title': 'Create a Business Card',
+  'qr_preview_create_card_title': 'Add to Business Card',
   'qr_preview_create_card_subtitle': 'Use this info to design your card',
   'qr_preview_title': 'Preview',
   'qr_preview_download': 'Download',

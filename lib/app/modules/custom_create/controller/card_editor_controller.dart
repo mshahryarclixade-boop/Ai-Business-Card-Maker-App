@@ -94,6 +94,11 @@ class CardEditorController extends GetxController {
 
   late final Rx<CardOrientation> orientation;
 
+  /// The saved card this editor writes to: set when a saved card is opened,
+  /// or after the first save of a new one, so saving again updates that card
+  /// in place (never a second copy).
+  String? savedDesignId;
+
   final RxList<CardElement> elements = <CardElement>[].obs;
   final Rx<String?> selectedElementId = Rx<String?>(null);
   final Rx<Color> backgroundColor = const Color(0xFFFFFFFF).obs;
@@ -129,6 +134,7 @@ class CardEditorController extends GetxController {
   final RxBool isSaving = false.obs; // <-- EXISTING
 
   final RxBool isCapturing = false.obs;
+
 
   final List<_Snap> _undoStack = [];
   final List<_Snap> _redoStack = [];
@@ -370,19 +376,23 @@ class CardEditorController extends GetxController {
     await _cropAndAddImage(picked.path);
   }
 
-  /// "Take a picture" under the Image tool.
-  Future<void> addImageFromCamera() async {
-    if (!await PermissionGate.ensure(AppPermission.camera)) return;
-    final XFile? picked = await _picker.pickImage(
-      source: ImageSource.camera,
-      imageQuality: 90,
-      preferredCameraDevice: CameraDevice.front,
-    );
+Future<void> addImageFromCamera() async {
+  if (!await PermissionGate.ensure(AppPermission.camera)) return;
 
-    if (picked == null) return;
+  final XFile? picked = await _picker.pickImage(
+    source: ImageSource.camera,
+    imageQuality: 90,
+    preferredCameraDevice: CameraDevice.front,
+  );
+  if (picked == null) return;
 
-    await _cropAndAddImage(picked.path);
-  }
+  // iOS needs longer for the camera to fully dismiss
+  await Future.delayed(Duration(milliseconds: Platform.isIOS ? 1200 : 500));
+
+  // copy out of iOS's temp folder before cropping
+  final copy = await _persistFile(File(picked.path));
+  await _cropAndAddImage(copy.path);
+}
 
   Future<void> _cropAndAddImage(String sourcePath) async {
     final CroppedFile? cropped = await ImageCropper().cropImage(
@@ -521,9 +531,9 @@ class CardEditorController extends GetxController {
   DateTime? _lastBgColorChange;
   int _bgColorStackLen = -1;
 
-  void setBackgroundColor(Color color) {
-    // Dragging in the colour picker changes the colour many times a second:
-    // that is ONE undo step, not hundreds.
+  /// Dragging in the colour picker changes the colour many times a second:
+  /// that is ONE undo step, not hundreds.
+  void _undoStepForColorBurst() {
     final now = DateTime.now();
     final inBurst =
         _lastBgColorChange != null &&
@@ -535,6 +545,43 @@ class CardEditorController extends GetxController {
       _bgColorStackLen = _undoStack.length;
     }
     _lastBgColorChange = now;
+  }
+
+  /// What the Background panel's colours change: the selected element when
+  /// there is one it can recolour (a text, a shape, an icon), otherwise the
+  /// card's background.
+  ColorPickerTarget get toolColorTarget {
+    final el = selectedElement;
+    if (el == null) return ColorPickerTarget.background;
+    return el.type == CardElementType.text
+        ? ColorPickerTarget.text
+        : ColorPickerTarget.element;
+  }
+
+  /// The colour [setToolColor] would replace.
+  Color get toolColor {
+    final el = selectedElement;
+    if (el == null) return backgroundColor.value;
+    return el.type == CardElementType.text ? el.color : el.tintColor;
+  }
+
+  /// A colour picked in the Background panel (palette or custom picker).
+  void setToolColor(Color color) {
+    final el = selectedElement;
+    if (el == null) {
+      setBackgroundColor(color);
+      return;
+    }
+    _undoStepForColorBurst();
+    final i = elements.indexWhere((e) => e.id == el.id);
+    if (i == -1) return;
+    elements[i] = el.type == CardElementType.text
+        ? el.copyWith(color: color)
+        : el.copyWith(tintColor: color);
+  }
+
+  void setBackgroundColor(Color color) {
+    _undoStepForColorBurst();
 
     backgroundColor.value = color;
 
@@ -894,11 +941,16 @@ class CardEditorController extends GetxController {
         .map((e) => CardElement.fromJson(e as Map<String, dynamic>))
         .toList();
     return _SideData(
+      backgroundColor: Color(
+        (d['backgroundColor'] as num?)?.toInt() ?? 0xFFFFFFFF,
+      ),
       elements: TemplateData.fitTexts(
         TemplateData.fillElements(els, values),
         canvasWidth: orientation.value.canvasSize.width,
       ),
-      backgroundTemplate: d['background'] as String?,
+      backgroundTemplate: (d['background'] as String?)?.isEmpty ?? true
+          ? null
+          : d['background'] as String?,
     );
   }
 

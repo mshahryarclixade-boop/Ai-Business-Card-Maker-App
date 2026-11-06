@@ -19,6 +19,11 @@ const Map<String, String> recentDesignsStrings = {
       'Something went wrong while saving to gallery.',
   'card_detail_download': 'Download',
   'card_detail_edit': 'Edit',
+  'card_detail_delete': 'Delete Template',
+  'card_detail_delete_title': 'Delete this template?',
+  'card_detail_delete_message':
+      'This card will be removed from My Cards. This can\'t be undone.',
+  'card_detail_delete_confirm': 'Delete',
   'my_cards_tab_ai': 'Ai Cards',
   'pill_tab_saved': 'Saved',
   'pill_tab_favorite': 'Favorite',

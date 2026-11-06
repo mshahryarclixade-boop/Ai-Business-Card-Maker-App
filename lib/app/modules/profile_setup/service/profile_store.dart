@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../../../core/services/profile_scope.dart';
+import '../../../core/services/recent_designs_service.dart';
 import '../model/user_profile_data.dart';
 
 class ProfileStore extends GetxService {
@@ -47,8 +48,14 @@ class ProfileStore extends GetxService {
 
   /// Saves the details of any profile. The active one is updated live.
   void writeStored(String id, UserProfileData data) {
+    final old = readStored(id);
     _box.write(ProfileScope.key(_baseKey, id), jsonEncode(data.toJson()));
-    if (id == ProfileScope.id) profile.value = data;
+    if (id == ProfileScope.id) {
+      profile.value = data; // the active profile's cards follow it live
+    } else if (old != null && Get.isRegistered<RecentDesignsService>()) {
+      // A profile that is not open: its saved cards still get the change.
+      Get.find<RecentDesignsService>().syncStoredProfile(id, old, data);
+    }
   }
 
   void savePersonal({

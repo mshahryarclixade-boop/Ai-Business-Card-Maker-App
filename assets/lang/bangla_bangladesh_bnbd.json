@@ -1085,7 +1085,7 @@
   "qr_manage_title": "কিউআর কোড",
   "qr_preview_company": "কোম্পানি • {company}",
   "qr_preview_create_card_subtitle": "আপনার কার্ড ডিজাইন করতে এই তথ্য ব্যবহার করুন",
-  "qr_preview_create_card_title": "একটি বিজনেস কার্ড তৈরি করুন",
+  "qr_preview_create_card_title": "বিজনেস কার্ডে যোগ করুন",
   "qr_preview_download": "ডাউনলোড করুন",
   "qr_preview_save_failed_message": "কিউআর কোডটি সংরক্ষণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "qr_preview_save_permission_message": "কিউআর কোডটি সংরক্ষণ করতে ছবি তোলার অনুমতি দিন।",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "ব্যাকগ্রাউন্ড সরান",
   "logo_bg_restore": "আসলটি ফিরিয়ে আনুন",
   "logo_bg_subtitle": "আপনার লোগো কার্ডের সাথে মিশে যাওয়ার জন্য ব্যাকগ্রাউন্ড সরাবেন?",
-  "logo_bg_title": "কোম্পানির লোগো"
+  "logo_bg_title": "কোম্পানির লোগো",
+  "card_detail_delete": "টেমপ্লেট মুছুন",
+  "card_detail_delete_confirm": "মুছুন",
+  "card_detail_delete_message": "এই কার্ডটি আমার কার্ড থেকে সরিয়ে দেওয়া হবে। এটি পূর্বাবস্থায় ফেরানো যাবে না।",
+  "card_detail_delete_title": "এই টেমপ্লেট মুছবেন?"
 }

@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR kódy",
   "qr_preview_company": "Spoločnosť • {company}",
   "qr_preview_create_card_subtitle": "Použite tieto informácie na návrh svojej karty",
-  "qr_preview_create_card_title": "Vytvorte si vizitku",
+  "qr_preview_create_card_title": "Pridať na vizitku",
   "qr_preview_download": "Stiahnuť",
   "qr_preview_save_failed_message": "QR kód sa nepodarilo uložiť. Skúste to znova.",
   "qr_preview_save_permission_message": "Povoľte prístup k fotke, aby ste uložili QR kód.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Odstrániť pozadie",
   "logo_bg_restore": "Obnoviť pôvodné",
   "logo_bg_subtitle": "Odstrániť pozadie, aby sa logo zlúčilo s vašou vizitkou?",
-  "logo_bg_title": "Logo spoločnosti"
+  "logo_bg_title": "Logo spoločnosti",
+  "card_detail_delete": "Odstrániť šablónu",
+  "card_detail_delete_confirm": "Odstrániť",
+  "card_detail_delete_message": "Táto vizitka bude odstránená z Mojich vizitiek. Túto akciu nie je možné vrátiť späť.",
+  "card_detail_delete_title": "Odstrániť túto šablónu?"
 }

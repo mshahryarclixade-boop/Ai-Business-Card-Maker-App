@@ -1085,7 +1085,7 @@
   "qr_manage_title": "codes QR",
   "qr_preview_company": "Entreprise • {company}",
   "qr_preview_create_card_subtitle": "Utilisez ces informations pour concevoir votre carte.",
-  "qr_preview_create_card_title": "Créer une carte de visite",
+  "qr_preview_create_card_title": "Ajouter à la carte de visite",
   "qr_preview_download": "Télécharger",
   "qr_preview_save_failed_message": "Impossible d'enregistrer le code QR. Veuillez réessayer.",
   "qr_preview_save_permission_message": "Autoriser l'accès aux photos pour enregistrer le code QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Supprimer l'arrière-plan",
   "logo_bg_restore": "Restaurer l'original",
   "logo_bg_subtitle": "Supprimer l'arrière-plan pour que votre logo se fonde dans votre carte ?",
-  "logo_bg_title": "Logo de l'entreprise"
+  "logo_bg_title": "Logo de l'entreprise",
+  "card_detail_delete": "Supprimer le modèle",
+  "card_detail_delete_confirm": "Supprimer",
+  "card_detail_delete_message": "Cette carte sera retirée de Mes cartes. Cette action est irréversible.",
+  "card_detail_delete_title": "Supprimer ce modèle ?"
 }

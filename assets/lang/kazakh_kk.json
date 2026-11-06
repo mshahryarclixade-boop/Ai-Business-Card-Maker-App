@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR кодтары",
   "qr_preview_company": "Компания • {company}",
   "qr_preview_create_card_subtitle": "Картаңызды жасау үшін осы ақпаратты пайдаланыңыз",
-  "qr_preview_create_card_title": "Визитка жасаңыз",
+  "qr_preview_create_card_title": "Визиткаға қосу",
   "qr_preview_download": "Жүктеп алу",
   "qr_preview_save_failed_message": "QR кодын сақтау мүмкін болмады. Қайталап көріңіз.",
   "qr_preview_save_permission_message": "QR кодын сақтау үшін фотосуретке кіруге рұқсат беріңіз.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Фонды жою",
   "logo_bg_restore": "Түпнұсқаны қалпына келтіру",
   "logo_bg_subtitle": "Логотип картаңызбен үйлесуі үшін фонды жойғыңыз келе ме?",
-  "logo_bg_title": "Компания логотипі"
+  "logo_bg_title": "Компания логотипі",
+  "card_detail_delete": "Үлгіні жою",
+  "card_detail_delete_confirm": "Жою",
+  "card_detail_delete_message": "Бұл карта «Менің карталарым» бөлімінен жойылады. Мұны қайтару мүмкін емес.",
+  "card_detail_delete_title": "Бұл үлгіні жою керек пе?"
 }

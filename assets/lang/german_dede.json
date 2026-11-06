@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR-Codes",
   "qr_preview_company": "Unternehmen • {company}",
   "qr_preview_create_card_subtitle": "Nutzen Sie diese Informationen, um Ihre Karte zu gestalten.",
-  "qr_preview_create_card_title": "Erstellen Sie eine Visitenkarte",
+  "qr_preview_create_card_title": "Zur Visitenkarte hinzufügen",
   "qr_preview_download": "Herunterladen",
   "qr_preview_save_failed_message": "Der QR-Code konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
   "qr_preview_save_permission_message": "Erlauben Sie den Fotozugriff, um den QR-Code zu speichern.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Hintergrund entfernen",
   "logo_bg_restore": "Original wiederherstellen",
   "logo_bg_subtitle": "Hintergrund entfernen, damit dein Logo mit deiner Karte verschmilzt?",
-  "logo_bg_title": "Firmenlogo"
+  "logo_bg_title": "Firmenlogo",
+  "card_detail_delete": "Vorlage löschen",
+  "card_detail_delete_confirm": "Löschen",
+  "card_detail_delete_message": "Diese Karte wird aus „Meine Karten“ entfernt. Das kann nicht rückgängig gemacht werden.",
+  "card_detail_delete_title": "Diese Vorlage löschen?"
 }

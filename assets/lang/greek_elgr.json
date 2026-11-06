@@ -1085,7 +1085,7 @@
   "qr_manage_title": "Κωδικοί QR",
   "qr_preview_company": "Εταιρεία • {company}",
   "qr_preview_create_card_subtitle": "Χρησιμοποιήστε αυτές τις πληροφορίες για να σχεδιάσετε την κάρτα σας",
-  "qr_preview_create_card_title": "Δημιουργήστε μια επαγγελματική κάρτα",
+  "qr_preview_create_card_title": "Προσθήκη στην επαγγελματική κάρτα",
   "qr_preview_download": "Λήψη",
   "qr_preview_save_failed_message": "Δεν ήταν δυνατή η αποθήκευση του κωδικού QR. Δοκιμάστε ξανά.",
   "qr_preview_save_permission_message": "Επιτρέψτε την πρόσβαση στις φωτογραφίες για να αποθηκεύσετε τον κωδικό QR.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Αφαίρεση φόντου",
   "logo_bg_restore": "Επαναφορά αρχικού",
   "logo_bg_subtitle": "Να αφαιρεθεί το φόντο ώστε το λογότυπό σας να ταιριάζει με την κάρτα σας;",
-  "logo_bg_title": "Λογότυπο εταιρείας"
+  "logo_bg_title": "Λογότυπο εταιρείας",
+  "card_detail_delete": "Διαγραφή προτύπου",
+  "card_detail_delete_confirm": "Διαγραφή",
+  "card_detail_delete_message": "Αυτή η κάρτα θα αφαιρεθεί από τις Κάρτες μου. Η ενέργεια δεν μπορεί να αναιρεθεί.",
+  "card_detail_delete_title": "Διαγραφή αυτού του προτύπου;"
 }

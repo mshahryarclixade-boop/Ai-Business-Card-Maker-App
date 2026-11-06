@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR-коды",
   "qr_preview_company": "Компания • {company}",
   "qr_preview_create_card_subtitle": "Используйте эту информацию для создания своей открытки.",
-  "qr_preview_create_card_title": "Создайте визитку",
+  "qr_preview_create_card_title": "Добавить на визитку",
   "qr_preview_download": "Скачать",
   "qr_preview_save_failed_message": "Не удалось сохранить QR-код. Пожалуйста, попробуйте еще раз.",
   "qr_preview_save_permission_message": "Разрешите доступ к фотографии, чтобы сохранить QR-код.",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Удалить фон",
   "logo_bg_restore": "Вернуть оригинал",
   "logo_bg_subtitle": "Удалить фон, чтобы логотип гармонично смотрелся на визитке?",
-  "logo_bg_title": "Логотип компании"
+  "logo_bg_title": "Логотип компании",
+  "card_detail_delete": "Удалить шаблон",
+  "card_detail_delete_confirm": "Удалить",
+  "card_detail_delete_message": "Эта карточка будет удалена из раздела «Мои карточки». Это действие нельзя отменить.",
+  "card_detail_delete_title": "Удалить этот шаблон?"
 }

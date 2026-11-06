@@ -1085,7 +1085,7 @@
   "qr_manage_title": "کیو آر کوڈز",
   "qr_preview_company": "کمپنی • {company}",
   "qr_preview_create_card_subtitle": "اپنے کارڈ کو ڈیزائن کرنے کے لیے اس معلومات کا استعمال کریں۔",
-  "qr_preview_create_card_title": "بزنس کارڈ بنائیں",
+  "qr_preview_create_card_title": "بزنس کارڈ میں شامل کریں",
   "qr_preview_download": "ڈاؤن لوڈ کریں۔",
   "qr_preview_save_failed_message": "QR کوڈ محفوظ نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔",
   "qr_preview_save_permission_message": "QR کوڈ کو محفوظ کرنے کے لیے تصویر تک رسائی کی اجازت دیں۔",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "پس منظر ہٹائیں",
   "logo_bg_restore": "اصل بحال کریں",
   "logo_bg_subtitle": "کیا پس منظر ہٹائیں تاکہ آپ کا لوگو کارڈ میں گھل مل جائے؟",
-  "logo_bg_title": "کمپنی کا لوگو"
+  "logo_bg_title": "کمپنی کا لوگو",
+  "card_detail_delete": "ٹیمپلیٹ حذف کریں",
+  "card_detail_delete_confirm": "حذف کریں",
+  "card_detail_delete_message": "یہ کارڈ میرے کارڈز سے ہٹا دیا جائے گا۔ اسے واپس نہیں کیا جا سکتا۔",
+  "card_detail_delete_title": "یہ ٹیمپلیٹ حذف کریں؟"
 }

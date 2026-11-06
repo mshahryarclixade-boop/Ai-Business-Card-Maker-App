@@ -107,6 +107,8 @@ class _CardEditorViewState extends State<CardEditorView> {
 
     final design = widget.design;
     if (design != null) {
+      // Everything saved from here on goes into this card.
+      controller.savedDesignId = design.id;
       if (design.designData != null) {
         // Normal saved design: full structured elements for both sides.
         controller.loadFromDesign(design);
@@ -375,8 +377,8 @@ class _CardEditorViewState extends State<CardEditorView> {
 }
 
 /// The card, scaled down to fit (never up), with the working margin around it
-/// so elements can be edited outside the card. The side switcher sits above
-/// the card's top-right corner.
+/// so elements can be edited outside the card. The side switcher sits at the
+/// right edge, right under the Save button.
 class _CanvasArea extends StatelessWidget {
   const _CanvasArea({required this.controller, required this.repaintKey});
 
@@ -412,13 +414,12 @@ class _CanvasArea extends StatelessWidget {
                 right: 0,
                 height: _header,
                 child: ClipRect(
-                  child: Center(
-                    child: SizedBox(
-                      width: math.max(card.width * scale, 110),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: SideSwitcher(controller: controller),
-                      ),
+                  child: Align(
+                    // Right under the Save button.
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: Padding(
+                      padding: const EdgeInsetsDirectional.only(end: 10),
+                      child: SideSwitcher(controller: controller),
                     ),
                   ),
                 ),

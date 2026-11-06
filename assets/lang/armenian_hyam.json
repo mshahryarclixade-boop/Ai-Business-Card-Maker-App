@@ -1085,7 +1085,7 @@
   "qr_manage_title": "QR կոդեր",
   "qr_preview_company": "Ընկերություն • {company}",
   "qr_preview_create_card_subtitle": "Օգտագործեք այս տեղեկատվությունը ձեր քարտը ձևավորելու համար",
-  "qr_preview_create_card_title": "Ստեղծեք այցեքարտ",
+  "qr_preview_create_card_title": "Ավելացնել այցեքարտին",
   "qr_preview_download": "Ներբեռնել",
   "qr_preview_save_failed_message": "Չհաջողվեց պահպանել QR կոդը։ Խնդրում ենք կրկին փորձել։",
   "qr_preview_save_permission_message": "Թույլատրեք լուսանկարների հասանելիությունը՝ QR կոդը պահպանելու համար։",
@@ -1265,5 +1265,9 @@
   "logo_bg_remove": "Հեռացնել ֆոնը",
   "logo_bg_restore": "Վերականգնել բնօրինակը",
   "logo_bg_subtitle": "Հեռացնե՞լ ֆոնը, որ լոգոն ներդաշնակ տեսք ունենա քարտի հետ։",
-  "logo_bg_title": "Ընկերության լոգո"
+  "logo_bg_title": "Ընկերության լոգո",
+  "card_detail_delete": "Ջնջել ձևանմուշը",
+  "card_detail_delete_confirm": "Ջնջել",
+  "card_detail_delete_message": "Այս քարտը կհեռացվի «Իմ քարտերից»։ Սա հնարավոր չէ չեղարկել։",
+  "card_detail_delete_title": "Ջնջե՞լ այս ձևանմուշը։"
 }

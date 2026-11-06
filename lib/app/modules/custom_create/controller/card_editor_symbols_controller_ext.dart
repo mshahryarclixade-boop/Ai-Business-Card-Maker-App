@@ -82,6 +82,40 @@ extension CardEditorSymbolsX on CardEditorController {
     setSelectedStickerSize(current.height + delta);
   }
 
+  /// Free resize of a `shape` element (width and height separately), from its
+  /// bottom-right handle. Never smaller than 1 card unit, so a thin line stays
+  /// a line and can be grabbed again.
+  void resizeSelectedShapeBy(double dx, double dy) {
+    final current = _selected;
+    if (current == null || current.type != CardElementType.shape) return;
+    _updateSelected(
+      (e) => e.copyWith(
+        width: (e.width + dx).clamp(1.0, 1000.0),
+        height: (e.height + dy).clamp(1.0, 1000.0),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------- Layers
+  /// Z-order is the order of the element list: later is drawn on top.
+  /// Each of these is one Undo step.
+  void bringSelectedForward() => _moveSelectedLayer((i, n) => i + 1);
+  void sendSelectedBackward() => _moveSelectedLayer((i, n) => i - 1);
+  void bringSelectedToFront() => _moveSelectedLayer((i, n) => n - 1);
+  void sendSelectedToBack() => _moveSelectedLayer((i, n) => 0);
+
+  void _moveSelectedLayer(int Function(int index, int count) target) {
+    final id = selectedElementId.value;
+    if (id == null) return;
+    final from = elements.indexWhere((e) => e.id == id);
+    if (from == -1) return;
+    final to = target(from, elements.length).clamp(0, elements.length - 1);
+    if (to == from) return;
+    recordHistory();
+    final el = elements.removeAt(from);
+    elements.insert(to, el);
+  }
+
   // ---------------------------------------------------------------- Shapes
   void applyImageMask(CardImageMask mask) {
     final selectedId = selectedElementId.value;
@@ -185,11 +219,26 @@ extension CardEditorSymbolsX on CardEditorController {
         throw StateError('Card capture failed: other side not ready');
       }
 
-      await Get.find<RecentDesignsService>().save(
-        startSide == 0 ? shown : hidden,
-        backThumbnailBytes: startSide == 0 ? hidden : shown,
-        designData: buildDesignData(),
-      );
+      // Into the card being edited (or, the first time, as a new one): saving
+      // again never makes a second copy.
+      final service = Get.find<RecentDesignsService>();
+      final front = startSide == 0 ? shown : hidden;
+      final back = startSide == 0 ? hidden : shown;
+      final data = buildDesignData();
+      final id = savedDesignId;
+      final updated = id == null
+          ? null
+          : await service.update(id, front: front, back: back, designData: data);
+      if (updated != null) {
+        savedDesignId = updated.id;
+      } else {
+        final created = await service.save(
+          front,
+          backThumbnailBytes: back,
+          designData: data,
+        );
+        savedDesignId = created.id;
+      }
     } finally {
       if (currentSide.value != startSide) switchToSide(startSide);
       // Let the original side draw once before the cover comes off.
