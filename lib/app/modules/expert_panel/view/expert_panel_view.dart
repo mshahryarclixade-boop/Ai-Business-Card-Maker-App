@@ -24,7 +24,11 @@ void openExpertPanel() {
   }
   final context = Get.context;
   if (context == null) return;
-  showClixaUpgrade(context, onUnlocked: openExpertPanel);
+  showClixaUpgrade(
+    context,
+    onUnlocked: openExpertPanel,
+    screen: 'expert_panel_entry',
+  );
 }
 
 TextStyle _t(double size, Color color, {FontWeight? w, double? h}) => TextStyle(

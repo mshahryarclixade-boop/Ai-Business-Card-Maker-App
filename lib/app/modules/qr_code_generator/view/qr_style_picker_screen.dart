@@ -1,3 +1,4 @@
+import '../../../core/widgets/pro_crown_badge.dart';
 import '../../career_studio/widgets/career_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
@@ -5,6 +6,8 @@ import 'package:get/get.dart' hide Trans;
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/translations/tr_extension.dart';
+import '../../paywall/services/free_limits.dart';
+import '../../paywall/services/paywall_triggers.dart';
 import '../model/qr_code_builder.dart';
 import '../model/qr_entry.dart';
 import '../model/qr_profile_data.dart';
@@ -41,7 +44,18 @@ class QrStylePickerScreen extends StatefulWidget {
 class _QrStylePickerScreenState extends State<QrStylePickerScreen> {
   late QrStyle _style = QrStyles.byId(widget.initialStyleId);
 
-  void _save() {
+  Future<void> _save() async {
+    // Classic is free. Any other style is a Pro style - except one this QR
+    // code already has (what the user made is never locked).
+    final isProStyle =
+        _style.id != QrStyles.classic.id && _style.id != widget.initialStyleId;
+    if (!await FreeLimits.ensureTemplate(
+      isPremium: isProStyle,
+      trigger: PaywallTrigger.proQr,
+      screen: 'qr_style_picker',
+    )) {
+      return; // the paywall was shown; the chosen style stays selected
+    }
     final existing = widget.editId == null
         ? null
         : QrStore.entries.firstWhereOrNull((e) => e.id == widget.editId);
@@ -234,42 +248,54 @@ class _StyleTile extends StatelessWidget {
     final w = (MediaQuery.sizeOf(context).width - 48 - 24) / 3;
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: w.clamp(80.0, 140.0),
-        padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: selected ? AppColors.primary : const Color(0xFFE1E1EE),
-            width: selected ? 2 : 1,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: w.clamp(80.0, 140.0),
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: selected ? AppColors.primary : const Color(0xFFE1E1EE),
+                width: selected ? 2 : 1,
+              ),
+            ),
+            child: Column(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: StyledQr(
+                    data: data,
+                    style: style,
+                    size: (w.clamp(80.0, 140.0)) - 16 - 4,
+                    padding: 4,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  style.nameKey.tr,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: AppTextStyles.fontFamily,
+                    fontSize: 13,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    color: AppColors.titleDark,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: StyledQr(
-                data: data,
-                style: style,
-                size: (w.clamp(80.0, 140.0)) - 16 - 4,
-                padding: 4,
-              ),
+          // Every style except Classic is a Pro style: a crown, visual only.
+          if (style.id != QrStyles.classic.id)
+            const PositionedDirectional(
+              top: 4,
+              end: 4,
+              child: ProCrownBadge(iconSize: 10, padding: 4),
             ),
-            const SizedBox(height: 6),
-            Text(
-              style.nameKey.tr,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontFamily: AppTextStyles.fontFamily,
-                fontSize: 13,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: AppColors.titleDark,
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

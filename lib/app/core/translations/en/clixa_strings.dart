@@ -6,7 +6,7 @@ const Map<String, String> clixaStrings = {
   'clixa_card_message': 'Your AI business coach. What shall we work on today?',
   'clixa_input_hint': 'Type an idea or a question…',
   'clixa_start_chat': 'Start a chat',
-  'clixa_free_left': '{left} of {total} free chats left today',
+  'clixa_free_left': '{left} of {total} free chats left this week',
   'clixa_unlimited_chats': 'Unlimited chats',
   'clixa_recent': 'Recent chats',
   'clixa_no_recent': 'No recent chats',
@@ -90,7 +90,7 @@ const Map<String, String> clixaStrings = {
   // Sheets
   'clixa_start_sheet_title': 'Start a new chat',
   'clixa_start_sheet_message':
-      'A new chat starts fresh, so each idea or plan stays separate. {left} of {total} free chats left today',
+      'A new chat starts fresh, so each idea or plan stays separate. {left} of {total} free chats left this week',
   'clixa_start_sheet_message_pro':
       'A new chat starts fresh, so each idea or plan stays separate.',
   'clixa_cancel': 'Cancel',
@@ -98,11 +98,11 @@ const Map<String, String> clixaStrings = {
   'clixa_limit_chat_message':
       'Free chats include {max} messages. Go Pro to keep this chat going, or start a new chat. This one stays saved in your history.',
   'clixa_get_unlimited_messages': 'Get unlimited messages',
-  'clixa_new_chat_left': 'Start a new chat ({left} left today)',
+  'clixa_new_chat_left': 'Start a new chat ({left} left this week)',
   'clixa_not_now': 'Not now',
-  'clixa_limit_day_title': 'You\'ve used today\'s {total} free chats',
+  'clixa_limit_day_title': 'You\'ve used your {total} free chats this week',
   'clixa_limit_day_message':
-      'New chats unlock again tomorrow. You can still continue any saved chat, or go Pro for unlimited chats and the expert panel.',
+      'New chats unlock again next week. You can still continue any saved chat, or go Pro for unlimited chats and the expert panel.',
   'clixa_get_unlimited_chats': 'Get unlimited chats',
   'clixa_continue_saved': 'Continue a saved chat',
   'clixa_rename_chat': 'Rename chat',

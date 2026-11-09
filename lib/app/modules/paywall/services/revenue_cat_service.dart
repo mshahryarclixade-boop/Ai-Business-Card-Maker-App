@@ -273,13 +273,19 @@ class RevenueCatHelper {
     }
   }
 
-  Future<List<StoreProduct>> getProducts() async {
+  /// The store products: the plans, plus [extraIds] (the discounted offer
+  /// product from Remote Config, when one is set).
+  Future<List<StoreProduct>> getProducts({
+    List<String> extraIds = const [],
+  }) async {
     if (!_configured) return [];
     try {
-      final products = await Purchases.getProducts(productIdentifiers);
+      final ids = {...productIdentifiers, ...extraIds.where((e) => e.isNotEmpty)}
+          .toList();
+      final products = await Purchases.getProducts(ids);
       if (products.isEmpty) {
         log(
-          'no products fetched (ids: ${productIdentifiers.join(", ")})',
+          'no products fetched (ids: ${ids.join(", ")})',
           name: 'RevenueCatHelper',
         );
       }
@@ -290,9 +296,7 @@ class RevenueCatHelper {
         );
       }
       final found = products.map((p) => productIdOf(p.identifier)).toSet();
-      final missing = productIdentifiers
-          .where((id) => !found.contains(id))
-          .toList();
+      final missing = ids.where((id) => !found.contains(id)).toList();
       if (missing.isNotEmpty) {
         log('invalidProductIdentifiers: $missing', name: 'RevenueCatHelper');
       }

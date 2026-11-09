@@ -11,6 +11,11 @@ const Map<String, String> profileSetupStrings = {
   'profile_setup_ready_subtitle':
       'We’ve added your details to a clean starting design. Now make it your own.',
   'profile_setup_ready_go_home': 'Go to Home',
+  'profile_setup_ready_scan': 'Scan a Card',
+  'profile_setup_ready_share': 'Share Your Card',
+  'profile_setup_ready_share_unavailable_title': 'Card not ready yet',
+  'profile_setup_ready_share_unavailable':
+      'Your card is still being saved. Try again in a moment.',
   'profile_setup_business_title': 'Tell us about your business',
   'profile_setup_business_company_name': 'Company name',
   'profile_setup_business_company_hint': 'Acme Corporation',

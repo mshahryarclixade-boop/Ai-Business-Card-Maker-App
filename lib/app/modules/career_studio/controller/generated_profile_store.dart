@@ -1,3 +1,4 @@
+import '../../paywall/services/usage_service.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -40,6 +41,7 @@ abstract final class GeneratedProfileStore {
     texts = t;
     rewritesLeft = rewrites;
     built.value = true;
+    UsageHelper.count(UsageFeature.careerBuild, 'career_build', 'career_builder');
     try {
       GetStorage().write(_key, {
         'headline': t.headline,

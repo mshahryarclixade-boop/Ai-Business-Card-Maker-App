@@ -1,3 +1,4 @@
+import '../../paywall/services/paywall_triggers.dart';
 import 'package:flutter/services.dart';
 import '../../../core/utils/input_validators.dart';
 import '../../../core/widgets/hide_when_pro.dart';
@@ -13,13 +14,11 @@ import '../../../core/services/profile_scope.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/add_link_sheet.dart';
-import '../../career_studio/widgets/career_hub_sheets.dart';
 import '../../profile/model/profile_model.dart';
 import '../../profile/service/profile_repository.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../model/qr_profile_data.dart';
 import 'qr_style_picker_screen.dart';
-import '../../paywall/view/paywall_screen.dart';
 import '../../../core/translations/tr_extension.dart';
 
 class CustomQrCodeScreen extends StatefulWidget {
@@ -299,7 +298,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                   size: 40,
                   iconSize: 22,
                   borderRadius: 12,
-                  onTap: () => showUpgradeSheet(context),
+                  onTap: () => PaywallTriggers.show(PaywallTrigger.crown, screen: 'qr_code'),
                 )),
               ),
               Expanded(

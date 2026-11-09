@@ -1,3 +1,4 @@
+import 'package:ai_business_card_maker/app/modules/paywall/services/usage_service.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -232,6 +233,8 @@ void main() {
 
     testWidgets('pick a style, save, then manage the QR codes', (t) async {
       await fresh();
+      // Midnight is a Pro style: this user is Pro.
+      Get.put(UsageService(isPro: () => true));
       t.view.physicalSize = const Size(390 * 3, 844 * 3);
       t.view.devicePixelRatio = 3;
       addTearDown(t.view.reset);

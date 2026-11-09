@@ -1,3 +1,8 @@
+import '../../paywall/services/watermark_service.dart';
+import 'dart:async';
+import '../../paywall/services/free_limits.dart';
+import '../../paywall/services/paywall_triggers.dart';
+import '../../paywall/services/usage_service.dart';
 import '../../../core/services/permission_gate.dart';
 import 'dart:io';
 
@@ -168,6 +173,11 @@ class AiCardController extends GetxController {
       return;
     }
 
+    // The free plan's 3 AI cards (CRO plan). Out of them: the "Unlimited AI
+    // cards" paywall opens and the prompt, the reference image and the chosen
+    // template stay exactly as they are.
+    if (!await FreeLimits.ensure(UsageFeature.aiCard, screen: 'ai_card_generator')) return;
+
     // Plan limit: no-op unless Remote Config `credits_enabled` is on.
     final aiCardCost = RemoteConfigService().creditCosts.aiCard;
     if (_checkingCredits) return;
@@ -204,6 +214,7 @@ class AiCardController extends GetxController {
 
       // Charged only now that a card was actually delivered.
       await CreditGate.spend(cost: aiCardCost, source: 'ai_card');
+      await _spendFreeUse();
 
       await FirebaseAnalytics.instance.logEvent(name: 'card_generated');
 
@@ -249,6 +260,20 @@ class AiCardController extends GetxController {
     } finally {
       isGenerating.value = false;
     }
+  }
+
+  /// One free AI card is spent (once per generation). When it was the last
+  /// one, the "Unlimited AI cards" paywall opens over the finished card - the
+  /// card, the prompt and the draft are all kept.
+  Future<void> _spendFreeUse() async {
+    final usage = UsageService.to;
+    final wasLast = !usage.isPro && usage.remaining(UsageFeature.aiCard) == 1;
+    usage.consume(
+      UsageFeature.aiCard,
+      dedupeKey: 'ai_${DateTime.now().microsecondsSinceEpoch}',
+      source: 'ai_card',
+    );
+    if (wasLast) unawaited(PaywallTriggers.show(PaywallTrigger.aiLimit, screen: 'ai_card_generator'));
   }
 
   void _fail(String message) {
@@ -298,9 +323,13 @@ class AiCardController extends GetxController {
         }
       }
 
-      await Gal.putImage(card.frontImagePath, album: 'AI Business Card');
-
-      await Gal.putImage(card.backImagePath, album: 'AI Business Card');
+      final files = await WatermarkService.prepare([
+        card.frontImagePath,
+        card.backImagePath,
+      ]);
+      for (final f in files) {
+        await Gal.putImage(f, album: 'AI Business Card');
+      }
 
       await FirebaseAnalytics.instance.logEvent(name: 'card_saved_to_gallery');
       await CreditGate.spend(
@@ -369,9 +398,12 @@ class AiCardController extends GetxController {
     isSharing.value = true;
 
     try {
+      final files = await WatermarkService.prepare([
+        card.frontImagePath,
+        card.backImagePath,
+      ]);
       await Share.shareXFiles([
-        XFile(card.frontImagePath),
-        XFile(card.backImagePath),
+        for (final f in files) XFile(f),
       ], text: 'ai_card_share_text'.tr);
       await CreditGate.spend(
         cost: exportCost,

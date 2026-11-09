@@ -1,3 +1,7 @@
+import '../../../core/services/remote_config_service.dart';
+import '../../paywall/services/free_limits.dart';
+import '../../paywall/services/paywall_triggers.dart';
+import '../../paywall/services/usage_service.dart';
 import '../../../core/services/permission_gate.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -25,7 +29,10 @@ import '../../../core/translations/tr_extension.dart';
 
 enum _ScanMode { card, qr }
 
-enum _CardOrientation { landscape, portrait }
+/// [auto] is the default: the card is detected wherever it is held; the
+/// frame guide is the usual (landscape) card shape. The manual toggle is
+/// hidden unless Remote Config `scan_orientation_toggle` turns it on.
+enum _CardOrientation { auto, landscape, portrait }
 
 class ScanCardView extends StatefulWidget {
   const ScanCardView({super.key});
@@ -43,13 +50,20 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
   MobileScannerController? _qrController;
 
   _ScanMode _mode = _ScanMode.card;
-  _CardOrientation _orientation = _CardOrientation.portrait;
+  _CardOrientation _orientation = _CardOrientation.auto;
 
   bool _isFlashOn = false;
   bool _isProcessing = false;
   bool _qrHandled = false;
   bool _isSwitching = false;
   String? _cameraError;
+
+  /// "Why we need the camera" is shown before the system prompt.
+  bool _showPrimer = false;
+  bool _primerAccepted = false;
+
+  /// The camera is refused and only the system Settings can change it.
+  bool _permissionDenied = false;
   String? _scannedLink; // NEW: web link found in the QR, shown on screen
 
   @override
@@ -120,15 +134,30 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
   }
 
   Future<void> _initCameraInner() async {
-    setState(() => _cameraError = null);
-    // Asks for the camera; if refused, Open Settings / Later is shown, and
-    // "Try again" below asks again.
-    if (!await PermissionGate.ensure(AppPermission.camera)) {
-      if (mounted) {
-        setState(() => _cameraError = 'scan_camera_permission_needed'.tr);
+    setState(() {
+      _cameraError = null;
+      _permissionDenied = false;
+    });
+    // First the explanation (why the camera), then the system prompt. Already
+    // allowed: straight to the camera.
+    if (!await PermissionGate.isGranted(AppPermission.camera)) {
+      if (!_primerAccepted) {
+        if (mounted) setState(() => _showPrimer = true);
+        return;
       }
-      return;
+      // Asks for the camera; if refused for good, Open Settings / Later is
+      // shown, and the screen keeps an Open Settings button.
+      if (!await PermissionGate.ensure(AppPermission.camera)) {
+        if (mounted) {
+          setState(() {
+            _cameraError = 'scan_camera_permission_needed'.tr;
+            _permissionDenied = true;
+          });
+        }
+        return;
+      }
     }
+    if (mounted && _showPrimer) setState(() => _showPrimer = false);
     if (!mounted) return;
     try {
       final cameras = await availableCameras();
@@ -165,8 +194,12 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
   Future<void> _switchMode(_ScanMode mode) async {
     if (_mode == mode || _isSwitching) return;
     if (mode == _ScanMode.qr &&
-        !await PermissionGate.ensure(AppPermission.camera)) {
-      return;
+        !await PermissionGate.isGranted(AppPermission.camera)) {
+      // Not allowed yet: the explanation first (the camera area shows it).
+      if (mounted && !_primerAccepted) setState(() => _showPrimer = true);
+      if (!_primerAccepted || !await PermissionGate.ensure(AppPermission.camera)) {
+        return;
+      }
     }
     if (!mounted) return;
     _isSwitching = true;
@@ -233,16 +266,37 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
   // Capture / pick / decode
   // ---------------------------------------------------------------------
 
+  /// A NEW card scan starts only with a free scan left (CRO plan): out of
+  /// scans, the "Scan unlimited cards" paywall opens and nothing is lost -
+  /// the earlier scans and contacts stay as they are.
+  Future<bool> _allowScan() => FreeLimits.ensure(UsageFeature.scan, screen: 'scan');
+
+  /// The scan produced a result: spend the free scan (once per picture), warn
+  /// on the second-last one, then continue with the result. The result is held
+  /// here while the (skippable) paywall is up, so it is kept either way.
+  Future<void> _finishScan(String savedPath, ScannedContactData data) async {
+    final usage = UsageService.to;
+    final wasPro = usage.isPro;
+    usage.consume(UsageFeature.scan, dedupeKey: savedPath, source: 'scan');
+    final warnAt = RemoteConfigService().croLimits.scanWarningRemaining;
+    if (!wasPro && warnAt > 0 && usage.remaining(UsageFeature.scan) == warnAt) {
+      await PaywallTriggers.show(PaywallTrigger.scanWarning, screen: 'scan');
+    }
+    if (!mounted) return;
+    _goToCreateContact(data);
+  }
+
   Future<void> _captureCard() async {
     final controller = _cameraController;
     if (controller == null || !controller.value.isInitialized || _isProcessing) return;
+    if (!await _allowScan()) return;
 
     setState(() => _isProcessing = true);
     try {
       final photo = await controller.takePicture();
       final savedPath = await _persistImage(photo.path);
       final data = await _scannerService.extractFromImage(savedPath);
-      _goToCreateContact(data);
+      await _finishScan(savedPath, data);
     } catch (e) {
       _showError('scan_read_card_failed'.tr);
     } finally {
@@ -267,13 +321,14 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
       _externalUiOpen = false;
     }
     if (picked == null || !mounted) return;
+    if (_mode == _ScanMode.card && !await _allowScan()) return;
 
     setState(() => _isProcessing = true);
     try {
       if (_mode == _ScanMode.card) {
         final savedPath = await _persistImage(picked.path);
         final data = await _scannerService.extractFromImage(savedPath);
-        _goToCreateContact(data);
+        await _finishScan(savedPath, data);
       } else {
         final raw = await _readQrFromImage(picked.path);
         if (raw == null) {
@@ -540,6 +595,11 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
   }
 
   Widget _buildPreviewArea() {
+    // The explanation / "camera refused" screens stand alone: no frame guide
+    // or dimming layer on top of their buttons.
+    if (_showPrimer || (_mode == _ScanMode.card && _cameraError != null)) {
+      return _buildCameraLayer();
+    }
     return Stack(
       alignment: Alignment.center,
       fit: StackFit.expand,
@@ -557,6 +617,36 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
             ),
           ),
         ),
+        // "3 of 5 scans used": always shown to free users, in card mode.
+        if (_mode == _ScanMode.card)
+          Positioned(
+            top: 8,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Obx(() {
+                UsageService.to.revision.value; // refresh when a scan is spent
+                final text = FreeLimits.counter(UsageFeature.scan);
+                if (text == null) return const SizedBox.shrink();
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.55),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Text(
+                    text,
+                    style: const TextStyle(
+                      fontFamily: AppTextStyles.fontFamily,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.white,
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
         // NEW: link card shown after a web QR is scanned
         if (_scannedLink != null)
           Positioned(
@@ -661,6 +751,8 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
   }
 
   Widget _buildCameraLayer() {
+    if (_showPrimer) return _buildCameraPrimer();
+
     if (_mode == _ScanMode.qr) {
       final controller = _qrController;
       if (controller == null) {
@@ -669,6 +761,8 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
       }
       return MobileScanner(controller: controller, onDetect: _onQrDetect);
     }
+
+    if (_showPrimer) return _buildCameraPrimer();
 
     if (_cameraError != null) {
       return _buildCameraFallback(_cameraError!);
@@ -705,6 +799,89 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
     );
   }
 
+  /// Why the camera is needed, before the system's Allow / Don't Allow prompt.
+  Widget _buildCameraPrimer() {
+    return Container(
+      color: Colors.black,
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      alignment: Alignment.center,
+      child: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.photo_camera_outlined,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'scan_primer_title'.tr,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontFamily: AppTextStyles.fontFamily,
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'scan_primer_message'.tr,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: AppTextStyles.fontFamily,
+                  color: Colors.white.withOpacity(0.8),
+                  fontSize: 14,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _primerAccepted = true;
+                      _showPrimer = false;
+                    });
+                    _initCamera();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'scan_primer_continue'.tr,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildCameraFallback(String message) {
     return Container(
       color: Colors.black,
@@ -729,6 +906,17 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
             onPressed: _initCamera,
             child: Text('scan_try_again'.tr, style: TextStyle(color: AppColors.primary)),
           ),
+          // Refused: only the system Settings can allow it now.
+          if (_permissionDenied)
+            ElevatedButton(
+              onPressed: PermissionGate.openSettings,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                elevation: 0,
+              ),
+              child: Text('perm_open_settings'.tr),
+            ),
         ],
       ),
     );
@@ -746,19 +934,27 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
       );
     }
 
-    final isLandscape = _orientation == _CardOrientation.landscape;
+    // Auto: the usual (landscape) card guide; Portrait only when chosen.
+    final isLandscape = _orientation != _CardOrientation.portrait;
+    final showToggle = RemoteConfigService().scanOrientationToggle;
     final frameWidth = isLandscape ? 280.0 : 200.0;
     final frameHeight = isLandscape ? 176.0 : 280.0;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        if (showToggle)
         Padding(
           padding: const EdgeInsets.only(bottom: 18),
           child: ScanSegmentedToggle<_CardOrientation>(
             selected: _orientation,
             onChanged: (v) => setState(() => _orientation = v),
             options: [
+              ScanToggleOption(
+                value: _CardOrientation.auto,
+                label: 'scan_orientation_auto'.tr,
+                icon: Icons.auto_awesome,
+              ),
               ScanToggleOption(
                 value: _CardOrientation.landscape,
                 label: 'scan_orientation_landscape'.tr,

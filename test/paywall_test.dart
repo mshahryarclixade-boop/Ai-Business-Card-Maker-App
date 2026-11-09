@@ -16,7 +16,8 @@ void main() {
         '{"enabled":false,"trial":{"days":7},"plans":{"monthly":{"visible":false}}}',
       );
       expect(c.enabled, isFalse);
-      expect(c.trialButtonLabel, 'Start 7-Day Free Trial');
+      // A trial is only promised when the store really offers one.
+      expect(c.trialButtonLabel, 'Continue');
       expect(c.monthly.visible, isFalse);
       expect(c.yearly.visible, isTrue);
     });

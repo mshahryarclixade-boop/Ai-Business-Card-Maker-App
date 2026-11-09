@@ -41,6 +41,8 @@ class PaywallConfig {
       'benefit_text': '{days} days completely free, no charge today',
       'info_line_1': 'No payment today, {yearly_price}/year after trial',
       'info_line_2': 'Cancel anytime before trial ends',
+      // Under the plans screen's button, for the yearly plan with a real trial.
+      'fine_print': '{days} days free, then {yearly_price}/year. Cancel anytime.',
     },
     // Screen 1 (trial pitch)
     'screen1': {
@@ -55,20 +57,19 @@ class PaywallConfig {
         {'icon': 'bg', 'text': 'Remove Background'},
       ],
       'plan_title': 'Yearly Pro',
-      'save_badge': 'Save 70%',
-      'price_note': 'Just \$2.49/month, billed annually',
+      'save_badge': 'Save 64%',
+      'price_note': 'Just \$2.50/month, billed annually',
     },
     // Screen 2 (plans)
     'screen2': {
-      'title': 'Unlock Pro & keep creating',
+      'title': 'Create and scan without limits',
       'subtitle': 'Get unlimited access to every feature',
+      // Four short, outcome-led highlights (CRO plan).
       'features': [
-        'Unlimited AI Card',
-        'Unlimited Scan',
-        '50+ Templates',
+        'Unlimited AI cards',
+        'Unlimited scans',
         'No watermark',
-        'QR Generator',
-        'BG Remover',
+        'All templates and QR styles',
       ],
       'button_label': 'Continue',
       'commitment_text': 'No commitment, cancel anytime',
@@ -89,12 +90,13 @@ class PaywallConfig {
         'price': '\$29.99',
         'period': '/year',
         'original_price': '\$83.88/year',
-        'save_badge': 'Save 70%',
+        'save_badge': 'Save 64%',
+        'per_month_note': '{price}/month, billed yearly',
       },
     },
     'footer': {
       'restore': 'Restore Purchase',
-      'terms': 'Term Of Use',
+      'terms': 'Terms of Use',
       'privacy': 'Privacy Policy',
     },
   };
@@ -151,8 +153,24 @@ class PaywallConfig {
   bool get showPlansScreen => _m['show_plans_screen'] as bool;
 
   // --- Trial ---
-  bool get trialEnabled => _trial['enabled'] as bool;
-  int get trialDays => (_trial['days'] as num).toInt();
+  /// A trial is shown only when Remote Config allows it AND the store really
+  /// offers (and this user may have) the yearly free trial.
+  bool get trialEnabled => (_trial['enabled'] as bool) && _storeTrial;
+
+  /// The trial's real length from the store (the config's number only until
+  /// the store answers).
+  int get trialDays {
+    final store = _storeTrialDays;
+    return store > 0 ? store : (_trial['days'] as num).toInt();
+  }
+
+  static bool get _storeTrial =>
+      Get.isRegistered<SubscriptionController>() &&
+      Get.find<SubscriptionController>().yearlyTrialEligible.value;
+
+  static int get _storeTrialDays => Get.isRegistered<SubscriptionController>()
+      ? Get.find<SubscriptionController>().yearlyTrialDays.value
+      : 0;
 
   /// Replaces `{days}` and `{yearly_price}` placeholders.
   String _fill(Object? s) => s
@@ -166,6 +184,17 @@ class PaywallConfig {
           as String,
     ),
   );
+  /// The plans screen's button is always "Continue"; the trial is explained
+  /// in [s2FinePrint].
+  String get s2CtaLabel => _loc(_s2['button_label'] as String);
+
+  /// Under the button: "3 days free, then $29.99/year. Cancel anytime." for
+  /// the yearly plan when a trial is really available (store price and trial
+  /// length), else the plain "No commitment, cancel anytime".
+  String s2FinePrint({required bool yearlySelected}) => yearlySelected && trialEnabled
+      ? _fill(_loc(_trial['fine_print'] as String))
+      : _loc(_s2['commitment_text'] as String);
+
   String get trialBenefitText => _fill(_loc(_trial['benefit_text'] as String));
   String get trialInfoLine1 => _fill(_loc(_trial['info_line_1'] as String));
   String get trialInfoLine2 => _fill(_loc(_trial['info_line_2'] as String));
@@ -228,9 +257,14 @@ class PaywallConfig {
   PaywallPlan get yearly {
     final p = _plans['yearly'] as Map;
     final m = _monthlyProduct;
+    final y = _yearlyProduct;
+    final perMonth = y == null
+        ? _money(defaultYearlyPrice / 12, 'USD')
+        : _money(y.price / 12, y.currencyCode);
     return PaywallPlan(
       p,
-      product: _yearlyProduct,
+      product: y,
+      perMonth: perMonth,
       savePercent: _savePercent,
       storeOriginalPrice: m == null
           ? null
@@ -253,9 +287,16 @@ class PaywallConfig {
   /// prices are known.
   int? get _savePercent {
     final m = _monthlyProduct, y = _yearlyProduct;
-    if (m == null || y == null || m.price <= 0) return null;
+    if (m == null || y == null || m.price <= 0) {
+      // Store prices not loaded: the saving of the default prices (64%, not
+      // the 70% the screen used to claim).
+      return ((1 - defaultYearlyPrice / (defaultMonthlyPrice * 12)) * 100).round();
+    }
     return ((1 - y.price / (m.price * 12)) * 100).round();
   }
+
+  static const defaultMonthlyPrice = 6.99;
+  static const defaultYearlyPrice = 29.99;
 
   static String _money(double value, String currencyCode) =>
       NumberFormat.simpleCurrency(name: currencyCode).format(value);
@@ -293,6 +334,7 @@ class PaywallPlan {
     this.product,
     this.savePercent,
     this.storeOriginalPrice,
+    this.perMonth = '',
   });
   final Map _p;
 
@@ -300,6 +342,15 @@ class PaywallPlan {
   final StoreProduct? product;
   final int? savePercent;
   final String? storeOriginalPrice;
+
+  /// Yearly price per month in the store's currency ("$2.50").
+  final String perMonth;
+
+  /// "$2.50/month, billed yearly" (empty for plans without the note).
+  String get perMonthNote {
+    final t = _loc((_p['per_month_note'] ?? '') as String);
+    return t.isEmpty || perMonth.isEmpty ? '' : t.replaceAll('{price}', perMonth);
+  }
 
   bool get visible => _p['visible'] as bool;
   String get title => _loc(_p['title'] as String);
@@ -316,9 +367,13 @@ class PaywallPlan {
       _withPercent(_loc((_p['save_badge'] ?? '') as String), savePercent);
 
   /// [text]'s first "70%" replaced by [percent], when known.
+  /// Any script's digits (and the Arabic percent sign) are matched.
   static String _withPercent(String text, int? percent) => percent == null
       ? text
-      : text.replaceFirst(RegExp(r'\d+\s?%'), '$percent%');
+      : text.replaceFirst(
+          RegExp(r'\p{Nd}+\s?[%٪]', unicode: true),
+          '$percent%',
+        );
 }
 
 /// The paywall's texts come from Remote Config, with English defaults. A text
@@ -340,16 +395,17 @@ const Map<String, String> _defaultTextKeys = {
   'Scan any QR Code': 'paywall_cfg_feat_qr',
   'Remove Background': 'paywall_cfg_feat_bg',
   'Yearly Pro': 'paywall_cfg_yearly_pro',
-  'Save 70%': 'paywall_cfg_save_badge',
-  'Just \$2.49/month, billed annually': 'paywall_cfg_price_note',
-  'Unlock Pro & keep creating': 'paywall_cfg_s2_title',
+  'Save 64%': 'paywall_cfg_save_badge',
+  'Just \$2.50/month, billed annually': 'paywall_cfg_price_note',
+  '{days} days free, then {yearly_price}/year. Cancel anytime.':
+      'paywall_cfg_trial_fine_print',
+  '{price}/month, billed yearly': 'paywall_cfg_billed_yearly',
+  'Create and scan without limits': 'cro_msg_default_headline',
+  'All templates and QR styles': 'paywall_cfg_s2_feat_all',
   'Get unlimited access to every feature': 'paywall_cfg_s2_subtitle',
-  'Unlimited AI Card': 'paywall_cfg_s2_feat_ai',
-  'Unlimited Scan': 'paywall_cfg_s2_feat_scan',
-  '50+ Templates': 'paywall_cfg_s2_feat_templates',
+  'Unlimited AI cards': 'paywall_cfg_s2_feat_ai',
+  'Unlimited scans': 'paywall_cfg_s2_feat_scan',
   'No watermark': 'paywall_cfg_s2_feat_watermark',
-  'QR Generator': 'paywall_cfg_s2_feat_qr',
-  'BG Remover': 'paywall_cfg_s2_feat_bg',
   'No commitment, cancel anytime': 'paywall_cfg_commitment',
   'Monthly': 'paywall_cfg_monthly',
   '/month': 'paywall_cfg_per_month',
@@ -359,7 +415,7 @@ const Map<String, String> _defaultTextKeys = {
   '/year': 'paywall_cfg_per_year',
   '\$83.88/year': 'paywall_cfg_original_price',
   'Restore Purchase': 'paywall_cfg_restore',
-  'Term Of Use': 'paywall_cfg_terms',
+  'Terms of Use': 'paywall_cfg_terms',
   'Privacy Policy': 'paywall_cfg_privacy',
 };
 

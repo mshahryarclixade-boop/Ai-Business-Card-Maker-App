@@ -36,6 +36,20 @@ class TemplateItem {
     this.textFields,
   });
 
+  TemplateItem copyWith({bool? isPremium}) => TemplateItem(
+    id: id,
+    name: name,
+    category: category,
+    orientation: orientation,
+    frontImagePath: frontImagePath,
+    backImagePath: backImagePath,
+    keywords: keywords,
+    isPremium: isPremium ?? this.isPremium,
+    noTextFrontImagePath: noTextFrontImagePath,
+    noTextBackImagePath: noTextBackImagePath,
+    textFields: textFields,
+  );
+
   bool matchesQuery(String query) {
     if (query.isEmpty) return true;
     if (name.toLowerCase().contains(query)) return true;

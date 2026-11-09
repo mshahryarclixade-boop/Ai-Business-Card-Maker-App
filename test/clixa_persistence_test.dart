@@ -1,3 +1,4 @@
+import 'package:get/get.dart' hide Trans;
 import 'dart:convert';
 import 'dart:io';
 
@@ -29,6 +30,7 @@ void main() {
   tearDownAll(() => ClixaChatStore.enabled = false);
 
   setUp(() async {
+    Get.reset();
     await GetStorage().erase();
   });
 
@@ -51,17 +53,14 @@ void main() {
     expect(back.createdAt.millisecondsSinceEpoch, chat.createdAt.millisecondsSinceEpoch);
   });
 
-  test('the free-chat count is kept for today and starts again on a new day', () async {
+  test('the free-chat count is kept after a restart', () async {
     final c = ClixaController()..onInit();
     await c.send(c.startChat(ClixaMode.talk), 'How do I find customers?');
-    expect(restarted().freeChatsLeft, ClixaController.freeChatsPerDay - 1);
+    expect(c.freeChatsLeft, ClixaController.freeChatsPerWeek - 1);
 
-    // The same record, but from yesterday: a new day starts with all free chats.
-    await GetStorage().write(
-      'clixa_daily',
-      jsonEncode({'day': '2000-01-01', 'count': 3}),
-    );
-    expect(restarted().freeChatsLeft, ClixaController.freeChatsPerDay);
+    // A new app run: a fresh service reads the same stored counter.
+    Get.reset();
+    expect(restarted().freeChatsLeft, ClixaController.freeChatsPerWeek - 1);
   });
 
   test('rename and delete are saved', () async {

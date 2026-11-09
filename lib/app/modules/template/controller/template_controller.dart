@@ -10,6 +10,8 @@ import 'package:get_storage/get_storage.dart';
 import '../../custom_create/view/card_editor_view.dart';
 import '../../profile/model/profile_model.dart';
 import '../../profile/service/profile_repository.dart';
+import '../../../core/services/remote_config_service.dart';
+import '../../paywall/services/free_limits.dart';
 import '../model/template_item.dart';
 import '../../../core/translations/tr_extension.dart';
 
@@ -158,7 +160,7 @@ class TemplateController extends GetxController {
                 : TemplateOrientation.horizontal,
             frontImagePath: path,
             backImagePath: assets.contains(backPath) ? backPath : path,
-            isPremium: number % 3 == 0,
+            isPremium: false,
           ),
           number,
         ));
@@ -185,7 +187,17 @@ class TemplateController extends GetxController {
         return a.$2.compareTo(b.$2);
       });
 
-      allTemplates.assignAll(entries.map((entry) => entry.$1));
+      // Free plan: the first `templates_free` templates (half per
+      // orientation, so both tabs keep free ones); the rest need Pro.
+      final perOrientation = (RemoteConfigService().croLimits.templatesFree + 1) ~/ 2;
+      final seen = <TemplateOrientation, int>{};
+      final marked = <TemplateItem>[];
+      for (final e in entries) {
+        final t = e.$1;
+        final n = seen.update(t.orientation, (v) => v + 1, ifAbsent: () => 1);
+        marked.add(n <= perOrientation ? t : t.copyWith(isPremium: true));
+      }
+      allTemplates.assignAll(marked);
     } catch (e, st) {
       debugPrint('Failed to load templates: $e');
 
@@ -311,10 +323,11 @@ class TemplateController extends GetxController {
     autoFillProfile.value = value;
   }
 
-  void onEditTemplateTap() {
+  Future<void> onEditTemplateTap() async {
     final item = selectedTemplate.value;
 
     if (item == null) return;
+    if (!await FreeLimits.ensureTemplate(isPremium: item.isPremium, screen: 'templates')) return;
 
     FirebaseAnalytics.instance.logEvent(
       name: 'template_edit_started',

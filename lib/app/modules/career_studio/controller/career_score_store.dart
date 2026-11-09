@@ -1,3 +1,4 @@
+import '../../paywall/services/usage_service.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -125,6 +126,7 @@ abstract final class CareerScoreStore {
   static void newScan([ProfileAnalysis? analysis]) {
     final score = analysis == null ? firstScan : scoreOf(analysis);
     scanned.value = true;
+    UsageHelper.count(UsageFeature.careerOptimize, 'career_optimize', 'career_optimizer');
     base.value = score;
     before.value = score;
     partScores

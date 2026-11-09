@@ -1,3 +1,4 @@
+import '../../paywall/services/paywall_triggers.dart';
 import '../../../core/widgets/crown_upgrade_button.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:get/get.dart' hide Trans;
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/translations/tr_extension.dart';
-import '../../career_studio/widgets/career_hub_sheets.dart';
 import '../../career_studio/widgets/career_widgets.dart';
 import '../service/email_signature_store.dart';
 import '../widgets/signature_card.dart';
@@ -65,7 +65,7 @@ class EmailSignatureIntroView extends StatelessWidget {
                         size: 40,
                         iconSize: 22,
                         borderRadius: 12,
-                        onTap: () => showUpgradeSheet(context),
+                        onTap: () => PaywallTriggers.show(PaywallTrigger.crown, screen: 'email_signature'),
                       ),
               ),
             ),

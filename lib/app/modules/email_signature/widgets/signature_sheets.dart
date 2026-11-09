@@ -1,3 +1,4 @@
+import '../../paywall/services/paywall_triggers.dart';
 import 'package:flutter/services.dart';
 import '../../../core/utils/input_validators.dart';
 import 'package:flutter/material.dart';
@@ -6,25 +7,13 @@ import 'package:get/get.dart' hide Trans;
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/translations/tr_extension.dart';
-import '../../career_studio/widgets/career_hub_sheets.dart';
 import '../../paywall/controller/subscription_controller.dart';
-import '../../paywall/services/revenue_cat_service.dart';
 import '../model/email_signature.dart';
 
 /// Whether the user has Pro right now (observable inside an Obx).
 bool signatureIsPro() =>
     Get.isRegistered<SubscriptionController>() &&
     Get.find<SubscriptionController>().isUserPro.value;
-
-Future<bool> _buy(BuildContext context, {required bool yearly}) =>
-    Get.find<SubscriptionController>().buy(
-      context,
-      productId: yearly
-          ? RevenueCatHelper.yearlyProductId
-          : RevenueCatHelper.monthlyProductId,
-      plan: yearly ? 'yearly' : 'monthly',
-      source: 'email_signature',
-    );
 
 /// "Go Pro" for a locked signature option. After a purchase, "You're Pro"
 /// opens and its button runs [onUnlocked].
@@ -33,19 +22,10 @@ Future<void> showSignatureUpgrade(
   required String title,
   required String continueLabel,
   required VoidCallback onUnlocked,
-}) => showUpgradeSheet(
-  context,
-  title: title,
-  perkKeys: const [
-    'email_sig_perk_1',
-    'email_sig_perk_2',
-    'email_sig_perk_3',
-    'email_sig_perk_4',
-  ],
-  proMessageKey: 'email_sig_pro_message',
-  continueLabel: continueLabel,
+}) => openProPaywall(
+  'email_signature',
+  screen: 'email_signature_editor',
   onUnlocked: onUnlocked,
-  purchaser: _buy,
 );
 
 /// What the user chose when leaving the editor with unsaved changes.

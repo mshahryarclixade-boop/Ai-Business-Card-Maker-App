@@ -11,6 +11,9 @@ import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_re
 import 'package:ai_business_card_maker/app/modules/home/widgets/ai_toolkit_section.dart';
 import 'package:ai_business_card_maker/app/modules/profile_setup/model/user_profile_data.dart';
 import 'package:ai_business_card_maker/app/modules/profile_setup/service/profile_store.dart';
+import 'test_fonts.dart';
+import 'package:ai_business_card_maker/app/modules/paywall/view/paywall_view_2.dart';
+import 'package:ai_business_card_maker/app/modules/paywall/controller/subscription_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +22,11 @@ import 'package:get_storage/get_storage.dart';
 
 /// Career Studio fixes: field behaviour, saved builder draft, back to the
 /// hub, PDF help sheet, premium sheet and right-to-left transitions.
+class _FakeSub extends SubscriptionController {
+  @override
+  void onInit() {}
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -29,6 +37,7 @@ void main() {
           (call) async => Directory.systemTemp.createTempSync('gs').path,
         );
     await GetStorage.init();
+    await loadRobotoAsSfPro();
   });
 
   setUp(() async {
@@ -271,15 +280,16 @@ void main() {
     await flush(t);
   });
 
-  testWidgets('6. "Fix all 7 with Pro" opens the premium bottom sheet', (
+  testWidgets('6. "Fix all 7 with Pro" opens the plans paywall', (
     t,
   ) async {
+    Get.put<SubscriptionController>(_FakeSub());
     await openReport(t);
     await t.tap(find.text('Fix all 7 with Pro'));
     await t.pumpAndSettle();
-    expect(find.text('Unlock everything in Career Studio'), findsOneWidget);
-    expect(find.text('GO PRO'), findsOneWidget);
-    await t.tap(find.text('Not now'));
+    expect(find.byType(PaywallView2), findsOneWidget);
+    expect(find.text('GO PRO'), findsNothing); // not the Pro sheet
+    Get.back();
     await t.pumpAndSettle();
     expect(find.byType(ProfileReportView), findsOneWidget);
     await flush(t);

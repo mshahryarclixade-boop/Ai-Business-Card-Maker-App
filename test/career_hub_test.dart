@@ -7,6 +7,8 @@ import 'package:ai_business_card_maker/app/modules/career_studio/view/career_stu
 import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_builder_view.dart';
 import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_optimizer_view.dart';
 import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_report_view.dart';
+import 'package:ai_business_card_maker/app/modules/paywall/controller/subscription_controller.dart';
+import 'package:ai_business_card_maker/app/modules/paywall/view/paywall_view_2.dart';
 import 'package:ai_business_card_maker/app/modules/profile_setup/service/profile_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -35,6 +37,11 @@ Future<void> _loadFonts() async {
     }
   }
   await loader.load();
+}
+
+class _FakeSub extends SubscriptionController {
+  @override
+  void onInit() {}
 }
 
 const _free = CareerHubState();
@@ -142,7 +149,10 @@ void main() {
     expect(find.text('Close'), findsNothing);
   });
 
-  testWidgets('CS05 upgrade popup from the crown', (t) async {
+  testWidgets('CS05 the crown opens the plans paywall (Paywall View 2)', (
+    t,
+  ) async {
+    Get.put<SubscriptionController>(_FakeSub());
     await pump(t, _free);
     await t.tap(
       find.byIcon(Icons.circle).hitTestable().evaluate().isEmpty
@@ -150,12 +160,8 @@ void main() {
           : find.byIcon(Icons.circle),
     );
     await t.pumpAndSettle();
-    expect(find.text('Unlock everything in Career Studio'), findsOneWidget);
-    expect(find.text('GO PRO'), findsOneWidget);
-    expect(find.text('Yearly'), findsOneWidget);
-    expect(find.text('Monthly'), findsOneWidget);
-    expect(find.text('Not now'), findsOneWidget);
-    await shot(t, 'cs05_upgrade');
+    expect(find.byType(PaywallView2), findsOneWidget);
+    expect(find.text('Unlock everything in Career Studio'), findsNothing);
   });
 
   testWidgets('CS06 free build used popup; tools open otherwise', (t) async {

@@ -239,6 +239,13 @@ class _AddContactViewState extends State<AddContactView> {
     );
   }
 
+  /// Nothing to identify the contact by: no name and no email. A name OR an
+  /// email is all that is required; everything else is optional.
+  bool get _lacksNameAndEmail =>
+      _firstName.text.trim().isEmpty &&
+      _lastName.text.trim().isEmpty &&
+      _email.text.trim().isEmpty;
+
   Future<void> _save() async {
     // The company email sits under "show more": open it so its error is seen.
     if (!_showMoreFields &&
@@ -436,17 +443,13 @@ class _AddContactViewState extends State<AddContactView> {
                 const SizedBox(height: 14),
                 _buildReviewExtractedDataHeader(),
                 const SizedBox(height: 10),
-                if (widget.scannedData!.isMissingName && _firstName.text.trim().isEmpty)
+                // Only a name OR an email is required: the name warning matters
+                // only while there is no email either.
+                if (widget.scannedData!.isMissingName && _lacksNameAndEmail)
                   ExtractedDataWarning(
                     title: 'contacts_warning_name_missing_title'.tr,
                     message: 'contacts_warning_name_missing_message'.tr,
                     onTap: () => FocusScope.of(context).requestFocus(_firstNameFocus),
-                  ),
-                if (widget.scannedData!.isMissingCompany && _companyName.text.trim().isEmpty)
-                  ExtractedDataWarning(
-                    title: 'contacts_warning_company_missing_title'.tr,
-                    message: 'contacts_warning_company_missing_message'.tr,
-                    onTap: () => FocusScope.of(context).requestFocus(_companyNameFocus),
                   ),
                 const SizedBox(height: 4),
               ],
@@ -465,16 +468,17 @@ class _AddContactViewState extends State<AddContactView> {
                     children: [
                       Expanded(
                         child: LabeledField(
-                          label: 'contacts_field_first_name_required'.tr,
+                          label: 'contacts_field_first_name'.tr,
                           hint: 'contacts_field_first_name'.tr,
                           controller: _firstName,
                           focusNode: _firstNameFocus,
                           textCapitalization: TextCapitalization.words,
                           forceErrorBorder: _isFromScan &&
                               widget.scannedData!.isMissingName &&
-                              _firstName.text.trim().isEmpty,
-                          validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'contacts_validation_required'.tr
+                              _lacksNameAndEmail,
+                          // A name OR an email is enough to save.
+                          validator: (_) => _lacksNameAndEmail
+                              ? 'contacts_validation_name_or_email'.tr
                               : null,
                         ),
                       ),
@@ -491,17 +495,12 @@ class _AddContactViewState extends State<AddContactView> {
                   ),
                   const SizedBox(height: 14),
                   LabeledField(
-                    label: 'contacts_field_company_name_required'.tr,
+                    label: 'contacts_field_company_name'.tr,
                     hint: 'contacts_field_company_name'.tr,
                     controller: _companyName,
                     icon: Icons.apartment_outlined,
                     focusNode: _companyNameFocus,
                     textCapitalization: TextCapitalization.sentences,
-                    forceErrorBorder: _isFromScan &&
-                        widget.scannedData!.isMissingCompany &&
-                        _companyName.text.trim().isEmpty,
-                    validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'contacts_validation_required'.tr : null,
                   ),
                   const SizedBox(height: 14),
                   LabeledField(
@@ -529,7 +528,11 @@ class _AddContactViewState extends State<AddContactView> {
                     icon: Icons.mail_outline,
                     keyboardType: TextInputType.emailAddress,
                     inputFormatters: InputValidators.emailFormatters,
-                    validator: (v) => InputValidators.emailError(v ?? ''),
+                    validator: (v) =>
+                        InputValidators.emailError(v ?? '') ??
+                        (_lacksNameAndEmail
+                            ? 'contacts_validation_name_or_email'.tr
+                            : null),
                   ),
                   const SizedBox(height: 14),
                   LabeledField(

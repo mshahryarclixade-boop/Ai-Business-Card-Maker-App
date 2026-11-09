@@ -1,3 +1,4 @@
+import '../../paywall/services/paywall_triggers.dart';
 import 'dart:math' as math;
 
 import '../../../core/widgets/hide_when_pro.dart';
@@ -10,7 +11,6 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/services/store_links.dart';
 import '../../../core/utils/legal_links.dart';
 import '../../paywall/controller/subscription_controller.dart';
-import '../../paywall/view/paywall_screen.dart';
 import '../../profiles/view/profiles_view.dart';
 import '../../recent designs/view/my_cards_view.dart';
 import '../../../core/translations/app_strings.dart';
@@ -185,7 +185,7 @@ class _ProBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     // The whole banner (incl. "Get Pro") opens the plans paywall.
     return GestureDetector(
-      onTap: () => openPaywall(source: 'settings', plans: true),
+      onTap: () => PaywallTriggers.show(PaywallTrigger.settings, screen: 'settings'),
       child: _banner(),
     );
   }

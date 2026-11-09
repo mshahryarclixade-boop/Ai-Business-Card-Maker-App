@@ -1,4 +1,5 @@
-  import '../../career_studio/widgets/career_widgets.dart';
+  import '../../paywall/services/paywall_triggers.dart';
+import '../../career_studio/widgets/career_widgets.dart';
 import '../../../core/widgets/hide_when_pro.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
@@ -14,7 +15,6 @@ import '../widgets/contacts_empty_state.dart';
 import '../widgets/contacts_list.dart';
 import '../widgets/no_results_state.dart';
 import '../widgets/contacts_fab.dart';
-import '../../paywall/view/paywall_screen.dart';
 import '../../../core/translations/tr_extension.dart';
 
 enum _AddAction { manual, scan }
@@ -111,7 +111,7 @@ class _ContactsViewState extends State<ContactsView> {
   Future<void> _openPaywall() {
     return _keepSearchClosed<void>(
           () => Future<void>.sync(
-            () => openPaywall(source: 'contacts', plans: true),
+            () => PaywallTriggers.show(PaywallTrigger.crown, screen: 'contacts'),
       ),
     );
   }

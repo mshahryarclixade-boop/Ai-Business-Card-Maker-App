@@ -1,3 +1,4 @@
+import '../../paywall/services/paywall_triggers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -7,7 +8,6 @@ import '../../../core/translations/tr_extension.dart';
 import '../controller/career_hub_controller.dart';
 import '../controller/career_score_store.dart';
 import '../controller/profile_report_controller.dart';
-import '../widgets/career_hub_sheets.dart';
 import '../widgets/career_widgets.dart';
 import '../widgets/score_ring.dart';
 import 'profile_analyzing_view.dart';
@@ -111,9 +111,9 @@ class ProfileFixesReadyView extends StatelessWidget {
                         _UpsellCard(
                           locked: locked,
                           potential: c.potential,
-                          onUnlock: () => showUpgradeSheet(
-                            context,
-                            continueLabel: 'career_pro_continue_fixes'.tr,
+                          onUnlock: () => openProPaywall(
+                            'career_fix_all',
+                            screen: 'career_fixes_ready',
                             onUnlocked: _startRemaining,
                           ),
                         ),

@@ -1,4 +1,5 @@
-import '../../../core/widgets/tap_target.dart';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/services/remote_config_service.dart';
@@ -40,6 +41,16 @@ class _PaywallView2State extends State<PaywallView2> {
     final cfg = RemoteConfigService().paywallConfig;
     // A hidden monthly plan can't stay selected.
     final selected = cfg.monthly.visible ? _selected : 'yearly';
+    // Tablets get a real responsive layout (content ~88% wide with a maximum
+    // width), not the phone canvas blown up.
+    if (MediaQuery.sizeOf(context).shortestSide >= 600) {
+      return _TabletPaywall(
+        cfg: cfg,
+        selected: selected,
+        pops: widget.pops,
+        onSelect: (plan) => setState(() => _selected = plan),
+      );
+    }
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -50,22 +61,23 @@ class _PaywallView2State extends State<PaywallView2> {
             designWidth: _kDesignWidth,
             designHeight: _kDesignHeight,
             child: Stack(
-                      children: [
-                        const _Artwork(),
-                        if (cfg.showCloseButton) _CloseButton(pops: widget.pops),
-                        _Headline(cfg),
-                        _Subtitle(cfg),
-                        _FeaturePills(cfg),
-                        _PlanCardsRow(
-                          cfg,
-                          selected: selected,
-                          onSelect: (plan) => setState(() => _selected = plan),
-                        ),
-                        _ContinueButton(cfg, selected: selected, pops: widget.pops),
-                        _CommitmentText(cfg),
-                        _Footer(cfg, pops: widget.pops),
-                      ],
-                    ),
+              children: [
+                const _Artwork(),
+                if (cfg.showCloseButton || PaywallActions.skippable)
+                  _CloseButton(pops: widget.pops),
+                _Headline(cfg),
+                _Subtitle(cfg),
+                _FeaturePills(cfg),
+                _PlanCardsRow(
+                  cfg,
+                  selected: selected,
+                  onSelect: (plan) => setState(() => _selected = plan),
+                ),
+                _ContinueButton(cfg, selected: selected, pops: widget.pops),
+                _CommitmentText(cfg, selected: selected),
+                _Footer(cfg, pops: widget.pops),
+              ],
+            ),
           ),
         ),
       ),
@@ -96,24 +108,31 @@ class _CloseButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 16,
-      right: 24,
-      child: TapTarget(child: GestureDetector(
-        onTap: () => PaywallActions.exit(pops: pops),
+      top: 12,
+      right: 20,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => PaywallActions.close(context, pops: pops),
+        // A 44px touch target around a clearly visible 34px X.
         child: Container(
-          width: 26,
-          height: 26,
-          decoration: const BoxDecoration(
-            color: Color(0xFFE5E4F1),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.close_rounded,
-            size: 16,
-            color: Color(0xFF292938),
+          width: 44,
+          height: 44,
+          alignment: Alignment.center,
+          child: Container(
+            width: 34,
+            height: 34,
+            decoration: const BoxDecoration(
+              color: Color(0xFFD9D7EC),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.close_rounded,
+              size: 22,
+              color: Color(0xFF1F1F2E),
+            ),
           ),
         ),
-      )),
+      ),
     );
   }
 }
@@ -225,7 +244,7 @@ class _IconBadge extends StatelessWidget {
 }
 
 // -----------------------------------------------------------------------------
-// HEADLINE — "Unlock Pro & keep creating"
+// HEADLINE — "Create and scan without limits" (or the trigger's own)
 // -----------------------------------------------------------------------------
 
 class _Headline extends StatelessWidget {
@@ -239,7 +258,7 @@ class _Headline extends StatelessWidget {
       left: (393 - 320) / 2,
       width: 320,
       child: Text(
-        cfg.s2Title,
+        PaywallActions.headline ?? cfg.s2Title,
         textAlign: TextAlign.center,
         style: const TextStyle(
           fontFamily: AppTextStyles.fontFamily,
@@ -293,41 +312,17 @@ class _FeaturePills extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = cfg.s2Features;
     return Positioned(
-      top: 330,
+      top: 326,
       left: 24,
       width: 345,
-      child: Column(
-        children: [
-          // Two pills per row.
-          for (var i = 0; i < items.length; i += 2) ...[
-            if (i > 0) const SizedBox(height: 10),
-            _PillRow(
-              left: items[i],
-              right: i + 1 < items.length ? items[i + 1] : null,
-            ),
-          ],
-        ],
+      // The pills flow and centre: a long translation wraps to the next line
+      // instead of being cut off.
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 10,
+        runSpacing: 10,
+        children: [for (final t in items) _PillBadge(text: t)],
       ),
-    );
-  }
-}
-
-class _PillRow extends StatelessWidget {
-  final String left;
-  final String? right;
-
-  const _PillRow({required this.left, this.right});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Flexible(child: _PillBadge(text: left)),
-        if (right != null) ...[
-          const SizedBox(width: 10),
-          Flexible(child: _PillBadge(text: right!)),
-        ],
-      ],
     );
   }
 }
@@ -339,46 +334,49 @@ class _PillBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 16,
-            height: 16,
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 345),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
-            alignment: Alignment.center,
-            child: const Icon(Icons.check, size: 10, color: Colors.white),
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              text,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: AppTextStyles.fontFamily,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textBody,
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 16,
+              height: 16,
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: const Icon(Icons.check, size: 10, color: Colors.white),
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                text,
+                maxLines: 2,
+                style: const TextStyle(
+                  fontFamily: AppTextStyles.fontFamily,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textBody,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -406,10 +404,10 @@ class _PlanCardsRow extends StatelessWidget {
     // The yearly plan is the only purchasable one, so it always stays.
     final showMonthly = cfg.monthly.visible;
     return Positioned(
-      top: 490,
+      top: 478,
       left: 24,
       width: 345,
-      height: 165,
+      height: 186,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -448,7 +446,7 @@ class _MonthlyCard extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
-        height: 168,
+        height: 182,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: AppColors.white,
@@ -511,17 +509,17 @@ class _MonthlyCard extends StatelessWidget {
             // Flexible: a long translation is cut at the card's edge, not overflowed.
             Flexible(
               child: Text(
-              plan.description,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: AppTextStyles.fontFamily,
-                fontSize: 12,
-                height: 1.3,
-                fontWeight: FontWeight.w400,
-                color: AppColors.textSubtitle,
+                plan.description,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontFamily: AppTextStyles.fontFamily,
+                  fontSize: 12,
+                  height: 1.3,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.textSubtitle,
+                ),
               ),
-            ),
             ),
           ],
         ),
@@ -568,7 +566,7 @@ class _YearlyCard extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
-        height: 168,
+        height: 182,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           color: selected ? null : const Color(0xFFE0E0E0),
@@ -582,7 +580,7 @@ class _YearlyCard extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(2.94),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.circular(9.5),
@@ -593,32 +591,34 @@ class _YearlyCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Flexible(child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      plan.badge,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontFamily: AppTextStyles.fontFamily,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.1,
-                        color: Colors.white,
+                  Flexible(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        plan.badge,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.1,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  )),
+                  ),
                   _SelectDot(selected: selected, size: 22),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 6),
               Text(
                 plan.title,
                 maxLines: 1,
@@ -660,7 +660,22 @@ class _YearlyCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
+              if (plan.perMonthNote.isNotEmpty) ...[
+                const SizedBox(height: 3),
+                Text(
+                  plan.perMonthNote,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: AppTextStyles.fontFamily,
+                    fontSize: 10.5,
+                    height: 1.2,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSubtitle,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 3),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -676,7 +691,7 @@ class _YearlyCard extends StatelessWidget {
                         decoration: TextDecoration.lineThrough,
                       ),
                     ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   if (plan.saveBadge.isNotEmpty)
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -714,11 +729,7 @@ class _YearlyCard extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _ContinueButton extends StatelessWidget {
-  const _ContinueButton(
-    this.cfg, {
-    required this.selected,
-    required this.pops,
-  });
+  const _ContinueButton(this.cfg, {required this.selected, required this.pops});
   final PaywallConfig cfg;
   final String selected;
   final int pops;
@@ -726,7 +737,7 @@ class _ContinueButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 680,
+      top: 678,
       left: 24,
       width: 345,
       height: 56,
@@ -762,14 +773,10 @@ class _ContinueButton extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
-                        Icons.auto_awesome,
-                        size: 18,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(width: 10),
+                      // "Try 3 days free" only with a real trial on yearly;
+                      // otherwise "Continue" (no sparkle).
                       Text(
-                        cfg.s2ButtonLabel,
+                        cfg.s2CtaLabel,
                         style: const TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 15,
@@ -794,17 +801,18 @@ class _ContinueButton extends StatelessWidget {
 // -----------------------------------------------------------------------------
 
 class _CommitmentText extends StatelessWidget {
-  const _CommitmentText(this.cfg);
+  const _CommitmentText(this.cfg, {required this.selected});
   final PaywallConfig cfg;
+  final String selected;
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 750,
+      top: 742,
       left: 24,
       width: 345,
       child: Text(
-        cfg.s2CommitmentText,
+        cfg.s2FinePrint(yearlySelected: selected == 'yearly'),
         textAlign: TextAlign.center,
         style: const TextStyle(
           fontFamily: AppTextStyles.fontFamily,
@@ -828,26 +836,26 @@ class _Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 790,
-      left: 24,
-      width: 345,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      top: 770,
+      left: 16,
+      width: 361,
+      // Wraps instead of cutting a long translation; every link has a
+      // comfortable touch area.
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Flexible(child: GestureDetector(
+          _FooterLink(
+            text: cfg.restoreLabel,
             onTap: () => PaywallActions.restore(context, pops: pops),
-            child: _FooterLink(text: cfg.restoreLabel),
-          )),
+          ),
           const _FooterDot(),
-          Flexible(child: GestureDetector(
-            onTap: LegalLinks.openTermsOfUse,
-            child: _FooterLink(text: cfg.termsLabel),
-          )),
+          _FooterLink(text: cfg.termsLabel, onTap: LegalLinks.openTermsOfUse),
           const _FooterDot(),
-          Flexible(child: GestureDetector(
+          _FooterLink(
+            text: cfg.privacyLabel,
             onTap: LegalLinks.openPrivacyPolicy,
-            child: _FooterLink(text: cfg.privacyLabel),
-          )),
+          ),
         ],
       ),
     );
@@ -856,19 +864,28 @@ class _Footer extends StatelessWidget {
 
 class _FooterLink extends StatelessWidget {
   final String text;
+  final VoidCallback onTap;
 
-  const _FooterLink({required this.text});
+  const _FooterLink({required this.text, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: const TextStyle(
-        fontFamily: AppTextStyles.fontFamily,
-        fontSize: 9,
-        color: Color(0xFF8A8896),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontFamily: AppTextStyles.fontFamily,
+            fontSize: 12.5,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF5B5970),
+            decoration: TextDecoration.underline,
+            decorationColor: Color(0xFF9A98AC),
+          ),
+        ),
       ),
     );
   }
@@ -881,7 +898,563 @@ class _FooterDot extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.symmetric(horizontal: 6),
-      child: Text('•', style: TextStyle(fontSize: 9, color: Color(0xFFAAA8B4))),
+      child: Text(
+        '•',
+        style: TextStyle(fontSize: 12, color: Color(0xFF9A98AC)),
+      ),
+    );
+  }
+}
+
+// -----------------------------------------------------------------------------
+// TABLET LAYOUT (shortest side >= 600)
+// -----------------------------------------------------------------------------
+
+class _TabletPaywall extends StatelessWidget {
+  const _TabletPaywall({
+    required this.cfg,
+    required this.selected,
+    required this.pops,
+    required this.onSelect,
+  });
+
+  final PaywallConfig cfg;
+  final String selected;
+  final int pops;
+  final ValueChanged<String> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(gradient: _kBackgroundGradient),
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, c) {
+              // 88% of the width, never wider than 640.
+              final contentWidth = math.min(c.maxWidth * 0.88, 640.0);
+              final landscape = c.maxWidth > c.maxHeight;
+              final artHeight = landscape ? 150.0 : 230.0;
+              return Stack(
+                children: [
+                  Center(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: SizedBox(
+                        width: contentWidth,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // The same artwork as the phone: cards, sparkles
+                            // and the four icon badges, scaled to fit.
+                            SizedBox(
+                              height: artHeight,
+                              width: contentWidth,
+                              child: FittedBox(
+                                fit: BoxFit.contain,
+                                child: const SizedBox(
+                                  width: 393,
+                                  height: 235,
+                                  child: Stack(children: [_Artwork()]),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              PaywallActions.headline ?? cfg.s2Title,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontFamily: AppTextStyles.fontFamily,
+                                fontSize: 34,
+                                height: 1.15,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.titleDark,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              cfg.s2Subtitle,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontFamily: AppTextStyles.fontFamily,
+                                fontSize: 17,
+                                color: AppColors.textTitle,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            _TabletChips(cfg.s2Features),
+                            const SizedBox(height: 24),
+                            _TabletPlans(
+                              cfg: cfg,
+                              selected: selected,
+                              onSelect: onSelect,
+                            ),
+                            const SizedBox(height: 20),
+                            _TabletCta(
+                              cfg: cfg,
+                              selected: selected,
+                              pops: pops,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              cfg.s2FinePrint(
+                                yearlySelected: selected == 'yearly',
+                              ),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontFamily: AppTextStyles.fontFamily,
+                                fontSize: 14,
+                                color: AppColors.textSubtitle,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                _FooterLink(
+                                  text: cfg.restoreLabel,
+                                  onTap: () => PaywallActions.restore(
+                                    context,
+                                    pops: pops,
+                                  ),
+                                ),
+                                const _FooterDot(),
+                                _FooterLink(
+                                  text: cfg.termsLabel,
+                                  onTap: LegalLinks.openTermsOfUse,
+                                ),
+                                const _FooterDot(),
+                                _FooterLink(
+                                  text: cfg.privacyLabel,
+                                  onTap: LegalLinks.openPrivacyPolicy,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (cfg.showCloseButton || PaywallActions.skippable)
+                    Positioned(
+                      top: 12,
+                      right: 20,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => PaywallActions.close(context, pops: pops),
+                        child: Container(
+                          width: 48,
+                          height: 48,
+                          alignment: Alignment.center,
+                          child: Container(
+                            width: 38,
+                            height: 38,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFD9D7EC),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.close_rounded,
+                              size: 24,
+                              color: Color(0xFF1F1F2E),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The highlights in a 2-column grid.
+class _TabletChips extends StatelessWidget {
+  const _TabletChips(this.items);
+  final List<String> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var i = 0; i < items.length; i += 2) ...[
+          if (i > 0) const SizedBox(height: 12),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(child: _TabletChip(items[i])),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: i + 1 < items.length
+                      ? _TabletChip(items[i + 1])
+                      : const SizedBox.shrink(),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _TabletChip extends StatelessWidget {
+  const _TabletChip(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 20,
+            height: 20,
+            decoration: const BoxDecoration(
+              color: AppColors.primary,
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: const Icon(Icons.check, size: 13, color: Colors.white),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              maxLines: 2,
+              style: const TextStyle(
+                fontFamily: AppTextStyles.fontFamily,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textBody,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Monthly and Yearly side by side, the same height.
+class _TabletPlans extends StatelessWidget {
+  const _TabletPlans({
+    required this.cfg,
+    required this.selected,
+    required this.onSelect,
+  });
+
+  final PaywallConfig cfg;
+  final String selected;
+  final ValueChanged<String> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    final showMonthly = cfg.monthly.visible;
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (showMonthly) ...[
+            Expanded(
+              child: _TabletPlanCard(
+                plan: cfg.monthly,
+                yearly: false,
+                selected: selected == 'monthly',
+                onTap: () => onSelect('monthly'),
+              ),
+            ),
+            const SizedBox(width: 14),
+          ],
+          Expanded(
+            child: _TabletPlanCard(
+              plan: cfg.yearly,
+              yearly: true,
+              selected: selected == 'yearly',
+              onTap: () => onSelect('yearly'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TabletPlanCard extends StatelessWidget {
+  const _TabletPlanCard({
+    required this.plan,
+    required this.yearly,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final PaywallPlan plan;
+  final bool yearly;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: selected ? const Color(0xFFAA96FA) : const Color(0xFFE0E0E0),
+            width: 2.5,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // "Most Popular" sits above the title (the same row height on
+            // both cards, so the titles and prices line up).
+            SizedBox(
+              height: 22,
+              child: yearly && plan.badge.isNotEmpty
+                  ? Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 9,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          plan.badge,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontFamily: AppTextStyles.fontFamily,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    )
+                  : null,
+            ),
+            const SizedBox(height: 6),
+            // The title, and the check mark at the far right of the card.
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    plan.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: AppTextStyles.fontFamily,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.titleDark,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _SelectDot(selected: selected, size: 24),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      plan.price,
+                      style: TextStyle(
+                        fontFamily: AppTextStyles.fontFamily,
+                        fontSize: 32,
+                        height: 1,
+                        letterSpacing: -0.3,
+                        fontWeight: FontWeight.w800,
+                        color: yearly ? AppColors.primary : Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  plan.period,
+                  style: TextStyle(
+                    fontFamily: AppTextStyles.fontFamily,
+                    fontSize: 14,
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (yearly) ...[
+              // One line: never wraps in the middle of the price.
+              if (plan.perMonthNote.isNotEmpty)
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Text(
+                    plan.perMonthNote,
+                    maxLines: 1,
+                    style: const TextStyle(
+                      fontFamily: AppTextStyles.fontFamily,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSubtitle,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 10),
+              // The struck price and the saving, side by side, with room.
+              Wrap(
+                spacing: 10,
+                runSpacing: 6,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  if (plan.originalPrice.isNotEmpty)
+                    Text(
+                      plan.originalPrice,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontFamily: AppTextStyles.fontFamily,
+                        fontSize: 14,
+                        color: Colors.grey.shade500,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                  if (plan.saveBadge.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 9,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _kSaveGreenBg,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        plan.saveBadge,
+                        maxLines: 1,
+                        style: const TextStyle(
+                          fontFamily: AppTextStyles.fontFamily,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: _kSaveGreen,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ] else
+              Text(
+                plan.description,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontFamily: AppTextStyles.fontFamily,
+                  fontSize: 14,
+                  height: 1.35,
+                  color: AppColors.textSubtitle,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The Continue button, as wide as the plan cards.
+class _TabletCta extends StatelessWidget {
+  const _TabletCta({
+    required this.cfg,
+    required this.selected,
+    required this.pops,
+  });
+
+  final PaywallConfig cfg;
+  final String selected;
+  final int pops;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 60,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0xFFBCA4FC),
+              offset: Offset(4, 4),
+              blurRadius: 12.5,
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => selected == 'monthly'
+                ? PaywallActions.buyMonthly(context, pops: pops)
+                : PaywallActions.buyYearly(context, pops: pops),
+            child: Ink(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerRight,
+                  end: Alignment.centerLeft,
+                  colors: [Color(0xFF8A56D1), Color(0xFF583DD0)],
+                ),
+              ),
+              child: Center(
+                child: PaywallBusy(
+                  child: Text(
+                    cfg.s2CtaLabel,
+                    style: const TextStyle(
+                      fontFamily: AppTextStyles.fontFamily,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 
+import '../../paywall/services/watermark_service.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -142,11 +143,12 @@ class _ShareCardSheet extends StatelessWidget {
     Get.back();
 
     try {
+      final stamped = await WatermarkService.prepare(
+        cardImages.map((f) => f.path).toList(),
+      );
       await SharePlus.instance.share(
         ShareParams(
-          files: cardImages
-              .map((file) => XFile(file.path))
-              .toList(),
+          files: stamped.map((path) => XFile(path)).toList(),
           sharePositionOrigin: shareOrigin(),
         ),
       );
@@ -183,8 +185,11 @@ class _ShareCardSheet extends StatelessWidget {
         }
       }
 
-      for (final image in cardImages) {
-        await Gal.putImage(image.path);
+      final stamped = await WatermarkService.prepare(
+        cardImages.map((f) => f.path).toList(),
+      );
+      for (final path in stamped) {
+        await Gal.putImage(path);
       }
 
       await FirebaseAnalytics.instance.logEvent(

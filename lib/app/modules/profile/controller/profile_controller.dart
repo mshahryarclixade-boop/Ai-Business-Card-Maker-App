@@ -1,3 +1,4 @@
+import '../../paywall/services/watermark_service.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -326,7 +327,8 @@ class ProfileController extends GetxController {
       final file = File(
         '${dir.path}/business_card_${DateTime.now().millisecondsSinceEpoch}.png',
       );
-      await file.writeAsBytes(bytes);
+      // Free exports carry the watermark (Pro: untouched).
+      await file.writeAsBytes(await WatermarkService.prepareBytes(bytes));
 
       await Share.shareXFiles([
         XFile(file.path),
@@ -373,7 +375,7 @@ class ProfileController extends GetxController {
 
     try {
       await Gal.putImageBytes(
-        bytes,
+        await WatermarkService.prepareBytes(bytes),
         name: 'business_card_${DateTime.now().millisecondsSinceEpoch}',
       );
       await CreditGate.spend(cost: exportCost, source: 'profile_export');

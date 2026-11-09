@@ -1,3 +1,4 @@
+import '../../paywall/services/paywall_triggers.dart';
 import '../../../core/widgets/hide_when_pro.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'dart:ui';
@@ -11,7 +12,6 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../controller/profile_controller.dart';
 import '../model/profile_model.dart';
-import '../../paywall/view/paywall_screen.dart';
 import '../../../core/translations/tr_extension.dart';
 
 class ProfileView extends StatefulWidget {
@@ -85,23 +85,25 @@ class _EmptyProfile extends StatelessWidget {
               children: [
                 Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: TapTarget(child: GestureDetector(
-                    onTap: () => Get.back(),
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.arrow_back,
-                        size: 20,
-                        color: Colors.black,
+                  child: TapTarget(
+                    child: GestureDetector(
+                      onTap: () => Get.back(),
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.arrow_back,
+                          size: 20,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
-                  )),
+                  ),
                 ),
 
                 Center(
@@ -116,28 +118,32 @@ class _EmptyProfile extends StatelessWidget {
                   ),
                 ),
 
-                HideWhenPro(child: Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: TapTarget(child: GestureDetector(
-                    onTap: () {
-                      openPaywall(source: 'profile', plans: true);
-                    },
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: const FaIcon(
-                        FontAwesomeIcons.crown,
-                        size: 18,
-                        color: Color(0xFFF5A623),
+                HideWhenPro(
+                  child: Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: TapTarget(
+                      child: GestureDetector(
+                        onTap: () {
+                          PaywallTriggers.show(PaywallTrigger.crown, screen: 'profile');
+                        },
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          alignment: Alignment.center,
+                          child: const FaIcon(
+                            FontAwesomeIcons.crown,
+                            size: 18,
+                            color: Color(0xFFF5A623),
+                          ),
+                        ),
                       ),
                     ),
-                  )),
-                )),
+                  ),
+                ),
               ],
             ),
           ),
@@ -240,23 +246,25 @@ class _SavedProfile extends StatelessWidget {
                   children: [
                     Align(
                       alignment: AlignmentDirectional.centerStart,
-                      child: TapTarget(child: GestureDetector(
-                        onTap: () => Get.back(),
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          alignment: Alignment.center,
-                          child: const Icon(
-                            Icons.arrow_back,
-                            size: 18,
-                            color: AppColors.titleDark,
+                      child: TapTarget(
+                        child: GestureDetector(
+                          onTap: () => Get.back(),
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            alignment: Alignment.center,
+                            child: const Icon(
+                              Icons.arrow_back,
+                              size: 18,
+                              color: AppColors.titleDark,
+                            ),
                           ),
                         ),
-                      )),
+                      ),
                     ),
 
                     Center(
@@ -271,23 +279,29 @@ class _SavedProfile extends StatelessWidget {
                       ),
                     ),
 
-                    HideWhenPro(child: Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        alignment: Alignment.center,
-                        child: const FaIcon(
-                          FontAwesomeIcons.crown,
-                          size: 18,
-                          color: Color(0xFFF5A623),
+                    HideWhenPro(
+                      child: Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: GestureDetector(
+                          onTap: () =>
+                              PaywallTriggers.show(PaywallTrigger.crown, screen: 'profile'),
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            alignment: Alignment.center,
+                            child: const FaIcon(
+                              FontAwesomeIcons.crown,
+                              size: 18,
+                              color: Color(0xFFF5A623),
+                            ),
+                          ),
                         ),
                       ),
-                    )),
+                    ),
                   ],
                 ),
               ),
@@ -523,18 +537,20 @@ class _SavedProfile extends StatelessWidget {
                     PositionedDirectional(
                       top: 1,
                       end: 0,
-                      child: TapTarget(child: GestureDetector(
-                        onTap: controller.toggleCardMenu,
-                        child: SizedBox(
-                          width: _CardSpec.menuBtnSize,
-                          height: _CardSpec.menuBtnSize,
-                          child: const Icon(
-                            Icons.more_horiz_rounded,
-                            size: 24,
-                            color: Color(0xFF1E1E24),
+                      child: TapTarget(
+                        child: GestureDetector(
+                          onTap: controller.toggleCardMenu,
+                          child: SizedBox(
+                            width: _CardSpec.menuBtnSize,
+                            height: _CardSpec.menuBtnSize,
+                            child: const Icon(
+                              Icons.more_horiz_rounded,
+                              size: 24,
+                              color: Color(0xFF1E1E24),
+                            ),
                           ),
                         ),
-                      )),
+                      ),
                     ),
 
                     Obx(

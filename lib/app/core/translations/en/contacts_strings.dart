@@ -23,6 +23,7 @@ const Map<String, String> contactsStrings = {
   'contacts_field_first_name': 'First Name',
   'contacts_field_last_name': 'Last Name',
   'contacts_validation_required': 'Required',
+  'contacts_validation_name_or_email': 'Add a name or an email',
   'contacts_field_company_name_required': 'Company Name *',
   'contacts_field_company_name': 'Company Name',
   'contacts_field_job_title': 'Job Title',

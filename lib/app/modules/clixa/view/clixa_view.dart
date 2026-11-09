@@ -144,7 +144,7 @@ class ClixaView extends StatelessWidget {
                                 ? 'clixa_unlimited_chats'.tr
                                 : 'clixa_free_left'.trParams({
                                     'left': c.freeChatsLeft,
-                                    'total': ClixaController.freeChatsPerDay,
+                                    'total': ClixaController.freeChatsPerWeek,
                                   }),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

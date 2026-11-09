@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart' hide Trans;
 
+import '../../../core/services/analytics_service.dart';
 import '../../../core/services/remote_config_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -32,7 +33,7 @@ Future<void> _show(BuildContext context, Widget child) =>
 
 void _upgrade(BuildContext context, String source) {
   Navigator.of(context).pop();
-  openPaywall(source: source, plans: true);
+  openPaywall(source: source, plans: true, screen: 'career_hub');
 }
 
 /// Post Planner is not built yet.
@@ -43,15 +44,16 @@ Future<void> showPostPlannerSoonSheet(BuildContext context) =>
 typedef CareerPurchaser =
     Future<bool> Function(BuildContext context, {required bool yearly});
 
-Future<bool> _buyPlan(BuildContext context, {required bool yearly}) =>
-    Get.find<SubscriptionController>().buy(
-      context,
-      productId: yearly
-          ? RevenueCatHelper.yearlyProductId
-          : RevenueCatHelper.monthlyProductId,
-      plan: yearly ? 'yearly' : 'monthly',
-      source: 'career_studio',
-    );
+CareerPurchaser _buyPlanFor(String source) =>
+    (BuildContext context, {required bool yearly}) =>
+        Get.find<SubscriptionController>().buy(
+          context,
+          productId: yearly
+              ? RevenueCatHelper.yearlyProductId
+              : RevenueCatHelper.monthlyProductId,
+          plan: yearly ? 'yearly' : 'monthly',
+          source: source,
+        );
 
 /// Upgrade to Pro. [lockedFeature] names the fix that was blocked ("Unlock
 /// the “Featured” fix"). Continue buys the chosen plan (the store's own
@@ -69,7 +71,18 @@ Future<void> showUpgradeSheet(
   String? continueLabel,
   VoidCallback? onUnlocked,
   CareerPurchaser? purchaser,
+
+  /// The analytics source. This sheet is the Expert panel's Pro sheet; every
+  /// other Pro entry opens the paywall (see `openProPaywall`).
+  String source = 'expert_panel',
+
+  /// The screen it was opened from (analytics `screen`).
+  String screen = 'clixa',
 }) async {
+  AnalyticsService.beginPaywall(screen);
+  // Same events as the paywall screen: view and dismiss here; plan_selected
+  // is logged by SubscriptionController.buy with the same source.
+  AnalyticsService.logPaywallShown(source);
   final unlocked = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
@@ -86,11 +99,13 @@ Future<void> showUpgradeSheet(
           title: title,
           perkKeys: perkKeys,
           header: header,
-          purchaser: purchaser ?? _buyPlan,
+          purchaser: purchaser ?? _buyPlanFor(source),
         ),
       ),
     ),
   );
+  if (unlocked != true) AnalyticsService.logPaywallDismissed(source);
+  AnalyticsService.endPaywall();
   if (unlocked == true && context.mounted) {
     await showYoureProDialog(
       context,

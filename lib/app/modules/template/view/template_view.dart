@@ -1,3 +1,4 @@
+import '../../paywall/services/paywall_triggers.dart';
 import '../../../core/widgets/hide_when_pro.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,6 @@ import '../widget/popular_tags_view.dart';
 import '../widget/search_bar_widget.dart';
 import '../widget/template_card.dart';
 import '../widget/template_preview_card.dart';
-import '../../paywall/view/paywall_screen.dart';
 import '../../../core/translations/tr_extension.dart';
 
 class TemplateView extends GetView<TemplateController> {
@@ -73,7 +73,7 @@ class _TemplateListing extends StatelessWidget {
                     child: TapTarget(
                       child: GestureDetector(
                         onTap: () {
-                          openPaywall(source: 'templates', plans: true);
+                          PaywallTriggers.show(PaywallTrigger.crown, screen: 'templates');
                         },
                         child: Container(
                           width: 36,
@@ -284,18 +284,21 @@ class _TemplateDetailView extends StatelessWidget {
                 HideWhenPro(
                   child: Align(
                     alignment: AlignmentDirectional.centerEnd,
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: const FaIcon(
-                        FontAwesomeIcons.crown,
-                        size: 18,
-                        color: Color(0xFFF5A623),
+                    child: GestureDetector(
+                      onTap: () => PaywallTriggers.show(PaywallTrigger.crown, screen: 'templates'),
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: const FaIcon(
+                          FontAwesomeIcons.crown,
+                          size: 18,
+                          color: Color(0xFFF5A623),
+                        ),
                       ),
                     ),
                   ),

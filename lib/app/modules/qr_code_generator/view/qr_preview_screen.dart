@@ -1,3 +1,4 @@
+import '../../paywall/services/paywall_triggers.dart';
 import '../../../core/widgets/hide_when_pro.dart';
 import '../../career_studio/widgets/career_widgets.dart';
 import 'dart:convert';
@@ -17,7 +18,6 @@ import '../../../core/services/profile_scope.dart';
 import '../../../core/services/recent_designs_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/share_origin.dart';
-import '../../career_studio/widgets/career_hub_sheets.dart';
 import '../../custom_create/view/card_editor_view.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../model/qr_code_builder.dart';
@@ -26,7 +26,6 @@ import '../model/qr_style.dart';
 import '../service/qr_store.dart';
 import '../widgets/styled_qr.dart';
 import '../service/qr_generator_service.dart';
-import '../../paywall/view/paywall_screen.dart';
 import '../../../core/translations/tr_extension.dart';
 
 String _kQrFormKey() => ProfileScope.key('qr_form_data');
@@ -161,7 +160,7 @@ Future<Uint8List> _pngBytes({double borderFraction = 0.08}) =>
                 size: 40,
                 iconSize: 22,
                 borderRadius: 12,
-                onTap: () => showUpgradeSheet(context),
+                onTap: () => PaywallTriggers.show(PaywallTrigger.crown, screen: 'qr_preview'),
               )),
             ),
             Expanded(

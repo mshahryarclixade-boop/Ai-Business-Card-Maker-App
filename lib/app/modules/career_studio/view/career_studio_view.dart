@@ -1,3 +1,5 @@
+import '../../paywall/services/usage_service.dart';
+import '../../paywall/services/paywall_triggers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 import '../../../core/widgets/crown_upgrade_button.dart';
@@ -126,6 +128,19 @@ class _CareerStudioViewState extends State<CareerStudioView> {
           if (widget.initial == null && GeneratedProfileStore.built.value) {
             s = s.copyWith(buildsLeft: s.isPro ? s.buildsLeft : 0);
           }
+          // The usage counters (CRO plan) agree with the saved profile / report:
+          // whichever says "used" wins, so clearing one store can't hand out
+          // a second free build or optimize.
+          if (widget.initial == null && !s.isPro) {
+            final u = UsageService.to;
+            u.revision.value; // follow the counters
+            if (!u.canUse(UsageFeature.careerBuild)) {
+              s = s.copyWith(buildsLeft: 0);
+            }
+            if (!u.canUse(UsageFeature.careerOptimize)) {
+              s = s.copyWith(scansLeft: 0);
+            }
+          }
           // The score comes from the report (shared with the report screen);
           // a pinned state (previews/tests) shows what it was given.
           final live = widget.initial == null;
@@ -149,7 +164,7 @@ class _CareerStudioViewState extends State<CareerStudioView> {
                         size: 40,
                         iconSize: 22,
                         borderRadius: 12,
-                        onTap: () => showUpgradeSheet(context),
+                        onTap: () => PaywallTriggers.show(PaywallTrigger.crown, screen: 'career_hub'),
                       ),
               ),
               Expanded(

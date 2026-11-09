@@ -1,6 +1,6 @@
 /// English strings: paywall. The paywall's own texts come from Remote Config
 /// (English defaults in PaywallConfig); these are what the defaults show in
-/// the app language. Keep "$2.49" and "70%" as they are: the app swaps in the
+/// the app language. Keep "$2.50" and "64%" as they are: the app swaps in the
 /// real store price and saving.
 const Map<String, String> paywallStrings = {
   'paywall_cfg_trial_button': 'Start {days}-Day Free Trial',
@@ -18,16 +18,20 @@ const Map<String, String> paywallStrings = {
   'paywall_cfg_feat_qr': 'Scan any QR Code',
   'paywall_cfg_feat_bg': 'Remove Background',
   'paywall_cfg_yearly_pro': 'Yearly Pro',
-  'paywall_cfg_save_badge': 'Save 70%',
-  'paywall_cfg_price_note': 'Just \$2.49/month, billed annually',
+  'paywall_cfg_save_badge': 'Save 64%',
+  'paywall_cfg_price_note': 'Just \$2.50/month, billed annually',
   'paywall_cfg_s2_title': 'Unlock Pro & keep creating',
   'paywall_cfg_s2_subtitle': 'Get unlimited access to every feature',
-  'paywall_cfg_s2_feat_ai': 'Unlimited AI Card',
-  'paywall_cfg_s2_feat_scan': 'Unlimited Scan',
+  'paywall_cfg_s2_feat_ai': 'Unlimited AI cards',
+  'paywall_cfg_s2_feat_scan': 'Unlimited scans',
   'paywall_cfg_s2_feat_templates': '50+ Templates',
   'paywall_cfg_s2_feat_watermark': 'No watermark',
   'paywall_cfg_s2_feat_qr': 'QR Generator',
   'paywall_cfg_s2_feat_bg': 'BG Remover',
+  'paywall_cfg_s2_feat_all': 'All templates and QR styles',
+  'paywall_cfg_trial_fine_print':
+      '{days} days free, then {yearly_price}/year. Cancel anytime.',
+  'paywall_cfg_billed_yearly': '{price}/month, billed yearly',
   'paywall_cfg_commitment': 'No commitment, cancel anytime',
   'paywall_cfg_monthly': 'Monthly',
   'paywall_cfg_per_month': '/month',
@@ -37,6 +41,27 @@ const Map<String, String> paywallStrings = {
   'paywall_cfg_per_year': '/year',
   'paywall_cfg_original_price': '\$83.88/year',
   'paywall_cfg_restore': 'Restore Purchase',
-  'paywall_cfg_terms': 'Term Of Use',
+  'paywall_cfg_terms': 'Terms of Use',
   'paywall_cfg_privacy': 'Privacy Policy',
+  'cro_limit_reached_title': "You've reached the free limit",
+  'cro_limit_reached_message': 'Upgrade to Pro to keep going.',
+  'cro_offer_first_year_title': 'A special offer, just for you',
+  'cro_offer_first_year_body':
+      'Get your first year of Pro at a discounted price. Available once.',
+  'cro_offer_returning_title': 'Welcome back',
+  'cro_offer_returning_body':
+      'Here is a special price on a full year of Pro, for a limited time.',
+  'cro_offer_claim': 'Claim offer',
+  'cro_offer_dismiss': 'Not now',
+  'cro_msg_default_headline': 'Create and scan without limits',
+  'cro_msg_scan_limit_headline': 'Scan unlimited cards',
+  'cro_msg_ai_limit_headline': 'Unlimited AI cards',
+  'cro_msg_counter_scans': '{used} of {limit} scans used',
+  'cro_msg_counter_ai': '{used} of {limit} AI cards used',
+  'cro_msg_counter_bg': '{used} of {limit} background removal used',
+  'cro_msg_counter_clixa': '{used} of {limit} chats this week',
+  'cro_msg_counter_career_build': '{used} of {limit} profile build used',
+  'cro_msg_counter_career_optimize': '{used} of {limit} profile optimize used',
+  'cro_msg_watermark_link': 'Remove watermark',
+  'cro_msg_watermark_text': 'Made with AI Business Card Maker',
 };

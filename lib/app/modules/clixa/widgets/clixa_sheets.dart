@@ -1,3 +1,4 @@
+import '../../paywall/services/paywall_triggers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -49,16 +50,18 @@ Future<bool> _buy(BuildContext context, {required bool yearly}) =>
           ? RevenueCatHelper.yearlyProductId
           : RevenueCatHelper.monthlyProductId,
       plan: yearly ? 'yearly' : 'monthly',
-      source: 'clixa',
+      source: 'expert_panel',
     );
 
 /// "Unlock the expert panel": the Go Pro sheet with the five experts.
 Future<void> showClixaUpgrade(
   BuildContext context, {
   VoidCallback? onUnlocked,
+  String screen = 'clixa',
 }) => showUpgradeSheet(
   context,
   onUnlocked: onUnlocked,
+  screen: screen,
   title: 'clixa_unlock_title'.tr,
   header: const ExpertAvatars(size: 40, overlap: 12),
   perkKeys: const [
@@ -188,7 +191,7 @@ Future<void> showStartChatSheet(
               ? 'clixa_start_sheet_message_pro'.tr
               : 'clixa_start_sheet_message'.trParams({
                   'left': c.freeChatsLeft,
-                  'total': ClixaController.freeChatsPerDay,
+                  'total': ClixaController.freeChatsPerWeek,
                 }),
         ),
         for (var i = 0; i < ClixaMode.values.length; i++) ...[
@@ -280,7 +283,7 @@ Future<void> showFreeLimitSheet(
           ),
           _Primary('clixa_get_unlimited_messages'.tr, () {
             Navigator.of(ctx).pop();
-            showClixaUpgrade(context);
+            PaywallTriggers.show(PaywallTrigger.clixaLimit, screen: 'clixa');
           }),
           const SizedBox(height: 10),
           _Outline(
@@ -310,13 +313,14 @@ Future<void> showDailyLimitSheet(
         children: [
           _Title(
             'clixa_limit_day_title'.trParams({
-              'total': ClixaController.freeChatsPerDay,
+              'total': ClixaController.freeChatsPerWeek,
             }),
           ),
           _Body('clixa_limit_day_message'.tr),
           _Primary('clixa_get_unlimited_chats'.tr, () {
             Navigator.of(ctx).pop();
-            showClixaUpgrade(context);
+            // The weekly limit is the `clixa_limit` paywall (CRO plan).
+            PaywallTriggers.show(PaywallTrigger.clixaLimit, screen: 'clixa');
           }),
           const SizedBox(height: 10),
           _Outline('clixa_continue_saved'.tr, () {

@@ -78,6 +78,14 @@ void main() {
         await t.pump(const Duration(milliseconds: 300));
         expect(t.takeException(), isNull);
 
+        // Paywall 2 on a tablet (shortest side >= 600) has its own responsive
+        // layout instead of the scaled canvas (see paywall_tablet_test.dart).
+        if (screen.key == 'paywall 2' && s.value.shortestSide >= 600) {
+          expect(find.byType(PaywallCanvas), findsNothing);
+          await t.pumpWidget(const SizedBox());
+          return;
+        }
+
         final box = t.getRect(find.descendant(of: find.byType(PaywallCanvas), matching: find.byType(FittedBox)).first);
         // Never wider than the screen, and centred horizontally.
         expect(box.width, lessThanOrEqualTo(s.value.width + 0.5));

@@ -239,6 +239,11 @@ const Map<String, String> careerStudioStrings = {
   'career_optimizer_heading': 'Let\'s check your profile',
   'career_optimizer_subtitle':
       'Choose how to share it. We only read it to score it.',
+  'career_optimizer_examples_title': 'Supported uploads',
+  'career_optimizer_example_pdf':
+      'LinkedIn profile PDF (More → Save to PDF)',
+  'career_optimizer_example_screenshot':
+      'Screenshots of your profile',
   'career_optimizer_free_scan_note': '1 free scan left this month',
   'career_optimizer_analyze_button': 'Analyze my profile',
   'career_optimizer_pdf_title': 'Upload profile PDF',

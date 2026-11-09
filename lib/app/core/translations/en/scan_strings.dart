@@ -19,6 +19,11 @@ const Map<String, String> scanStrings = {
   'scan_instruction_qr': 'Point at any QR code',
   'scan_instruction_qr_subtext':
       'Works with business card QR codes and any standard QR',
+  'scan_orientation_auto': 'Auto',
+  'scan_primer_title': 'Allow camera access',
+  'scan_primer_message':
+      'We use your camera to scan business cards and QR codes. It is only used while you are on this screen.',
+  'scan_primer_continue': 'Continue',
   'scan_orientation_landscape': 'Landscape',
   'scan_orientation_portrait': 'Portrait',
   'scan_status_reading_card': 'Reading card...',

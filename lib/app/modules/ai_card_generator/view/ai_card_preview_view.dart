@@ -1,3 +1,4 @@
+import '../../paywall/services/paywall_triggers.dart';
 import '../../../core/widgets/hide_when_pro.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
@@ -40,29 +41,31 @@ class AiCardPreviewView extends StatelessWidget {
               ),
               alignment: Alignment.center,
               child: Obx(
-                () => TapTarget(child: IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  icon: controller.isSharing.value
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
+                () => TapTarget(
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: controller.isSharing.value
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.titleDark,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.ios_share,
+                            size: 18,
                             color: AppColors.titleDark,
                           ),
-                        )
-                      : const Icon(
-                          Icons.ios_share,
-                          size: 18,
-                          color: AppColors.titleDark,
-                        ),
-                  onPressed:
-                      (controller.isSharing.value ||
-                          controller.generatedCard.value == null)
-                      ? null
-                      : () => controller.shareCard(),
-                )),
+                    onPressed:
+                        (controller.isSharing.value ||
+                            controller.generatedCard.value == null)
+                        ? null
+                        : () => controller.shareCard(),
+                  ),
+                ),
               ),
             ),
           ),
@@ -76,23 +79,28 @@ class AiCardPreviewView extends StatelessWidget {
             ),
           ),
           actions: [
-            HideWhenPro(child: Padding(
-              padding: const EdgeInsetsDirectional.only(end: 16),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: const BoxDecoration(
-                  color: AppColors.cardWhite,
-                  shape: BoxShape.circle,
-                ),
-                alignment: Alignment.center,
-                child: const FaIcon(
-                  FontAwesomeIcons.crown,
-                  size: 18,
-                  color: Color(0xFFF5A623),
+            HideWhenPro(
+              child: Padding(
+                padding: const EdgeInsetsDirectional.only(end: 16),
+                child: GestureDetector(
+                  onTap: () => PaywallTriggers.show(PaywallTrigger.crown, screen: 'ai_card_preview'),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: AppColors.cardWhite,
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: const FaIcon(
+                      FontAwesomeIcons.crown,
+                      size: 18,
+                      color: Color(0xFFF5A623),
+                    ),
+                  ),
                 ),
               ),
-            )),
+            ),
           ],
         ),
         body: SafeArea(

@@ -6,6 +6,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 
 import '../../modules/paywall/models/credit_config_model.dart';
+import '../../modules/paywall/models/cro_config_model.dart';
 import '../../modules/paywall/models/paywall_config_model.dart';
 
 /// Remote Config values, with safe in-app defaults so the app behaves the
@@ -20,6 +21,7 @@ class RemoteConfigService {
   static const _creditCostsKey = 'credit_costs';
   static const _onboardingEnabledKey = 'onboarding_enabled';
   static const _paywallConfigKey = 'paywall_config';
+  static const _scanOrientationToggleKey = 'scan_orientation_toggle';
 
   // One JSON parameter per platform: android_version_config /
   // ios_version_config.
@@ -59,6 +61,10 @@ class RemoteConfigService {
         'android_version_config': '',
         'ios_version_config': '',
         _onboardingEnabledKey: true,
+        _scanOrientationToggleKey: false,
+        // The CRO plan (limits, triggers, messages, experiment, offers).
+        for (final k in CroConfig.defaultJson.keys)
+          k: CroConfig.defaultString(k),
       });
       _rc = rc;
       final fetch = rc.fetchAndActivate();
@@ -88,6 +94,11 @@ class RemoteConfigService {
   bool get creditsEnabled => _rc?.getBool(_creditsEnabledKey) ?? false;
   /// While false, the app skips onboarding. Defaults to true, so a failed
   /// or slow fetch keeps the current behaviour.
+  /// The scan screen's Auto / Landscape / Portrait switch. Hidden by default
+  /// (the card is detected automatically).
+  bool get scanOrientationToggle =>
+      _rc?.getBool(_scanOrientationToggleKey) ?? false;
+
   bool get onboardingEnabled => _rc?.getBool(_onboardingEnabledKey) ?? true;
 
   /// Paywall copy + display settings. Never null: falls back to the
@@ -100,6 +111,29 @@ class RemoteConfigService {
     }
     return _paywallConfig!;
   }
+
+  // ---- CRO plan ------------------------------------------------------------
+  // Parsed per raw value and cached: a getter is cheap to call anywhere. Every
+  // one falls back to the plan's defaults (not fetched yet, offline, bad JSON).
+  final Map<String, (String, Object)> _croCache = {};
+
+  T _cro<T extends Object>(String key, T Function(String raw) parse) {
+    final raw = _rc?.getString(key) ?? '';
+    final hit = _croCache[key];
+    if (hit != null && hit.$1 == raw) return hit.$2 as T;
+    final value = parse(raw);
+    _croCache[key] = (raw, value);
+    return value;
+  }
+
+  CroLimits get croLimits => _cro(CroKeys.limits, CroLimits.fromJsonString);
+  CroTriggers get croTriggers =>
+      _cro(CroKeys.triggers, CroTriggers.fromJsonString);
+  CroMessages get croMessages =>
+      _cro(CroKeys.messages, CroMessages.fromJsonString);
+  CroExperiment get croExperiment =>
+      _cro(CroKeys.experiment, CroExperiment.fromJsonString);
+  CroOffers get croOffers => _cro(CroKeys.offers, CroOffers.fromJsonString);
 
   CreditPools get creditPools =>
       CreditPools.fromJsonString(_rc?.getString(_creditPoolsKey) ?? '');

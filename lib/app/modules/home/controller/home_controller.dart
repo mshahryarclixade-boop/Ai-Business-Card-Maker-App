@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -17,6 +18,11 @@ import '../../custom_create/view/card_editor_view.dart';
 import '../../../core/services/remote_config_service.dart';
 import '../../paywall/controller/subscription_controller.dart';
 import '../../paywall/services/credits_gate.dart';
+import '../../paywall/services/free_limits.dart';
+import '../../paywall/services/offer_service.dart';
+import '../../paywall/services/paywall_triggers.dart';
+import '../../paywall/services/usage_service.dart';
+import '../../paywall/widgets/offer_sheet.dart';
 import '../../paywall/view/paywall_screen.dart';
 import '../../profile_setup/controller/first_card_generator.dart';
 import '../../profile_setup/service/profile_store.dart';
@@ -89,6 +95,7 @@ class HomeController extends GetxController {
 
     // Home is the first screen where the No Internet dialog is allowed
     Get.find<ConnectivityService>().startMonitoring();
+    unawaited(_maybeShowReturningOffer());
 
     // Home is the first screen where we ask for notification permission.
     NotificationService().requestPermissionAndSubscribe();
@@ -99,7 +106,11 @@ class HomeController extends GetxController {
       pro,
     ) {
       if (!pro && Get.currentRoute == Routes.MAIN) {
-        openPaywall(source: 'subscription_lapsed');
+        openPaywall(
+          source: 'subscription_lapsed',
+          plans: true,
+          screen: 'home',
+        );
       }
     });
 
@@ -108,6 +119,18 @@ class HomeController extends GetxController {
     //   onYes: (rating) => debugPrint('Rated: $rating stars'),
     //   onNo: () => debugPrint('Pressed No'),
     // );
+  }
+
+  /// The returning-user offer (day 2-3, after leaving the paywall once). One
+  /// offer a day at most; nothing without a real discounted store product.
+  Future<void> _maybeShowReturningOffer() async {
+    await Future<void>.delayed(const Duration(seconds: 2));
+    final ctx = Get.context;
+    if (ctx == null || !ctx.mounted) return;
+    if (Get.currentRoute != Routes.MAIN) return; // only while on Home
+    if (!Get.isRegistered<OfferService>()) return;
+    if (!OfferService.to.canShowReturning()) return;
+    await showOfferSheet(ctx, OfferType.returning, source: 'home');
   }
 
   Future<void> previewTemplateTap(TemplateItem item) async {
@@ -158,6 +181,7 @@ class HomeController extends GetxController {
   Future<void> editTemplate() async {
     final item = previewTemplate.value;
     if (item == null || applying.value) return;
+    if (!await FreeLimits.ensureTemplate(isPremium: item.isPremium, screen: 'home')) return;
 
     FirebaseAnalytics.instance.logEvent(
       name: 'template_edit_started',
@@ -182,6 +206,7 @@ class HomeController extends GetxController {
   Future<void> applyTemplate() async {
     final item = previewTemplate.value;
     if (item == null || applying.value) return;
+    if (!await FreeLimits.ensureTemplate(isPremium: item.isPremium, screen: 'home')) return;
 
     final live = previewData.value;
     if (live != null) {
@@ -247,6 +272,9 @@ class HomeController extends GetxController {
 
   /// Old flow: builds a new card from the chosen template using AI.
   Future<void> _applyWithAi(TemplateItem item) async {
+    // The free plan's AI cards (CRO plan): out of them, the paywall opens and
+    // the previewed template stays as it is.
+    if (!await FreeLimits.ensure(UsageFeature.aiCard, screen: 'home')) return;
     if (!await Get.find<ConnectivityService>().ensureInternet()) return;
 
     // Plan limit: no-op unless Remote Config `credits_enabled` is on.
@@ -264,6 +292,14 @@ class HomeController extends GetxController {
       );
       // Charged only now that the card was actually generated.
       await CreditGate.spend(cost: aiCardCost, source: 'template_ai');
+      final usage = UsageService.to;
+      final wasLast = !usage.isPro && usage.remaining(UsageFeature.aiCard) == 1;
+      usage.consume(
+        UsageFeature.aiCard,
+        dedupeKey: 'ai_${DateTime.now().microsecondsSinceEpoch}',
+        source: 'template_ai',
+      );
+      if (wasLast) unawaited(PaywallTriggers.show(PaywallTrigger.aiLimit, screen: 'home'));
       previewTemplate.value = null;
       previewData.value = null;
       _promote(item.id);

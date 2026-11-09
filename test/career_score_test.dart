@@ -13,6 +13,8 @@ import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_re
 import 'package:ai_business_card_maker/app/modules/home/widgets/ai_toolkit_section.dart';
 import 'package:ai_business_card_maker/app/modules/paywall/controller/subscription_controller.dart';
 import 'package:ai_business_card_maker/app/modules/profile_setup/service/profile_store.dart';
+import 'test_fonts.dart';
+import 'package:ai_business_card_maker/app/modules/paywall/view/paywall_view_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,6 +49,7 @@ void main() {
           (call) async => Directory.systemTemp.createTempSync('gs').path,
         );
     await GetStorage.init();
+    await loadRobotoAsSfPro();
   });
 
   late _FakeSub sub;
@@ -264,10 +267,9 @@ void main() {
 
     await t.tap(find.text('Unlock all fixes with Pro'));
     await t.pumpAndSettle();
-    await t.tap(find.text('Continue'));
-    await t.pumpAndSettle();
-    expect(find.text("You're Pro"), findsOneWidget);
-    await t.tap(find.text('Continue to your fixes'));
+    expect(find.byType(PaywallView2), findsOneWidget); // the plans paywall
+    Get.find<SubscriptionController>().isUserPro.value = true; // bought
+    Get.back();
     await t.pumpAndSettle();
     expect(find.text('Fix 1 of 5'), findsOneWidget);
     expect(inScreen(ProfileFixView, 'No Featured section'), findsOneWidget);

@@ -1,3 +1,6 @@
+import '../../paywall/services/paywall_triggers.dart';
+import '../../paywall/services/free_limits.dart';
+import '../../paywall/services/usage_service.dart';
 import '../../../core/widgets/hide_when_pro.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
@@ -13,7 +16,6 @@ import '../../profile/widgets/dashed_border.dart';
 import '../controller/ai_card_controller.dart';
 import '../service/ai_card_service.dart';
 import 'ai_card_preview_view.dart';
-import '../../paywall/view/paywall_screen.dart';
 import '../../../core/translations/tr_extension.dart';
 
 class AiCardGeneratorView extends StatelessWidget {
@@ -56,7 +58,7 @@ class AiCardGeneratorView extends StatelessWidget {
               padding: const EdgeInsetsDirectional.only(end: 16),
               child: TapTarget(child: GestureDetector(
                 onTap: () {
-                  openPaywall(source: 'ai_card_generator', plans: true);
+                  PaywallTriggers.show(PaywallTrigger.crown, screen: 'ai_card_generator');
                 },
                 child: Container(
                   width: 36,
@@ -173,6 +175,15 @@ class AiCardGeneratorView extends StatelessWidget {
                               if (!controller.canGenerate) {
                                 // Surfaces the validation snackbar.
                                 controller.generate();
+                                return;
+                              }
+
+                              // Free AI cards left? Else the paywall opens HERE
+                              // (the prompt and the reference image stay).
+                              if (!await FreeLimits.ensure(
+                                UsageFeature.aiCard,
+                                screen: 'ai_card_generator',
+                              )) {
                                 return;
                               }
 

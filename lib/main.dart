@@ -19,6 +19,8 @@ import 'app/core/services/notification_service.dart';
 import 'app/core/services/remote_config_service.dart';
 import 'app/modules/paywall/controller/credits_controller.dart';
 import 'app/modules/paywall/controller/subscription_controller.dart';
+import 'app/modules/paywall/services/usage_service.dart';
+import 'app/modules/paywall/services/offer_service.dart';
 import 'app/modules/paywall/services/revenue_cat_service.dart';
 import 'app/modules/paywall/services/user_credits_manager.dart';
 import 'app/modules/career_studio/controller/career_score_store.dart';
@@ -78,6 +80,9 @@ void main() async {
       .timeout(const Duration(seconds: 5), onTimeout: () {})
       .catchError((Object _) {});
   Get.put(SubscriptionController(), permanent: true);
+  // The CRO plan: free-usage counters and discount offers.
+  Get.put(UsageService(), permanent: true);
+  Get.put(OfferService(), permanent: true);
   Get.put(CreditsController(), permanent: true);
   Get.put(ConnectivityService(), permanent: true);
   Get.put(ProfileController(), permanent: true);

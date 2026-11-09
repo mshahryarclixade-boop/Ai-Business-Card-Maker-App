@@ -232,7 +232,7 @@ Future<void> showNoRewritesSheet(
               label: 'career_draft_no_rewrites_upgrade'.tr,
               onTap: () {
                 Navigator.of(ctx).pop();
-                openPaywall(source: 'career_rewrite', plans: true);
+                openPaywall(source: 'career_rewrite', plans: true, screen: 'career_draft');
               },
             ),
             const SizedBox(height: 10),

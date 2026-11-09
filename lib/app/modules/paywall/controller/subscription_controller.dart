@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/services/analytics_service.dart';
 import '../../../core/services/internet_connectivity_service.dart';
+import '../../../core/services/remote_config_service.dart';
 import '../../../core/translations/tr_extension.dart';
 import '../../../core/widgets/app_snackbar.dart';
 import '../../../core/widgets/connection_interrupted_dialog.dart';
@@ -116,13 +117,67 @@ class SubscriptionController extends GetxController {
     isLoadingProducts.value = true;
 
     try {
-      final fetched = await _revenueCatHelper.getProducts();
+      final fetched = await _revenueCatHelper.getProducts(
+        // The discounted offer product (empty when not set up).
+        extraIds: [RemoteConfigService().croOffers.firstYearProductId],
+      );
 
       // Keep previously loaded products if this attempt returned empty.
-      if (fetched.isNotEmpty) products.value = fetched;
+      if (fetched.isNotEmpty) {
+        products.value = fetched;
+        await _refreshTrial();
+      }
     } finally {
       isLoadingProducts.value = false;
     }
+  }
+
+  // ---- Free trial: only what the store really offers -----------------------
+
+  /// The yearly product has a free trial in the store AND this user may still
+  /// have it. The paywall shows a trial (label, benefit text) only while this
+  /// is true: never a trial the store configuration does not support.
+  final yearlyTrialEligible = false.obs;
+
+  /// Length of that store trial in days (0 = none).
+  final yearlyTrialDays = 0.obs;
+
+  /// Days of a store trial period, or 0 when the product has no free trial.
+  static int freeTrialDays(StoreProduct? p) {
+    final intro = p?.introductoryPrice;
+    if (intro == null || intro.price != 0) return 0;
+    final n = intro.periodNumberOfUnits;
+    return switch (intro.periodUnit) {
+      PeriodUnit.day => n,
+      PeriodUnit.week => n * 7,
+      PeriodUnit.month => n * 30,
+      PeriodUnit.year => n * 365,
+      _ => 0,
+    };
+  }
+
+  Future<void> _refreshTrial() async {
+    final yearly = productFor(RevenueCatHelper.yearlyProductId);
+    final days = freeTrialDays(yearly);
+    var eligible = days > 0;
+    if (eligible) {
+      try {
+        final result = await Purchases.checkTrialOrIntroductoryPriceEligibility([
+          RevenueCatHelper.yearlyProductId,
+        ]);
+        final status = result[RevenueCatHelper.yearlyProductId]?.status;
+        // iOS says "ineligible" for a user who already had a trial; Android
+        // reports "unknown" (the store decides at purchase) - treated as
+        // eligible, the product does have the trial.
+        if (status == IntroEligibilityStatus.introEligibilityStatusIneligible) {
+          eligible = false;
+        }
+      } catch (_) {
+        // Unknown: the product has the trial, keep it.
+      }
+    }
+    yearlyTrialDays.value = eligible ? days : 0;
+    yearlyTrialEligible.value = eligible;
   }
 
   Future<bool> retryFetch() async {
@@ -141,6 +196,11 @@ class SubscriptionController extends GetxController {
     required String plan,
     required String source,
   }) async {
+    AnalyticsService.logPlanSelected(
+      plan: plan,
+      source: source,
+      trialOffered: plan == 'yearly' && yearlyTrialEligible.value,
+    );
     AnalyticsService.logPaywallPurchaseTapped(plan, source);
 
     if (!RevenueCatHelper.isConfigured) {

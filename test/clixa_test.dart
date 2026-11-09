@@ -42,6 +42,7 @@ void main() {
 
   Future<void> boot(WidgetTester t, {bool pro = false, Widget? home}) async {
     Get.reset();
+    await GetStorage().erase(); // the free-chat counter lives here
     sub = _FakeSub()..isUserPro.value = pro;
     Get.put<SubscriptionController>(sub);
     Get.put(ProfileStore());
@@ -79,7 +80,7 @@ void main() {
       );
       expect(find.text('Type an idea or a question…'), findsOneWidget);
       expect(find.text('Start a chat'), findsOneWidget);
-      expect(find.text('3 of 3 free chats left today'), findsOneWidget);
+      expect(find.text('3 of 3 free chats left this week'), findsOneWidget);
       for (final m in ClixaMode.values) {
         expect(find.text(_en[m.titleKey]!), findsOneWidget, reason: m.id);
       }
@@ -347,16 +348,16 @@ void main() {
   group('free limits', () {
     testWidgets('after three chats a fourth asks for Pro', (t) async {
       await boot(t);
-      // A chat uses one of today's free chats once its first message is answered.
+      // A chat uses one of the week's free chats once its first message is answered.
       var n = 0;
       for (final m in [ClixaMode.discuss, ClixaMode.plan, ClixaMode.numbers]) {
         await t.runAsync(() => c.send(c.startChat(m), 'saved chat ${n++}'));
       }
       await t.pump();
-      expect(find.text('0 of 3 free chats left today'), findsOneWidget);
+      expect(find.text('0 of 3 free chats left this week'), findsOneWidget);
       await t.tap(find.text('Just talk business'));
       await settle(t);
-      expect(find.text('You\'ve used today\'s 3 free chats'), findsOneWidget);
+      expect(find.text('You\'ve used your 3 free chats this week'), findsOneWidget);
       expect(find.text('Get unlimited chats'), findsOneWidget);
       expect(find.text('Continue a saved chat'), findsOneWidget);
       expect(find.text('Not now'), findsOneWidget);
@@ -391,10 +392,10 @@ void main() {
       expect(find.text('This chat reached the free limit'), findsOneWidget);
       expect(find.text('Get unlimited messages'), findsOneWidget);
       expect(
-        find.text('Start a new chat (3 left today)'),
+        find.text('Start a new chat (3 left this week)'),
         findsNothing,
       ); // 2 left
-      expect(find.textContaining('left today)'), findsOneWidget);
+      expect(find.textContaining('left this week)'), findsOneWidget);
 
       // Another message is not sent.
       await t.tap(find.text('Not now'));

@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:ai_business_card_maker/app/core/services/analytics_service.dart';
 import 'package:ai_business_card_maker/app/modules/career_studio/controller/career_score_store.dart';
+import 'package:ai_business_card_maker/app/modules/clixa/widgets/clixa_sheets.dart';
+import 'package:ai_business_card_maker/app/modules/paywall/view/paywall_view_2.dart';
 import 'package:ai_business_card_maker/app/modules/career_studio/view/career_studio_view.dart';
 import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_fix_view.dart';
 import 'package:ai_business_card_maker/app/modules/career_studio/view/profile_report_view.dart';
@@ -18,6 +21,7 @@ class _FakeSub extends SubscriptionController {
   final bool succeeds;
   int buys = 0;
   String? lastPlan;
+  String? lastSource;
 
   @override
   void onInit() {}
@@ -31,9 +35,23 @@ class _FakeSub extends SubscriptionController {
   }) async {
     buys++;
     lastPlan = plan;
+    lastSource = source;
     if (succeeds) isUserPro.value = true;
     return succeeds;
   }
+}
+
+Future<void> _loadFonts() async {
+  final sdk = Platform.environment['FLUTTER_ROOT'];
+  if (sdk == null) return;
+  final loader = FontLoader('SFPro');
+  for (final f in ['Roboto-Regular.ttf', 'Roboto-Medium.ttf', 'Roboto-Bold.ttf']) {
+    final file = File('$sdk/bin/cache/artifacts/material_fonts/$f');
+    if (file.existsSync()) {
+      loader.addFont(Future.value(ByteData.view(file.readAsBytesSync().buffer)));
+    }
+  }
+  await loader.load();
 }
 
 void main() {
@@ -46,9 +64,16 @@ void main() {
           (call) async => Directory.systemTemp.createTempSync('gs').path,
         );
     await GetStorage.init();
+    await _loadFonts();
   });
 
   late _FakeSub sub;
+  late List<(String, Object?)> events;
+  setUp(() {
+    events = [];
+    AnalyticsService.sink = (n, p) => events.add((n, p['source']));
+  });
+  tearDown(() => AnalyticsService.sink = null);
 
   Future<void> pump(WidgetTester t, Widget home, {bool succeeds = true}) async {
     Get.reset();
@@ -63,95 +88,90 @@ void main() {
     await t.pump(const Duration(milliseconds: 300));
   }
 
-  testWidgets('CS31-33: locked fix -> sheet -> subscribe -> You\'re Pro -> '
-      'that fix opens', (t) async {
+  // Every Career Pro entry opens the plans paywall (Paywall View 2); the Pro
+  // sheet is only the Expert panel's.
+  testWidgets('locked fix -> Paywall View 2; Pro afterwards opens that fix', (
+    t,
+  ) async {
     await pump(t, const ProfileReportView());
     await t.tap(find.text('No Featured section'));
     await t.pumpAndSettle();
+    expect(find.byType(PaywallView2), findsOneWidget);
+    expect(find.text('GO PRO'), findsNothing); // not the Pro sheet
+    expect(events, contains(('paywall_shown', 'career_fix_locked')));
 
-    // CS31: names the blocked fix.
-    expect(find.text('GO PRO'), findsOneWidget);
-    expect(find.text('Unlock the “Featured” fix'), findsOneWidget);
-    expect(find.text('Unlock everything in Career Studio'), findsNothing);
-    expect(find.text('Yearly'), findsOneWidget);
-    expect(find.text('Monthly'), findsOneWidget);
-
-    // Choose monthly, then Continue starts the purchase of that plan.
-    await t.tap(find.text('Monthly'));
-    await t.pump();
-    await t.tap(find.text('Continue'));
-    await t.pumpAndSettle();
-    expect(sub.buys, 1);
-    expect(sub.lastPlan, 'monthly');
-
-    // CS33: "You're Pro" dialog (the store's own sheet is CS32, system UI).
-    expect(find.text("You're Pro"), findsOneWidget);
-    expect(
-      find.textContaining('Everything in Career Studio is unlocked.'),
-      findsOneWidget,
-    );
-    expect(find.text('Continue to your fixes'), findsOneWidget);
-    expect(find.text('GO PRO'), findsNothing); // sheet is closed
-
-    // Continue to your fixes -> the blocked fix opens.
-    await t.tap(find.text('Continue to your fixes'));
+    sub.isUserPro.value = true; // bought
+    Get.back();
     await t.pumpAndSettle();
     expect(find.byType(ProfileFixView), findsOneWidget);
     expect(find.text('No Featured section'), findsOneWidget);
-    expect(find.text('Pro · unlimited AI rewrites'), findsOneWidget);
   });
 
-  testWidgets('"Fix all 7 with Pro": sheet, subscribe, then the first fix', (
+  testWidgets('"Fix all 7 with Pro" and the hub crown open Paywall View 2', (
     t,
   ) async {
     await pump(t, const ProfileReportView());
     await t.tap(find.text('Fix all 7 with Pro'));
     await t.pumpAndSettle();
-    expect(find.text('Unlock everything in Career Studio'), findsOneWidget);
-    await t.tap(find.text('Continue'));
+    expect(find.byType(PaywallView2), findsOneWidget);
+    expect(events, contains(('paywall_shown', 'career_fix_all')));
+    Get.back();
     await t.pumpAndSettle();
-    expect(sub.lastPlan, 'yearly'); // the default plan
-    expect(find.text("You're Pro"), findsOneWidget);
-    await t.tap(find.text('Continue to your fixes'));
-    await t.pumpAndSettle();
-    expect(find.byType(ProfileFixView), findsOneWidget);
-    expect(find.text('Headline is only a job title'), findsOneWidget);
-  });
+    expect(events, contains(('paywall_dismissed', 'career_fix_all')));
 
-  testWidgets('a cancelled or failed purchase keeps the sheet, no dialog', (
-    t,
-  ) async {
-    await pump(t, const ProfileReportView(), succeeds: false);
-    await t.tap(find.text('No Featured section'));
-    await t.pumpAndSettle();
-    await t.tap(find.text('Continue'));
-    await t.pumpAndSettle();
-    expect(sub.buys, 1);
-    expect(find.text("You're Pro"), findsNothing);
-    expect(find.text('Unlock the “Featured” fix'), findsOneWidget);
-
-    // Not now just closes it.
-    await t.tap(find.text('Not now'));
-    await t.pumpAndSettle();
-    expect(find.text('Unlock the “Featured” fix'), findsNothing);
-    expect(find.byType(ProfileFixView), findsNothing);
-  });
-
-  testWidgets('hub crown: subscribe -> You\'re Pro -> Continue closes it', (
-    t,
-  ) async {
     await pump(t, const CareerStudioView());
     await t.tap(find.byType(GestureDetector).at(1)); // crown button
     await t.pumpAndSettle();
-    expect(find.text('Unlock everything in Career Studio'), findsOneWidget);
-    await t.tap(find.text('Continue'));
-    await t.pumpAndSettle();
-    expect(find.text("You're Pro"), findsOneWidget);
-    expect(find.text('Continue to your fixes'), findsNothing);
-    await t.tap(find.text('Continue'));
-    await t.pumpAndSettle();
-    expect(find.text("You're Pro"), findsNothing);
-    // The hub now shows the Pro state.
-    expect(find.text('Pro plan'), findsOneWidget);
+    expect(find.byType(PaywallView2), findsOneWidget);
+    expect(events, contains(('paywall_shown', 'crown')));
+  });
+
+  group('the Expert panel keeps its own Pro sheet', () {
+    Future<void> open(WidgetTester t, {bool succeeds = true}) async {
+      await pump(
+        t,
+        Builder(
+          builder: (context) => Scaffold(
+            body: TextButton(
+              onPressed: () => showClixaUpgrade(context),
+              child: const Text('crown'),
+            ),
+          ),
+        ),
+        succeeds: succeeds,
+      );
+      await t.tap(find.text('crown'));
+      await t.pumpAndSettle();
+    }
+
+    testWidgets('subscribe -> You\'re Pro, source expert_panel', (t) async {
+      await open(t);
+      expect(find.byType(PaywallView2), findsNothing);
+      expect(events, contains(('paywall_shown', 'expert_panel')));
+      await t.tap(find.text('Monthly'));
+      await t.pump();
+      await t.tap(find.text('Continue'));
+      await t.pumpAndSettle();
+      expect(sub.lastPlan, 'monthly');
+      expect(sub.lastSource, 'expert_panel');
+      expect(find.text("You're Pro"), findsOneWidget);
+      expect(
+        events.where((e) => e == ('paywall_dismissed', 'expert_panel')),
+        isEmpty,
+      );
+    });
+
+    testWidgets('a failed purchase keeps the sheet; Not now logs a dismiss', (
+      t,
+    ) async {
+      await open(t, succeeds: false);
+      await t.tap(find.text('Continue'));
+      await t.pumpAndSettle();
+      expect(sub.buys, 1);
+      expect(find.text("You're Pro"), findsNothing);
+      await t.tap(find.text('Not now'));
+      await t.pumpAndSettle();
+      expect(events, contains(('paywall_dismissed', 'expert_panel')));
+    });
   });
 }

@@ -1,3 +1,4 @@
+import '../../../core/widgets/pro_crown_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -55,23 +56,35 @@ class HomeTemplatesSection extends GetView<HomeController> {
 
                 return GestureDetector(
                   onTap: () => controller.previewTemplateTap(item),
-                  child: Container(
-                    foregroundDecoration: BoxDecoration(
-                      border: Border.all(
-                        color: isSelected
-                            ? AppColors.primary
-                            : Colors.transparent,
-                        width: 2,
+                  child: Stack(
+                    children: [
+                      Container(
+                        foregroundDecoration: BoxDecoration(
+                          border: Border.all(
+                            color: isSelected
+                                ? AppColors.primary
+                                : Colors.transparent,
+                            width: 2,
+                          ),
+                        ),
+                        child: Image.asset(
+                          item.frontImagePath,
+                          height: 112,
+                          fit: BoxFit.fitHeight,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const SizedBox.shrink();
+                          },
+                        ),
                       ),
-                    ),
-                    child: Image.asset(
-                      item.frontImagePath,
-                      height: 112,
-                      fit: BoxFit.fitHeight,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const SizedBox.shrink();
-                      },
-                    ),
+                      // Pro templates: a crown (previewing still works;
+                      // editing / applying opens the paywall). Not for Pro users.
+                      if (item.isPremium)
+                        const PositionedDirectional(
+                          bottom: 6,
+                          end: 6,
+                          child: ProCrownBadge(iconSize: 10, padding: 4),
+                        ),
+                    ],
                   ),
                 );
               },

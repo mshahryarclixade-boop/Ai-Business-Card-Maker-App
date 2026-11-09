@@ -1,3 +1,5 @@
+import '../../paywall/services/paywall_triggers.dart';
+import '../../paywall/services/watermark_service.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 
@@ -43,9 +45,13 @@ class CardDetailView extends StatelessWidget {
         }
       }
 
-      await Gal.putImage(design.path, album: 'AI Business Card');
-      if (design.backPath != null) {
-        await Gal.putImage(design.backPath!, album: 'AI Business Card');
+      // Free exports carry a small watermark (the card itself is untouched).
+      final files = await WatermarkService.prepare([
+        design.path,
+        if (design.backPath != null) design.backPath!,
+      ]);
+      for (final f in files) {
+        await Gal.putImage(f, album: 'AI Business Card');
       }
 
       Get.snackbar(
@@ -184,6 +190,22 @@ class CardDetailView extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if (WatermarkService.applies)
+                      TextButton(
+                        onPressed: () => PaywallTriggers.show(
+                          PaywallTrigger.watermark,
+                          screen: 'card_detail',
+                        ),
+                        child: Text(
+                          croText('watermark_link'),
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
                     if (!current.isAiGenerated) ...[
                       const SizedBox(height: 12),
                       SizedBox(

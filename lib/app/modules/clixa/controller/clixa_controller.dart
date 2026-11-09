@@ -1,9 +1,8 @@
-import 'dart:math' as math;
-
 import 'package:get/get.dart' hide Trans;
 
 import '../../../core/translations/tr_extension.dart';
 import '../../paywall/controller/subscription_controller.dart';
+import '../../paywall/services/usage_service.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../service/clixa_ai_service.dart';
 import '../service/clixa_chat_store.dart';
@@ -13,7 +12,8 @@ import '../model/clixa_models.dart';
 /// the "free today" counter are saved on the device ([ClixaChatStore]), so they
 /// are still there after the app is closed and reopened.
 class ClixaController extends GetxController {
-  static const freeChatsPerDay = 3;
+  /// Free chats per week (Remote Config `cro_limits.clixa_chats_per_week`).
+  static int get freeChatsPerWeek => UsageService.to.limitOf(UsageFeature.clixaChat);
   static const freeMessagesPerChat = 3;
 
   static ClixaController get to => Get.isRegistered<ClixaController>()
@@ -36,9 +36,6 @@ class ClixaController extends GetxController {
     chatsStartedToday.value = saved.startedToday;
   }
 
-  int get _usedToday =>
-      _countDay == ClixaChatStore.dayKey() ? chatsStartedToday.value : 0;
-
   Future<void> _save() =>
       ClixaChatStore.save(chats, _countDay, chatsStartedToday.value);
 
@@ -46,7 +43,10 @@ class ClixaController extends GetxController {
       Get.isRegistered<SubscriptionController>() &&
       Get.find<SubscriptionController>().isUserPro.value;
 
-  int get freeChatsLeft => math.max(0, freeChatsPerDay - _usedToday);
+  int get freeChatsLeft {
+    UsageService.to.revision.value; // screens showing the counter follow it
+    return UsageService.to.remaining(UsageFeature.clixaChat);
+  }
 
   bool get canStartChat => isPro || freeChatsLeft > 0;
 
@@ -107,10 +107,13 @@ class ClixaController extends GetxController {
         about: _about(),
       );
       if (first) {
-        final today = ClixaChatStore.dayKey();
-        chatsStartedToday.value =
-            (_countDay == today ? chatsStartedToday.value : 0) + 1;
-        _countDay = today;
+        // One free chat is used when its first message is answered - once
+        // per chat (the chat's id is the dedupe key).
+        UsageService.to.consume(
+          UsageFeature.clixaChat,
+          dedupeKey: 'clixa_${chat.id}',
+          source: 'clixa',
+        );
       }
       chat.messages.add(ClixaMessage(fromUser: false, text: r.text));
       if (r.verdict != null) {

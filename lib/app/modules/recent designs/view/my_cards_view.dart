@@ -1,3 +1,4 @@
+import '../../paywall/services/paywall_triggers.dart';
 import '../../../core/widgets/crown_upgrade_button.dart';
 import '../../career_studio/widgets/career_widgets.dart';
 import '../../../core/widgets/hide_when_pro.dart';
@@ -15,7 +16,6 @@ import '../controller/my_cards_controller.dart';
 import '../widgets/pill_tab_selector.dart';
 import '../../home/widgets/recent_design_card.dart';
 import 'card_detail_view.dart';
-import '../../paywall/view/paywall_screen.dart';
 import '../../../core/translations/tr_extension.dart';
 
 /// SETTINGS > MY CARDS > MY CARDS
@@ -40,7 +40,7 @@ class MyCardsView extends StatelessWidget {
                 size: 40,
                 iconSize: 22,
                 borderRadius: 12,
-                onTap: () => openPaywall(source: 'my_cards', plans: true),
+                onTap: () => PaywallTriggers.show(PaywallTrigger.crown, screen: 'my_cards'),
               ),
             ),
           ),

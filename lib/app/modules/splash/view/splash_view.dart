@@ -1,3 +1,4 @@
+import '../../paywall/view/paywall_view_2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:get_storage/get_storage.dart';
@@ -94,9 +95,11 @@ class _SplashViewState extends State<SplashView>
         !paywall.showOnLaunch) {
       Get.offAllNamed(Routes.MAIN);
     } else {
+      AnalyticsService.beginPaywall('launch');
       AnalyticsService.logPaywallShown('launch');
-      Get.offAllNamed(
-        Routes.PAYWALL,
+      // The plans paywall (View 2) - the same one the crown opens.
+      Get.offAll(
+        () => const PaywallView2(pops: 1),
         arguments: const PaywallArgs(source: 'launch', isLaunch: true),
       );
     }

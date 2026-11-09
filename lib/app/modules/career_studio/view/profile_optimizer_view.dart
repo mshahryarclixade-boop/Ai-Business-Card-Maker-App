@@ -59,7 +59,10 @@ class ProfileOptimizerView extends GetView<ProfileOptimizerController> {
                           color: AppColors.textSubtitle,
                         ),
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 14),
+                      // What can be uploaded, before the user picks anything.
+                      const _SupportedUploads(),
+                      const SizedBox(height: 14),
                       _PdfCard(controller: controller),
                       const SizedBox(height: 12),
                       _ImagesCard(controller: controller),
@@ -94,6 +97,81 @@ class ProfileOptimizerView extends GetView<ProfileOptimizerController> {
           ),
         ),
       ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Supported uploads
+// ---------------------------------------------------------------------------
+
+class _SupportedUploads extends StatelessWidget {
+  const _SupportedUploads();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: const Key('career_supported_uploads'),
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.pillBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'career_optimizer_examples_title'.tr,
+            style: const TextStyle(
+              fontFamily: AppTextStyles.fontFamily,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: AppColors.titleDark,
+            ),
+          ),
+          const SizedBox(height: 8),
+          _ExampleRow(
+            icon: Icons.picture_as_pdf_outlined,
+            text: 'career_optimizer_example_pdf'.tr,
+          ),
+          const SizedBox(height: 6),
+          _ExampleRow(
+            icon: Icons.image_outlined,
+            text: 'career_optimizer_example_screenshot'.tr,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ExampleRow extends StatelessWidget {
+  const _ExampleRow({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: AppColors.primary),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontFamily: AppTextStyles.fontFamily,
+              fontSize: 13,
+              height: 1.35,
+              color: AppColors.textSubtitle,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

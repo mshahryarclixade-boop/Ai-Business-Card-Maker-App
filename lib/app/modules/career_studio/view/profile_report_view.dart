@@ -1,3 +1,4 @@
+import '../../paywall/services/paywall_triggers.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
@@ -6,7 +7,6 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/translations/tr_extension.dart';
 import '../controller/profile_report_controller.dart';
-import '../widgets/career_hub_sheets.dart';
 import '../widgets/career_widgets.dart';
 import '../widgets/score_breakdown_sheet.dart';
 import '../widgets/score_ring.dart';
@@ -61,9 +61,9 @@ class _ProfileReportViewState extends State<ProfileReportView> {
   }
 
   /// The "Fix all 7 with Pro" button opens the Career Studio premium sheet.
-  void _showPremium() => showUpgradeSheet(
-    context,
-    continueLabel: 'career_pro_continue_fixes'.tr,
+  void _showPremium() => openProPaywall(
+    'career_fix_all',
+    screen: 'career_report',
     onUnlocked: () {
       final f = _c.next;
       if (f != null) _openFix(f);
@@ -90,10 +90,9 @@ class _ProfileReportViewState extends State<ProfileReportView> {
   void _openFix(ReportFix f) {
     if (_c.isLocked(f)) {
       // CS31: upgrade from a locked fix, then carry on with that fix.
-      showUpgradeSheet(
-        context,
-        lockedFeature: f.nameKey.tr,
-        continueLabel: 'career_pro_continue_fixes'.tr,
+      openProPaywall(
+        'career_fix_locked',
+        screen: 'career_report',
         onUnlocked: () => _openFix(f),
       );
       return;

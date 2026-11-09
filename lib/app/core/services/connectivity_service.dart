@@ -11,7 +11,7 @@ import '../translations/tr_extension.dart';
 import '../widgets/no_internet_dialog.dart';
 import 'internet_connectivity_service.dart';
 
-class ConnectivityService extends GetxService {
+class ConnectivityService extends GetxService with WidgetsBindingObserver {
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _subscription;
   Timer? _debounce;
@@ -45,6 +45,22 @@ class ConnectivityService extends GetxService {
   /// The app is locked: monitoring is on and there is no real internet.
   bool get isBlocked => _monitoring && !isOnline.value;
 
+  /// The system Back button / gesture is navigation too: while the app is
+  /// locked it opens the No Internet dialog instead of going back. With the
+  /// dialog already up, Back closes it as usual.
+  @override
+  Future<bool> didPopRoute() async {
+    if (!isBlocked || dialogVisible.value) return false;
+    unawaited(showNoInternetDialog());
+    return true; // consumed: no navigation
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    WidgetsBinding.instance.addObserver(this); // before the app's own observer
+  }
+
   @override
   void onReady() {
     super.onReady();
@@ -62,6 +78,7 @@ class ConnectivityService extends GetxService {
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     _debounce?.cancel();
     _poll?.cancel();
     _subscription?.cancel();

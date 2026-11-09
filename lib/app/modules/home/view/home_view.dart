@@ -1,9 +1,9 @@
+import '../../paywall/services/paywall_triggers.dart';
 import '../../../core/widgets/hide_when_pro.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 import '../../../core/widgets/crown_upgrade_button.dart';
-import '../../career_studio/widgets/career_hub_sheets.dart';
 import '../widgets/ai_toolkit_section.dart';
 import '../widgets/home_templates_section.dart';
 import '../../../core/theme/app_colors.dart';
@@ -71,7 +71,7 @@ class HomeView extends GetView<HomeController> {
                                 size: 36,
                                 iconSize: 22,
                                 borderRadius: 10,
-                                onTap: () => showUpgradeSheet(context),
+                                onTap: () => PaywallTriggers.show(PaywallTrigger.crown, screen: 'home'),
                               ),
                             ),
                             const HideWhenPro(child: SizedBox(width: 6)),

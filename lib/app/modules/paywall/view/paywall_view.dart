@@ -1,4 +1,3 @@
-import '../../../core/widgets/tap_target.dart';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -40,7 +39,7 @@ class PaywallView extends StatelessWidget {
             child: Stack(
                       children: [
                         const _ArtworkCards(),
-                        if (cfg.showCloseButton) _CloseButton(),
+                        if (cfg.showCloseButton || PaywallActions.skippable) _CloseButton(),
                         _Headline(cfg),
                         _Subtitle(cfg),
                         _FeatureCard(cfg),
@@ -79,24 +78,31 @@ class _CloseButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 16,
-      right: 24,
-      child: TapTarget(child: GestureDetector(
-        onTap: () => PaywallActions.exit(),
+      top: 12,
+      right: 20,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => PaywallActions.close(context),
+        // A 44px touch target around a clearly visible 34px X.
         child: Container(
-          width: 26,
-          height: 26,
-          decoration: const BoxDecoration(
-            color: Color(0xFFE5E4F1),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.close_rounded,
-            size: 16,
-            color: Color(0xFF292938),
+          width: 44,
+          height: 44,
+          alignment: Alignment.center,
+          child: Container(
+            width: 34,
+            height: 34,
+            decoration: const BoxDecoration(
+              color: Color(0xFFD9D7EC),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.close_rounded,
+              size: 22,
+              color: Color(0xFF1F1F2E),
+            ),
           ),
         ),
-      )),
+      ),
     );
   }
 }
@@ -221,27 +227,46 @@ class _Headline extends StatelessWidget {
       left: (393 - 215) / 2,
       width: 215,
       height: 60,
-      child: Text.rich(
-        TextSpan(
-          style: const TextStyle(
-            fontFamily: AppTextStyles.fontFamily,
-            fontSize: 26,
-            height: 1.0,
-            fontWeight: FontWeight.w700,
-          ),
-          children: [
-            TextSpan(
-              text: '${cfg.s1TitleLine1}\n',
-              style: const TextStyle(color: AppColors.titleDark),
+      child: PaywallActions.headline != null
+          // A trigger's own headline, on one block (shrinks to fit).
+          ? FittedBox(
+              fit: BoxFit.scaleDown,
+              child: SizedBox(
+                width: 215,
+                child: Text(
+                  PaywallActions.headline!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: AppTextStyles.fontFamily,
+                    fontSize: 26,
+                    height: 1.0,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.titleDark,
+                  ),
+                ),
+              ),
+            )
+          : Text.rich(
+              TextSpan(
+                style: const TextStyle(
+                  fontFamily: AppTextStyles.fontFamily,
+                  fontSize: 26,
+                  height: 1.0,
+                  fontWeight: FontWeight.w700,
+                ),
+                children: [
+                  TextSpan(
+                    text: '${cfg.s1TitleLine1}\n',
+                    style: const TextStyle(color: AppColors.titleDark),
+                  ),
+                  TextSpan(
+                    text: cfg.s1TitleLine2,
+                    style: const TextStyle(color: AppColors.primary),
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
             ),
-            TextSpan(
-              text: cfg.s1TitleLine2,
-              style: const TextStyle(color: AppColors.primary),
-            ),
-          ],
-        ),
-        textAlign: TextAlign.center,
-      ),
     );
   }
 }
@@ -656,26 +681,24 @@ class _Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 790,
-      left: 24,
-      width: 345,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      top: 770,
+      left: 16,
+      width: 361,
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Flexible(child: GestureDetector(
+          _FooterLink(
+            text: cfg.restoreLabel,
             onTap: () => PaywallActions.restore(context),
-            child: _FooterLink(text: cfg.restoreLabel),
-          )),
+          ),
           const _FooterDot(),
-          Flexible(child: GestureDetector(
-            onTap: LegalLinks.openTermsOfUse,
-            child: _FooterLink(text: cfg.termsLabel),
-          )),
+          _FooterLink(text: cfg.termsLabel, onTap: LegalLinks.openTermsOfUse),
           const _FooterDot(),
-          Flexible(child: GestureDetector(
+          _FooterLink(
+            text: cfg.privacyLabel,
             onTap: LegalLinks.openPrivacyPolicy,
-            child: _FooterLink(text: cfg.privacyLabel),
-          )),
+          ),
         ],
       ),
     );
@@ -684,19 +707,28 @@ class _Footer extends StatelessWidget {
 
 class _FooterLink extends StatelessWidget {
   final String text;
+  final VoidCallback onTap;
 
-  const _FooterLink({required this.text});
+  const _FooterLink({required this.text, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: const TextStyle(
-        fontFamily: AppTextStyles.fontFamily,
-        fontSize: 9,
-        color: Color(0xFF8A8896),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontFamily: AppTextStyles.fontFamily,
+            fontSize: 12.5,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF5B5970),
+            decoration: TextDecoration.underline,
+            decorationColor: Color(0xFF9A98AC),
+          ),
+        ),
       ),
     );
   }
@@ -709,7 +741,7 @@ class _FooterDot extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.symmetric(horizontal: 6),
-      child: Text('•', style: TextStyle(fontSize: 9, color: Color(0xFFAAA8B4))),
+      child: Text('•', style: TextStyle(fontSize: 12, color: Color(0xFF9A98AC))),
     );
   }
 }
