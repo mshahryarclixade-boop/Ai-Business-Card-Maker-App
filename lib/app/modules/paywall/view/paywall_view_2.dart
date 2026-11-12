@@ -13,7 +13,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 
 const double _kDesignWidth = 393;
-const double _kDesignHeight = 860;
+const double _kDesignHeight = 850; // footer ends ~832: no wasted band under it
 
 class PaywallView2 extends StatefulWidget {
   const PaywallView2({super.key, this.pops = 2});
@@ -28,7 +28,7 @@ class PaywallView2 extends StatefulWidget {
 
 class _PaywallView2State extends State<PaywallView2> {
   /// `monthly` or `yearly` — the plan Continue purchases.
-  String _selected = 'yearly';
+  String _selected = 'monthly';
 
   @override
   Widget build(BuildContext context) => Obx(() {
@@ -315,13 +315,31 @@ class _FeaturePills extends StatelessWidget {
       top: 326,
       left: 24,
       width: 345,
-      // The pills flow and centre: a long translation wraps to the next line
-      // instead of being cut off.
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        spacing: 10,
-        runSpacing: 10,
-        children: [for (final t in items) _PillBadge(text: t)],
+      // Two columns of equal chips; long texts wrap to a second line and an
+      // odd last chip is centred.
+      child: Column(
+        children: [
+          for (var i = 0; i < items.length; i += 2) ...[
+            if (i > 0) const SizedBox(height: 10),
+            IntrinsicHeight(
+              child: i + 1 < items.length
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(child: _PillBadge(text: items[i])),
+                        const SizedBox(width: 10),
+                        Expanded(child: _PillBadge(text: items[i + 1])),
+                      ],
+                    )
+                  : Center(
+                      child: FractionallySizedBox(
+                        widthFactor: 0.5,
+                        child: _PillBadge(text: items[i]),
+                      ),
+                    ),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -337,7 +355,7 @@ class _PillBadge extends StatelessWidget {
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 345),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(30),
@@ -369,7 +387,7 @@ class _PillBadge extends StatelessWidget {
                 maxLines: 2,
                 style: const TextStyle(
                   fontFamily: AppTextStyles.fontFamily,
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: AppColors.textBody,
                 ),
@@ -404,7 +422,7 @@ class _PlanCardsRow extends StatelessWidget {
     // The yearly plan is the only purchasable one, so it always stays.
     final showMonthly = cfg.monthly.visible;
     return Positioned(
-      top: 478,
+      top: 506,
       left: 24,
       width: 345,
       height: 186,
@@ -662,59 +680,72 @@ class _YearlyCard extends StatelessWidget {
               ),
               if (plan.perMonthNote.isNotEmpty) ...[
                 const SizedBox(height: 3),
-                Text(
-                  plan.perMonthNote,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontFamily: AppTextStyles.fontFamily,
-                    fontSize: 10.5,
-                    height: 1.2,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSubtitle,
+                // One line that shrinks on a narrow phone instead of wrapping
+                // into the lines below it.
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Text(
+                    plan.perMonthNote,
+                    maxLines: 1,
+                    style: const TextStyle(
+                      fontFamily: AppTextStyles.fontFamily,
+                      fontSize: 10.5,
+                      height: 1.2,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSubtitle,
+                    ),
                   ),
                 ),
               ],
               const SizedBox(height: 3),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (plan.originalPrice.isNotEmpty)
-                    Text(
-                      plan.originalPrice,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontFamily: AppTextStyles.fontFamily,
-                        fontSize: 11,
-                        color: Colors.grey.shade400,
-                        decoration: TextDecoration.lineThrough,
-                      ),
-                    ),
-                  const SizedBox(height: 4),
-                  if (plan.saveBadge.isNotEmpty)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _kSaveGreenBg,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Text(
-                        plan.saveBadge,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontFamily: AppTextStyles.fontFamily,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: _kSaveGreen,
+              // The strike price and the saving badge shrink to the room left
+              // in the card (never overflow it).
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: AlignmentDirectional.topStart,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (plan.originalPrice.isNotEmpty)
+                        Text(
+                          plan.originalPrice,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: AppTextStyles.fontFamily,
+                            fontSize: 11,
+                            color: Colors.grey.shade400,
+                            decoration: TextDecoration.lineThrough,
+                          ),
                         ),
-                      ),
-                    ),
-                ],
+                      const SizedBox(height: 4),
+                      if (plan.saveBadge.isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _kSaveGreenBg,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            plan.saveBadge,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontFamily: AppTextStyles.fontFamily,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: _kSaveGreen,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
@@ -737,7 +768,7 @@ class _ContinueButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 678,
+      top: 706,
       left: 24,
       width: 345,
       height: 56,
@@ -776,7 +807,7 @@ class _ContinueButton extends StatelessWidget {
                       // "Try 3 days free" only with a real trial on yearly;
                       // otherwise "Continue" (no sparkle).
                       Text(
-                        cfg.s2CtaLabel,
+                        cfg.s2CtaFor(yearlySelected: selected == 'yearly'),
                         style: const TextStyle(
                           fontFamily: AppTextStyles.fontFamily,
                           fontSize: 15,
@@ -808,7 +839,7 @@ class _CommitmentText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 742,
+      top: 770,
       left: 24,
       width: 345,
       child: Text(
@@ -836,7 +867,7 @@ class _Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 770,
+      top: 798,
       left: 16,
       width: 361,
       // Wraps instead of cutting a long translation; every link has a
@@ -1087,18 +1118,22 @@ class _TabletChips extends StatelessWidget {
         for (var i = 0; i < items.length; i += 2) ...[
           if (i > 0) const SizedBox(height: 12),
           IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(child: _TabletChip(items[i])),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: i + 1 < items.length
-                      ? _TabletChip(items[i + 1])
-                      : const SizedBox.shrink(),
-                ),
-              ],
-            ),
+            child: i + 1 < items.length
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(child: _TabletChip(items[i])),
+                      const SizedBox(width: 12),
+                      Expanded(child: _TabletChip(items[i + 1])),
+                    ],
+                  )
+                // An odd last chip is centred, the width of one column.
+                : Center(
+                    child: FractionallySizedBox(
+                      widthFactor: 0.5,
+                      child: _TabletChip(items[i]),
+                    ),
+                  ),
           ),
         ],
       ],
@@ -1441,7 +1476,7 @@ class _TabletCta extends StatelessWidget {
               child: Center(
                 child: PaywallBusy(
                   child: Text(
-                    cfg.s2CtaLabel,
+                    cfg.s2CtaFor(yearlySelected: selected == 'yearly'),
                     style: const TextStyle(
                       fontFamily: AppTextStyles.fontFamily,
                       fontSize: 18,

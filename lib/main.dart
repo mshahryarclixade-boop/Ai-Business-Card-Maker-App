@@ -1,3 +1,5 @@
+import 'app/core/services/app_startup.dart';
+import 'app/core/services/user_sync_service.dart';
 import 'dart:ui';
 
 import 'package:ai_business_card_maker/app/core/services/offline_gate.dart';
@@ -20,7 +22,6 @@ import 'app/core/services/remote_config_service.dart';
 import 'app/modules/paywall/controller/credits_controller.dart';
 import 'app/modules/paywall/controller/subscription_controller.dart';
 import 'app/modules/paywall/services/usage_service.dart';
-import 'app/modules/paywall/services/offer_service.dart';
 import 'app/modules/paywall/services/revenue_cat_service.dart';
 import 'app/modules/paywall/services/user_credits_manager.dart';
 import 'app/modules/career_studio/controller/career_score_store.dart';
@@ -33,10 +34,31 @@ import 'app/core/translations/tr_extension.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Only what the first frame needs is awaited here, so the splash screen shows
+  // at once: storage, the app language and Firebase's own setup.
+  await GetStorage.init();
   await AppStrings.init();
-
+  AppStrings.followDeviceLanguage();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // The offline lock wraps the whole app, so it must exist before runApp.
+  Get.put(ConnectivityService(), permanent: true);
 
+  // Everything else starts in the background; the splash waits for it only
+  // when it is about to route (AppStartup.ready).
+  AppStartup.run(_initServices);
+
+  // Clarity wraps the app only. No custom user id is set, so sessions use
+  // Clarity's random anonymous id.
+  runApp(
+    ClarityWidget(
+      clarityConfig: ClarityConfig(projectId: _clarityProjectId),
+      app: const MyApp(),
+    ),
+  );
+}
+
+/// The slow start-up work, in the order it needs.
+Future<void> _initServices() async {
   await FirebaseAppCheck.instance.activate(
     providerAndroid: const AndroidPlayIntegrityProvider(),
     providerApple: kDebugMode
@@ -48,54 +70,39 @@ void main() async {
   await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
     !kDebugMode,
   );
-
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-
   PlatformDispatcher.instance.onError = (error, stack) {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
 
-  await GetStorage.init();
   // Which profile is active must be known before any per-profile store loads.
   ProfilesManager.load();
   QrStore.load();
   CareerScoreStore.load();
   GeneratedProfileStore.load();
-  await NotificationService().init();
 
-  // Remote Config must be ready before credit pools are read; bounded so a
-  // slow network never stalls launch (defaults apply).
-  await RemoteConfigService().init().timeout(
-    const Duration(seconds: 5),
-    onTimeout: () {},
-  );
-  await RevenueCatHelper().initPlatformState();
-  // Before SubscriptionController: its first status check may grant a plan
-  // pool, and a new user's free-tier record written after that would
-  // overwrite it. Bounded so a slow network never stalls launch (initUser
-  // keeps a local guess and reconciles later).
+  // These do not depend on each other: in parallel, each bounded so a slow
+  // network never stalls start (defaults apply).
+  await Future.wait([
+    NotificationService().init(),
+    RemoteConfigService().init().timeout(const Duration(seconds: 5), onTimeout: () {}),
+    RevenueCatHelper().initPlatformState(),
+  ]);
+  // Before SubscriptionController: its first status check may grant a plan pool,
+  // and a new user's free-tier record written after that would overwrite it.
   await UserCreditsManager()
       .initUser()
       .timeout(const Duration(seconds: 5), onTimeout: () {})
       .catchError((Object _) {});
   Get.put(SubscriptionController(), permanent: true);
-  // The CRO plan: free-usage counters and discount offers.
+  // The CRO plan: free-usage counters.
   Get.put(UsageService(), permanent: true);
-  Get.put(OfferService(), permanent: true);
+  // This device's usage document (devices/{deviceId}).
+  UserSync.start();
   Get.put(CreditsController(), permanent: true);
-  Get.put(ConnectivityService(), permanent: true);
   Get.put(ProfileController(), permanent: true);
   await Get.putAsync(() => RecentDesignsService().init());
-
-  // Clarity wraps the app only; it starts after every service above is up.
-  // No custom user id is set, so sessions use Clarity's random anonymous id.
-  runApp(
-    ClarityWidget(
-      clarityConfig: ClarityConfig(projectId: _clarityProjectId),
-      app: const MyApp(),
-    ),
-  );
 }
 
 /// Microsoft Clarity project id (not a secret).

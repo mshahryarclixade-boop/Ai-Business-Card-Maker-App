@@ -1,3 +1,5 @@
+import '../../../core/services/user_sync_service.dart';
+import '../widgets/pro_dialogs.dart';
 import 'dart:async';
 import 'dart:developer';
 
@@ -8,7 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/services/analytics_service.dart';
 import '../../../core/services/internet_connectivity_service.dart';
-import '../../../core/services/remote_config_service.dart';
 import '../../../core/translations/tr_extension.dart';
 import '../../../core/widgets/app_snackbar.dart';
 import '../../../core/widgets/connection_interrupted_dialog.dart';
@@ -117,10 +118,7 @@ class SubscriptionController extends GetxController {
     isLoadingProducts.value = true;
 
     try {
-      final fetched = await _revenueCatHelper.getProducts(
-        // The discounted offer product (empty when not set up).
-        extraIds: [RemoteConfigService().croOffers.firstYearProductId],
-      );
+      final fetched = await _revenueCatHelper.getProducts();
 
       // Keep previously loaded products if this attempt returned empty.
       if (fetched.isNotEmpty) {
@@ -189,6 +187,10 @@ class SubscriptionController extends GetxController {
     (p) => RevenueCatHelper.productIdOf(p.identifier) == productId,
   );
 
+  /// The last `buy` found an existing subscription instead of purchasing (so
+  /// the paywall says "Purchases restored", not "Welcome to Pro").
+  bool lastBuyWasRestore = false;
+
   /// Buys a subscription after checking internet access.
   Future<bool> buy(
     BuildContext context, {
@@ -196,6 +198,7 @@ class SubscriptionController extends GetxController {
     required String plan,
     required String source,
   }) async {
+    lastBuyWasRestore = false;
     AnalyticsService.logPlanSelected(
       plan: plan,
       source: source,
@@ -245,13 +248,12 @@ class SubscriptionController extends GetxController {
     // Already subscribed: unlock instead of purchasing again.
     if (await _revenueCatHelper.checkSubscriptionStatus() == true) {
       isUserPro.value = true;
+      unawaited(UserSync.sync(force: true)); // plan + expiry to the device record
 
       AnalyticsService.logPaywallRestored(restored: true, source: source);
 
-      showAppSnackbar(
-        'paywall_controller_purchase_restored_title'.tr,
-        'paywall_controller_purchase_restored_message'.tr,
-      );
+      // Not a new purchase: the paywall tells the user "Purchases restored".
+      lastBuyWasRestore = true;
 
       return true;
     }
@@ -336,6 +338,7 @@ class _PurchaseCallback implements InAppCallback {
   @override
   void onPurchaseSuccess(BuildContext context) {
     controller.isUserPro.value = true;
+    unawaited(UserSync.sync(force: true)); // plan + expiry to the device record
 
     AnalyticsService.logPaywallPurchased(plan ?? 'unknown', source);
     _complete(true);
@@ -393,21 +396,19 @@ class _PurchaseCallback implements InAppCallback {
 
     final restored = controller.isUserPro.value;
 
+    if (restored) unawaited(UserSync.sync(force: true));
+
     if (_restoringOwned && restored) {
       AnalyticsService.logPaywallRestored(restored: true, source: source);
+      controller.lastBuyWasRestore = true;
     }
 
     if (!_restoringOwned) {
       AnalyticsService.logPaywallRestored(restored: restored, source: source);
 
-      if (restored) {
-        showAppSnackbar(
-          'paywall_controller_purchase_restored_title'.tr,
-          'paywall_controller_purchase_restored_message'.tr,
-        );
-      } else {
-        _nothingToRestore();
-      }
+      // Restored: the paywall shows the "Purchases restored" dialog and then
+      // closes. Nothing found: the "No purchases found" dialog, paywall stays.
+      if (!restored) _nothingToRestore();
     } else if (!restored) {
       _alreadyOwned();
     }
@@ -444,10 +445,7 @@ class _PurchaseCallback implements InAppCallback {
     _complete(false);
   }
 
-  void _nothingToRestore() => showAppSnackbar(
-    'paywall_controller_nothing_to_restore_title'.tr,
-    'paywall_controller_nothing_to_restore_message'.tr,
-  );
+  void _nothingToRestore() => unawaited(showNothingToRestoreDialog());
 
   void _alreadyOwned() => showAppSnackbar(
     'paywall_controller_already_owned_title'.tr,

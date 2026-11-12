@@ -91,7 +91,7 @@ void main() {
         expect(box.width, lessThanOrEqualTo(s.value.width + 0.5));
         expect(box.center.dx, closeTo(s.value.width / 2, 1));
         // Fits the height unless it is a small screen (then it scrolls).
-        final scale = PaywallCanvas.scaleFor(s.value.width, s.value.height - 0); // safe area is 0 in tests
+        final scale = PaywallCanvas.scaleFor(s.value.width, s.value.height - 0, designHeight: screen.key == 'paywall 2' ? 850 : 860); // safe area is 0 in tests
         if (scale > PaywallCanvas.minReadableScale + 1e-9) {
           expect(box.height, lessThanOrEqualTo(s.value.height + 0.5));
         } else {

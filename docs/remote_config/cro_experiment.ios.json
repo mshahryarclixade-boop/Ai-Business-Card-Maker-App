@@ -1,0 +1,6 @@
+{
+  "onboarding_paywall": {
+    "enabled": true,
+    "paywall_percent": 50
+  }
+}

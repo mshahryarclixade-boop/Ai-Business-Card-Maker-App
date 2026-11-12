@@ -10,6 +10,7 @@ import 'package:ai_business_card_maker/app/core/widgets/side_switcher.dart';
 import 'package:ai_business_card_maker/app/modules/home/widgets/recent_design_card.dart';
 import 'package:ai_business_card_maker/app/modules/recent designs/view/card_detail_view.dart';
 import 'package:ai_business_card_maker/app/modules/recent designs/view/my_cards_view.dart';
+import 'package:ai_business_card_maker/app/modules/recent designs/widgets/pill_tab_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -59,6 +60,35 @@ void main() {
   }
 
   group('My Cards list', () {
+    testWidgets('one card per row: a list, not a grid', (t) async {
+      await boot(t);
+      await add(t);
+      await add(t);
+      await t.pumpWidget(const GetMaterialApp(home: MyCardsView()));
+      await t.pump();
+      expect(find.byType(GridView), findsNothing);
+      expect(find.byType(ListView), findsOneWidget);
+      final rects = [for (final e in find.byType(RecentDesignCard).evaluate()) t.getRect(find.byWidget(e.widget))];
+      expect(rects.length, 2);
+      expect(rects[1].top, greaterThan(rects[0].bottom)); // below, not beside
+      for (var i = 1; i < rects.length; i++) {
+        expect(rects[i].left, rects[0].left); // same column
+        expect(rects[i].width, rects[0].width);
+      }
+      expect(rects[0].width, greaterThan(500)); // full width, not half
+    });
+
+    testWidgets('no My Cards / AI Cards filter: AI-generated and manual cards show together', (t) async {
+      await boot(t);
+      await t.runAsync(() => service.save(_png(), backThumbnailBytes: _png(), designData: _blank(), isAiGenerated: true));
+      await add(t);
+      await t.pumpWidget(const GetMaterialApp(home: MyCardsView()));
+      await t.pump();
+      expect(find.byType(PillTabSelector), findsNothing);
+      expect(find.text('AI Cards'), findsNothing);
+      expect(find.byType(RecentDesignCard), findsNWidgets(2));
+    });
+
     testWidgets('follows the service: a deleted card goes, an edited card shows its new picture', (t) async {
       await boot(t);
       final a = await add(t);

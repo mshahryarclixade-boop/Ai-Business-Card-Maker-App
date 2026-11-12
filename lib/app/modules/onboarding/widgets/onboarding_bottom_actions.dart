@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/services/remote_config_service.dart';
+
 import '../../../core/theme/app_colors.dart';
 import 'onboarding_constrained.dart';
 import '../../../core/translations/tr_extension.dart';
@@ -46,7 +48,7 @@ class OnboardingBottomActions extends StatelessWidget {
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
-                          'onboarding_create_profile'.tr,
+                          RemoteConfigService().onboardingConfig.buttonText,
                           maxLines: 1,
                           style: TextStyle(
                             fontFamily: 'Inter',

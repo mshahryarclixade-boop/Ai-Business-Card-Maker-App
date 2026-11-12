@@ -642,7 +642,13 @@
         "italic": false
       }
     ],
-    "backgroundColor": 4294176730
+    "backgroundColor": 4294176730,
+    "defaultLogoIds": [
+      "spa_care_08_f_1",
+      "spa_care_08_f_9",
+      "spa_care_08_f_11",
+      "spa_care_08_f_14"
+    ]
   },
   "back": {
     "elements": [
@@ -1043,6 +1049,13 @@
         "italic": false
       }
     ],
-    "backgroundColor": 4294176730
+    "backgroundColor": 4294176730,
+    "defaultLogoIds": [
+      "spa_care_08_b_10",
+      "spa_care_08_b_11",
+      "spa_care_08_b_12",
+      "spa_care_08_b_13",
+      "spa_care_08_b_14"
+    ]
   }
 }

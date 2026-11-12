@@ -1,0 +1,89 @@
+rules_version = '2';
+
+// The app reads and writes ONLY devices/{deviceId} (its own usage document,
+// no login). Everything else is denied. The AI Cloud Functions use the Admin
+// SDK and are not affected by these rules.
+//
+// App Check: turn on "Enforce" for Cloud Firestore in the Firebase console
+// (App Check -> Cloud Firestore); rules cannot require it by themselves.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Counters (same names as UserSync.features in the app).
+    function features() {
+      return ['scan', 'ai_card', 'clixa_chat', 'career_build', 'career_optimize',
+              'email_signature', 'template', 'qr', 'contacts', 'bg_remover',
+              'expert_panel'];
+    }
+
+    function validId(id) {
+      return id.matches('[A-Za-z0-9._-]{8,128}');
+    }
+
+    // One counter after a write: unchanged, +1, or (a weekly feature) a NEW
+    // week that restarts at 1. Never down, never more than +1.
+    function counterOk(f) {
+      let n = request.resource.data.counters[f];
+      let o = resource.data.counters[f];
+      return n == o
+          || (n.used == o.used + 1 && n.get('windowStart', null) == o.get('windowStart', null))
+          || (n.used == 1 && n.get('windowStart', 0) > o.get('windowStart', 0));
+    }
+
+    function allCountersOk() {
+      return counterOk('scan') && counterOk('ai_card') && counterOk('clixa_chat')
+          && counterOk('career_build') && counterOk('career_optimize')
+          && counterOk('email_signature') && counterOk('template') && counterOk('qr')
+          && counterOk('contacts') && counterOk('bg_remover') && counterOk('expert_panel');
+    }
+
+    function zeroCounter(f) {
+      return request.resource.data.counters[f].used == 0;
+    }
+
+    function allZero() {
+      return zeroCounter('scan') && zeroCounter('ai_card') && zeroCounter('clixa_chat')
+          && zeroCounter('career_build') && zeroCounter('career_optimize')
+          && zeroCounter('email_signature') && zeroCounter('template') && zeroCounter('qr')
+          && zeroCounter('contacts') && zeroCounter('bg_remover') && zeroCounter('expert_panel');
+    }
+
+    function planOk() {
+      let p = request.resource.data.plan;
+      return p.tier in ['free', 'monthly', 'yearly'] && p.isPro is bool;
+    }
+
+    match /devices/{deviceId} {
+      // One document by id; no listing of other devices.
+      allow get: if validId(deviceId);
+      allow list: if false;
+
+      // A new device: free, every counter at 0.
+      allow create: if validId(deviceId)
+          && request.resource.data.keys().hasOnly(['deviceId', 'platform', 'appVersion',
+               'createdAt', 'lastSeenAt', 'updatedAt', 'plan', 'counters'])
+          && request.resource.data.deviceId == deviceId
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.plan.tier == 'free'
+          && request.resource.data.plan.isPro == false
+          && request.resource.data.counters.keys().hasOnly(features())
+          && allZero();
+
+      // Counters only go up by 1 per write; plan, expiry and the meta fields
+      // can be written; nothing else can change.
+      allow update: if validId(deviceId)
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['counters', 'plan', 'platform', 'appVersion', 'lastSeenAt', 'updatedAt'])
+          && request.resource.data.deviceId == resource.data.deviceId
+          && request.resource.data.createdAt == resource.data.createdAt
+          && allCountersOk()
+          && planOk();
+
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

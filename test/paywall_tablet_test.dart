@@ -98,6 +98,8 @@ void main() {
         t,
       ) async {
         await pump(t, size);
+        await t.tap(find.text('Yearly')); // monthly is selected by default
+        await t.pump();
         final yearly = t.getRect(find.text('Yearly'));
         final pill = t.getRect(find.text('Most Popular'));
         expect(pill.bottom, lessThanOrEqualTo(yearly.top + 1)); // above
@@ -150,14 +152,15 @@ void main() {
         ); // room between
       });
 
-      testWidgets('chips form a 2 x 2 grid', (t) async {
+      testWidgets('the five feature points sit in a two-column grid', (t) async {
         await pump(t, size);
         final r = [
           for (final s in [
-            'Unlimited AI cards',
-            'Unlimited scans',
-            'No watermark',
+            'Unlimited card scans',
+            'Design with AI, no limits',
+            'No watermark on exports',
             'All templates and QR styles',
+            'AI Business Coach',
           ])
             t.getRect(find.text(s)),
         ];
@@ -166,6 +169,10 @@ void main() {
         expect(r[2].top, greaterThan(r[0].bottom));
         expect(r[1].left, greaterThan(r[0].right)); // two columns
         expect((r[0].left - r[2].left).abs(), lessThan(3)); // aligned columns
+        // The fifth is on its own row, centred.
+        expect(r[4].top, greaterThan(r[2].bottom));
+        expect(r[4].left, greaterThan(r[0].left)); // between the columns
+        expect(r[4].left, lessThan(r[1].left));
       });
 
       testWidgets('keeps the artwork: sparkles and the four icon badges', (
@@ -199,13 +206,18 @@ void main() {
         sub.yearlyTrialEligible.value = true;
         sub.yearlyTrialDays.value = 3;
         await pump(t, size);
+        expect(find.text('Continue'), findsOneWidget); // monthly by default
+        await t.tap(find.text('Yearly'));
+        await t.pump();
         expect(
           find.text(r'3 days free, then $29.99/year. Cancel anytime.'),
           findsOneWidget,
         );
-        expect(find.text('Continue'), findsOneWidget); // CTA unchanged
+        expect(find.text('Start Free Trial'), findsOneWidget); // yearly selected
+        expect(find.text('Continue'), findsNothing);
         await t.tap(find.text('Monthly'));
         await t.pump();
+        expect(find.text('Continue'), findsOneWidget);
         expect(find.textContaining('days free'), findsNothing);
       });
     });
@@ -253,9 +265,9 @@ void main() {
         'lib/app/modules/paywall/services/paywall_triggers.dart',
       ).readAsStringSync();
       final view1 = RegExp(
-        r"(\w+)\('(\w+)', plans: false",
+        r"(\w+)\(\s*'(\w+)',\s*plans: false",
       ).allMatches(src).map((m) => m.group(2)).toSet();
-      expect(view1, {'onboarding', 'scan_warning', 'scan_limit', 'ai_limit'});
+      expect(view1, isEmpty); // every paywall trigger opens Paywall 2
     });
   });
 }

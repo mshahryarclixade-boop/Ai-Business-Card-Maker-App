@@ -32,7 +32,12 @@ void main() {
     expect(r.size, const Size(120, 40));
   });
 
-  test('settings links point at the Clixade pages', () {
-    expect(LegalLinks.contactUs, 'https://clixade.com/contact-us');
+  test('privacy policy and support email are per platform', () {
+    expect(LegalLinks.privacyPolicyFor(ios: false),
+        'https://clixade.com/moessa-app/privacy-policy');
+    expect(LegalLinks.privacyPolicyFor(ios: true),
+        'https://clixade.com/privacy-policy');
+    expect(LegalLinks.supportEmailFor(ios: false), 'amoessa777@gmail.com');
+    expect(LegalLinks.supportEmailFor(ios: true), 'contacts.clixade@gmail.com');
   });
 }

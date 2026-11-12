@@ -1,3 +1,4 @@
+import '../../paywall/services/usage_service.dart';
 import 'dart:convert';
 
 import 'package:get/get.dart';
@@ -28,8 +29,16 @@ abstract final class EmailSignatureStore {
     return signatures.isEmpty ? null : signatures.last;
   }
 
-  static bool canCreate({required bool isPro}) =>
-      isPro || signatures.length < freeLimit;
+  /// Free users: [freeLimit] signatures EVER created on this device (the
+  /// count lives in Firestore, so deleting one or switching profile does not
+  /// give the slot back). A signature saved before this counter existed
+  /// still counts.
+  static bool canCreate({required bool isPro}) {
+    if (isPro) return true;
+    final created = UsageService.to.used(UsageFeature.emailSignature);
+    final used = created > signatures.length ? created : signatures.length;
+    return used < freeLimit;
+  }
 
   /// Shows the active profile's signatures (after a profile switch).
   static void reload() {
@@ -71,6 +80,9 @@ abstract final class EmailSignatureStore {
       signatures[i] = s;
     } else {
       signatures.add(s);
+    }
+    if (i < 0) {
+      UsageService.to.consume(UsageFeature.emailSignature, dedupeKey: s.id);
     }
     activeId.value = s.id;
     _save();

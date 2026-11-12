@@ -1,3 +1,4 @@
+import '../../paywall/widgets/card_watermark.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -95,6 +96,7 @@ class MyCardSection extends StatelessWidget {
                       )
                     else
                       Image.asset(preview.frontImagePath, fit: BoxFit.contain),
+                    const CardWatermark(), // free users: on the preview only
                     if (applying)
                       Container(
                         color: const Color(0x99FFFFFF),

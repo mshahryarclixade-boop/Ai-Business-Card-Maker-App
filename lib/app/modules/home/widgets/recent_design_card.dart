@@ -1,3 +1,4 @@
+import '../../paywall/widgets/card_watermark.dart';
 import '../../../core/widgets/tap_target.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -17,6 +18,9 @@ class RecentDesignCard extends StatelessWidget {
   final bool isPremium;
   final double aspectRatio;
 
+  /// The free plan's watermark on the card picture (My Cards).
+  final bool showWatermark;
+
   const RecentDesignCard({
     super.key,
     this.thumbnailFile,
@@ -28,6 +32,7 @@ class RecentDesignCard extends StatelessWidget {
     this.onFavoriteTap,
     this.isPremium = false,
     this.aspectRatio = 1.4,
+    this.showWatermark = false,
   });
 
   @override
@@ -65,6 +70,7 @@ class RecentDesignCard extends StatelessWidget {
                   ],
                 ),
               ),
+              if (showWatermark && thumbnailFile != null) const CardWatermark(),
               if (showFavoriteBadge)
                 PositionedDirectional(
                   top: 8,

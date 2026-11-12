@@ -1,7 +1,6 @@
 import '../../paywall/services/watermark_service.dart';
 import 'dart:async';
 import '../../paywall/services/free_limits.dart';
-import '../../paywall/services/paywall_triggers.dart';
 import '../../paywall/services/usage_service.dart';
 import '../../../core/services/permission_gate.dart';
 import 'dart:io';
@@ -273,7 +272,7 @@ class AiCardController extends GetxController {
       dedupeKey: 'ai_${DateTime.now().microsecondsSinceEpoch}',
       source: 'ai_card',
     );
-    if (wasLast) unawaited(PaywallTriggers.show(PaywallTrigger.aiLimit, screen: 'ai_card_generator'));
+    if (wasLast) unawaited(FreeLimits.promptAiLimit(screen: 'ai_card_generator'));
   }
 
   void _fail(String message) {

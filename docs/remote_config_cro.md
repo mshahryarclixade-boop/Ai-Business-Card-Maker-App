@@ -1,3 +1,5 @@
+> **Outdated.** The current reference is `docs/remote_config_reference.md` (offers, `cro_offers` and the background-remover limit were removed).
+
 # Remote Config - CRO Part 1
 
 All five parameters are JSON. Every key is optional: a missing / invalid key uses the default below (the plan's Option A), so the app works with none of them published. They were published to project `ai-business-card-e1cde` with exactly these defaults.

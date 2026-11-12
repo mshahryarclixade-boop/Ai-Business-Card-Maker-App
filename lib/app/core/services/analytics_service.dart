@@ -23,7 +23,7 @@ abstract final class AnalyticsService {
   static void Function(String name, Map<String, Object> params)? sink;
 
   /// The screen the open paywall / Pro sheet was launched from. Every paywall
-  /// event (shown, dismissed, plan_selected, purchase_*, restore_*, offers)
+  /// event (shown, dismissed, plan_selected, purchase_*, restore_*)
   /// carries it as `screen`, next to `source` (the trigger).
   static String? _paywallScreen;
   static void beginPaywall(String? screen) => _paywallScreen = screen ?? 'unknown';
@@ -138,7 +138,7 @@ abstract final class AnalyticsService {
     'source': source,
   });
 
-  // ---- Experiment and offers ------------------------------------------------
+  // ---- Experiment ------------------------------------------------
 
   static void logExperimentAssigned({
     required String experiment,
@@ -147,19 +147,4 @@ abstract final class AnalyticsService {
     'experiment': experiment,
     'variant': variant,
   });
-
-  static void logOfferDisplayed({
-    required String offerType,
-    required String source,
-  }) => _log('offer_displayed', {'offer_type': offerType, 'source': source});
-
-  static void logOfferAccepted({
-    required String offerType,
-    required String source,
-  }) => _log('offer_accepted', {'offer_type': offerType, 'source': source});
-
-  static void logOfferDismissed({
-    required String offerType,
-    required String source,
-  }) => _log('offer_dismissed', {'offer_type': offerType, 'source': source});
 }

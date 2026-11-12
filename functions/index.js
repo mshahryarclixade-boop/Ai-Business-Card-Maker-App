@@ -5,7 +5,7 @@ const { GoogleGenAI } = require("@google/genai");
 const panelEngine = require("./panel/engine");
 const usage = require("./usage");
 
-/** Records one AI query for the app's device id (see usage.trackQuery). */
+/** Records one AI query for the app's user id (see usage.trackQuery). */
 const trackUser = (data, task, summary) =>
   usage.trackQuery({ db: getFirestore(), FieldValue }, data, task, summary);
 
@@ -18,7 +18,7 @@ const OPTIONS = {
   region: "us-central1",
   timeoutSeconds: 300,
   memory: "1GiB",
-  enforceAppCheck: false, // TODO: set back to true before release.
+  enforceAppCheck: false, // TODO: set back to true once App Check is confirmed in the console.
   maxInstances: 10,
 };
 

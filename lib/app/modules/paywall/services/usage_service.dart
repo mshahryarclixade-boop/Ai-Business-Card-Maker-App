@@ -4,18 +4,22 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../../../core/services/analytics_service.dart';
+import '../../../core/services/user_sync_service.dart';
 import '../../../core/services/remote_config_service.dart';
 import '../controller/subscription_controller.dart';
+import '../../email_signature/service/email_signature_store.dart';
 import '../models/cro_config_model.dart';
 
 /// What the free plan counts.
 enum UsageFeature {
   scan('scan'),
   aiCard('ai_card'),
-  bgRemover('bg_remover'),
   clixaChat('clixa_chat'),
   careerBuild('career_build'),
-  careerOptimize('career_optimize');
+  careerOptimize('career_optimize'),
+
+  /// Email signatures CREATED (lifetime; deleting one does not give it back).
+  emailSignature('email_signature');
 
   const UsageFeature(this.tag);
 
@@ -116,17 +120,31 @@ class UsageService extends GetxService {
     return switch (f) {
       UsageFeature.scan => l.scanFree,
       UsageFeature.aiCard => l.aiCardFree,
-      UsageFeature.bgRemover => l.bgRemoverFree,
-      UsageFeature.clixaChat => l.clixaChatsPerWeek,
+      // Pro: Remote Config's Pro allowance (-1 = unlimited).
+      UsageFeature.clixaChat =>
+        isPro ? l.clixaChatsPerWeekPro : l.clixaChatsPerWeek,
       UsageFeature.careerBuild => l.careerBuildLifetime,
       UsageFeature.careerOptimize => l.careerOptimizeLifetime,
+      UsageFeature.emailSignature => EmailSignatureStore.freeLimit,
     };
   }
 
-  int remaining(UsageFeature f) => (limitOf(f) - used(f)).clamp(0, 1 << 30);
+  /// Pro users are counted only for a feature that has a Pro allowance
+  /// (today Clixa chats, from `plan_limits`); -1 = unlimited = not counted.
+  bool _proLimited(UsageFeature f) =>
+      isPro && f == UsageFeature.clixaChat && limitOf(f) >= 0;
 
-  /// Pro, or a free use is left.
-  bool canUse(UsageFeature f) => isPro || remaining(f) > 0;
+  /// True when Pro has no limit on [f].
+  bool unlimitedForPro(UsageFeature f) => isPro && !_proLimited(f);
+
+  int remaining(UsageFeature f) {
+    final limit = limitOf(f);
+    if (limit < 0) return 1 << 30;
+    return (limit - used(f)).clamp(0, 1 << 30);
+  }
+
+  /// Pro (unlimited), or a use is left.
+  bool canUse(UsageFeature f) => unlimitedForPro(f) || remaining(f) > 0;
 
   /// This was the last free use ("Last AI card generation" trigger) - i.e.
   /// none is left after the use just spent.
@@ -149,7 +167,10 @@ class UsageService extends GetxService {
   /// [dedupeKey]: a use is counted once per key (e.g. the scanned image's
   /// path), so repeating the same action does not cost again.
   bool consume(UsageFeature f, {String? dedupeKey, String? source}) {
-    if (isPro) return true;
+    if (unlimitedForPro(f)) {
+      _report(f, dedupeKey);
+      return true;
+    }
 
     final all = _all();
     var e = Map<String, dynamic>.from(_entry(f));
@@ -172,8 +193,11 @@ class UsageService extends GetxService {
     }
 
     e['used'] = spent + 1;
+    // A weekly feature's first use opens a new week (the server counter restarts).
+    int? newWindow;
     if (f.weekly && e['start'] == null) {
-      e['start'] = _clock().millisecondsSinceEpoch;
+      newWindow = _clock().millisecondsSinceEpoch;
+      e['start'] = newWindow;
     }
     if (dedupeKey != null) {
       keys.add(dedupeKey);
@@ -184,6 +208,7 @@ class UsageService extends GetxService {
     _box.write(storageKey, jsonEncode(all));
     revision.value++;
 
+    _report(f, dedupeKey, newWindow);
     AnalyticsService.logUsageConsumed(
       feature: f.tag,
       used: spent + 1,
@@ -198,6 +223,46 @@ class UsageService extends GetxService {
       );
     }
     return true;
+  }
+
+  /// Tells the server about this use (the user's record `ai_usage/{user_id}`
+  /// keeps the counts, so a reinstall does not reset the limits).
+  void _report(UsageFeature f, String? dedupeKey, [int? windowStart]) =>
+      UserSync.track(f.tag, eventId: dedupeKey, windowStart: windowStart);
+
+  /// Brings the server's counters in (after a reinstall / on a new phone for a
+  /// recovered subscriber): a counter only ever goes UP, never down. [remote]:
+  /// `{feature: {used, windowStart?}}` as the server stores it.
+  void mergeRemote(Map<String, dynamic> remote) {
+    final all = _all();
+    var changed = false;
+    for (final f in UsageFeature.values) {
+      final r = remote[f.tag];
+      if (r is! Map) continue;
+      final rUsed = r['used'] is num ? (r['used'] as num).toInt() : 0;
+      if (rUsed <= 0) continue;
+      var e = Map<String, dynamic>.from(_entry(f));
+      if (f.weekly) {
+        final rStart = r['windowStart'] is num ? (r['windowStart'] as num).toInt() : null;
+        if (rStart == null) continue;
+        final active = DateTime.fromMillisecondsSinceEpoch(rStart).add(_window).isAfter(_clock());
+        if (!active) continue; // the server's window is over
+        if (_windowOver(f, e)) e = {};
+        final lUsed = e['used'] is int ? e['used'] as int : 0;
+        if (rUsed <= lUsed) continue;
+        e['used'] = rUsed;
+        e['start'] = rStart;
+      } else {
+        final lUsed = e['used'] is int ? e['used'] as int : 0;
+        if (rUsed <= lUsed) continue;
+        e['used'] = rUsed;
+      }
+      all[f.tag] = e;
+      changed = true;
+    }
+    if (!changed) return;
+    _box.write(storageKey, jsonEncode(all));
+    revision.value++;
   }
 
   /// Forgets every counter (tests, support).

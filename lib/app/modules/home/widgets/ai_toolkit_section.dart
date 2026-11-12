@@ -66,6 +66,11 @@ class AiToolkitSection extends StatelessWidget {
   }
 }
 
+/// Width of the icon/avatar column and the gap after it: the same on every
+/// Business ToolKit card, so the texts line up.
+const double _kLeadingWidth = 62;
+const double _kLeadingGap = 12;
+
 class _ToolkitCard extends StatelessWidget {
   const _ToolkitCard({
     required this.leading,
@@ -98,13 +103,13 @@ class _ToolkitCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                width: 62,
+                width: _kLeadingWidth,
                 child: Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: leading,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: _kLeadingGap),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,55 +166,28 @@ class _ExpertPanelCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const ExpertAvatars(size: 34, overlap: 8, count: 2),
-              const SizedBox(width: 16),
+              const SizedBox(
+                width: _kLeadingWidth,
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: ExpertAvatars(size: 34, overlap: 8, count: 2),
+                ),
+              ),
+              const SizedBox(width: _kLeadingGap),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            'home_toolkit_expert_title'.tr,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontFamily: AppTextStyles.fontFamily,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.titleDark,
-                            ),
-                          ),
-                        ),
-                        HideWhenPro(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 3,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primaryDark,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  'clixa_pro'.tr,
-                                  style: const TextStyle(
-                                    fontFamily: AppTextStyles.fontFamily,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w800,
-                                    color: AppColors.crownGold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                    Text(
+                      'home_toolkit_expert_title'.tr,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontFamily: AppTextStyles.fontFamily,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.titleDark,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -222,6 +200,31 @@ class _ExpertPanelCard extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+              // The PRO label sits at the far right of the card.
+              HideWhenPro(
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryDark,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'clixa_pro'.tr,
+                      style: const TextStyle(
+                        fontFamily: AppTextStyles.fontFamily,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.crownGold,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],

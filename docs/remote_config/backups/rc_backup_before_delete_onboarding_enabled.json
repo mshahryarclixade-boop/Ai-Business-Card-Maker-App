@@ -1,0 +1,147 @@
+{
+  "conditions": [
+    {
+      "name": "Android.",
+      "expression": "device.os == 'android'",
+      "tagColor": "GREEN"
+    },
+    {
+      "name": "iOS.",
+      "expression": "device.os == 'ios'",
+      "tagColor": "PINK"
+    }
+  ],
+  "parameters": {
+    "paywall_config": {
+      "defaultValue": {
+        "value": "{\"enabled\":true,\"show_on_launch\":true,\"trial\":{\"button_label\":\"Start {days}-Day Free Trial\",\"no_trial_button_label\":\"Continue\",\"benefit_text\":\"{days} days completely free, no charge today\",\"info_line_1\":\"No payment today, {yearly_price}/year after trial\",\"info_line_2\":\"Cancel anytime before trial ends\",\"fine_print\":\"{days} days free, then {yearly_price}/year. Cancel anytime.\"},\"screen1\":{\"title_line1\":\"Start creating\",\"title_line2\":\"for free\",\"subtitle\":\"Unlock everything with Pro\",\"features\":[{\"icon\":\"scan\",\"text\":\"Unlimited card scans\"},{\"icon\":\"ai\",\"text\":\"Design with AI, no limits\"},{\"icon\":\"watermark\",\"text\":\"No watermark on exports\"},{\"icon\":\"templates\",\"text\":\"All templates and QR styles\"},{\"icon\":\"coach\",\"text\":\"AI Business Coach\"}],\"plan_title\":\"Yearly Pro\"},\"screen2\":{\"title\":\"Create and scan without limits\",\"subtitle\":\"Get unlimited access to every feature\",\"features\":[\"Unlimited card scans\",\"Design with AI, no limits\",\"No watermark on exports\",\"All templates and QR styles\",\"AI Business Coach\"],\"button_label\":\"Continue\",\"trial_button_label\":\"Start Free Trial\",\"commitment_text\":\"No commitment, cancel anytime\"},\"headlines\":{\"default\":\"Create and scan without limits\",\"onboarding\":\"Create and scan without limits\",\"scan_warning\":\"Keep scanning with Pro\",\"scan_limit\":\"Keep scanning with Pro\",\"ai_limit\":\"Keep creating with AI\",\"pro_template\":\"Unlock every template\",\"pro_qr\":\"Unlock every QR style\",\"watermark\":\"Export without the watermark\",\"clixa_limit\":\"Keep talking to your AI coach\",\"crown\":\"Create and scan without limits\",\"settings\":\"Create and scan without limits\",\"career\":\"Get found by the right people\"},\"plans\":{\"monthly\":{\"visible\":true,\"title\":\"MONTHLYYY\",\"period\":\"/month\",\"description\":\"Full access to all Pro features\"},\"yearly\":{\"visible\":true,\"title\":\"Yearly\",\"badge\":\"Most Popular\",\"period\":\"/year\",\"per_month_note\":\"{price}/month, billed yearly\"}},\"footer\":{\"restore\":\"Restore Purchase\",\"terms\":\"Terms of Use\",\"privacy\":\"Privacy Policy\"}}"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{\"enabled\":true,\"show_on_launch\":true,\"trial\":{\"button_label\":\"Start {days}-Day Free Trial\",\"no_trial_button_label\":\"Continue\",\"benefit_text\":\"{days} days completely free, no charge today\",\"info_line_1\":\"No payment today, {yearly_price}/year after trial\",\"info_line_2\":\"Cancel anytime before trial ends\",\"fine_print\":\"{days} days free, then {yearly_price}/year. Cancel anytime.\"},\"screen1\":{\"title_line1\":\"Start creating\",\"title_line2\":\"for free\",\"subtitle\":\"Unlock everything with Pro\",\"features\":[{\"icon\":\"scan\",\"text\":\"Unlimited card scans\"},{\"icon\":\"ai\",\"text\":\"Design with AI, no limits\"},{\"icon\":\"watermark\",\"text\":\"No watermark on exports\"},{\"icon\":\"templates\",\"text\":\"All templates and QR styles\"},{\"icon\":\"coach\",\"text\":\"AI Business Coach\"}],\"plan_title\":\"Yearly Pro\"},\"screen2\":{\"title\":\"Create and scan without limits\",\"subtitle\":\"Get unlimited access to every feature\",\"features\":[\"Unlimited card scans\",\"Design with AI, no limits\",\"No watermark on exports\",\"All templates and QR styles\",\"AI Business Coach\"],\"button_label\":\"Continue\",\"trial_button_label\":\"Start Free Trial\",\"commitment_text\":\"No commitment, cancel anytime\"},\"headlines\":{\"default\":\"Create and scan without limits\",\"onboarding\":\"Create and scan without limits\",\"scan_warning\":\"Keep scanning with Pro\",\"scan_limit\":\"Keep scanning with Pro\",\"ai_limit\":\"Keep creating with AI\",\"pro_template\":\"Unlock every template\",\"pro_qr\":\"Unlock every QR style\",\"watermark\":\"Export without the watermark\",\"clixa_limit\":\"Keep talking to your AI coach\",\"crown\":\"Create and scan without limits\",\"settings\":\"Create and scan without limits\",\"career\":\"Get found by the right people\"},\"plans\":{\"monthly\":{\"visible\":true,\"title\":\"MONTHLYYY\",\"period\":\"/month\",\"description\":\"Full access to all Pro features\"},\"yearly\":{\"visible\":true,\"title\":\"Yearly\",\"badge\":\"Most Popular\",\"period\":\"/year\",\"per_month_note\":\"{price}/month, billed yearly\"}},\"footer\":{\"restore\":\"Restore Purchase\",\"terms\":\"Terms of Use\",\"privacy\":\"Privacy Policy\"}}"
+        },
+        "iOS.": {
+          "value": "{\"enabled\":true,\"show_on_launch\":true,\"trial\":{\"button_label\":\"Start {days}-Day Free Trial\",\"no_trial_button_label\":\"Continue\",\"benefit_text\":\"{days} days completely free, no charge today\",\"info_line_1\":\"No payment today, {yearly_price}/year after trial\",\"info_line_2\":\"Cancel anytime before trial ends\",\"fine_print\":\"{days} days free, then {yearly_price}/year. Cancel anytime.\"},\"screen1\":{\"title_line1\":\"Start creating\",\"title_line2\":\"for free\",\"subtitle\":\"Unlock everything with Pro\",\"features\":[{\"icon\":\"scan\",\"text\":\"Unlimited card scans\"},{\"icon\":\"ai\",\"text\":\"Design with AI, no limits\"},{\"icon\":\"watermark\",\"text\":\"No watermark on exports\"},{\"icon\":\"templates\",\"text\":\"All templates and QR styles\"},{\"icon\":\"coach\",\"text\":\"AI Business Coach\"}],\"plan_title\":\"Yearly Pro\"},\"screen2\":{\"title\":\"Create and scan without limits\",\"subtitle\":\"Get unlimited access to every feature\",\"features\":[\"Unlimited card scans\",\"Design with AI, no limits\",\"No watermark on exports\",\"All templates and QR styles\",\"AI Business Coach\"],\"button_label\":\"Continue\",\"trial_button_label\":\"Start Free Trial\",\"commitment_text\":\"No commitment, cancel anytime\"},\"headlines\":{\"default\":\"Create and scan without limits\",\"onboarding\":\"Create and scan without limits\",\"scan_warning\":\"Keep scanning with Pro\",\"scan_limit\":\"Keep scanning with Pro\",\"ai_limit\":\"Keep creating with AI\",\"pro_template\":\"Unlock every template\",\"pro_qr\":\"Unlock every QR style\",\"watermark\":\"Export without the watermark\",\"clixa_limit\":\"Keep talking to your AI coach\",\"crown\":\"Create and scan without limits\",\"settings\":\"Create and scan without limits\",\"career\":\"Get found by the right people\"},\"plans\":{\"monthly\":{\"visible\":true,\"title\":\"MONTHLYYY\",\"period\":\"/month\",\"description\":\"Full access to all Pro features\"},\"yearly\":{\"visible\":true,\"title\":\"Yearly\",\"badge\":\"Most Popular\",\"period\":\"/year\",\"per_month_note\":\"{price}/month, billed yearly\"}},\"footer\":{\"restore\":\"Restore Purchase\",\"terms\":\"Terms of Use\",\"privacy\":\"Privacy Policy\"}}"
+        }
+      },
+      "description": "Paywall words only: headline per source, five feature points, buttons (Continue for monthly, Start Free Trial for yearly with a real trial), fine print, per-month label. Prices and trial length come from the store.",
+      "valueType": "JSON"
+    },
+    "android_version_config": {
+      "defaultValue": {
+        "value": "{   \"min_build_number\": 0,   \"min_version_label\": \"1.0.0\",   \"latest_version_label\": \"1.0.0 (3)\" }"
+      },
+      "valueType": "JSON"
+    },
+    "paywall_offers": {
+      "defaultValue": {
+        "value": "{\n  \"products\": {\n    \"yearly\": \"business_card_yearly\",\n    \"monthly\": \"business_card_monthly\"\n  },\n  \"trial\": {\n    \"enabled\": true,\n    \"days\": 3\n  }\n}"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{\n  \"products\": {\n    \"yearly\": \"business_card_yearly\",\n    \"monthly\": \"business_card_monthly\"\n  },\n  \"trial\": {\n    \"enabled\": true,\n    \"days\": 3\n  }\n}"
+        },
+        "iOS.": {
+          "value": "{\n  \"products\": {\n    \"yearly\": \"business_card_yearly\",\n    \"monthly\": \"business_card_monthly\"\n  },\n  \"trial\": {\n    \"enabled\": true,\n    \"days\": 3\n  }\n}"
+        }
+      },
+      "description": "Store product ids of the plans sold (yearly, monthly) and the free-trial switch/days. No discount or returning-user offers. Missing fields keep the app's built-in values.",
+      "valueType": "JSON"
+    },
+    "onboarding_config": {
+      "defaultValue": {
+        "value": "{\n  \"enabled\": true,\n  \"title\": \"Create Stunning\\nCards in Seconds.\",\n  \"subtitle\": \"\",\n  \"button_text\": \"Create my Profile\"\n}"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{\n  \"enabled\": true,\n  \"title\": \"Create Stunning\\nCards in Seconds.\",\n  \"subtitle\": \"\",\n  \"button_text\": \"Create my Profile\"\n}"
+        },
+        "iOS.": {
+          "value": "{\n  \"enabled\": true,\n  \"title\": \"Create Stunning\\nCards in Seconds.\",\n  \"subtitle\": \"\",\n  \"button_text\": \"Create my Profile\"\n}"
+        }
+      },
+      "description": "Text and on/off switch for the single onboarding screen (enabled, title, subtitle, button_text). A text equal to the English default is shown translated; a changed text is shown as written. The image is bundled in the app.",
+      "valueType": "JSON"
+    },
+    "cro_limits": {
+      "defaultValue": {
+        "value": "{\"scan_free\": 5, \"scan_warning_remaining\": 1, \"ai_card_free\": 3, \"templates_free\": 10, \"bg_remover_free\": 1, \"clixa_chats_per_week\": 3, \"career_build_lifetime\": 1, \"career_optimize_lifetime\": 1, \"show_counters\": true}"
+      },
+      "description": "OLD free limits, kept only for the released app build. The new build reads plan_limits first.",
+      "valueType": "JSON"
+    },
+    "cro_experiment": {
+      "defaultValue": {
+        "value": "{   \"onboarding_paywall\": {     \"enabled\": true,     \"paywall_percent\": 50   } }"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{   \"onboarding_paywall\": {     \"enabled\": true,     \"paywall_percent\": 50   } }"
+        },
+        "iOS.": {
+          "value": "{   \"onboarding_paywall\": {     \"enabled\": true,     \"paywall_percent\": 50   } }"
+        }
+      },
+      "description": "CRO Part 1: onboarding paywall 50/50 test",
+      "valueType": "JSON"
+    },
+    "cro_triggers": {
+      "defaultValue": {
+        "value": "{\n  \"onboarding\": {\n    \"enabled\": true\n  },\n  \"scan_warning\": {\n    \"enabled\": true\n  },\n  \"scan_limit\": {\n    \"enabled\": true\n  },\n  \"ai_limit\": {\n    \"enabled\": true\n  },\n  \"pro_template\": {\n    \"enabled\": true\n  },\n  \"pro_qr\": {\n    \"enabled\": true\n  },\n  \"watermark\": {\n    \"enabled\": true\n  },\n  \"clixa_limit\": {\n    \"enabled\": true\n  },\n  \"crown\": {\n    \"enabled\": true\n  },\n  \"settings\": {\n    \"enabled\": true\n  }\n}"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{\n  \"onboarding\": {\n    \"enabled\": true\n  },\n  \"scan_warning\": {\n    \"enabled\": true\n  },\n  \"scan_limit\": {\n    \"enabled\": true\n  },\n  \"ai_limit\": {\n    \"enabled\": true\n  },\n  \"pro_template\": {\n    \"enabled\": true\n  },\n  \"pro_qr\": {\n    \"enabled\": true\n  },\n  \"watermark\": {\n    \"enabled\": true\n  },\n  \"clixa_limit\": {\n    \"enabled\": true\n  },\n  \"crown\": {\n    \"enabled\": true\n  },\n  \"settings\": {\n    \"enabled\": true\n  }\n}"
+        },
+        "iOS.": {
+          "value": "{\n  \"onboarding\": {\n    \"enabled\": true\n  },\n  \"scan_warning\": {\n    \"enabled\": true\n  },\n  \"scan_limit\": {\n    \"enabled\": true\n  },\n  \"ai_limit\": {\n    \"enabled\": true\n  },\n  \"pro_template\": {\n    \"enabled\": true\n  },\n  \"pro_qr\": {\n    \"enabled\": true\n  },\n  \"watermark\": {\n    \"enabled\": true\n  },\n  \"clixa_limit\": {\n    \"enabled\": true\n  },\n  \"crown\": {\n    \"enabled\": true\n  },\n  \"settings\": {\n    \"enabled\": true\n  }\n}"
+        }
+      },
+      "description": "Turn each paywall source on or off (onboarding, scan_warning, scan_limit, ai_limit, pro_template, pro_qr, watermark, clixa_limit, crown, settings). The limit itself still applies when its paywall is off.",
+      "valueType": "JSON"
+    },
+    "onboarding_enabled": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "OLD on/off switch for onboarding, kept only for the released app build. The new build reads onboarding_config.enabled first.",
+      "valueType": "BOOLEAN"
+    },
+    "ios_version_config": {
+      "defaultValue": {
+        "value": "{   \"min_build_number\": 0,   \"min_version_label\": \"1.0.0\",   \"latest_version_label\": \"1.0.0 (3)\" }"
+      },
+      "valueType": "JSON"
+    },
+    "plan_limits": {
+      "defaultValue": {
+        "value": "{\n  \"show_counters\": true,\n  \"plans\": {\n    \"free\": {\n      \"card_scans\": {\n        \"limit\": 5,\n        \"period\": \"lifetime\",\n        \"warn_at_remaining\": 1\n      },\n      \"ai_card\": {\n        \"limit\": 3,\n        \"period\": \"lifetime\"\n      },\n      \"qr_styles\": {\n        \"allowed\": [\n          \"classic\"\n        ]\n      },\n      \"clixa_chats\": {\n        \"limit\": 3,\n        \"period\": \"weekly\",\n        \"messages_per_chat\": 3\n      },\n      \"career_build\": {\n        \"limit\": 1,\n        \"period\": \"lifetime\"\n      },\n      \"career_optimize\": {\n        \"limit\": 1,\n        \"period\": \"lifetime\"\n      },\n      \"contacts\": {\n        \"limit\": -1\n      },\n      \"export_watermark\": true\n    },\n    \"trial\": {\n      \"card_scans\": {\n        \"limit\": -1\n      },\n      \"ai_card\": {\n        \"limit\": -1\n      },\n      \"qr_styles\": {\n        \"allowed\": \"all\"\n      },\n      \"clixa_chats\": {\n        \"limit\": 5,\n        \"period\": \"weekly\",\n        \"messages_per_chat\": -1\n      },\n      \"career_build\": {\n        \"limit\": -1\n      },\n      \"career_optimize\": {\n        \"limit\": -1\n      },\n      \"contacts\": {\n        \"limit\": -1\n      },\n      \"export_watermark\": false\n    },\n    \"monthly\": {\n      \"card_scans\": {\n        \"limit\": -1\n      },\n      \"ai_card\": {\n        \"limit\": -1\n      },\n      \"qr_styles\": {\n        \"allowed\": \"all\"\n      },\n      \"clixa_chats\": {\n        \"limit\": 5,\n        \"period\": \"weekly\",\n        \"messages_per_chat\": -1\n      },\n      \"career_build\": {\n        \"limit\": -1\n      },\n      \"career_optimize\": {\n        \"limit\": -1\n      },\n      \"contacts\": {\n        \"limit\": -1\n      },\n      \"export_watermark\": false\n    },\n    \"yearly\": {\n      \"card_scans\": {\n        \"limit\": -1\n      },\n      \"ai_card\": {\n        \"limit\": -1\n      },\n      \"qr_styles\": {\n        \"allowed\": \"all\"\n      },\n      \"clixa_chats\": {\n        \"limit\": 5,\n        \"period\": \"weekly\",\n        \"messages_per_chat\": -1\n      },\n      \"career_build\": {\n        \"limit\": -1\n      },\n      \"career_optimize\": {\n        \"limit\": -1\n      },\n      \"contacts\": {\n        \"limit\": -1\n      },\n      \"export_watermark\": false\n    }\n  }\n}"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{\n  \"show_counters\": true,\n  \"plans\": {\n    \"free\": {\n      \"card_scans\": {\n        \"limit\": 5,\n        \"period\": \"lifetime\",\n        \"warn_at_remaining\": 1\n      },\n      \"ai_card\": {\n        \"limit\": 3,\n        \"period\": \"lifetime\"\n      },\n      \"qr_styles\": {\n        \"allowed\": [\n          \"classic\"\n        ]\n      },\n      \"clixa_chats\": {\n        \"limit\": 3,\n        \"period\": \"weekly\",\n        \"messages_per_chat\": 3\n      },\n      \"career_build\": {\n        \"limit\": 1,\n        \"period\": \"lifetime\"\n      },\n      \"career_optimize\": {\n        \"limit\": 1,\n        \"period\": \"lifetime\"\n      },\n      \"contacts\": {\n        \"limit\": -1\n      },\n      \"export_watermark\": true\n    },\n    \"trial\": {\n      \"card_scans\": {\n        \"limit\": -1\n      },\n      \"ai_card\": {\n        \"limit\": -1\n      },\n      \"qr_styles\": {\n        \"allowed\": \"all\"\n      },\n      \"clixa_chats\": {\n        \"limit\": 5,\n        \"period\": \"weekly\",\n        \"messages_per_chat\": -1\n      },\n      \"career_build\": {\n        \"limit\": -1\n      },\n      \"career_optimize\": {\n        \"limit\": -1\n      },\n      \"contacts\": {\n        \"limit\": -1\n      },\n      \"export_watermark\": false\n    },\n    \"monthly\": {\n      \"card_scans\": {\n        \"limit\": -1\n      },\n      \"ai_card\": {\n        \"limit\": -1\n      },\n      \"qr_styles\": {\n        \"allowed\": \"all\"\n      },\n      \"clixa_chats\": {\n        \"limit\": 5,\n        \"period\": \"weekly\",\n        \"messages_per_chat\": -1\n      },\n      \"career_build\": {\n        \"limit\": -1\n      },\n      \"career_optimize\": {\n        \"limit\": -1\n      },\n      \"contacts\": {\n        \"limit\": -1\n      },\n      \"export_watermark\": false\n    },\n    \"yearly\": {\n      \"card_scans\": {\n        \"limit\": -1\n      },\n      \"ai_card\": {\n        \"limit\": -1\n      },\n      \"qr_styles\": {\n        \"allowed\": \"all\"\n      },\n      \"clixa_chats\": {\n        \"limit\": 5,\n        \"period\": \"weekly\",\n        \"messages_per_chat\": -1\n      },\n      \"career_build\": {\n        \"limit\": -1\n      },\n      \"career_optimize\": {\n        \"limit\": -1\n      },\n      \"contacts\": {\n        \"limit\": -1\n      },\n      \"export_watermark\": false\n    }\n  }\n}"
+        },
+        "iOS.": {
+          "value": "{\n  \"show_counters\": true,\n  \"plans\": {\n    \"free\": {\n      \"card_scans\": {\n        \"limit\": 5,\n        \"period\": \"lifetime\",\n        \"warn_at_remaining\": 1\n      },\n      \"ai_card\": {\n        \"limit\": 3,\n        \"period\": \"lifetime\"\n      },\n      \"qr_styles\": {\n        \"allowed\": [\n          \"classic\"\n        ]\n      },\n      \"clixa_chats\": {\n        \"limit\": 3,\n        \"period\": \"weekly\",\n        \"messages_per_chat\": 3\n      },\n      \"career_build\": {\n        \"limit\": 1,\n        \"period\": \"lifetime\"\n      },\n      \"career_optimize\": {\n        \"limit\": 1,\n        \"period\": \"lifetime\"\n      },\n      \"contacts\": {\n        \"limit\": -1\n      },\n      \"export_watermark\": true\n    },\n    \"trial\": {\n      \"card_scans\": {\n        \"limit\": -1\n      },\n      \"ai_card\": {\n        \"limit\": -1\n      },\n      \"qr_styles\": {\n        \"allowed\": \"all\"\n      },\n      \"clixa_chats\": {\n        \"limit\": 5,\n        \"period\": \"weekly\",\n        \"messages_per_chat\": -1\n      },\n      \"career_build\": {\n        \"limit\": -1\n      },\n      \"career_optimize\": {\n        \"limit\": -1\n      },\n      \"contacts\": {\n        \"limit\": -1\n      },\n      \"export_watermark\": false\n    },\n    \"monthly\": {\n      \"card_scans\": {\n        \"limit\": -1\n      },\n      \"ai_card\": {\n        \"limit\": -1\n      },\n      \"qr_styles\": {\n        \"allowed\": \"all\"\n      },\n      \"clixa_chats\": {\n        \"limit\": 5,\n        \"period\": \"weekly\",\n        \"messages_per_chat\": -1\n      },\n      \"career_build\": {\n        \"limit\": -1\n      },\n      \"career_optimize\": {\n        \"limit\": -1\n      },\n      \"contacts\": {\n        \"limit\": -1\n      },\n      \"export_watermark\": false\n    },\n    \"yearly\": {\n      \"card_scans\": {\n        \"limit\": -1\n      },\n      \"ai_card\": {\n        \"limit\": -1\n      },\n      \"qr_styles\": {\n        \"allowed\": \"all\"\n      },\n      \"clixa_chats\": {\n        \"limit\": 5,\n        \"period\": \"weekly\",\n        \"messages_per_chat\": -1\n      },\n      \"career_build\": {\n        \"limit\": -1\n      },\n      \"career_optimize\": {\n        \"limit\": -1\n      },\n      \"contacts\": {\n        \"limit\": -1\n      },\n      \"export_watermark\": false\n    }\n  }\n}"
+        }
+      },
+      "description": "What each plan may do (free, trial, monthly, yearly). -1 = unlimited. Pro (trial, monthly, yearly; weekly reads the same): Clixa AI chats 5 per week. Read first; cro_limits is only the fallback.",
+      "valueType": "JSON"
+    },
+    "cro_messages": {
+      "defaultValue": {
+        "value": "{\n  \"counter_scans\": \"{used} of {limit} scans used\",\n  \"counter_ai\": \"{used} of {limit} AI cards used\",\n  \"counter_clixa\": \"{used} of {limit} chats this week\",\n  \"counter_career_build\": \"{used} of {limit} profile build used\",\n  \"counter_career_optimize\": \"{used} of {limit} profile optimize used\",\n  \"watermark_link\": \"Remove watermark\",\n  \"watermark_text\": \"Made with AI Business Card Maker\"\n}"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{\n  \"counter_scans\": \"{used} of {limit} scans used\",\n  \"counter_ai\": \"{used} of {limit} AI cards used\",\n  \"counter_clixa\": \"{used} of {limit} chats this week\",\n  \"counter_career_build\": \"{used} of {limit} profile build used\",\n  \"counter_career_optimize\": \"{used} of {limit} profile optimize used\",\n  \"watermark_link\": \"Remove watermark\",\n  \"watermark_text\": \"Made with AI Business Card Maker\"\n}"
+        },
+        "iOS.": {
+          "value": "{\n  \"counter_scans\": \"{used} of {limit} scans used\",\n  \"counter_ai\": \"{used} of {limit} AI cards used\",\n  \"counter_clixa\": \"{used} of {limit} chats this week\",\n  \"counter_career_build\": \"{used} of {limit} profile build used\",\n  \"counter_career_optimize\": \"{used} of {limit} profile optimize used\",\n  \"watermark_link\": \"Remove watermark\",\n  \"watermark_text\": \"Made with AI Business Card Maker\"\n}"
+        }
+      },
+      "description": "Counter texts ('3 of 5 scans used') and the watermark texts. Headlines live in paywall_config.",
+      "valueType": "JSON"
+    }
+  }
+}

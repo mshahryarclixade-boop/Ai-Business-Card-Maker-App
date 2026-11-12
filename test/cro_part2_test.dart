@@ -93,10 +93,11 @@ void main() {
         findsOneWidget,
       );
       for (final chip in const [
-        'Unlimited AI cards',
-        'Unlimited scans',
-        'No watermark',
+        'Unlimited card scans',
+        'Design with AI, no limits',
+        'No watermark on exports',
         'All templates and QR styles',
+        'AI Business Coach',
       ]) {
         expect(find.text(chip), findsOneWidget, reason: chip);
       }
@@ -134,13 +135,19 @@ void main() {
       expect(find.textContaining('off'), findsNothing);
     });
 
-    testWidgets('the button is always "Continue"; the trial is in the fine print',
+    testWidgets('monthly: "Continue"; yearly with a real trial: "Start Free Trial"',
         (t) async {
-      // Not eligible: plain commitment line, no trial wording.
+      // Monthly is selected by default: "Continue", plain commitment line.
       await pumpPaywall(t, _sizes['phone 393x852']!);
       expect(find.text('Continue'), findsOneWidget);
+      expect(find.text('Start Free Trial'), findsNothing);
       expect(find.text('No commitment, cancel anytime'), findsOneWidget);
       expect(find.textContaining('days free'), findsNothing);
+      // Tapping Yearly turns the button into "Start Free Trial".
+      await t.tap(find.text('Yearly'));
+      await t.pump();
+      expect(find.text('Start Free Trial'), findsOneWidget);
+      expect(find.text('Continue'), findsNothing);
       await t.pumpWidget(const SizedBox());
 
       // Eligible: the yearly plan explains the trial with the store price.
@@ -148,19 +155,25 @@ void main() {
       sub.yearlyTrialDays.value = 3;
       await pumpPaywall(t, _sizes['phone 393x852']!);
       expect(find.text('Continue'), findsOneWidget);
+      await t.tap(find.text('Yearly'));
+      await t.pump();
+      expect(find.text('Start Free Trial'), findsOneWidget);
+      expect(find.text('Continue'), findsNothing);
       expect(find.text('Try 3 days free'), findsNothing);
       expect(
         find.text(r'3 days free, then $29.99/year. Cancel anytime.'),
         findsOneWidget,
       );
 
-      // Monthly has no trial.
+      // Monthly has no trial: "Continue".
       await t.tap(find.text('Monthly'));
       await t.pump();
       expect(find.text('Continue'), findsOneWidget);
+      expect(find.text('Start Free Trial'), findsNothing);
       expect(find.text('No commitment, cancel anytime'), findsOneWidget);
       await t.tap(find.text('Yearly'));
       await t.pump();
+      expect(find.text('Start Free Trial'), findsOneWidget);
       expect(find.textContaining('3 days free'), findsOneWidget);
     });
 
@@ -170,6 +183,8 @@ void main() {
       sub.yearlyTrialEligible.value = true;
       sub.yearlyTrialDays.value = 7;
       await pumpPaywall(t, _sizes['phone 393x852']!);
+      await t.tap(find.text('Yearly'));
+      await t.pump();
       expect(find.textContaining('7 days free, then'), findsOneWidget);
     });
 
@@ -188,7 +203,7 @@ void main() {
     });
 
     testWidgets('a trigger headline replaces the default', (t) async {
-      // ai_limit: "Unlimited AI cards" (Part 1) still wins over the default.
+      // pro_template has its own headline.
       size(t, _sizes['phone 393x852']!);
       await t.pumpWidget(
         GetMaterialApp(
@@ -203,7 +218,8 @@ void main() {
       await t.tap(find.text('go'));
       await t.pumpAndSettle();
       expect(find.byType(PaywallView2), findsOneWidget);
-      expect(find.text('Create and scan without limits'), findsOneWidget);
+      expect(find.text('Unlock every template'), findsOneWidget);
+      expect(find.text('Create and scan without limits'), findsNothing);
     });
 
     for (final s in _sizes.entries) {

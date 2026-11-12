@@ -1,0 +1,116 @@
+{
+  "show_counters": true,
+  "plans": {
+    "free": {
+      "card_scans": {
+        "limit": 5,
+        "period": "lifetime",
+        "warn_at_remaining": 1
+      },
+      "ai_card": {
+        "limit": 3,
+        "period": "lifetime"
+      },
+      "qr_styles": {
+        "allowed": [
+          "classic"
+        ]
+      },
+      "clixa_chats": {
+        "limit": 3,
+        "period": "weekly",
+        "messages_per_chat": 3
+      },
+      "career_build": {
+        "limit": 1,
+        "period": "lifetime"
+      },
+      "career_optimize": {
+        "limit": 1,
+        "period": "lifetime"
+      },
+      "contacts": {
+        "limit": -1
+      },
+      "export_watermark": true
+    },
+    "trial": {
+      "card_scans": {
+        "limit": -1
+      },
+      "ai_card": {
+        "limit": -1
+      },
+      "qr_styles": {
+        "allowed": "all"
+      },
+      "clixa_chats": {
+        "limit": 5,
+        "period": "weekly",
+        "messages_per_chat": -1
+      },
+      "career_build": {
+        "limit": -1
+      },
+      "career_optimize": {
+        "limit": -1
+      },
+      "contacts": {
+        "limit": -1
+      },
+      "export_watermark": false
+    },
+    "monthly": {
+      "card_scans": {
+        "limit": -1
+      },
+      "ai_card": {
+        "limit": -1
+      },
+      "qr_styles": {
+        "allowed": "all"
+      },
+      "clixa_chats": {
+        "limit": 5,
+        "period": "weekly",
+        "messages_per_chat": -1
+      },
+      "career_build": {
+        "limit": -1
+      },
+      "career_optimize": {
+        "limit": -1
+      },
+      "contacts": {
+        "limit": -1
+      },
+      "export_watermark": false
+    },
+    "yearly": {
+      "card_scans": {
+        "limit": -1
+      },
+      "ai_card": {
+        "limit": -1
+      },
+      "qr_styles": {
+        "allowed": "all"
+      },
+      "clixa_chats": {
+        "limit": 5,
+        "period": "weekly",
+        "messages_per_chat": -1
+      },
+      "career_build": {
+        "limit": -1
+      },
+      "career_optimize": {
+        "limit": -1
+      },
+      "contacts": {
+        "limit": -1
+      },
+      "export_watermark": false
+    }
+  }
+}

@@ -77,13 +77,11 @@ class ProfileBuilderFlowController extends GetxController {
   final location = TextEditingController();
   final wins = TextEditingController();
 
-  final RxString experience = '3-5'.obs;
-  final RxString goal = 'Win clients'.obs;
-  final RxSet<String> audience = <String>{
-    'Startup founders',
-    'Product managers',
-  }.obs;
-  final RxString tone = 'Professional'.obs;
+  // Nothing is selected until the user picks it ('' / empty = unselected).
+  final RxString experience = ''.obs;
+  final RxString goal = ''.obs;
+  final RxSet<String> audience = <String>{}.obs;
+  final RxString tone = ''.obs;
 
   final RxInt step = 1.obs;
 
@@ -131,11 +129,11 @@ class ProfileBuilderFlowController extends GetxController {
     company.text = (d['company'] as String?) ?? '';
     location.text = (d['location'] as String?) ?? '';
     wins.text = (d['wins'] as String?) ?? '';
-    experience.value = (d['experience'] as String?) ?? '3-5';
-    goal.value = (d['goal'] as String?) ?? 'Win clients';
+    experience.value = (d['experience'] as String?) ?? '';
+    goal.value = (d['goal'] as String?) ?? '';
     final a = d['audience'];
-    if (a is List) audience.assignAll(a.whereType<String>());
-    tone.value = (d['tone'] as String?) ?? 'Professional';
+    audience.assignAll(a is List ? a.whereType<String>() : const <String>[]);
+    tone.value = (d['tone'] as String?) ?? '';
   }
 
   /// True once the user has moved past step 1 or changed anything.
@@ -149,12 +147,10 @@ class ProfileBuilderFlowController extends GetxController {
         name.text.trim() != (p?.fullName.trim() ?? '') ||
         role.text.trim() != (p?.designation.trim() ?? '') ||
         company.text.trim() != (p?.companyName.trim() ?? '') ||
-        experience.value != '3-5' ||
-        goal.value != 'Win clients' ||
-        tone.value != 'Professional' ||
-        !(audience.length == 2 &&
-            audience.contains('Startup founders') &&
-            audience.contains('Product managers'));
+        experience.value.isNotEmpty ||
+        goal.value.isNotEmpty ||
+        tone.value.isNotEmpty ||
+        audience.isNotEmpty;
   }
 
   /// Leaving midway keeps the answers as a draft; finishing clears it.

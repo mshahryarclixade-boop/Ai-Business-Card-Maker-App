@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/services/recent_designs_service.dart';
 import '../../home/widgets/share_card_sheet.dart';
+import '../../profile_setup/service/first_card_flow.dart';
 
 import '../../home/controller/home_controller.dart';
 import '../../scan card and qr/view/scan_card_view.dart';
@@ -20,17 +21,22 @@ class MainNavController extends GetxController {
     final next = pendingFirstCardAction;
     pendingFirstCardAction = null;
     if (next == null) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       switch (next) {
         case FirstCardNext.scan:
-          onScanTap();
+          await onScanTap(); // completes when the user comes back
         case FirstCardNext.share:
-          if (!Get.isRegistered<RecentDesignsService>()) return;
-          final service = Get.find<RecentDesignsService>();
-          if (service.designs.isEmpty) return;
-          final d = service.designs.first;
-          showShareCardSheet(frontImage: d.file, backImage: d.backFile);
+          if (Get.isRegistered<RecentDesignsService>()) {
+            final service = Get.find<RecentDesignsService>();
+            if (service.designs.isNotEmpty) {
+              final d = service.designs.first;
+              // Completes when the sheet and the option chosen in it are done.
+              await showShareCardSheet(frontImage: d.file, backImage: d.backFile);
+            }
+          }
       }
+      // Back from the action: the paywall, then the notification permission.
+      await FirstCardFlow.afterAction();
     });
   }
 
@@ -53,9 +59,9 @@ class MainNavController extends GetxController {
     changeTab(index);
   }
 
-  void onScanTap() {
+  Future<void> onScanTap() async {
     _cancelHomeTemplatePreview();
-    Get.to(
+    await Get.to(
           () => const ScanCardView(),
       transition: Transition.rightToLeft,
     );

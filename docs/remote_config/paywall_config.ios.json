@@ -1,0 +1,88 @@
+{
+  "enabled": true,
+  "show_on_launch": true,
+  "trial": {
+    "button_label": "Start {days}-Day Free Trial",
+    "no_trial_button_label": "Continue",
+    "benefit_text": "{days} days completely free, no charge today",
+    "info_line_1": "No payment today, {yearly_price}/year after trial",
+    "info_line_2": "Cancel anytime before trial ends",
+    "fine_print": "{days} days free, then {yearly_price}/year. Cancel anytime."
+  },
+  "screen1": {
+    "title_line1": "Start creating",
+    "title_line2": "for free",
+    "subtitle": "Unlock everything with Pro",
+    "features": [
+      {
+        "icon": "scan",
+        "text": "Unlimited card scans"
+      },
+      {
+        "icon": "ai",
+        "text": "Design with AI, no limits"
+      },
+      {
+        "icon": "watermark",
+        "text": "No watermark on exports"
+      },
+      {
+        "icon": "templates",
+        "text": "All templates and QR styles"
+      },
+      {
+        "icon": "coach",
+        "text": "AI Business Coach"
+      }
+    ],
+    "plan_title": "Yearly Pro"
+  },
+  "screen2": {
+    "title": "Create and scan without limits",
+    "subtitle": "Get unlimited access to every feature",
+    "features": [
+      "Unlimited card scans",
+      "Design with AI, no limits",
+      "No watermark on exports",
+      "All templates and QR styles",
+      "AI Business Coach"
+    ],
+    "button_label": "Continue",
+    "trial_button_label": "Start Free Trial",
+    "commitment_text": "No commitment, cancel anytime"
+  },
+  "headlines": {
+    "default": "Create and scan without limits",
+    "onboarding": "Create and scan without limits",
+    "scan_warning": "Keep scanning with Pro",
+    "scan_limit": "Keep scanning with Pro",
+    "ai_limit": "Keep creating with AI",
+    "pro_template": "Unlock every template",
+    "pro_qr": "Unlock every QR style",
+    "watermark": "Export without the watermark",
+    "clixa_limit": "Keep talking to your AI coach",
+    "crown": "Create and scan without limits",
+    "settings": "Create and scan without limits",
+    "career": "Get found by the right people"
+  },
+  "plans": {
+    "monthly": {
+      "visible": true,
+      "title": "Monthly",
+      "period": "/month",
+      "description": "Full access to all Pro features"
+    },
+    "yearly": {
+      "visible": true,
+      "title": "Yearly",
+      "badge": "Most Popular",
+      "period": "/year",
+      "per_month_note": "{price}/month, billed yearly"
+    }
+  },
+  "footer": {
+    "restore": "Restore Purchase",
+    "terms": "Terms of Use",
+    "privacy": "Privacy Policy"
+  }
+}

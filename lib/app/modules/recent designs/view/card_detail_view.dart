@@ -1,3 +1,4 @@
+import '../../paywall/widgets/card_watermark.dart';
 import '../../paywall/services/paywall_triggers.dart';
 import '../../paywall/services/watermark_service.dart';
 import '../../../core/widgets/tap_target.dart';
@@ -31,6 +32,9 @@ class CardDetailView extends StatelessWidget {
 
   Future<void> _downloadCard(RecentDesign design) async {
     try {
+      // Free users are asked about the watermark first (Pro: no dialog), as on Home.
+      if (!await WatermarkService.confirmExport(screen: 'card_detail')) return;
+
       final hasAccess = await Gal.hasAccess();
       if (!hasAccess) {
         final granted = await Gal.requestAccess();
@@ -190,22 +194,6 @@ class CardDetailView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (WatermarkService.applies)
-                      TextButton(
-                        onPressed: () => PaywallTriggers.show(
-                          PaywallTrigger.watermark,
-                          screen: 'card_detail',
-                        ),
-                        child: Text(
-                          croText('watermark_link'),
-                          style: const TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
                     if (!current.isAiGenerated) ...[
                       const SizedBox(height: 12),
                       SizedBox(
@@ -261,6 +249,8 @@ class _DesignPreviewCard extends StatelessWidget {
             ),
           ],
         ),
+        // Free users see the watermark on the preview.
+        child: const Stack(fit: StackFit.expand, children: [CardWatermark()]),
       ),
     );
   }

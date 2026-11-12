@@ -10,7 +10,7 @@ import 'package:get_storage/get_storage.dart';
 import '../../custom_create/view/card_editor_view.dart';
 import '../../profile/model/profile_model.dart';
 import '../../profile/service/profile_repository.dart';
-import '../../../core/services/remote_config_service.dart';
+import '../../paywall/models/cro_config_model.dart';
 import '../../paywall/services/free_limits.dart';
 import '../model/template_item.dart';
 import '../../../core/translations/tr_extension.dart';
@@ -187,9 +187,9 @@ class TemplateController extends GetxController {
         return a.$2.compareTo(b.$2);
       });
 
-      // Free plan: the first `templates_free` templates (half per
+      // Free plan: the first `CroLimits.freeTemplates` templates (half per
       // orientation, so both tabs keep free ones); the rest need Pro.
-      final perOrientation = (RemoteConfigService().croLimits.templatesFree + 1) ~/ 2;
+      final perOrientation = (CroLimits.freeTemplates + 1) ~/ 2;
       final seen = <TemplateOrientation, int>{};
       final marked = <TemplateItem>[];
       for (final e in entries) {

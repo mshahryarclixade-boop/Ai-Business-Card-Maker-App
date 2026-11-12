@@ -1,0 +1,10 @@
+{
+  "products": {
+    "yearly": "business_card_yearly",
+    "monthly": "business_card_monthly"
+  },
+  "trial": {
+    "enabled": true,
+    "days": 3
+  }
+}

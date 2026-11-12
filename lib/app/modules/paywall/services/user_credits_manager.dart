@@ -3,9 +3,10 @@ import 'dart:developer';
 import 'dart:math' show max;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_udid/flutter_udid.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/services/device_identity.dart';
 import '../../../core/services/remote_config_service.dart';
 import '../models/credit_config_model.dart';
 
@@ -21,7 +22,6 @@ class UserCreditsManager {
   static const String planTierKey = 'plan_tier';
   static const String balanceKey = 'credit_balance';
   static const String initializedKey = 'initialized';
-  static const String _deviceUdidKey = 'device_udid';
 
   /// Set whenever a write to Firestore fails and falls back to a
   /// local-only update. While true, the local cache holds the most recent
@@ -55,25 +55,63 @@ class UserCreditsManager {
   static CreditPools Function() creditPoolsProvider = () =>
       RemoteConfigService().creditPools;
 
-  Future<String> _deviceUdid() async {
-    final prefs = await SharedPreferences.getInstance();
-    final cached = prefs.getString(_deviceUdidKey);
-    if (cached != null) return cached;
+  /// The user id the credit record and the AI usage record are kept under:
+  /// the device's actual id (see [DeviceIdentity]).
+  Future<String> _deviceUdid() => DeviceIdentity.userId();
 
-    final udid = await FlutterUdid.consistentUdid;
-    await prefs.setString(_deviceUdidKey, udid);
-    return udid;
+  /// The user id, or null if it cannot be read.
+  Future<String?> udidOrNull() => DeviceIdentity.userIdOrNull();
+
+  static const String _usersMigratedKey = 'users_doc_migrated_v2';
+
+  /// Moves the credit record saved under the old SHA-256 id to the device id
+  /// (once). The old document is kept and marked, never deleted. If the new
+  /// record already exists nothing is overwritten. Offline / failed: tried
+  /// again on the next start.
+  Future<void> migrateLegacyUserDoc() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_usersMigratedKey) ?? false) return;
+    try {
+      final id = await DeviceIdentity.rawDeviceId();
+      final legacy = await DeviceIdentity.legacyHashId();
+      await moveLegacyUserDoc(
+        id: id,
+        legacy: legacy,
+        read: (docId) async {
+          final snap = await _userDoc(docId).get();
+          return snap.exists ? snap.data() : null;
+        },
+        write: (docId, data, {bool merge = false}) =>
+            _userDoc(docId).set(data, merge ? SetOptions(merge: true) : null),
+      );
+      await prefs.setBool(_usersMigratedKey, true);
+    } catch (e) {
+      log('credit record migration postponed: $e', name: 'UserCreditsManager');
+    }
   }
 
-  /// This device's id (the one the credit record and the AI usage record are
-  /// kept under), or null if it cannot be read.
-  Future<String?> udidOrNull() async {
-    try {
-      return await _deviceUdid();
-    } catch (e) {
-      log('device id unavailable: $e', name: 'UserCreditsManager');
-      return null;
-    }
+  /// The move itself (storage passed in, so it is testable). Returns true when
+  /// a record was moved.
+  @visibleForTesting
+  static Future<bool> moveLegacyUserDoc({
+    required String id,
+    required String legacy,
+    required Future<Map<String, dynamic>?> Function(String docId) read,
+    required Future<void> Function(
+      String docId,
+      Map<String, dynamic> data, {
+      bool merge,
+    })
+    write,
+  }) async {
+    if (id == legacy) return false;
+    if (await read(id) != null) return false; // never overwrite the new record
+    final old = await read(legacy);
+    if (old == null || old['migratedTo'] != null) return false;
+    await write(id, {...old, 'migratedFrom': legacy});
+    await write(legacy, {'migratedTo': id}, merge: true);
+    log('moved the credit record $legacy -> $id', name: 'UserCreditsManager');
+    return true;
   }
 
   DocumentReference<Map<String, dynamic>> _userDoc(String udid) =>
@@ -401,6 +439,7 @@ class UserCreditsManager {
   /// exists the prior balance/plan is restored; otherwise the free pool is
   /// granted and recorded.
   Future<void> initUser() async {
+    await migrateLegacyUserDoc();
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool(initializedKey) ?? false) return;
 

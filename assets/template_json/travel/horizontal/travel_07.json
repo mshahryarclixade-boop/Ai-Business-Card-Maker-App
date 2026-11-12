@@ -224,7 +224,10 @@
         "italic": false
       }
     ],
-    "backgroundColor": 4294374379
+    "backgroundColor": 4294374379,
+    "defaultLogoIds": [
+      "travel_07_f_2"
+    ]
   },
   "back": {
     "elements": [

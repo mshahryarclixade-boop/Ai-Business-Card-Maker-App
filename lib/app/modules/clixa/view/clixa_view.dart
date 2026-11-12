@@ -1,3 +1,4 @@
+import '../../../core/services/user_sync_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -42,6 +43,7 @@ void startClixaChat(
   bool replace = false,
 }) {
   final c = ClixaController.to;
+  UserSync.refresh(); // the chat counter lives in Firestore (cache until it answers)
   if (!c.canStartChat) {
     showDailyLimitSheet(
       context,
@@ -140,12 +142,13 @@ class ClixaView extends StatelessWidget {
                       Flexible(
                         child: Obx(
                           () => Text(
-                            c.isPro
+                            c.unlimitedChats
                                 ? 'clixa_unlimited_chats'.tr
-                                : 'clixa_free_left'.trParams({
-                                    'left': c.freeChatsLeft,
-                                    'total': ClixaController.freeChatsPerWeek,
-                                  }),
+                                : (c.isPro ? 'clixa_pro_left' : 'clixa_free_left')
+                                      .trParams({
+                                        'left': c.freeChatsLeft,
+                                        'total': c.chatsPerWeek,
+                                      }),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.end,

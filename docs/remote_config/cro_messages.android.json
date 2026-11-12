@@ -1,0 +1,9 @@
+{
+  "counter_scans": "{used} of {limit} scans used",
+  "counter_ai": "{used} of {limit} AI cards used",
+  "counter_clixa": "{used} of {limit} chats this week",
+  "counter_career_build": "{used} of {limit} profile build used",
+  "counter_career_optimize": "{used} of {limit} profile optimize used",
+  "watermark_link": "Remove watermark",
+  "watermark_text": "Made with Business Card Maker"
+}

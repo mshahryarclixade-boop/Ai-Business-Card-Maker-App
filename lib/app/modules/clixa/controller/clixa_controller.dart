@@ -48,7 +48,19 @@ class ClixaController extends GetxController {
     return UsageService.to.remaining(UsageFeature.clixaChat);
   }
 
-  bool get canStartChat => isPro || freeChatsLeft > 0;
+  /// Pro without a chat limit (Remote Config `plan_limits`: -1).
+  bool get unlimitedChats {
+    UsageService.to.revision.value;
+    return UsageService.to.unlimitedForPro(UsageFeature.clixaChat);
+  }
+
+  /// This week's chat allowance for the user's plan.
+  int get chatsPerWeek => UsageService.to.limitOf(UsageFeature.clixaChat);
+
+  bool get canStartChat {
+    UsageService.to.revision.value;
+    return UsageService.to.canUse(UsageFeature.clixaChat);
+  }
 
   /// Starts a chat. It uses one of today's free chats only once the first
   /// message is answered (see [send]), so opening a chat and leaving costs

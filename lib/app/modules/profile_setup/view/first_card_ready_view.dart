@@ -7,8 +7,7 @@ import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
 import '../../../routes/app_routes.dart';
-import '../../paywall/services/onboarding_experiment.dart';
-import '../../paywall/services/paywall_triggers.dart';
+import '../service/first_card_flow.dart';
 import '../../main_nav/controller/main_nav_controller.dart';
 import '../widgets/profile_primary_button.dart';
 import '../widgets/profile_setup_layout.dart';
@@ -26,12 +25,10 @@ class FirstCardReadyView extends StatelessWidget {
 
   static final _alwaysObservable = false.obs;
 
-  /// 50/50 test: half of the users see the (skippable) paywall here; closing
-  /// it - or not seeing it - goes on to Home and the chosen next step.
+  /// Opens Home with the chosen action; the paywall and then the notification
+  /// permission come AFTER the action, when the user returns (FirstCardFlow).
   Future<void> _continue(FirstCardNext next) async {
-    if (OnboardingExperiment().showsPaywall) {
-      await PaywallTriggers.show(PaywallTrigger.onboarding, screen: 'first_card_ready');
-    }
+    FirstCardFlow.begin();
     MainNavController.pendingFirstCardAction = next;
     Get.offAllNamed(Routes.MAIN);
   }

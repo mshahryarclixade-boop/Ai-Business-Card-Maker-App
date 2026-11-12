@@ -1,3 +1,4 @@
+import '../../../core/services/user_sync_service.dart';
 import 'dart:convert';
 
 import 'package:get/get.dart';
@@ -95,6 +96,7 @@ abstract final class QrStore {
       entries[i] = e;
     } else {
       entries.insert(0, e);
+      UserSync.track('qr', detail: 'created');
       selectedId.value = null; // a new code is shown first, as before
     }
     introSeen.value = true;

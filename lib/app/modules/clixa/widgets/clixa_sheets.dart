@@ -62,7 +62,7 @@ Future<void> showClixaUpgrade(
   context,
   onUnlocked: onUnlocked,
   screen: screen,
-  title: 'clixa_unlock_title'.tr,
+  title: croText('expert_panel_headline'),
   header: const ExpertAvatars(size: 40, overlap: 12),
   perkKeys: const [
     'clixa_perk_1',
@@ -187,12 +187,13 @@ Future<void> showStartChatSheet(
       children: [
         _Title('clixa_start_sheet_title'.tr),
         _Body(
-          c.isPro
+          c.unlimitedChats
               ? 'clixa_start_sheet_message_pro'.tr
-              : 'clixa_start_sheet_message'.trParams({
-                  'left': c.freeChatsLeft,
-                  'total': ClixaController.freeChatsPerWeek,
-                }),
+              : (c.isPro ? 'clixa_pro_left' : 'clixa_start_sheet_message')
+                    .trParams({
+                      'left': c.freeChatsLeft,
+                      'total': c.chatsPerWeek,
+                    }),
         ),
         for (var i = 0; i < ClixaMode.values.length; i++) ...[
           if (i > 0) const Divider(height: 1, color: AppColors.pillBorder),
@@ -312,17 +313,27 @@ Future<void> showDailyLimitSheet(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _Title(
-            'clixa_limit_day_title'.trParams({
-              'total': ClixaController.freeChatsPerWeek,
-            }),
+            ClixaController.to.isPro
+                ? 'clixa_limit_pro_title'.tr
+                : 'clixa_limit_day_title'.trParams({
+                    'total': ClixaController.freeChatsPerWeek,
+                  }),
           ),
-          _Body('clixa_limit_day_message'.tr),
-          _Primary('clixa_get_unlimited_chats'.tr, () {
-            Navigator.of(ctx).pop();
-            // The weekly limit is the `clixa_limit` paywall (CRO plan).
-            PaywallTriggers.show(PaywallTrigger.clixaLimit, screen: 'clixa');
-          }),
-          const SizedBox(height: 10),
+          _Body(
+            (ClixaController.to.isPro
+                    ? 'clixa_limit_pro_message'
+                    : 'clixa_limit_day_message')
+                .tr,
+          ),
+          // A Pro user has nothing to upgrade to: no paywall button.
+          if (!ClixaController.to.isPro) ...[
+            _Primary('clixa_get_unlimited_chats'.tr, () {
+              Navigator.of(ctx).pop();
+              // The weekly limit is the `clixa_limit` paywall (CRO plan).
+              PaywallTriggers.show(PaywallTrigger.clixaLimit, screen: 'clixa');
+            }),
+            const SizedBox(height: 10),
+          ],
           _Outline('clixa_continue_saved'.tr, () {
             Navigator.of(ctx).pop();
             onContinueSaved();

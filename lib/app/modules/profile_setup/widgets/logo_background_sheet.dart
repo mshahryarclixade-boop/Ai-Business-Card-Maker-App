@@ -1,5 +1,4 @@
-import '../../paywall/services/free_limits.dart';
-import '../../paywall/services/usage_service.dart';
+import '../../../core/services/user_sync_service.dart';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -44,8 +43,6 @@ class _LogoBackgroundSheetState extends State<_LogoBackgroundSheet> {
   bool _failed = false;
 
   Future<void> _remove() async {
-    // 1 free removal; after that it is a Pro feature (the logo stays as is).
-    if (!await FreeLimits.ensure(UsageFeature.bgRemover, screen: 'business_details')) return;
     if (!mounted) return;
     setState(() {
       _step = _Step.working;
@@ -58,13 +55,7 @@ class _LogoBackgroundSheetState extends State<_LogoBackgroundSheet> {
       result = null;
     }
     if (!mounted) return;
-    if (result != null) {
-      UsageService.to.consume(
-        UsageFeature.bgRemover,
-        dedupeKey: 'bg_${DateTime.now().microsecondsSinceEpoch}',
-        source: 'logo_bg',
-      );
-    }
+    if (result != null) UserSync.track('bg_remover', detail: 'logo');
     setState(() {
       _processed = result;
       _failed = result == null;

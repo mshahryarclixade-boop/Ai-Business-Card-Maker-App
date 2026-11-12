@@ -24,10 +24,16 @@ class TemplateSideData {
   final int? backgroundColor;
   final List<CardElement> elements;
 
+  /// Ids of the shapes that draw this template's OWN logo mark (its icon next
+  /// to the name). They are hidden when the user uploaded a logo, which then
+  /// takes their place.
+  final List<String> defaultLogoIds;
+
   const TemplateSideData({
     this.background = '',
     this.backgroundColor,
     required this.elements,
+    this.defaultLogoIds = const [],
   });
 
   /// A side as the editor saves it in `designData` (a background colour, a
@@ -139,6 +145,10 @@ class TemplateData {
       background: d['background'] as String? ?? '',
       backgroundColor: (d['backgroundColor'] as num?)?.toInt(),
       elements: els,
+      defaultLogoIds: [
+        for (final id in (d['defaultLogoIds'] as List<dynamic>? ?? const []))
+          id as String,
+      ],
     );
   }
 
@@ -185,11 +195,19 @@ class TemplateData {
   /// value is uppercased too, to match the design.
   static List<CardElement> fillElements(
     List<CardElement> els,
-    Map<String, String> values,
-  ) {
+    Map<String, String> values, {
+    Iterable<String> defaultLogoIds = const [],
+  }) {
     final out = <CardElement>[];
+    // The user uploaded a logo: it REPLACES the template's own mark (its icon
+    // and any monogram) and takes its place. Only one logo is shown. Without an
+    // uploaded logo the template's default stays.
+    final uploadedLogo = (values['logo'] ?? '').isNotEmpty;
+    final marks = uploadedLogo ? defaultLogoIds.toSet() : const <String>{};
+    final markArea = marks.isEmpty ? null : _unionBox(els.where((e) => marks.contains(e.id)));
     for (final e in els) {
       final key = e.field;
+      if (uploadedLogo && (marks.contains(e.id) || _isTemplateOwnLogo(e))) continue;
       if (key == 'logo' && e.type == CardElementType.image) {
         final logo = values['logo'];
         // The caller does not handle logos (first card, AI frames): untouched.
@@ -200,7 +218,7 @@ class TemplateData {
         if (logo.isEmpty) continue; // no logo: no empty slot
         out.add(
           _logoInSlot(
-            e,
+            markArea == null ? e : _slotOver(e, markArea),
             logo,
             double.tryParse(values['logo_aspect'] ?? '') ?? 1,
           ),
@@ -264,7 +282,39 @@ class TemplateData {
     ),
   );
 
+  static Rect? _unionBox(Iterable<CardElement> els) {
+    Rect? r;
+    for (final e in els) {
+      final b = e.position & Size(e.width, e.height);
+      r = r == null ? b : r.expandToInclude(b);
+    }
+    return r;
+  }
+
+  /// The logo slot moved onto the area of the template's own mark: a square the
+  /// size of the mark (at least 32, at most 56), centred on it.
+  static CardElement _slotOver(CardElement slot, Rect mark) {
+    final side = math.max(mark.width, mark.height).clamp(32.0, 56.0);
+    return slot.copyWith(
+      position: Offset(mark.center.dx - side / 2, mark.center.dy - side / 2),
+      width: side,
+      height: side,
+    );
+  }
+
+  /// A mark that belongs to the template itself (not the user's logo slot): its
+  /// big monogram letter (`initial`) or a bundled logo image without the `logo`
+  /// field.
+  static bool _isTemplateOwnLogo(CardElement e) =>
+      (e.type == CardElementType.text && e.field == 'initial') ||
+      (e.type == CardElementType.image &&
+          e.field != 'logo' &&
+          e.imageAsset != null &&
+          e.imageAsset!.contains('template_logos'));
+
   /// The logo, as large as the slot allows but never stretched, centred in it.
+  /// A bundled default logo the slot may carry is dropped: the uploaded file
+  /// is what shows (an asset would be drawn over it).
   static CardElement _logoInSlot(CardElement slot, String path, double aspect) {
     final box = math.min(slot.width, slot.height);
     final w = aspect >= 1 ? box : box * aspect;
@@ -275,7 +325,7 @@ class TemplateData {
       height: h,
       position:
           slot.position + Offset((slot.width - w) / 2, (slot.height - h) / 2),
-    );
+    )..imageAsset = null;
   }
 
   /// Keeps a one-line text inside the card: the font size is reduced only
@@ -309,12 +359,20 @@ class TemplateData {
     front: TemplateSideData(
       background: front.background,
       backgroundColor: front.backgroundColor,
-      elements: fillElements(front.elements, values),
+      elements: fillElements(
+        front.elements,
+        values,
+        defaultLogoIds: front.defaultLogoIds,
+      ),
     ),
     back: TemplateSideData(
       background: back.background,
       backgroundColor: back.backgroundColor,
-      elements: fillElements(back.elements, values),
+      elements: fillElements(
+        back.elements,
+        values,
+        defaultLogoIds: back.defaultLogoIds,
+      ),
     ),
   );
 

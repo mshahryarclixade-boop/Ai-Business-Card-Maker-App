@@ -313,6 +313,8 @@ class _FeatureCard extends StatelessWidget {
     'templates' => Icons.layers_outlined,
     'qr' => Icons.qr_code_scanner_rounded,
     'bg' => Icons.auto_fix_high_rounded,
+    'watermark' => Icons.water_drop_outlined,
+    'coach' => Icons.psychology_outlined,
     _ => Icons.check_circle_outline_rounded,
   };
 

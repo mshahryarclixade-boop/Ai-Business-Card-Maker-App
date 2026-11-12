@@ -378,7 +378,10 @@
         "italic": false
       }
     ],
-    "backgroundColor": 4294242792
+    "backgroundColor": 4294242792,
+    "defaultLogoIds": [
+      "travel_01_f_plane"
+    ]
   },
   "back": {
     "elements": [
@@ -559,6 +562,9 @@
         "italic": false
       }
     ],
-    "backgroundColor": 4280771797
+    "backgroundColor": 4280771797,
+    "defaultLogoIds": [
+      "travel_01_b_plane"
+    ]
   }
 }

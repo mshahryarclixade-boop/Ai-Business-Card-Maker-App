@@ -9,28 +9,30 @@ import '../view/paywall_screen.dart';
 /// The CRO plan's paywall triggers, each with its source tag (analytics).
 enum PaywallTrigger {
   /// First card ready, before "Go to Home": skippable, X visible at once.
-  onboarding('onboarding', plans: false, skippable: true),
+  onboarding('onboarding', plans: true, skippable: true),
 
   /// The second-last free scan: skippable warning.
-  scanWarning('scan_warning', plans: false, skippable: true),
+  scanWarning(
+    'scan_warning',
+    plans: true,
+    skippable: true,
+    headline: 'scan_limit_headline',
+  ),
 
   /// No free scan left.
-  scanLimit('scan_limit', plans: false, headline: 'scan_limit_headline'),
+  scanLimit('scan_limit', plans: true, headline: 'scan_limit_headline'),
 
   /// The last free AI card was made, or none is left.
-  aiLimit('ai_limit', plans: false, headline: 'ai_limit_headline'),
+  aiLimit('ai_limit', plans: true, headline: 'ai_limit_headline'),
 
-  proTemplate('pro_template', plans: true),
-  proQr('pro_qr', plans: true),
-
-  /// Background remover after its free use.
-  proBg('pro_bg', plans: true),
+  proTemplate('pro_template', plans: true, headline: 'pro_template_headline'),
+  proQr('pro_qr', plans: true, headline: 'pro_qr_headline'),
 
   /// "Remove watermark" on the export screen.
-  watermark('watermark', plans: true),
+  watermark('watermark', plans: true, headline: 'watermark_headline'),
 
   /// Clixa chat limit.
-  clixaLimit('clixa_limit', plans: true),
+  clixaLimit('clixa_limit', plans: true, headline: 'clixa_limit_headline'),
 
   /// Any crown button (Home first).
   crown('crown', plans: true),
@@ -84,7 +86,14 @@ abstract final class PaywallTriggers {
     return openPaywall(
       source: t.source,
       plans: t.plans,
-      headline: croText(t.headline ?? 'default_headline'),
+      // Remote Config's paywall_config.headlines first, else the built-in
+      // (translated) headline.
+      headlineBuilder: () =>
+          RemoteConfigService().paywallConfig.headlineFor(
+            t.source,
+            generic: t.headline == null,
+          ) ??
+          croText(t.headline ?? 'default_headline'),
       skippable: t.skippable,
       screen: screen,
     );

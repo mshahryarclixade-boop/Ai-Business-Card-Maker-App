@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ui' show Locale;
 
 import 'package:flutter/foundation.dart' show ValueNotifier;
-import 'package:flutter/widgets.dart' show Element, WidgetsBinding;
+import 'package:flutter/widgets.dart'
+    show Element, WidgetsBinding, WidgetsBindingObserver;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/date_symbol_data_local.dart' show initializeDateFormatting;
@@ -70,10 +72,11 @@ abstract final class AppStrings {
         savedChoice ??
         resolve(WidgetsBinding.instance.platformDispatcher.locale);
     await _use(tag);
-    // Month names etc. for every shipped language (used by DateFormat).
-    try {
-      await initializeDateFormatting();
-    } catch (_) {}
+    // Month names etc. for every shipped language (used by DateFormat). This
+    // takes a while and nothing needs it for the first frame: not awaited.
+    unawaited(
+      initializeDateFormatting().catchError((Object _) {}),
+    );
     changes.value = language;
   }
 
@@ -143,6 +146,18 @@ abstract final class AppStrings {
 
   static bool isSupported(String tag) => assetByLanguage.containsKey(tag);
 
+  static final _DeviceLanguageWatcher _watcher = _DeviceLanguageWatcher();
+
+  /// While "System default" is chosen, follow the phone's language live:
+  /// changing it in the system settings while the app is open switches the
+  /// app (and every Remote Config text) without a restart. A language picked
+  /// in the app is never overridden. Call once after [init].
+  static void followDeviceLanguage() {
+    WidgetsBinding.instance
+      ..removeObserver(_watcher)
+      ..addObserver(_watcher);
+  }
+
   static Future<void> _use(String tag) async {
     await _loadAsset(fallbackLanguage);
     if (tag != fallbackLanguage) await _loadAsset(tag);
@@ -191,4 +206,14 @@ abstract final class AppStrings {
       _loaded[fallbackLanguage]?[key] ??
       byLanguage[fallbackLanguage]![key] ??
       key;
+}
+
+class _DeviceLanguageWatcher with WidgetsBindingObserver {
+  @override
+  void didChangeLocales(List<Locale>? locales) {
+    if (AppStrings.savedChoice != null) return; // the user's own choice wins
+    final device = WidgetsBinding.instance.platformDispatcher.locale;
+    if (AppStrings.resolve(device) == AppStrings.language) return;
+    AppStrings.useSystemDefault();
+  }
 }

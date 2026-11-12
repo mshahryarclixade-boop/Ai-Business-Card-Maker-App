@@ -102,6 +102,21 @@ void main() {
     await shot(t, 'cs08_step1');
   });
 
+  testWidgets('every option starts unselected on all three screens', (t) async {
+    await pump(t, const ProfileBuilderView(isPro: false));
+    final c = Get.find<ProfileBuilderFlowController>();
+    expect([c.experience.value, c.goal.value, c.tone.value], ['', '', '']);
+    expect(c.audience, isEmpty);
+    expect(c.hasProgress, isFalse);
+    c.tone.value = 'Bold';
+    expect(c.hasProgress, isTrue); // a pick counts as progress (draft kept)
+    c.tone.value = '';
+    // A saved draft without choices restores no choices either.
+    c.applyDraft({'name': 'A'});
+    expect([c.experience.value, c.goal.value, c.tone.value], ['', '', '']);
+    expect(c.audience, isEmpty);
+  });
+
   testWidgets('steps 2 and 3, back arrow, audience cap, free note', (t) async {
     await pump(t, const ProfileBuilderView(isPro: false));
     await t.tap(find.text('Continue'));
@@ -111,10 +126,17 @@ void main() {
     expect(find.byIcon(Icons.arrow_back_rounded), findsOneWidget);
     await shot(t, 'cs10_step2');
 
-    // Startup founders + Product managers are preselected; a 3rd is allowed,
-    // a 4th is ignored.
+    // Nothing is preselected (not even Startup founders / Product managers /
+    // Win clients / 3-5 years / Professional); up to 3 can be picked, a 4th is
+    // ignored.
     final c = Get.find<ProfileBuilderFlowController>();
+    expect(c.audience, isEmpty);
+    expect(c.goal.value, '');
+    expect(c.experience.value, '');
+    expect(c.tone.value, '');
     await t.tap(find.text('Recruiters'));
+    await t.tap(find.text('Startup founders'));
+    await t.tap(find.text('Product managers'));
     await t.tap(find.text('Investors'));
     await t.pump();
     expect(c.audience.length, 3);

@@ -1,6 +1,5 @@
 import '../../../core/services/remote_config_service.dart';
 import '../../paywall/services/free_limits.dart';
-import '../../paywall/services/paywall_triggers.dart';
 import '../../paywall/services/usage_service.dart';
 import '../../../core/services/permission_gate.dart';
 import 'dart:io';
@@ -280,7 +279,7 @@ class _ScanCardViewState extends State<ScanCardView> with WidgetsBindingObserver
     usage.consume(UsageFeature.scan, dedupeKey: savedPath, source: 'scan');
     final warnAt = RemoteConfigService().croLimits.scanWarningRemaining;
     if (!wasPro && warnAt > 0 && usage.remaining(UsageFeature.scan) == warnAt) {
-      await PaywallTriggers.show(PaywallTrigger.scanWarning, screen: 'scan');
+      await FreeLimits.promptScanWarning(screen: 'scan');
     }
     if (!mounted) return;
     _goToCreateContact(data);

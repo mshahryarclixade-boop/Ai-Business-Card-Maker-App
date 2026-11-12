@@ -5,10 +5,12 @@ import 'package:get/get.dart' hide Trans;
 import 'package:intl/intl.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
+import '../../../core/services/remote_config_service.dart';
 import '../controller/subscription_controller.dart';
 import '../services/revenue_cat_service.dart';
 
 import '../../../core/translations/tr_extension.dart';
+import '../../../core/utils/localized_text.dart';
 
 /// Paywall copy and display settings, delivered as one JSON parameter
 /// (`paywall_config`) in Firebase Remote Config.
@@ -50,11 +52,11 @@ class PaywallConfig {
       'title_line2': 'for free',
       'subtitle': 'Unlock everything with Pro',
       'features': [
-        {'icon': 'ai', 'text': 'Unlimited AI Card Generation'},
-        {'icon': 'scan', 'text': 'Scan Unlimited Cards'},
-        {'icon': 'templates', 'text': '50+ Premium Templates'},
-        {'icon': 'qr', 'text': 'Scan any QR Code'},
-        {'icon': 'bg', 'text': 'Remove Background'},
+        {'icon': 'scan', 'text': 'Unlimited card scans'},
+        {'icon': 'ai', 'text': 'Design with AI, no limits'},
+        {'icon': 'watermark', 'text': 'No watermark on exports'},
+        {'icon': 'templates', 'text': 'All templates and QR styles'},
+        {'icon': 'coach', 'text': 'AI Business Coach'},
       ],
       'plan_title': 'Yearly Pro',
       'save_badge': 'Save 64%',
@@ -64,15 +66,34 @@ class PaywallConfig {
     'screen2': {
       'title': 'Create and scan without limits',
       'subtitle': 'Get unlimited access to every feature',
-      // Four short, outcome-led highlights (CRO plan).
+      // The five feature points (CRO plan).
       'features': [
-        'Unlimited AI cards',
-        'Unlimited scans',
-        'No watermark',
+        'Unlimited card scans',
+        'Design with AI, no limits',
+        'No watermark on exports',
         'All templates and QR styles',
+        'AI Business Coach',
       ],
+      // Monthly selected (or no trial available): "Continue".
       'button_label': 'Continue',
+      // Yearly selected and the store really offers the trial.
+      'trial_button_label': 'Start Free Trial',
       'commitment_text': 'No commitment, cancel anytime',
+    },
+    // Headline per paywall source (a missing source uses its built-in one).
+    'headlines': {
+      'default': 'Create and scan without limits',
+      'onboarding': 'Create and scan without limits',
+      'scan_warning': 'Keep scanning with Pro',
+      'scan_limit': 'Keep scanning with Pro',
+      'ai_limit': 'Keep creating with AI',
+      'pro_template': 'Unlock every template',
+      'pro_qr': 'Unlock every QR style',
+      'watermark': 'Export without the watermark',
+      'clixa_limit': 'Keep talking to your AI coach',
+      'crown': 'Create and scan without limits',
+      'settings': 'Create and scan without limits',
+      'career': 'Get found by the right people',
     },
     // Plans (display text; shared by both screens)
     'plans': {
@@ -128,7 +149,11 @@ class PaywallConfig {
       final o = over[k];
       if (v is Map) {
         out[k] = _merge(v, o is Map ? o : const {});
+      } else if (v is String && o is Map) {
+        // A text per language; the built-in text is the last fallback.
+        out[k] = _LText(o, v);
       } else if ((v is bool && o is bool) ||
+          // A text may also be a map of texts per language.
           (v is String && o is String) ||
           (v is num && o is num) ||
           (v is List && o is List)) {
@@ -155,13 +180,19 @@ class PaywallConfig {
   // --- Trial ---
   /// A trial is shown only when Remote Config allows it AND the store really
   /// offers (and this user may have) the yearly free trial.
-  bool get trialEnabled => (_trial['enabled'] as bool) && _storeTrial;
+  bool get trialEnabled =>
+      (RemoteConfigService().paywallOffers.trialEnabled ??
+          _trial['enabled'] as bool) &&
+      _storeTrial;
 
   /// The trial's real length from the store (the config's number only until
   /// the store answers).
   int get trialDays {
     final store = _storeTrialDays;
-    return store > 0 ? store : (_trial['days'] as num).toInt();
+    return store > 0
+        ? store
+        : (RemoteConfigService().paywallOffers.trialDays ??
+              (_trial['days'] as num).toInt());
   }
 
   static bool get _storeTrial =>
@@ -180,44 +211,78 @@ class PaywallConfig {
 
   String get trialButtonLabel => _fill(
     _loc(
-      (trialEnabled ? _trial['button_label'] : _trial['no_trial_button_label'])
-          as String,
+      trialEnabled ? _trial['button_label'] : _trial['no_trial_button_label'],
     ),
   );
-  /// The plans screen's button is always "Continue"; the trial is explained
-  /// in [s2FinePrint].
-  String get s2CtaLabel => _loc(_s2['button_label'] as String);
+  /// The plans screen's button for the monthly plan: "Continue".
+  String get s2CtaLabel => _loc(_s2['button_label']);
+
+  /// The plans screen's button: "Start Free Trial" for the yearly plan when
+  /// the store really offers the trial to this user, else "Continue" (the
+  /// trial is also explained in [s2FinePrint]).
+  String s2CtaFor({required bool yearlySelected}) => yearlySelected
+      ? _loc(_s2['trial_button_label'])
+      : s2CtaLabel;
+
+  /// The headline Remote Config set for [source] (`headlines.<source>`), as
+  /// written; null when it is unset or still the English default (the caller
+  /// then shows the translated built-in headline). [generic]: the source has
+  /// no headline of its own, so `headlines.default` applies too.
+  String? headlineFor(String source, {bool generic = false}) {
+    final h = _m['headlines'] as Map;
+    final d = defaultJson['headlines'] as Map;
+    String? pick(String k) {
+      final v = h[k];
+      final r = v is _LText
+          ? pickLocalized(v.texts)
+          : v is Map
+          ? pickLocalized(v)
+          : (v is String ? v : null);
+      return r != null && r.trim().isNotEmpty && r != d[k] ? r : null;
+    }
+
+    return pick(source) ?? (generic ? pick('default') : null);
+  }
 
   /// Under the button: "3 days free, then $29.99/year. Cancel anytime." for
   /// the yearly plan when a trial is really available (store price and trial
   /// length), else the plain "No commitment, cancel anytime".
   String s2FinePrint({required bool yearlySelected}) => yearlySelected && trialEnabled
-      ? _fill(_loc(_trial['fine_print'] as String))
-      : _loc(_s2['commitment_text'] as String);
+      ? _fill(_loc(_trial['fine_print']))
+      : _loc(_s2['commitment_text']);
 
-  String get trialBenefitText => _fill(_loc(_trial['benefit_text'] as String));
-  String get trialInfoLine1 => _fill(_loc(_trial['info_line_1'] as String));
-  String get trialInfoLine2 => _fill(_loc(_trial['info_line_2'] as String));
+  String get trialBenefitText => _fill(_loc(_trial['benefit_text']));
+  String get trialInfoLine1 => _fill(_loc(_trial['info_line_1']));
+  String get trialInfoLine2 => _fill(_loc(_trial['info_line_2']));
 
   // --- Screen 1 ---
-  String get s1TitleLine1 => _loc(_s1['title_line1'] as String);
-  String get s1TitleLine2 => _loc(_s1['title_line2'] as String);
-  String get s1Subtitle => _loc(_s1['subtitle'] as String);
-  String get s1PlanTitle => _loc(_s1['plan_title'] as String);
-  String get s1SaveBadge => _withSavePercent(_loc(_s1['save_badge'] as String));
-  String get s1PriceNote => _withPerMonth(_loc(_s1['price_note'] as String));
+  String get s1TitleLine1 => _loc(_s1['title_line1']);
+  String get s1TitleLine2 => _loc(_s1['title_line2']);
+  String get s1Subtitle => _loc(_s1['subtitle']);
+  String get s1PlanTitle => _loc(_s1['plan_title']);
+  String get s1SaveBadge => _withSavePercent(_loc(_s1['save_badge']));
+  String get s1PriceNote => _withPerMonth(_loc(_s1['price_note']));
 
   /// Each feature has an `icon` key (ai, scan, templates, qr, bg) and `text`.
   List<PaywallFeature> get s1Features {
     final list = _s1['features'];
     final out = <PaywallFeature>[];
     if (list is List) {
-      for (final f in list) {
-        if (f is Map && f['text'] is String) {
+      final defaults = (defaultJson['screen1'] as Map)['features'] as List;
+      for (var i = 0; i < list.length; i++) {
+        final f = list[i];
+        if (f is Map && (f['text'] is String || f['text'] is Map)) {
           out.add(
             PaywallFeature(
               f['icon']?.toString() ?? '',
-              _loc(f['text'] as String),
+              // A missing language falls back to the built-in text of the
+              // same position.
+              _loc(
+                f['text'],
+                fallback: i < defaults.length
+                    ? (defaults[i] as Map)['text'] as String
+                    : '',
+              ),
             ),
           );
         }
@@ -228,24 +293,32 @@ class PaywallConfig {
 
   static List<PaywallFeature> get _defaultS1Features => [
     for (final f in (defaultJson['screen1'] as Map)['features'] as List)
-      PaywallFeature(f['icon'] as String, _loc(f['text'] as String)),
+      PaywallFeature(f['icon'] as String, _loc(f['text'])),
   ];
 
   // --- Screen 2 ---
-  String get s2Title => _loc(_s2['title'] as String);
-  String get s2Subtitle => _loc(_s2['subtitle'] as String);
-  String get s2ButtonLabel => _loc(_s2['button_label'] as String);
-  String get s2CommitmentText => _loc(_s2['commitment_text'] as String);
+  String get s2Title => _loc(_s2['title']);
+  String get s2Subtitle => _loc(_s2['subtitle']);
+  String get s2ButtonLabel => _loc(_s2['button_label']);
+  String get s2CommitmentText => _loc(_s2['commitment_text']);
 
   List<String> get s2Features {
     final list = _s2['features'];
+    final defaults = (defaultJson['screen2'] as Map)['features'] as List;
     final out = list is List
-        ? list.whereType<String>().map(_loc).toList()
+        ? [
+            for (var i = 0; i < list.length; i++)
+              if (list[i] is String || list[i] is Map)
+                _loc(
+                  list[i],
+                  fallback: i < defaults.length ? defaults[i] as String : '',
+                ),
+          ]
         : <String>[];
     return out.isEmpty
         ? [
             for (final f in (defaultJson['screen2'] as Map)['features'] as List)
-              _loc(f as String),
+              _loc(f),
           ]
         : out;
   }
@@ -268,7 +341,7 @@ class PaywallConfig {
       savePercent: _savePercent,
       storeOriginalPrice: m == null
           ? null
-          : '${_money(m.price * 12, m.currencyCode)}${_loc(p['period'] as String)}',
+          : '${_money(m.price * 12, m.currencyCode)}${_loc(p['period'])}',
     );
   }
 
@@ -317,9 +390,9 @@ class PaywallConfig {
   }
 
   // --- Footer ---
-  String get restoreLabel => _loc(_footer['restore'] as String);
-  String get termsLabel => _loc(_footer['terms'] as String);
-  String get privacyLabel => _loc(_footer['privacy'] as String);
+  String get restoreLabel => _loc(_footer['restore']);
+  String get termsLabel => _loc(_footer['terms']);
+  String get privacyLabel => _loc(_footer['privacy']);
 }
 
 class PaywallFeature {
@@ -348,23 +421,23 @@ class PaywallPlan {
 
   /// "$2.50/month, billed yearly" (empty for plans without the note).
   String get perMonthNote {
-    final t = _loc((_p['per_month_note'] ?? '') as String);
+    final t = _loc((_p['per_month_note'] ?? ''));
     return t.isEmpty || perMonth.isEmpty ? '' : t.replaceAll('{price}', perMonth);
   }
 
   bool get visible => _p['visible'] as bool;
-  String get title => _loc(_p['title'] as String);
+  String get title => _loc(_p['title']);
   String get price => product?.priceString ?? _p['price'] as String;
-  String get period => _loc(_p['period'] as String);
-  String get description => _loc((_p['description'] ?? '') as String);
-  String get badge => _loc((_p['badge'] ?? '') as String);
+  String get period => _loc(_p['period']);
+  String get description => _loc((_p['description'] ?? ''));
+  String get badge => _loc((_p['badge'] ?? ''));
   String get originalPrice {
-    final text = _loc((_p['original_price'] ?? '') as String);
+    final text = _loc((_p['original_price'] ?? ''));
     return text.isEmpty ? text : storeOriginalPrice ?? text;
   }
 
   String get saveBadge =>
-      _withPercent(_loc((_p['save_badge'] ?? '') as String), savePercent);
+      _withPercent(_loc((_p['save_badge'] ?? '')), savePercent);
 
   /// [text]'s first "70%" replaced by [percent], when known.
   /// Any script's digits (and the Arabic percent sign) are matched.
@@ -382,6 +455,7 @@ class PaywallPlan {
 const Map<String, String> _defaultTextKeys = {
   'Start {days}-Day Free Trial': 'paywall_cfg_trial_button',
   'Continue': 'paywall_cfg_continue',
+  'Start Free Trial': 'paywall_cfg_start_free_trial',
   '{days} days completely free, no charge today': 'paywall_cfg_trial_benefit',
   'No payment today, {yearly_price}/year after trial':
       'paywall_cfg_trial_info1',
@@ -389,11 +463,6 @@ const Map<String, String> _defaultTextKeys = {
   'Start creating': 'paywall_cfg_s1_title1',
   'for free': 'paywall_cfg_s1_title2',
   'Unlock everything with Pro': 'paywall_cfg_s1_subtitle',
-  'Unlimited AI Card Generation': 'paywall_cfg_feat_ai',
-  'Scan Unlimited Cards': 'paywall_cfg_feat_scan',
-  '50+ Premium Templates': 'paywall_cfg_feat_templates',
-  'Scan any QR Code': 'paywall_cfg_feat_qr',
-  'Remove Background': 'paywall_cfg_feat_bg',
   'Yearly Pro': 'paywall_cfg_yearly_pro',
   'Save 64%': 'paywall_cfg_save_badge',
   'Just \$2.50/month, billed annually': 'paywall_cfg_price_note',
@@ -403,9 +472,10 @@ const Map<String, String> _defaultTextKeys = {
   'Create and scan without limits': 'cro_msg_default_headline',
   'All templates and QR styles': 'paywall_cfg_s2_feat_all',
   'Get unlimited access to every feature': 'paywall_cfg_s2_subtitle',
-  'Unlimited AI cards': 'paywall_cfg_s2_feat_ai',
-  'Unlimited scans': 'paywall_cfg_s2_feat_scan',
-  'No watermark': 'paywall_cfg_s2_feat_watermark',
+  'Unlimited card scans': 'paywall_cfg_s2_feat_scan',
+  'Design with AI, no limits': 'paywall_cfg_s2_feat_ai',
+  'AI Business Coach': 'paywall_cfg_s2_feat_coach',
+  'No watermark on exports': 'paywall_cfg_s2_feat_watermark',
   'No commitment, cancel anytime': 'paywall_cfg_commitment',
   'Monthly': 'paywall_cfg_monthly',
   '/month': 'paywall_cfg_per_month',
@@ -419,7 +489,21 @@ const Map<String, String> _defaultTextKeys = {
   'Privacy Policy': 'paywall_cfg_privacy',
 };
 
-String _loc(String s) {
+/// A Remote Config text given per language, with the built-in text as the
+/// fallback when the current language (and `default` / `en`) is missing.
+class _LText {
+  const _LText(this.texts, this.fallback);
+  final Map texts;
+  final String fallback;
+}
+
+String _loc(Object? v, {String fallback = ''}) {
+  if (v is _LText) return _loc(pickLocalized(v.texts) ?? v.fallback);
+  if (v is Map) {
+    final picked = pickLocalized(v);
+    return _loc(picked ?? fallback);
+  }
+  final s = v is String ? v : '';
   final key = _defaultTextKeys[s];
   return key == null ? s : key.tr;
 }

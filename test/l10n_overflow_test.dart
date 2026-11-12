@@ -289,10 +289,6 @@ final _screens = <String, Widget Function()>{
       message: 'scan_instruction_qr_subtext'.tr,
     ),
   ),
-  'my_cards_ai_tab': () => _Prep(
-    () => Get.put(MyCardsController()).selectTab(1),
-    const MyCardsView(),
-  ),
   'my_cards_empty': () => _Prep(
     () => Get.find<RecentDesignsService>().designs.clear(),
     const MyCardsView(),

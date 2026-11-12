@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/services/remote_config_service.dart';
 import '../controller/credits_controller.dart';
 import 'subscription_credit_policy.dart';
 import 'user_credits_manager.dart';
@@ -52,10 +53,14 @@ class RevenueCatHelper {
 
   static String get weeklyProductId =>
       Platform.isIOS ? _iosWeeklyProductId : _androidWeeklyProductId;
+  // Plans sold: Remote Config's `paywall_offers.products` when set (per
+  // platform), else the built-in ids above.
   static String get monthlyProductId =>
-      Platform.isIOS ? _iosMonthlyProductId : _androidMonthlyProductId;
+      RemoteConfigService().paywallOffers.monthlyProductId ??
+      (Platform.isIOS ? _iosMonthlyProductId : _androidMonthlyProductId);
   static String get yearlyProductId =>
-      Platform.isIOS ? _iosYearlyProductId : _androidYearlyProductId;
+      RemoteConfigService().paywallOffers.yearlyProductId ??
+      (Platform.isIOS ? _iosYearlyProductId : _androidYearlyProductId);
 
   /// [storeId] without a Google Play base plan: RevenueCat names Play
   /// subscriptions `subscriptionId:basePlanId` (`business_card_yearly:yearly`),
@@ -273,15 +278,11 @@ class RevenueCatHelper {
     }
   }
 
-  /// The store products: the plans, plus [extraIds] (the discounted offer
-  /// product from Remote Config, when one is set).
-  Future<List<StoreProduct>> getProducts({
-    List<String> extraIds = const [],
-  }) async {
+  /// The store products (the plans).
+  Future<List<StoreProduct>> getProducts() async {
     if (!_configured) return [];
     try {
-      final ids = {...productIdentifiers, ...extraIds.where((e) => e.isNotEmpty)}
-          .toList();
+      final ids = productIdentifiers.toList();
       final products = await Purchases.getProducts(ids);
       if (products.isEmpty) {
         log(

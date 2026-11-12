@@ -1,0 +1,138 @@
+{
+  "conditions": [
+    {
+      "name": "Android.",
+      "expression": "device.os == 'android'",
+      "tagColor": "GREEN"
+    },
+    {
+      "name": "iOS.",
+      "expression": "device.os == 'ios'",
+      "tagColor": "PINK"
+    }
+  ],
+  "parameters": {
+    "cro_experiment": {
+      "defaultValue": {
+        "value": "{   \"onboarding_paywall\": {     \"enabled\": true,     \"paywall_percent\": 50   } }"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{   \"onboarding_paywall\": {     \"enabled\": true,     \"paywall_percent\": 50   } }"
+        },
+        "iOS.": {
+          "value": "{   \"onboarding_paywall\": {     \"enabled\": true,     \"paywall_percent\": 50   } }"
+        }
+      },
+      "description": "CRO Part 1: onboarding paywall 50/50 test",
+      "valueType": "JSON"
+    },
+    "cro_triggers": {
+      "defaultValue": {
+        "value": "{   \"onboarding\": {     \"enabled\": true   },   \"scan_warning\": {     \"enabled\": true   },   \"scan_limit\": {     \"enabled\": true   },   \"ai_limit\": {     \"enabled\": true   },   \"pro_template\": {     \"enabled\": true   },   \"pro_qr\": {     \"enabled\": true   },   \"pro_bg\": {     \"enabled\": true   },   \"watermark\": {     \"enabled\": true   },   \"clixa_limit\": {     \"enabled\": true   },   \"crown\": {     \"enabled\": true   },   \"settings\": {     \"enabled\": true   } }"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{   \"onboarding\": {     \"enabled\": true   },   \"scan_warning\": {     \"enabled\": true   },   \"scan_limit\": {     \"enabled\": true   },   \"ai_limit\": {     \"enabled\": true   },   \"pro_template\": {     \"enabled\": true   },   \"pro_qr\": {     \"enabled\": true   },   \"pro_bg\": {     \"enabled\": true   },   \"watermark\": {     \"enabled\": true   },   \"clixa_limit\": {     \"enabled\": true   },   \"crown\": {     \"enabled\": true   },   \"settings\": {     \"enabled\": true   } }"
+        },
+        "iOS.": {
+          "value": "{   \"onboarding\": {     \"enabled\": true   },   \"scan_warning\": {     \"enabled\": true   },   \"scan_limit\": {     \"enabled\": true   },   \"ai_limit\": {     \"enabled\": true   },   \"pro_template\": {     \"enabled\": true   },   \"pro_qr\": {     \"enabled\": true   },   \"pro_bg\": {     \"enabled\": true   },   \"watermark\": {     \"enabled\": true   },   \"clixa_limit\": {     \"enabled\": true   },   \"crown\": {     \"enabled\": true   },   \"settings\": {     \"enabled\": true   } }"
+        }
+      },
+      "valueType": "JSON"
+    },
+    "plan_limits": {
+      "defaultValue": {
+        "value": "{   \"show_counters\": true,   \"plans\": {     \"free\": {       \"card_scans\": { \"limit\": 5, \"period\": \"lifetime\", \"warn_at_remaining\": 1 },       \"templates\": { \"limit\": 10, \"period\": \"none\" },       \"qr_styles\": { \"allowed\": [\"classic\"] },       \"background_remover\": { \"limit\": 1, \"period\": \"lifetime\" },       \"clixa_chats\": { \"limit\": 3, \"period\": \"weekly\", \"messages_per_chat\": 3 },       \"career_build\": { \"limit\": 1, \"period\": \"lifetime\" },       \"career_optimize\": { \"limit\": 1, \"period\": \"lifetime\" },       \"contacts\": { \"limit\": -1 },       \"export_watermark\": true     },     \"trial\": {       \"card_scans\": { \"limit\": -1 },       \"templates\": { \"limit\": -1 },       \"qr_styles\": { \"allowed\": \"all\" },       \"background_remover\": { \"limit\": -1 },       \"clixa_chats\": { \"limit\": -1, \"messages_per_chat\": -1 },       \"career_build\": { \"limit\": -1 },       \"career_optimize\": { \"limit\": -1 },       \"contacts\": { \"limit\": -1 },       \"export_watermark\": false     },     \"monthly\": {       \"card_scans\": { \"limit\": -1 },       \"templates\": { \"limit\": -1 },       \"qr_styles\": { \"allowed\": \"all\" },       \"background_remover\": { \"limit\": -1 },       \"clixa_chats\": { \"limit\": -1, \"messages_per_chat\": -1 },       \"career_build\": { \"limit\": -1 },       \"career_optimize\": { \"limit\": -1 },       \"contacts\": { \"limit\": -1 },       \"export_watermark\": false     },     \"yearly\": {       \"card_scans\": { \"limit\": -1 },       \"templates\": { \"limit\": -1 },       \"qr_styles\": { \"allowed\": \"all\" },       \"background_remover\": { \"limit\": -1 },       \"clixa_chats\": { \"limit\": -1, \"messages_per_chat\": -1 },       \"career_build\": { \"limit\": -1 },       \"career_optimize\": { \"limit\": -1 },       \"contacts\": { \"limit\": -1 },       \"export_watermark\": false     }   } }"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{   \"show_counters\": true,   \"plans\": {     \"free\": {       \"card_scans\": { \"limit\": 5, \"period\": \"lifetime\", \"warn_at_remaining\": 1 },       \"templates\": { \"limit\": 10, \"period\": \"none\" },       \"qr_styles\": { \"allowed\": [\"classic\"] },       \"background_remover\": { \"limit\": 1, \"period\": \"lifetime\" },       \"clixa_chats\": { \"limit\": 3, \"period\": \"weekly\", \"messages_per_chat\": 3 },       \"career_build\": { \"limit\": 1, \"period\": \"lifetime\" },       \"career_optimize\": { \"limit\": 1, \"period\": \"lifetime\" },       \"contacts\": { \"limit\": -1 },       \"export_watermark\": true     },     \"trial\": {       \"card_scans\": { \"limit\": -1 },       \"templates\": { \"limit\": -1 },       \"qr_styles\": { \"allowed\": \"all\" },       \"background_remover\": { \"limit\": -1 },       \"clixa_chats\": { \"limit\": -1, \"messages_per_chat\": -1 },       \"career_build\": { \"limit\": -1 },       \"career_optimize\": { \"limit\": -1 },       \"contacts\": { \"limit\": -1 },       \"export_watermark\": false     },     \"monthly\": {       \"card_scans\": { \"limit\": -1 },       \"templates\": { \"limit\": -1 },       \"qr_styles\": { \"allowed\": \"all\" },       \"background_remover\": { \"limit\": -1 },       \"clixa_chats\": { \"limit\": -1, \"messages_per_chat\": -1 },       \"career_build\": { \"limit\": -1 },       \"career_optimize\": { \"limit\": -1 },       \"contacts\": { \"limit\": -1 },       \"export_watermark\": false     },     \"yearly\": {       \"card_scans\": { \"limit\": -1 },       \"templates\": { \"limit\": -1 },       \"qr_styles\": { \"allowed\": \"all\" },       \"background_remover\": { \"limit\": -1 },       \"clixa_chats\": { \"limit\": -1, \"messages_per_chat\": -1 },       \"career_build\": { \"limit\": -1 },       \"career_optimize\": { \"limit\": -1 },       \"contacts\": { \"limit\": -1 },       \"export_watermark\": false     }   } }"
+        },
+        "iOS.": {
+          "value": "{   \"show_counters\": true,   \"plans\": {     \"free\": {       \"card_scans\": { \"limit\": 5, \"period\": \"lifetime\", \"warn_at_remaining\": 1 },       \"templates\": { \"limit\": 10, \"period\": \"none\" },       \"qr_styles\": { \"allowed\": [\"classic\"] },       \"background_remover\": { \"limit\": 1, \"period\": \"lifetime\" },       \"clixa_chats\": { \"limit\": 3, \"period\": \"weekly\", \"messages_per_chat\": 3 },       \"career_build\": { \"limit\": 1, \"period\": \"lifetime\" },       \"career_optimize\": { \"limit\": 1, \"period\": \"lifetime\" },       \"contacts\": { \"limit\": -1 },       \"export_watermark\": true     },     \"trial\": {       \"card_scans\": { \"limit\": -1 },       \"templates\": { \"limit\": -1 },       \"qr_styles\": { \"allowed\": \"all\" },       \"background_remover\": { \"limit\": -1 },       \"clixa_chats\": { \"limit\": -1, \"messages_per_chat\": -1 },       \"career_build\": { \"limit\": -1 },       \"career_optimize\": { \"limit\": -1 },       \"contacts\": { \"limit\": -1 },       \"export_watermark\": false     },     \"monthly\": {       \"card_scans\": { \"limit\": -1 },       \"templates\": { \"limit\": -1 },       \"qr_styles\": { \"allowed\": \"all\" },       \"background_remover\": { \"limit\": -1 },       \"clixa_chats\": { \"limit\": -1, \"messages_per_chat\": -1 },       \"career_build\": { \"limit\": -1 },       \"career_optimize\": { \"limit\": -1 },       \"contacts\": { \"limit\": -1 },       \"export_watermark\": false     },     \"yearly\": {       \"card_scans\": { \"limit\": -1 },       \"templates\": { \"limit\": -1 },       \"qr_styles\": { \"allowed\": \"all\" },       \"background_remover\": { \"limit\": -1 },       \"clixa_chats\": { \"limit\": -1, \"messages_per_chat\": -1 },       \"career_build\": { \"limit\": -1 },       \"career_optimize\": { \"limit\": -1 },       \"contacts\": { \"limit\": -1 },       \"export_watermark\": false     }   } }"
+        }
+      },
+      "description": "Usage limits per plan (free, trial, monthly, yearly). -1 means unlimited.",
+      "valueType": "JSON"
+    },
+    "cro_messages": {
+      "defaultValue": {
+        "value": "{   \"counter_scans\": \"{used} of {limit} scans used\",   \"counter_ai\": \"{used} of {limit} AI cards used\",   \"counter_bg\": \"{used} of {limit} background removal used\",   \"counter_clixa\": \"{used} of {limit} chats this week\",   \"counter_career_build\": \"{used} of {limit} profile build used\",   \"counter_career_optimize\": \"{used} of {limit} profile optimize used\",   \"watermark_link\": \"Remove watermark\",   \"watermark_text\": \"Made with AI Business Card Maker\" }"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{   \"counter_scans\": \"{used} of {limit} scans used\",   \"counter_ai\": \"{used} of {limit} AI cards used\",   \"counter_bg\": \"{used} of {limit} background removal used\",   \"counter_clixa\": \"{used} of {limit} chats this week\",   \"counter_career_build\": \"{used} of {limit} profile build used\",   \"counter_career_optimize\": \"{used} of {limit} profile optimize used\",   \"watermark_link\": \"Remove watermark\",   \"watermark_text\": \"Made with AI Business Card Maker\" }"
+        },
+        "iOS.": {
+          "value": "{   \"counter_scans\": \"{used} of {limit} scans used\",   \"counter_ai\": \"{used} of {limit} AI cards used\",   \"counter_bg\": \"{used} of {limit} background removal used\",   \"counter_clixa\": \"{used} of {limit} chats this week\",   \"counter_career_build\": \"{used} of {limit} profile build used\",   \"counter_career_optimize\": \"{used} of {limit} profile optimize used\",   \"watermark_link\": \"Remove watermark\",   \"watermark_text\": \"Made with AI Business Card Maker\" }"
+        }
+      },
+      "description": "CRO Part 1: text overrides (empty = app language defaults)",
+      "valueType": "JSON"
+    },
+    "paywall_config": {
+      "defaultValue": {
+        "value": "{   \"enabled\": true,   \"show_on_launch\": true,   \"headlines\": {     \"default\": \"Create and scan without limits\",     \"onboarding\": \"Create and scan without limits\",     \"scan_warning\": \"Keep scanning with Pro\",     \"scan_limit\": \"Keep scanning with Pro\",     \"pro_template\": \"Unlock every template\",     \"pro_qr\": \"Unlock every QR style\",     \"pro_bg\": \"Remove backgrounds, no limits\",     \"watermark\": \"Export without the watermark\",     \"clixa_limit\": \"Keep talking to your AI coach\",     \"crown\": \"Create and scan without limits\",     \"settings\": \"Create and scan without limits\",     \"ai_limit\": \"Keep creating with AI\",     \"expert_panel\": \"Pitch to your AI expert panel\",     \"career\": \"Get found by the right people\",     \"launch\": \"Create and scan without limits\",     \"subscription_lapsed\": \"Create and scan without limits\",     \"email_signature\": \"Create and scan without limits\",     \"logo_bg\": \"Create and scan without limits\"   },   \"features\": [     \"Unlimited card scans\",     \"Design with AI, no limits\",     \"No watermark on exports\",     \"All templates and QR styles\",     \"AI Business Coach\"   ],   \"cta\": {     \"label\": \"Continue\",     \"trial_fine_print\": \"{days} days free, then {yearly_price}/year. Cancel anytime.\",     \"no_trial_fine_print\": \"No commitment, cancel anytime\"   },   \"yearly_per_month_label\": \"{price}/month, billed yearly\",   \"yearly_badge\": \"Most Popular\",   \"yearly_save_label\": \"Save {percent}%\" }"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{   \"enabled\": true,   \"show_on_launch\": true,   \"headlines\": {     \"default\": \"Create and scan without limits\",     \"onboarding\": \"Create and scan without limits\",     \"scan_warning\": \"Keep scanning with Pro\",     \"scan_limit\": \"Keep scanning with Pro\",     \"pro_template\": \"Unlock every template\",     \"pro_qr\": \"Unlock every QR style\",     \"pro_bg\": \"Remove backgrounds, no limits\",     \"watermark\": \"Export without the watermark\",     \"clixa_limit\": \"Keep talking to your AI coach\",     \"crown\": \"Create and scan without limits\",     \"settings\": \"Create and scan without limits\",     \"ai_limit\": \"Keep creating with AI\",     \"expert_panel\": \"Pitch to your AI expert panel\",     \"career\": \"Get found by the right people\",     \"launch\": \"Create and scan without limits\",     \"subscription_lapsed\": \"Create and scan without limits\",     \"email_signature\": \"Create and scan without limits\",     \"logo_bg\": \"Create and scan without limits\"   },   \"features\": [     \"Unlimited card scans\",     \"Design with AI, no limits\",     \"No watermark on exports\",     \"All templates and QR styles\",     \"AI Business Coach\"   ],   \"cta\": {     \"label\": \"Continue\",     \"trial_fine_print\": \"{days} days free, then {yearly_price}/year. Cancel anytime.\",     \"no_trial_fine_print\": \"No commitment, cancel anytime\"   },   \"yearly_per_month_label\": \"{price}/month, billed yearly\",   \"yearly_badge\": \"Most Popular\",   \"yearly_save_label\": \"Save {percent}%\" }"
+        },
+        "iOS.": {
+          "value": "{   \"enabled\": true,   \"show_on_launch\": true,   \"headlines\": {     \"default\": \"Create and scan without limits\",     \"onboarding\": \"Create and scan without limits\",     \"scan_warning\": \"Keep scanning with Pro\",     \"scan_limit\": \"Keep scanning with Pro\",     \"pro_template\": \"Unlock every template\",     \"pro_qr\": \"Unlock every QR style\",     \"pro_bg\": \"Remove backgrounds, no limits\",     \"watermark\": \"Export without the watermark\",     \"clixa_limit\": \"Keep talking to your AI coach\",     \"crown\": \"Create and scan without limits\",     \"settings\": \"Create and scan without limits\",     \"ai_limit\": \"Keep creating with AI\",     \"expert_panel\": \"Pitch to your AI expert panel\",     \"career\": \"Get found by the right people\",     \"launch\": \"Create and scan without limits\",     \"subscription_lapsed\": \"Create and scan without limits\",     \"email_signature\": \"Create and scan without limits\",     \"logo_bg\": \"Create and scan without limits\"   },   \"features\": [     \"Unlimited card scans\",     \"Design with AI, no limits\",     \"No watermark on exports\",     \"All templates and QR styles\",     \"AI Business Coach\"   ],   \"cta\": {     \"label\": \"Continue\",     \"trial_fine_print\": \"{days} days free, then {yearly_price}/year. Cancel anytime.\",     \"no_trial_fine_print\": \"No commitment, cancel anytime\"   },   \"yearly_per_month_label\": \"{price}/month, billed yearly\",   \"yearly_badge\": \"Most Popular\",   \"yearly_save_label\": \"Save {percent}%\" }"
+        }
+      },
+      "valueType": "JSON"
+    },
+    "cro_offers": {
+      "defaultValue": {
+        "value": "{\"enabled\": true, \"first_year_product_id\": \"\", \"returning_enabled\": true, \"returning_day_min\": 2, \"returning_day_max\": 3, \"max_per_day\": 1}"
+      },
+      "description": "CRO Part 1: discount offers (first_year_product_id = store product id)",
+      "valueType": "JSON"
+    },
+    "android_version_config": {
+      "defaultValue": {
+        "value": "{   \"min_build_number\": 0,   \"min_version_label\": \"1.0.0\",   \"latest_version_label\": \"1.0.0 (3)\" }"
+      },
+      "valueType": "JSON"
+    },
+    "paywall_offers": {
+      "defaultValue": {
+        "value": "{   \"products\": {     \"yearly\": \"business_card_yearly\",     \"monthly\": \"business_card_monthly\",     \"weekly\": \"business_card_weekly\"   },   \"trial\": {     \"enabled\": true,     \"days\": 3   },   \"first_year_offer\": {     \"enabled\": true,     \"product_id\": \"\",     \"show\": \"once_after_first_paywall_close\",     \"end_date\": \"\"   },   \"returning_offer\": {     \"enabled\": true,     \"surface\": \"home_bottom_sheet\",     \"day_min\": 2,     \"day_max\": 3   },   \"max_dialogs_per_day\": 1 }"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{   \"products\": {     \"yearly\": \"business_card_yearly\",     \"monthly\": \"business_card_monthly\",     \"weekly\": \"business_card_weekly\"   },   \"trial\": {     \"enabled\": true,     \"days\": 3   },   \"first_year_offer\": {     \"enabled\": true,     \"product_id\": \"\",     \"show\": \"once_after_first_paywall_close\",     \"end_date\": \"\"   },   \"returning_offer\": {     \"enabled\": true,     \"surface\": \"home_bottom_sheet\",     \"day_min\": 2,     \"day_max\": 3   },   \"max_dialogs_per_day\": 1 }"
+        },
+        "iOS.": {
+          "value": "{   \"products\": {     \"yearly\": \"business_card_yearly\",     \"monthly\": \"business_card_monthly\",     \"weekly\": \"business_card_weekly\"   },   \"trial\": {     \"enabled\": true,     \"days\": 3   },   \"first_year_offer\": {     \"enabled\": true,     \"product_id\": \"\",     \"show\": \"once_after_first_paywall_close\",     \"end_date\": \"\"   },   \"returning_offer\": {     \"enabled\": true,     \"surface\": \"home_bottom_sheet\",     \"day_min\": 2,     \"day_max\": 3   },   \"max_dialogs_per_day\": 1 }"
+        }
+      },
+      "description": "Store product IDs for the yearly and monthly plans.",
+      "valueType": "JSON"
+    },
+    "onboarding_config": {
+      "defaultValue": {
+        "value": "{   \"enabled\": true,   \"title\": \"Create Stunning\\nCards in Seconds.\",   \"subtitle\": \"\",   \"button_text\": \"Create my Profile\",   \"image\": \"assets/images/onboarding1_image.png\" }"
+      },
+      "conditionalValues": {
+        "Android.": {
+          "value": "{   \"enabled\": true,   \"title\": \"Create Stunning\\nCards in Seconds.\",   \"subtitle\": \"\",   \"button_text\": \"Create my Profile\",   \"image\": \"assets/images/onboarding1_image.png\" }"
+        },
+        "iOS.": {
+          "value": "{   \"enabled\": true,   \"title\": \"Create Stunning\\nCards in Seconds.\",   \"subtitle\": \"\",   \"button_text\": \"Create my Profile\",   \"image\": \"assets/images/onboarding1_image.png\" }"
+        }
+      },
+      "description": "Text and on/off switch for the single onboarding screen.",
+      "valueType": "JSON"
+    },
+    "ios_version_config": {
+      "defaultValue": {
+        "value": "{   \"min_build_number\": 0,   \"min_version_label\": \"1.0.0\",   \"latest_version_label\": \"1.0.0 (3)\" }"
+      },
+      "valueType": "JSON"
+    }
+  }
+}

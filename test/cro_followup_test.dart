@@ -5,13 +5,10 @@ import 'package:ai_business_card_maker/app/core/services/recent_designs_service.
 import 'package:ai_business_card_maker/app/modules/clixa/widgets/clixa_sheets.dart';
 import 'package:ai_business_card_maker/app/modules/main_nav/controller/main_nav_controller.dart';
 import 'package:ai_business_card_maker/app/modules/paywall/controller/subscription_controller.dart';
-import 'package:ai_business_card_maker/app/modules/paywall/models/cro_config_model.dart';
 import 'package:ai_business_card_maker/app/modules/paywall/models/paywall_config_model.dart';
-import 'package:ai_business_card_maker/app/modules/paywall/services/offer_service.dart';
 import 'package:ai_business_card_maker/app/modules/paywall/services/paywall_triggers.dart';
 import 'package:ai_business_card_maker/app/modules/paywall/services/revenue_cat_service.dart';
 import 'package:ai_business_card_maker/app/modules/paywall/view/paywall_screen.dart';
-import 'package:ai_business_card_maker/app/modules/paywall/view/paywall_view_2.dart';
 import 'package:ai_business_card_maker/app/modules/profile_setup/service/profile_store.dart';
 import 'package:ai_business_card_maker/app/modules/profile_setup/view/first_card_ready_view.dart';
 import 'package:ai_business_card_maker/app/routes/app_routes.dart';
@@ -24,7 +21,6 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 
 import 'test_fonts.dart';
 
-const _discountId = 'business_card_yearly_offer';
 
 /// A store that answers with the given products.
 class _Sub extends SubscriptionController {
@@ -117,92 +113,6 @@ void main() {
     });
   });
 
-  // 3 + 4 ---------------------------------------------------------- offers
-  group('Discount offer', () {
-    Future<void> open(WidgetTester t, {String product = _discountId}) async {
-      phone(t);
-      Get.put<SubscriptionController>(
-        _Sub({_discountId: _product(_discountId, 19.99, r'$19.99')}),
-      );
-      Get.put(
-        OfferService(
-          clock: () => dayNow,
-          isPro: () => false,
-          config: () => CroOffers(firstYearProductId: product),
-          hasProduct: (_) => true,
-        )..onInit(),
-      );
-      await t.pumpWidget(
-        GetMaterialApp(
-          home: Builder(
-            builder: (_) => TextButton(
-              onPressed: () =>
-                  PaywallTriggers.show(PaywallTrigger.crown, screen: 'home'),
-              child: const Text('crown'),
-            ),
-          ),
-        ),
-      );
-      await t.tap(find.text('crown'));
-      await t.pumpAndSettle();
-    }
-
-    testWidgets('the default paywall never shows a discount', (t) async {
-      await open(t);
-      expect(find.byType(PaywallView2), findsOneWidget);
-      expect(find.textContaining(r'$19.99'), findsNothing);
-      expect(find.text('Claim offer'), findsNothing);
-      expect(events.where((e) => e.$1 == 'offer_displayed'), isEmpty);
-    });
-
-    testWidgets('first dismissal shows the discount once, over the paywall', (
-      t,
-    ) async {
-      await open(t);
-      await t.tap(find.byIcon(Icons.close_rounded));
-      await t.pumpAndSettle();
-
-      // The offer sheet, with the STORE's price of the discounted product.
-      expect(find.byType(PaywallView2), findsOneWidget); // still underneath
-      expect(find.text('Claim offer'), findsOneWidget);
-      expect(find.textContaining(r'$19.99'), findsOneWidget);
-      expect(
-        events.any(
-          (e) =>
-              e.$1 == 'offer_displayed' && e.$2['offer_type'] == 'first_year',
-        ),
-        isTrue,
-      );
-
-      // Not now: the offer closes and the paywall closes with it.
-      await t.tap(find.text('Not now'));
-      await t.pumpAndSettle();
-      expect(events.any((e) => e.$1 == 'offer_dismissed'), isTrue);
-      expect(find.byType(PaywallView2), findsNothing);
-      expect(
-        events.any((e) => e.$1 == 'paywall_dismissed' && e.$2['screen'] == 'home'),
-        isTrue,
-      );
-
-      // Opening the paywall again and closing it: never a second time.
-      await t.tap(find.text('crown'));
-      await t.pumpAndSettle();
-      await t.tap(find.byIcon(Icons.close_rounded));
-      await t.pumpAndSettle();
-      expect(find.text('Claim offer'), findsNothing);
-      expect(events.where((e) => e.$1 == 'offer_displayed').length, 1);
-    });
-
-    testWidgets('no discounted product configured: closing shows no offer', (
-      t,
-    ) async {
-      await open(t, product: '');
-      await t.tap(find.byIcon(Icons.close_rounded));
-      await t.pumpAndSettle();
-      expect(find.text('Claim offer'), findsNothing);
-      expect(find.byType(PaywallView2), findsNothing);
-    });
-  });
 
   // 4 --------------------------------------------------------- analytics
   group('Paywall analytics: source + screen', () {

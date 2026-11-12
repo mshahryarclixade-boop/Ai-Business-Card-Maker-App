@@ -1,3 +1,4 @@
+import '../../../core/services/app_startup.dart';
 import '../../paywall/view/paywall_view_2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
@@ -52,6 +53,10 @@ class _SplashViewState extends State<SplashView>
   /// Force-update check first; then the normal routing below. An optional
   /// update prompt is shown on top of wherever the user lands.
   Future<void> _route() async {
+    // The services are started in the background while the splash animates
+    // (3 s): normally they are ready by now.
+    await AppStartup.ready;
+    if (!mounted) return;
     final update = await AppUpdateService.check();
     if (!mounted) return;
     if (update == UpdateType.forced) {

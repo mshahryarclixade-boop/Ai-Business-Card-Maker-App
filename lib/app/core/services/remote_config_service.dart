@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 
 import '../../modules/paywall/models/credit_config_model.dart';
 import '../../modules/paywall/models/cro_config_model.dart';
+import '../../modules/onboarding/models/onboarding_config.dart';
 import '../../modules/paywall/models/paywall_config_model.dart';
 
 /// Remote Config values, with safe in-app defaults so the app behaves the
@@ -22,6 +23,7 @@ class RemoteConfigService {
   static const _onboardingEnabledKey = 'onboarding_enabled';
   static const _paywallConfigKey = 'paywall_config';
   static const _scanOrientationToggleKey = 'scan_orientation_toggle';
+  static const _onboardingConfigKey = 'onboarding_config';
 
   // One JSON parameter per platform: android_version_config /
   // ios_version_config.
@@ -61,8 +63,13 @@ class RemoteConfigService {
         'android_version_config': '',
         'ios_version_config': '',
         _onboardingEnabledKey: true,
+        // No in-app default for plan_limits: until it is published,
+        // cro_limits keeps working.
+        CroKeys.planLimits: '',
+        CroKeys.paywallOffers: '',
+        _onboardingConfigKey: '',
         _scanOrientationToggleKey: false,
-        // The CRO plan (limits, triggers, messages, experiment, offers).
+        // The CRO plan (limits, triggers, messages, experiment).
         for (final k in CroConfig.defaultJson.keys)
           k: CroConfig.defaultString(k),
       });
@@ -99,7 +106,15 @@ class RemoteConfigService {
   bool get scanOrientationToggle =>
       _rc?.getBool(_scanOrientationToggleKey) ?? false;
 
-  bool get onboardingEnabled => _rc?.getBool(_onboardingEnabledKey) ?? true;
+  /// The onboarding screen's settings (`onboarding_config`). `enabled` falls
+  /// back to the old `onboarding_enabled` while the new key is not set.
+  OnboardingConfig get onboardingConfig => OnboardingConfig.fromJsonString(
+    _rc?.getString(_onboardingConfigKey) ?? '',
+  );
+
+  bool get onboardingEnabled =>
+      onboardingConfig.enabled ??
+      (_rc?.getBool(_onboardingEnabledKey) ?? true);
 
   /// Paywall copy + display settings. Never null: falls back to the
   /// built-in defaults when RC is unavailable or the JSON is invalid.
@@ -126,14 +141,31 @@ class RemoteConfigService {
     return value;
   }
 
-  CroLimits get croLimits => _cro(CroKeys.limits, CroLimits.fromJsonString);
+  PaywallOffers get paywallOffers =>
+      _cro(CroKeys.paywallOffers, PaywallOffers.fromJsonString);
+
+  String? _planRaw;
+  CroLimits? _planLimits;
+
+  /// `plan_limits` when published, else the older `cro_limits`.
+  CroLimits get croLimits {
+    final raw = _rc?.getString(CroKeys.planLimits) ?? '';
+    if (raw.trim().isNotEmpty) {
+      if (raw != _planRaw) {
+        _planRaw = raw;
+        _planLimits = CroLimits.fromPlanLimitsString(raw);
+      }
+      final plan = _planLimits;
+      if (plan != null) return plan;
+    }
+    return _cro(CroKeys.limits, CroLimits.fromJsonString);
+  }
   CroTriggers get croTriggers =>
       _cro(CroKeys.triggers, CroTriggers.fromJsonString);
   CroMessages get croMessages =>
       _cro(CroKeys.messages, CroMessages.fromJsonString);
   CroExperiment get croExperiment =>
       _cro(CroKeys.experiment, CroExperiment.fromJsonString);
-  CroOffers get croOffers => _cro(CroKeys.offers, CroOffers.fromJsonString);
 
   CreditPools get creditPools =>
       CreditPools.fromJsonString(_rc?.getString(_creditPoolsKey) ?? '');

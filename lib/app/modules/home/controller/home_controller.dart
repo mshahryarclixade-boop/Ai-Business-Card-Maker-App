@@ -1,3 +1,5 @@
+import '../../profile_setup/service/first_card_flow.dart';
+import '../../../core/services/user_sync_service.dart';
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -19,10 +21,7 @@ import '../../../core/services/remote_config_service.dart';
 import '../../paywall/controller/subscription_controller.dart';
 import '../../paywall/services/credits_gate.dart';
 import '../../paywall/services/free_limits.dart';
-import '../../paywall/services/offer_service.dart';
-import '../../paywall/services/paywall_triggers.dart';
 import '../../paywall/services/usage_service.dart';
-import '../../paywall/widgets/offer_sheet.dart';
 import '../../paywall/view/paywall_screen.dart';
 import '../../profile_setup/controller/first_card_generator.dart';
 import '../../profile_setup/service/profile_store.dart';
@@ -95,10 +94,11 @@ class HomeController extends GetxController {
 
     // Home is the first screen where the No Internet dialog is allowed
     Get.find<ConnectivityService>().startMonitoring();
-    unawaited(_maybeShowReturningOffer());
 
     // Home is the first screen where we ask for notification permission.
-    NotificationService().requestPermissionAndSubscribe();
+    // (After the first card the permission is asked once the first action and
+    // its paywall are done - see FirstCardFlow.)
+    if (!FirstCardFlow.armed) NotificationService().requestPermissionAndSubscribe();
 
     // Realtime: if the subscription lapses/is refunded while the app is
     // open, send the user back to the paywall.
@@ -121,18 +121,6 @@ class HomeController extends GetxController {
     // );
   }
 
-  /// The returning-user offer (day 2-3, after leaving the paywall once). One
-  /// offer a day at most; nothing without a real discounted store product.
-  Future<void> _maybeShowReturningOffer() async {
-    await Future<void>.delayed(const Duration(seconds: 2));
-    final ctx = Get.context;
-    if (ctx == null || !ctx.mounted) return;
-    if (Get.currentRoute != Routes.MAIN) return; // only while on Home
-    if (!Get.isRegistered<OfferService>()) return;
-    if (!OfferService.to.canShowReturning()) return;
-    await showOfferSheet(ctx, OfferType.returning, source: 'home');
-  }
-
   Future<void> previewTemplateTap(TemplateItem item) async {
     if (applying.value) return;
 
@@ -144,18 +132,25 @@ class HomeController extends GetxController {
 
     final seq = ++_tapSeq;
 
-    final base = await TemplateData.load(item);
+    TemplateData? base;
+    Map<String, String>? values;
     TemplateData? live;
-    if (base != null) {
-      // Fonts first, so the texts are measured (and fitted) with the real ones.
-      await AiFrameCardBuilder.loadFonts([
-        ...base.front.elements,
-        ...base.back.elements,
-      ]);
-      live = base
-          .filled(await TemplateData.currentProfileValuesWithLogo())
-          .fitted();
-      await _precache(live);
+    try {
+      base = await TemplateData.load(item);
+      if (base != null) {
+        // The preview shows AT ONCE with the fonts that are ready (a template
+        // whose Google font is not downloaded yet must not make the tap look
+        // dead); the real fonts are fetched in the background below.
+        values = await TemplateData.currentProfileValuesWithLogo();
+        live = base.filled(values).fitted();
+        await _precache(live);
+      }
+    } catch (e, st) {
+      // Whatever goes wrong while preparing the live preview, the tap still
+      // selects the template (its picture is shown instead).
+      debugPrint('template preview fell back to the picture: $e\n$st');
+      base = null;
+      live = null;
     }
 
     // A newer tap / cancel / apply happened while we were loading.
@@ -164,10 +159,38 @@ class HomeController extends GetxController {
     previewData.value = live;
     previewTemplate.value = item;
 
-    FirebaseAnalytics.instance.logEvent(
-      name: 'template_previewed',
-      parameters: {'category': item.category},
-    );
+    try {
+      FirebaseAnalytics.instance.logEvent(
+        name: 'template_previewed',
+        parameters: {'category': item.category},
+      );
+    } catch (_) {}
+
+    if (base != null && values != null) {
+      _fontRefine = _refineWithFonts(base, values, item, seq);
+      unawaited(_fontRefine);
+    }
+  }
+
+  /// Applying waits for this, so the saved card is drawn with the real fonts.
+  Future<void>? _fontRefine;
+
+  /// Downloads the template's fonts (bounded), then measures the texts again
+  /// with them - if that template is still the one being previewed.
+  Future<void> _refineWithFonts(
+    TemplateData base,
+    Map<String, String> values,
+    TemplateItem item,
+    int seq,
+  ) async {
+    try {
+      await AiFrameCardBuilder.loadFonts([
+        ...base.front.elements,
+        ...base.back.elements,
+      ]).timeout(const Duration(seconds: 8));
+    } catch (_) {}
+    if (seq != _tapSeq || applying.value || previewTemplate.value?.id != item.id) return;
+    previewData.value = base.filled(values).fitted();
   }
 
   void cancelPreview() {
@@ -219,8 +242,14 @@ class HomeController extends GetxController {
   Future<void> _applyLive(TemplateItem item, TemplateData live) async {
     applying.value = true;
     try {
-      // Make sure the latest frame (fonts, images) is painted.
+      // The template's fonts finish loading first (bounded), then the latest
+      // frame (fonts, images) is painted.
+      try {
+        await _fontRefine?.timeout(const Duration(seconds: 8));
+      } catch (_) {}
       await WidgetsBinding.instance.endOfFrame;
+      // The preview may have been re-measured with the real fonts meanwhile.
+      final data = previewData.value ?? live;
 
       final front = await _capture(frontCaptureKey);
       final back = await _capture(backCaptureKey);
@@ -231,7 +260,7 @@ class HomeController extends GetxController {
       await Get.find<RecentDesignsService>().save(
         front,
         backThumbnailBytes: back,
-        designData: live.toDesignData(),
+        designData: data.toDesignData(),
         title: item.name,
       );
 
@@ -244,6 +273,7 @@ class HomeController extends GetxController {
         name: 'template_applied',
         parameters: {'category': item.category, 'method': 'live'},
       );
+      UserSync.track('template', detail: 'applied:live:${item.category}');
 
       Get.snackbar(
         'home_template_applied_title'.tr,
@@ -299,7 +329,7 @@ class HomeController extends GetxController {
         dedupeKey: 'ai_${DateTime.now().microsecondsSinceEpoch}',
         source: 'template_ai',
       );
-      if (wasLast) unawaited(PaywallTriggers.show(PaywallTrigger.aiLimit, screen: 'home'));
+      if (wasLast) unawaited(FreeLimits.promptAiLimit(screen: 'home'));
       previewTemplate.value = null;
       previewData.value = null;
       _promote(item.id);
@@ -308,6 +338,7 @@ class HomeController extends GetxController {
         name: 'template_applied',
         parameters: {'category': item.category, 'method': 'ai'},
       );
+      UserSync.track('template', detail: 'applied:ai:${item.category}');
 
       Get.snackbar(
         'home_template_applied_title'.tr,

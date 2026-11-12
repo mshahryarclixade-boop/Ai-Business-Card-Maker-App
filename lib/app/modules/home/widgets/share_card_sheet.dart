@@ -1,3 +1,4 @@
+import 'dart:async';
 
 import '../../paywall/services/watermark_service.dart';
 import 'dart:convert';
@@ -36,14 +37,19 @@ void _snack(String title, String message) {
 }
 
 /// The four options shown when the user taps Share Card.
-void showShareCardSheet({
+///
+/// The returned future completes when the sheet is closed WITHOUT a choice, or
+/// when the chosen option has finished (shared, saved, the QR screen closed).
+Future<void> showShareCardSheet({
   required File frontImage,
   File? backImage,
 }) {
+  final run = _ShareRun();
   Get.bottomSheet(
     _ShareCardSheet(
       frontImage: frontImage,
       backImage: backImage,
+      run: run,
     ),
     backgroundColor: Colors.white,
     shape: const RoundedRectangleBorder(
@@ -51,17 +57,42 @@ void showShareCardSheet({
         top: Radius.circular(24),
       ),
     ),
-  );
+  ).whenComplete(() {
+    if (!run.started) run.finish(); // dismissed without choosing
+  });
+  return run.done.future;
+}
+
+/// Tracks one use of the sheet.
+class _ShareRun {
+  bool started = false;
+  final done = Completer<void>();
+
+  void finish() {
+    if (!done.isCompleted) done.complete();
+  }
 }
 
 class _ShareCardSheet extends StatelessWidget {
   const _ShareCardSheet({
     required this.frontImage,
     this.backImage,
+    this.run,
   });
 
   final File frontImage;
   final File? backImage;
+  final _ShareRun? run;
+
+  /// Runs the chosen option and tells the caller when it is over.
+  VoidCallback _option(Future<void> Function() action) => () async {
+    run?.started = true;
+    try {
+      await action();
+    } finally {
+      run?.finish();
+    }
+  };
 
   /// Returns front and back images when available.
   List<File> get cardImages => [
@@ -143,6 +174,8 @@ class _ShareCardSheet extends StatelessWidget {
     Get.back();
 
     try {
+      // Free users are asked about the watermark first (Pro: no dialog).
+      if (!await WatermarkService.confirmExport(screen: 'home')) return;
       final stamped = await WatermarkService.prepare(
         cardImages.map((f) => f.path).toList(),
       );
@@ -175,6 +208,8 @@ class _ShareCardSheet extends StatelessWidget {
     Get.back();
 
     try {
+      // Free users are asked about the watermark first (Pro: no dialog).
+      if (!await WatermarkService.confirmExport(screen: 'home')) return;
       if (!await Gal.hasAccess()) {
         if (!await Gal.requestAccess()) {
           _snack(
@@ -214,7 +249,7 @@ class _ShareCardSheet extends StatelessWidget {
     }
   }
 
-  void _showQr() {
+  Future<void> _showQr() async {
     Get.back();
 
     final entry = QrStore.defaultEntry;
@@ -232,7 +267,7 @@ class _ShareCardSheet extends StatelessWidget {
       name: 'qr_shown',
     );
 
-    Get.to(
+    await Get.to(
       () => QrPreviewScreen(
         profile: profile,
         qrOnly: true,
@@ -275,22 +310,22 @@ class _ShareCardSheet extends StatelessWidget {
             _Option(
               icon: Icons.share,
               label: 'home_share_option_link'.tr,
-              onTap: _shareContact,
+              onTap: _option(_shareContact),
             ),
             _Option(
               icon: Icons.image_outlined,
               label: 'home_share_option_image'.tr,
-              onTap: _shareImage,
+              onTap: _option(_shareImage),
             ),
             _Option(
               icon: Icons.download_rounded,
               label: 'home_share_option_gallery'.tr,
-              onTap: _saveToGallery,
+              onTap: _option(_saveToGallery),
             ),
             _Option(
               icon: Icons.qr_code_2_rounded,
               label: 'home_share_option_qr'.tr,
-              onTap: _showQr,
+              onTap: _option(_showQr),
             ),
           ],
         ),

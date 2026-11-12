@@ -101,18 +101,20 @@ void main() {
       await flush(t);
     });
 
-    testWidgets('Pro: no crown, no counter', (t) async {
+    testWidgets('Pro: no crown; 5 chats per week, not "free" and not unlimited',
+        (t) async {
       await boot(t, pro: true);
-      expect(find.text('Unlimited chats'), findsOneWidget);
+      expect(find.text('5 of 5 chats left this week'), findsOneWidget);
+      expect(find.text('Unlimited chats'), findsNothing);
       expect(find.textContaining('free chats left'), findsNothing);
       await flush(t);
     });
 
-    testWidgets('the crown opens "Unlock the expert panel"', (t) async {
+    testWidgets('the crown opens "Pitch to your AI expert panel"', (t) async {
       await boot(t);
       await t.tap(find.byType(CrownUpgradeButton));
       await settle(t);
-      expect(find.text('Unlock the expert panel'), findsOneWidget);
+      expect(find.text('Pitch to your AI expert panel'), findsOneWidget);
       expect(
         find.text('Consult or pitch to the 5-expert panel'),
         findsOneWidget,
@@ -301,7 +303,7 @@ void main() {
       await t.pump();
       await t.tap(find.text('Pitch it to the expert panel'));
       await settle(t);
-      expect(find.text('Unlock the expert panel'), findsOneWidget);
+      expect(find.text('Pitch to your AI expert panel'), findsOneWidget);
       expect(
         find.text('Unlimited chats and messages with Clixa'),
         findsOneWidget,
@@ -357,7 +359,7 @@ void main() {
       expect(find.text('0 of 3 free chats left this week'), findsOneWidget);
       await t.tap(find.text('Just talk business'));
       await settle(t);
-      expect(find.text('You\'ve used your 3 free chats this week'), findsOneWidget);
+      expect(find.text('You have used this week\'s free chats'), findsOneWidget);
       expect(find.text('Get unlimited chats'), findsOneWidget);
       expect(find.text('Continue a saved chat'), findsOneWidget);
       expect(find.text('Not now'), findsOneWidget);
@@ -450,7 +452,7 @@ void main() {
       await t.tap(find.text('Expert panel'));
       await settle(t);
       // The panel is Pro only: a free user gets the upgrade sheet.
-      expect(find.text('Unlock the expert panel'), findsOneWidget);
+      expect(find.text('Pitch to your AI expert panel'), findsOneWidget);
       expect(find.byType(ExpertPanelView), findsNothing);
       await flush(t);
     });
@@ -468,7 +470,7 @@ void main() {
       expect(find.text('PRO'), findsNothing);
       await t.tap(find.text('Expert panel'));
       await settle(t);
-      expect(find.text('Unlock the expert panel'), findsNothing);
+      expect(find.text('Pitch to your AI expert panel'), findsNothing);
       expect(find.byType(ExpertPanelView), findsOneWidget);
       await flush(t);
     });

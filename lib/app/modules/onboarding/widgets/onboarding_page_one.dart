@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/services/remote_config_service.dart';
 import '../../../core/theme/app_colors.dart';
 import 'onboarding_constrained.dart';
 import 'onboarding_feature_tile.dart';
-import '../../../core/translations/tr_extension.dart';
 
 class OnboardingPageOne extends StatelessWidget {
   const OnboardingPageOne({super.key});
@@ -47,7 +47,7 @@ class OnboardingPageOne extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'onboarding_page1_heading'.tr,
+            RemoteConfigService().onboardingConfig.title,
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 35,
@@ -57,6 +57,18 @@ class OnboardingPageOne extends StatelessWidget {
               color: AppColors.splashTextPrimary,
             ),
           ),
+          if (RemoteConfigService().onboardingConfig.subtitle.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              RemoteConfigService().onboardingConfig.subtitle,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 16,
+                height: 1.3,
+                color: AppColors.splashTextPrimary,
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
           for (int i = 0; i < onboardingPage1Features.length; i++) ...[
             OnboardingFeatureTile(feature: onboardingPage1Features[i]),

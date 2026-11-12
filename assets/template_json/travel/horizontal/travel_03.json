@@ -510,7 +510,11 @@
         "italic": false
       }
     ],
-    "backgroundColor": 4294177255
+    "backgroundColor": 4294177255,
+    "defaultLogoIds": [
+      "travel_03_f_9",
+      "travel_03_f_15"
+    ]
   },
   "back": {
     "elements": [
@@ -1043,6 +1047,14 @@
         "italic": false
       }
     ],
-    "backgroundColor": 4294177255
+    "backgroundColor": 4294177255,
+    "defaultLogoIds": [
+      "travel_03_b_14",
+      "travel_03_b_15",
+      "travel_03_b_16",
+      "travel_03_b_17",
+      "travel_03_b_18",
+      "travel_03_b_19"
+    ]
   }
 }

@@ -945,7 +945,14 @@ Future<void> addImageFromCamera() async {
         (d['backgroundColor'] as num?)?.toInt() ?? 0xFFFFFFFF,
       ),
       elements: TemplateData.fitTexts(
-        TemplateData.fillElements(els, values),
+        TemplateData.fillElements(
+          els,
+          values,
+          defaultLogoIds: [
+            for (final id in (d['defaultLogoIds'] as List<dynamic>? ?? const []))
+              id as String,
+          ],
+        ),
         canvasWidth: orientation.value.canvasSize.width,
       ),
       backgroundTemplate: (d['background'] as String?)?.isEmpty ?? true

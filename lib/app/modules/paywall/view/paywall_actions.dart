@@ -1,12 +1,12 @@
+import '../../../core/services/remote_config_service.dart';
+import '../widgets/pro_dialogs.dart';
 import '../../../core/services/analytics_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../routes/app_routes.dart';
 import '../controller/subscription_controller.dart';
-import '../services/offer_service.dart';
 import '../services/revenue_cat_service.dart';
-import '../widgets/offer_sheet.dart';
 import 'paywall_screen.dart';
 
 /// Shared purchase / restore / close behaviour for both paywall screens.
@@ -17,28 +17,14 @@ abstract final class PaywallActions {
   }
 
   /// A headline the trigger asked for (e.g. "Scan unlimited cards"), if any.
-  static String? get headline => _args.headline;
+  static String? get headline => _args.headlineBuilder?.call() ?? _args.headline;
 
   /// The close button must be visible at once (warning and onboarding
   /// paywalls), whatever `show_close_button` says.
   static bool get skippable => _args.skippable;
 
-  /// The X: leaves the paywall; the first time it is left without buying, the
-  /// one-time first-year offer shows over it first (once ever, when a
-  /// discounted store product is set up - see OfferService).
+  /// The X: leaves the paywall.
   static Future<void> close(BuildContext context, {int pops = 1}) async {
-    final offers = Get.isRegistered<OfferService>() ? OfferService.to : null;
-    if (offers != null && offers.canShowFirstYear()) {
-      final bought = await showOfferSheet(
-        context,
-        OfferType.firstYear,
-        source: _args.source,
-      );
-      if (bought) {
-        exit(pops: pops); // now Pro: the paywall is done
-        return;
-      }
-    }
     exit(pops: pops);
   }
 
@@ -69,31 +55,49 @@ abstract final class PaywallActions {
   }) async {
     if (busy.value) return;
     busy.value = true;
+    final sub = Get.find<SubscriptionController>();
+    // The store gives an eligible yearly buyer the free trial.
+    final trialOffered = plan == 'yearly' && sub.yearlyTrialEligible.value;
+    final trialDays = RemoteConfigService().paywallConfig.trialDays;
+    var unlocked = false;
     try {
-      final unlocked = await Get.find<SubscriptionController>().buy(
+      unlocked = await sub.buy(
         context,
         productId: productId,
         plan: plan,
         source: _args.source,
       );
-      if (unlocked) exit(pops: pops);
     } finally {
-      busy.value = false;
+      busy.value = false; // the spinner stops before any dialog opens
     }
+    if (!unlocked) return;
+    // Which dialog: found an existing subscription / trial started / plain
+    // purchase. Closed before the paywall is, so Back never pops it.
+    if (sub.lastBuyWasRestore) {
+      await showRestoredDialog();
+    } else if (trialOffered) {
+      await showTrialStartedDialog(trialDays);
+    } else {
+      await showWelcomeProDialog();
+    }
+    exit(pops: pops);
   }
 
   static Future<void> restore(BuildContext context, {int pops = 1}) async {
     if (busy.value) return;
     busy.value = true;
+    var restored = false;
     try {
-      final restored = await Get.find<SubscriptionController>().restorePurchase(
+      restored = await Get.find<SubscriptionController>().restorePurchase(
         context,
         source: _args.source,
       );
-      if (restored) exit(pops: pops);
     } finally {
       busy.value = false;
     }
+    if (!restored) return;
+    await showRestoredDialog();
+    exit(pops: pops);
   }
 
   static Future<void> buyMonthly(BuildContext context, {int pops = 1}) => buy(

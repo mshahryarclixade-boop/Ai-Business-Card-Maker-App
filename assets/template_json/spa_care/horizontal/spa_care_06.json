@@ -642,7 +642,18 @@
         "italic": false
       }
     ],
-    "backgroundColor": 4294505980
+    "backgroundColor": 4294505980,
+    "defaultLogoIds": [
+      "spa_care_06_f_1",
+      "spa_care_06_f_3",
+      "spa_care_06_f_4",
+      "spa_care_06_f_5",
+      "spa_care_06_f_6",
+      "spa_care_06_f_7",
+      "spa_care_06_f_8",
+      "spa_care_06_f_9",
+      "spa_care_06_f_10"
+    ]
   },
   "back": {
     "elements": [
@@ -1043,6 +1054,21 @@
         "italic": false
       }
     ],
-    "backgroundColor": 4283515238
+    "backgroundColor": 4283515238,
+    "defaultLogoIds": [
+      "spa_care_06_b_1",
+      "spa_care_06_b_3",
+      "spa_care_06_b_4",
+      "spa_care_06_b_5",
+      "spa_care_06_b_6",
+      "spa_care_06_b_7",
+      "spa_care_06_b_8",
+      "spa_care_06_b_9",
+      "spa_care_06_b_10",
+      "spa_care_06_b_11",
+      "spa_care_06_b_12",
+      "spa_care_06_b_13",
+      "spa_care_06_b_14"
+    ]
   }
 }

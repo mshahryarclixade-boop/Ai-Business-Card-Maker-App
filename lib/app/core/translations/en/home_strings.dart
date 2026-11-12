@@ -38,7 +38,7 @@ const Map<String, String> homeStrings = {
   'home_first_card_placeholder_subtitle':
       'Add your details and AI will design it for you',
   'home_first_card_create_button': 'Create Your First Card',
-  'home_templates_free_heading': 'Free Templates',
+  'home_templates_free_heading': 'Templates',
   'home_card_share': 'Share Card',
   'home_card_my_qr': 'QR Code',
   'home_card_qr_empty': 'No QR code yet. Tap to create one.',

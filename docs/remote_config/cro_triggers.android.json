@@ -1,0 +1,32 @@
+{
+  "onboarding": {
+    "enabled": true
+  },
+  "scan_warning": {
+    "enabled": true
+  },
+  "scan_limit": {
+    "enabled": true
+  },
+  "ai_limit": {
+    "enabled": true
+  },
+  "pro_template": {
+    "enabled": true
+  },
+  "pro_qr": {
+    "enabled": true
+  },
+  "watermark": {
+    "enabled": true
+  },
+  "clixa_limit": {
+    "enabled": true
+  },
+  "crown": {
+    "enabled": true
+  },
+  "settings": {
+    "enabled": true
+  }
+}

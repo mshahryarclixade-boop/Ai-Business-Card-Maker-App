@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:ai_business_card_maker/app/core/services/analytics_service.dart';
 import 'package:ai_business_card_maker/app/modules/paywall/models/cro_config_model.dart';
-import 'package:ai_business_card_maker/app/modules/paywall/services/offer_service.dart';
 import 'package:ai_business_card_maker/app/modules/paywall/services/onboarding_experiment.dart';
 import 'package:ai_business_card_maker/app/modules/paywall/services/usage_service.dart';
 import 'package:flutter/services.dart';
@@ -47,13 +46,11 @@ void main() {
         [
           l.scanFree,
           l.aiCardFree,
-          l.templatesFree,
-          l.bgRemoverFree,
           l.clixaChatsPerWeek,
           l.careerBuildLifetime,
           l.careerOptimizeLifetime,
         ],
-        [5, 3, 10, 1, 3, 1, 1],
+        [5, 3, 3, 1, 1],
       );
       expect(l.scanWarningRemaining, 1);
     });
@@ -79,11 +76,8 @@ void main() {
       expect(m.text('watermark_link'), 'Go clean');
     });
 
-    test('experiment and offers parse with defaults', () {
+    test('experiment parses with defaults', () {
       expect(CroExperiment.fromJsonString('').paywallPercent, 50);
-      final o = CroOffers.fromJsonString('{"first_year_product_id": "x"}');
-      expect(o.firstYearProductId, 'x');
-      expect(o.maxPerDay, 1);
     });
   });
 
@@ -133,13 +127,13 @@ void main() {
     });
 
     test('survives a restart (stored on the device)', () {
-      usage().consume(UsageFeature.bgRemover, dedupeKey: 'x');
-      expect(usage().canUse(UsageFeature.bgRemover), isFalse);
+      usage().consume(UsageFeature.careerBuild, dedupeKey: 'x');
+      expect(usage().canUse(UsageFeature.careerBuild), isFalse);
     });
 
     test('analytics: consumed + limit reached, with consistent params', () {
       final u = usage();
-      u.consume(UsageFeature.bgRemover, dedupeKey: 'x', source: 'logo_bg');
+      u.consume(UsageFeature.careerBuild, dedupeKey: 'x', source: 'career');
       final names = events.map((e) => e.$1).toList();
       expect(names, contains('usage_consumed'));
       expect(names, contains('limit_reached'));
@@ -147,48 +141,6 @@ void main() {
     });
   });
 
-  group('OfferService', () {
-    OfferService svc({String product = 'disc', bool has = true}) =>
-        OfferService(
-          clock: () => now,
-          isPro: () => pro,
-          config: () => CroOffers(firstYearProductId: product),
-          hasProduct: (_) => has,
-        )..onInit();
-
-    test('no product configured or returned by the store: no offer', () {
-      expect(svc(product: '').canShowFirstYear(), isFalse);
-      expect(svc(has: false).canShowFirstYear(), isFalse);
-    });
-
-    test('first-year offer: once ever, once per day, never to Pro', () {
-      var s = svc();
-      expect(s.canShowFirstYear(), isTrue);
-      s.markShown(OfferType.firstYear);
-      s = svc();
-      expect(s.canShowFirstYear(), isFalse);
-      pro = true;
-      expect(svc().canShowFirstYear(), isFalse);
-    });
-
-    test('returning offer only on day 2-3, after a dismissed paywall', () {
-      final s = svc();
-      s.onPaywallDismissed();
-      expect(s.canShowReturning(), isFalse); // day 1
-      now = now.add(const Duration(days: 1));
-      expect(s.canShowReturning(), isTrue); // day 2
-      now = now.add(const Duration(days: 2));
-      expect(s.canShowReturning(), isFalse); // day 4
-    });
-
-    test('max one offer per day', () {
-      final s = svc();
-      s.onPaywallDismissed();
-      now = now.add(const Duration(days: 1));
-      s.markShown(OfferType.firstYear);
-      expect(s.canShowReturning(), isFalse); // same day
-    });
-  });
 
   group('Onboarding experiment', () {
     OnboardingExperiment exp(int percent, int seed, {bool enabled = true}) =>

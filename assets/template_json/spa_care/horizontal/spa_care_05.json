@@ -246,7 +246,10 @@
         "italic": false
       }
     ],
-    "backgroundColor": 4294442235
+    "backgroundColor": 4294442235,
+    "defaultLogoIds": [
+      "spa_care_05_f_2"
+    ]
   },
   "back": {
     "elements": [
@@ -427,6 +430,9 @@
         "italic": false
       }
     ],
-    "backgroundColor": 4278747014
+    "backgroundColor": 4278747014,
+    "defaultLogoIds": [
+      "spa_care_05_b_4"
+    ]
   }
 }
