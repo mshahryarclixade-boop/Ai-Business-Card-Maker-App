@@ -28,6 +28,25 @@ class ImageMaskClipper extends CustomClipper<Path> {
         return _cloud(size, puffCount: 5);
       case CardImageMask.cloud2:
         return _cloud(size, puffCount: 7);
+      case CardImageMask.diamond:
+        return _polygon(size, sides: 4, rotationDeg: -90);
+      case CardImageMask.pentagon:
+        return _polygon(size, sides: 5, rotationDeg: -90);
+      case CardImageMask.rectangle:
+        // Landscape 4:3 window centred in the element.
+        final h = math.min(size.height, size.width * 0.75);
+        final w = math.min(size.width, h / 0.75);
+        return Path()
+          ..addRect(Rect.fromCenter(
+              center: size.center(Offset.zero), width: w, height: h));
+      case CardImageMask.triangle:
+        return Path()
+          ..moveTo(size.width / 2, 0)
+          ..lineTo(size.width, size.height)
+          ..lineTo(0, size.height)
+          ..close();
+      case CardImageMask.heart:
+        return _heart(size);
     }
   }
 
@@ -41,6 +60,19 @@ class ImageMaskClipper extends CustomClipper<Path> {
       i == 0 ? path.moveTo(point.dx, point.dy) : path.lineTo(point.dx, point.dy);
     }
     return path..close();
+  }
+
+  Path _heart(Size size) {
+    final w = size.width, h = size.height;
+    return Path()
+      ..moveTo(w * 0.5, h)
+      ..cubicTo(w * 0.05, h * 0.68, 0, h * 0.38, 0, h * 0.28)
+      ..cubicTo(0, h * 0.1, w * 0.14, 0, w * 0.28, 0)
+      ..cubicTo(w * 0.4, 0, w * 0.47, h * 0.08, w * 0.5, h * 0.18)
+      ..cubicTo(w * 0.53, h * 0.08, w * 0.6, 0, w * 0.72, 0)
+      ..cubicTo(w * 0.86, 0, w, h * 0.1, w, h * 0.28)
+      ..cubicTo(w, h * 0.38, w * 0.95, h * 0.68, w * 0.5, h)
+      ..close();
   }
 
   Path _star(Size size, {int points = 5}) {

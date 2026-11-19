@@ -1,4 +1,3 @@
-import '../../../core/services/user_sync_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
@@ -43,7 +42,6 @@ void startClixaChat(
   bool replace = false,
 }) {
   final c = ClixaController.to;
-  UserSync.refresh(); // the chat counter lives in Firestore (cache until it answers)
   if (!c.canStartChat) {
     showDailyLimitSheet(
       context,
@@ -96,21 +94,29 @@ class ClixaView extends StatelessWidget {
     final c = ClixaController.to;
     return Scaffold(
       backgroundColor: AppColors.background,
+      drawer: const ClixaHistoryDrawer(),
       body: SafeArea(
         child: Column(
           children: [
-            CareerAppBar(
-              title: 'clixa_title'.tr,
-              showLeading: !embedded,
-              trailing: Obx(
-                () => c.isPro
-                    ? const SizedBox.shrink()
-                    : CrownUpgradeButton(
-                        size: 40,
-                        iconSize: 22,
-                        borderRadius: 12,
-                        onTap: () => showClixaUpgrade(context),
-                      ),
+            Builder(
+              builder: (ctx) => CareerAppBar(
+                title: 'clixa_title'.tr,
+                leadingIcon: embedded
+                    ? Icons.history_rounded
+                    : Icons.arrow_back_rounded,
+                onLeading: embedded
+                    ? () => Scaffold.of(ctx).openDrawer()
+                    : null,
+                trailing: Obx(
+                  () => c.isPro
+                      ? const SizedBox.shrink()
+                      : CrownUpgradeButton(
+                          size: 40,
+                          iconSize: 22,
+                          borderRadius: 12,
+                          onTap: () => showClixaUpgrade(context),
+                        ),
+                ),
               ),
             ),
             Expanded(
@@ -144,7 +150,9 @@ class ClixaView extends StatelessWidget {
                           () => Text(
                             c.unlimitedChats
                                 ? 'clixa_unlimited_chats'.tr
-                                : (c.isPro ? 'clixa_pro_left' : 'clixa_free_left')
+                                : (c.isPro
+                                          ? 'clixa_pro_left'
+                                          : 'clixa_free_left')
                                       .trParams({
                                         'left': c.freeChatsLeft,
                                         'total': c.chatsPerWeek,
@@ -191,7 +199,7 @@ class ClixaView extends StatelessWidget {
                   Obx(() {
                     final chats = c.chats
                         .where((x) => x.userMessages > 0)
-                        .take(5)
+                        .take(3)
                         .toList();
                     if (chats.isEmpty) return const _NoRecentChats();
                     return _RecentChats(
@@ -539,6 +547,87 @@ class _RecentRow extends StatelessWidget {
                 ),
               );
             }),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Every saved chat, newest first; tapping one opens it.
+class ClixaHistoryDrawer extends StatelessWidget {
+  const ClixaHistoryDrawer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      backgroundColor: Colors.white,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+              child: Text(
+                'clixa_history'.tr,
+                style: _t(16, AppColors.titleDark, w: FontWeight.w800),
+              ),
+            ),
+            const Divider(height: 1, color: AppColors.pillBorder),
+            Expanded(
+              child: Obx(() {
+                final chats = ClixaController.to.chats
+                    .where((x) => x.userMessages > 0)
+                    .toList();
+                if (chats.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text(
+                      'clixa_no_recent'.tr,
+                      style: _t(13, AppColors.textGrey),
+                    ),
+                  );
+                }
+                return ListView.builder(
+                  itemCount: chats.length,
+                  itemBuilder: (_, i) {
+                    final x = chats[i];
+                    return ListTile(
+                      leading: Icon(
+                        x.mode.icon,
+                        size: 20,
+                        color: AppColors.onboardingBtnEnd,
+                      ),
+                      title: Obx(
+                        () => Text(
+                          x.title.value,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: _t(
+                            13,
+                            AppColors.titleDark,
+                            w: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      subtitle: Text(
+                        'clixa_recent_subtitle'.trParams({
+                          'mode': x.mode.titleKey.tr,
+                          'when': x.whenLabel,
+                        }),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: _t(12, AppColors.textGrey),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop(); // the drawer
+                        openClixaChat(x);
+                      },
+                    );
+                  },
+                );
+              }),
+            ),
           ],
         ),
       ),

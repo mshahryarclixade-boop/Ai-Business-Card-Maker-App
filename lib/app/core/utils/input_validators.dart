@@ -54,8 +54,41 @@ class InputValidators {
     return _typoTlds.contains(tld);
   }
 
+  /// Emails are always ASCII, whatever the app language. Urdu/Arabic keyboards
+  /// can insert invisible direction marks (RLM, LRM, ZWNJ...) or lookalike
+  /// characters, which made valid addresses fail validation.
+  static String normalizeEmail(String value) {
+    const map = {
+      '\uFF20': '@', '\uFE6B': '@', // fullwidth / small commercial at
+      '\u06D4': '.', '\u3002': '.', '\uFF0E': '.', // Urdu full stop, etc.
+      '\u060C': '.', // Arabic comma
+      '\uFF0D': '-', '\u2013': '-', '\u2014': '-',
+      '\uFF3F': '_',
+    };
+    final out = StringBuffer();
+    for (final r in value.runes) {
+      final ch = String.fromCharCode(r);
+      if (RegExp(r'[\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF\u061C]')
+          .hasMatch(ch)) {
+        continue; // invisible bidi / zero-width characters
+      }
+      if (map.containsKey(ch)) {
+        out.write(map[ch]);
+      } else if (r >= 0x0660 && r <= 0x0669) {
+        out.write(r - 0x0660); // Arabic-Indic digits
+      } else if (r >= 0x06F0 && r <= 0x06F9) {
+        out.write(r - 0x06F0); // Extended Arabic-Indic (Urdu) digits
+      } else if (r >= 0xFF21 && r <= 0xFF5A) {
+        out.write(String.fromCharCode(r - 0xFF01 + 0x21)); // fullwidth ASCII
+      } else {
+        out.write(ch);
+      }
+    }
+    return out.toString();
+  }
+
   static bool isValidEmail(String value) {
-    final v = value.trim();
+    final v = normalizeEmail(value).trim();
     if (v.length > maxEmailLength || v.contains('..')) return false;
     if (v.startsWith('.') || v.contains('.@')) return false;
     return _email.hasMatch(v) && !hasDomainTypo(v);
@@ -91,11 +124,39 @@ class InputValidators {
     LengthLimitingTextInputFormatter(maxPhoneLength),
   ];
 
+  /// For a website field: plain ASCII (same cleaning as email), no spaces.
+  static List<TextInputFormatter> get websiteFormatters => [
+    const EmailNormalizeFormatter(),
+    FilteringTextInputFormatter.deny(RegExp(r'\s')),
+  ];
+
   /// For an email field: no spaces, at most [maxEmailLength].
   static List<TextInputFormatter> get emailFormatters => [
+    const EmailNormalizeFormatter(),
     FilteringTextInputFormatter.deny(RegExp(r'\s')),
     LengthLimitingTextInputFormatter(maxEmailLength),
   ];
+}
+
+/// Keeps email text in plain ASCII regardless of the app language (see
+/// [InputValidators.normalizeEmail]).
+class EmailNormalizeFormatter extends TextInputFormatter {
+  const EmailNormalizeFormatter();
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final text = InputValidators.normalizeEmail(newValue.text);
+    if (text == newValue.text) return newValue;
+    return TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(
+        offset: newValue.selection.end.clamp(0, text.length),
+      ),
+    );
+  }
 }
 
 /// Stops typing (or pasting) past [max] digits. Other characters (+ spaces

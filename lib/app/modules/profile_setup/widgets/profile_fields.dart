@@ -111,7 +111,7 @@ class ProfileTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final Color? textColor;
   final List<TextInputFormatter>? inputFormatters;
-  final int maxLength;
+  final int? maxLength;
 
   @override
   Widget build(BuildContext context) {
@@ -127,10 +127,16 @@ class ProfileTextField extends StatelessWidget {
         controller: controller,
         focusNode: focusNode,
         keyboardType: keyboardType,
+        textDirection:
+            keyboardType == TextInputType.emailAddress ||
+                keyboardType == TextInputType.url
+            ? TextDirection.ltr
+            : null,
+        // in the TextField
         inputFormatters: [
           ...?inputFormatters,
-          LengthLimitingTextInputFormatter(maxLength),
-        ],
+          if (maxLength != null) LengthLimitingTextInputFormatter(maxLength!),
+          ],
         textInputAction: textInputAction,
         textCapitalization: textCapitalization,
         onChanged: onChanged,
@@ -221,7 +227,7 @@ class ProfilePhoneField extends StatelessWidget {
                 style: _inputTextStyle,
                 cursorColor: AppColors.profileStepActive,
                 decoration: const InputDecoration(
-                  hintText: '300 1234567',
+                  hintText: '202 555 0123',
                   hintStyle: _hintTextStyle,
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,

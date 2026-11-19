@@ -11,6 +11,8 @@ import 'package:path_provider/path_provider.dart';
 import '../../../core/services/recent_designs_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../qr_code_generator/view/qr_code_screen.dart';
+import '../../profile_setup/widgets/logo_background_sheet.dart';
+import 'dart:ui' as ui;
 import '../../template/model/template_live_data.dart';
 import '../model/card_element_model.dart';
 import 'card_editor_symbols_controller_ext.dart';
@@ -27,6 +29,7 @@ class CardTool {
   static const String background = 'background';
   static const String image = 'image';
   static const String symbols = 'symbols';
+  static const String logo = 'logo';
 }
 
 /// One step of the undo / redo history: the elements and background of the
@@ -108,6 +111,9 @@ class CardEditorController extends GetxController {
   final Rx<String?> backgroundTemplate = Rx<String?>(null);
 
   final RxString activeTool = CardTool.none.obs;
+
+  /// The editor's route while the QR generator is open on top of it.
+  Route<dynamic>? qrReturnRoute;
 
   /// Which segment of the text-style bar is expanded: '', 'font', 'size', 'color'.
   final RxString expandedStylePanel = ''.obs;
@@ -365,9 +371,13 @@ class CardEditorController extends GetxController {
   // ---------------------------------------------------------------------
 
   /// "Upload from Gallery" under the Image tool.
-  Future<void> addImageFromGallery() async {
+  Future<void> addImageFromGallery() => _guardImage('gallery', _addImageFromGallery);
+
+  Future<void> _addImageFromGallery() async {
     final XFile? picked = await _picker.pickImage(
       source: ImageSource.gallery,
+      maxWidth: 2048,
+      maxHeight: 2048,
       imageQuality: 90,
     );
 
@@ -376,11 +386,26 @@ class CardEditorController extends GetxController {
     await _cropAndAddImage(picked.path);
   }
 
-Future<void> addImageFromCamera() async {
+  /// Runs a pick/crop step; an error is logged instead of escaping as an
+  /// uncaught exception (which freezes the app when a debugger is attached,
+  /// and was lost silently otherwise).
+  Future<void> _guardImage(String step, Future<void> Function() run) async {
+    try {
+      await run();
+    } catch (e, st) {
+      debugPrint('[canvas-image] $step failed: $e\n$st');
+    }
+  }
+
+Future<void> addImageFromCamera() => _guardImage('camera', _addImageFromCamera);
+
+Future<void> _addImageFromCamera() async {
   if (!await PermissionGate.ensure(AppPermission.camera)) return;
 
   final XFile? picked = await _picker.pickImage(
     source: ImageSource.camera,
+    maxWidth: 2048,
+    maxHeight: 2048,
     imageQuality: 90,
     preferredCameraDevice: CameraDevice.front,
   );
@@ -393,6 +418,57 @@ Future<void> addImageFromCamera() async {
   final copy = await _persistFile(File(picked.path));
   await _cropAndAddImage(copy.path);
 }
+
+  /// "Add Logo" under the Logo tool: pick from the gallery, offer the same
+  /// "remove background" sheet as the Business Details screen, then place it.
+  Future<void> addLogoFromGallery() => _guardImage('logo', _addLogoFromGallery);
+
+  Future<void> _addLogoFromGallery() async {
+    final XFile? picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1024,
+      imageQuality: 90,
+    );
+    if (picked == null) return;
+
+    var bytes = await picked.readAsBytes();
+    final context = Get.context;
+    if (context != null) {
+      final processed = await showLogoBackgroundSheet(context, bytes);
+      if (processed != null) bytes = processed;
+    }
+
+    final tmp = File(
+      '${(await getTemporaryDirectory()).path}/logo_${DateTime.now().microsecondsSinceEpoch}.png',
+    );
+    await tmp.writeAsBytes(bytes);
+    final saved = await _persistFile(tmp);
+
+    // Keep the logo's own proportions.
+    var width = 90.0;
+    var height = 90.0;
+    try {
+      final codec = await ui.instantiateImageCodec(bytes);
+      final frame = await codec.getNextFrame();
+      final ratio = frame.image.height / frame.image.width;
+      height = (width * ratio).clamp(30.0, 200.0);
+    } catch (_) {}
+
+    _pushUndo();
+
+    final size = orientation.value.canvasSize;
+    final el = CardElement.image(
+      id: _newId,
+      position: Offset(size.width / 2 - width / 2, size.height / 2 - height / 2),
+      file: saved,
+      width: width,
+      height: height,
+    );
+
+    elements.add(el);
+    selectedElementId.value = el.id;
+    closeToolPanel();
+  }
 
   Future<void> _cropAndAddImage(String sourcePath) async {
     final CroppedFile? cropped = await ImageCropper().cropImage(
@@ -501,9 +577,13 @@ Future<void> addImageFromCamera() async {
 
   /// "Generate QR Code" under the QR tool.
   Future<void> generateQrCode() async {
+    // Where the "Add to existing card" button of the QR preview comes back
+    // to, so it can add the QR here instead of reopening a saved copy.
+    qrReturnRoute = Get.routing.route;
     final File? file = await Get.to<File>(
       () => const CustomQrCodeScreen(forCardInsertion: true),
     );
+    qrReturnRoute = null;
 
     if (file == null) return; // user cancelled the form
 

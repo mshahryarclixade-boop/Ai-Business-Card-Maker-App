@@ -13,6 +13,7 @@ const Map<String, String> clixaStrings = {
       'New chats unlock next week. You can still continue a saved chat.',
   'clixa_unlimited_chats': 'Unlimited chats',
   'clixa_recent': 'Recent chats',
+  'clixa_history': 'History',
   'clixa_no_recent': 'No recent chats',
   'clixa_recent_subtitle': 'Clixa · {mode} · {when}',
   'clixa_today': 'Today',

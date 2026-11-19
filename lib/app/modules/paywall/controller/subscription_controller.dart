@@ -1,4 +1,3 @@
-import '../../../core/services/user_sync_service.dart';
 import '../widgets/pro_dialogs.dart';
 import 'dart:async';
 import 'dart:developer';
@@ -248,7 +247,6 @@ class SubscriptionController extends GetxController {
     // Already subscribed: unlock instead of purchasing again.
     if (await _revenueCatHelper.checkSubscriptionStatus() == true) {
       isUserPro.value = true;
-      unawaited(UserSync.sync(force: true)); // plan + expiry to the device record
 
       AnalyticsService.logPaywallRestored(restored: true, source: source);
 
@@ -338,7 +336,6 @@ class _PurchaseCallback implements InAppCallback {
   @override
   void onPurchaseSuccess(BuildContext context) {
     controller.isUserPro.value = true;
-    unawaited(UserSync.sync(force: true)); // plan + expiry to the device record
 
     AnalyticsService.logPaywallPurchased(plan ?? 'unknown', source);
     _complete(true);
@@ -395,8 +392,6 @@ class _PurchaseCallback implements InAppCallback {
         await controller._revenueCatHelper.checkSubscriptionStatus() ?? true;
 
     final restored = controller.isUserPro.value;
-
-    if (restored) unawaited(UserSync.sync(force: true));
 
     if (_restoringOwned && restored) {
       AnalyticsService.logPaywallRestored(restored: true, source: source);

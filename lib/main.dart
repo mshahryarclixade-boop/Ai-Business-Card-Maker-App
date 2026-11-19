@@ -1,5 +1,4 @@
 import 'app/core/services/app_startup.dart';
-import 'app/core/services/user_sync_service.dart';
 import 'dart:ui';
 
 import 'package:ai_business_card_maker/app/core/services/offline_gate.dart';
@@ -10,6 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart' hide Trans;
 import 'package:get_storage/get_storage.dart';
@@ -29,6 +29,7 @@ import 'app/modules/profiles/service/profiles_manager.dart';
 import 'app/modules/qr_code_generator/service/qr_store.dart';
 import 'app/modules/career_studio/controller/generated_profile_store.dart';
 import 'app/routes/app_pages.dart';
+import 'app/routes/app_routes.dart';
 import 'firebase_options.dart';
 import 'app/core/translations/tr_extension.dart';
 
@@ -70,8 +71,12 @@ Future<void> _initServices() async {
   await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
     !kDebugMode,
   );
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  FlutterError.onError = (details) {
+    if (kDebugMode) FlutterError.dumpErrorToConsole(details); // temporary debug log
+    FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+  };
   PlatformDispatcher.instance.onError = (error, stack) {
+    if (kDebugMode) debugPrint('[uncaught] $error\n$stack'); // temporary debug log
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
@@ -98,8 +103,6 @@ Future<void> _initServices() async {
   Get.put(SubscriptionController(), permanent: true);
   // The CRO plan: free-usage counters.
   Get.put(UsageService(), permanent: true);
-  // This device's usage document (devices/{deviceId}).
-  UserSync.start();
   Get.put(CreditsController(), permanent: true);
   Get.put(ProfileController(), permanent: true);
   await Get.putAsync(() => RecentDesignsService().init());
@@ -115,22 +118,51 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  /// Away longer than this, coming back restarts the launch flow (splash, then
+  /// the normal routing). After a long time in the background the OS may have
+  /// discarded the app's graphics or state, which showed as a blank white
+  /// screen that looked like a crash.
+  static const _restartAfter = Duration(minutes: 30);
+
+  DateTime? _leftAt;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      _leftAt ??= DateTime.now();
+    } else if (state == AppLifecycleState.resumed) {
+      final left = _leftAt;
+      _leftAt = null;
+      if (left != null &&
+          DateTime.now().difference(left) >= _restartAfter &&
+          Get.currentRoute != Routes.SPLASH) {
+        Get.offAllNamed(Routes.SPLASH);
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     AppStrings.changes.addListener(_onLanguageChanged);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     AppStrings.changes.removeListener(_onLanguageChanged);
     super.dispose();
   }
 
   /// Language picked in Settings: GetMaterialApp keeps its own locale once
   /// built, so push the new one (this also flips text direction live).
-  void _onLanguageChanged() => Get.updateLocale(_frameworkLocale);
+  void _onLanguageChanged() {
+    debugPrint('[lang] updateLocale -> $_frameworkLocale');
+    Get.updateLocale(_frameworkLocale);
+  }
 
   static bool _frameworkSupports(Locale l) =>
       GlobalMaterialLocalizations.delegate.isSupported(l);
@@ -141,6 +173,20 @@ class _MyAppState extends State<MyApp> {
   static Locale get _frameworkLocale => _frameworkSupports(AppStrings.locale)
       ? AppStrings.locale
       : const Locale(AppStrings.fallbackLanguage);
+
+  bool? _lastWasTablet;
+
+  /// Phones: portrait up only. Tablets (shortest side >= 600dp, Android
+  /// tablets and iPad): portrait up and down.
+  void _applyOrientation(double shortestSide) {
+    final tablet = shortestSide >= 600;
+    if (_lastWasTablet == tablet) return;
+    _lastWasTablet = tablet;
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      if (tablet) DeviceOrientation.portraitDown,
+    ]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,9 +212,12 @@ class _MyAppState extends State<MyApp> {
       // the whole app. Cards, contacts and scans are personal data: mask the
       // whole app in Clarity recordings. Individual screens opt out with
       // ClarityUnmask.
-      builder: (context, child) => OfflineGate(
-        child: ClarityMask(child: child ?? const SizedBox.shrink()),
-      ),
+      builder: (context, child) {
+        _applyOrientation(MediaQuery.sizeOf(context).shortestSide);
+        return OfflineGate(
+          child: ClarityMask(child: child ?? const SizedBox.shrink()),
+        );
+      },
       // Analytics: logs screen views automatically.
       navigatorObservers: [
         FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),

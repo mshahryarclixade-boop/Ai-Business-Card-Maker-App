@@ -67,10 +67,12 @@ class RevenueCatHelper {
   /// App Store ones just the product id. Compare product ids through this.
   static String productIdOf(String storeId) => storeId.split(':').first;
 
+  /// The plans sold (yearly and monthly), fetched straight from the store.
+  /// Weekly isn't sold, so it isn't requested (it would only show up as an
+  /// invalid product id).
   static List<String> get productIdentifiers => [
     yearlyProductId,
     monthlyProductId,
-    weeklyProductId,
   ];
 
   static const String lastExpirationKey = 'last_expiration_date';
@@ -110,11 +112,22 @@ class RevenueCatHelper {
         'productIds: ${productIdentifiers.join(", ")}',
         name: 'RevenueCatHelper',
       );
+
+      // ---- TEMP DEBUG: yahan se ----
+      final raw = await Purchases.getProducts(
+        ['business_card_yearly', 'business_card_monthly'],
+      );
+      log(
+        'RAW Android products (${raw.length}): '
+        '${raw.map((p) => '${p.identifier} ${p.priceString}').join(" | ")}',
+        name: 'RCDebug',
+      );
+      // ---- yahan tak (baad mein hata dena) ----
+
     } catch (e) {
       log('RevenueCat init failed: $e', name: 'RevenueCatHelper');
     }
   }
-
   Future<void> setupPurchaseListener() async {
     Purchases.addCustomerInfoUpdateListener((customerInfo) async {
       await _handleSubscriptionChange(customerInfo);
@@ -283,7 +296,8 @@ class RevenueCatHelper {
     if (!_configured) return [];
     try {
       final ids = productIdentifiers.toList();
-      final products = await Purchases.getProducts(ids);
+      // Plain store products, no offerings involved.
+      final products = (await Purchases.getProducts(ids)).toList();
       if (products.isEmpty) {
         log(
           'no products fetched (ids: ${ids.join(", ")})',

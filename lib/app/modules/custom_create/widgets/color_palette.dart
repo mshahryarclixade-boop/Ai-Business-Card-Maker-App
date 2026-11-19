@@ -16,7 +16,7 @@ const List<Color> kColorPalette = [
   Color(0xFF5856D6),
   Color(0xFFAF52DE),
   Color(0xFFFF2D55),
-  // Soft tints
+  // Soft tints 
   Color(0xFFFFB3AE),
   Color(0xFFFFD3A1),
   Color(0xFFFFEE9E),
@@ -53,6 +53,16 @@ const List<Color> kColorPalette = [
 const Color _ringDark = Color(0xFF4F4065);
 const Color _hairline = Color(0xFFE1E1EE);
 
+const List<BoxShadow> _softShadow = [
+  BoxShadow(color: Color(0x1F000000), blurRadius: 2, offset: Offset(0, 1)),
+];
+
+/// Used by the Background panel. Kept to a 4px blur so the first and last
+/// swatches' shadows stay inside the panel's 16px side padding.
+const List<BoxShadow> _strongShadow = [
+  BoxShadow(color: Color(0x33000000), blurRadius: 4, offset: Offset(0, 2)),
+];
+
 /// One solid-color swatch circle. Light colors get a visible hairline, and
 /// the selected one a ring plus a tick that stays readable on any color.
 class PaletteSwatch extends StatelessWidget {
@@ -60,6 +70,7 @@ class PaletteSwatch extends StatelessWidget {
   final bool selected;
   final double size;
   final VoidCallback onTap;
+  final bool strongShadow;
 
   const PaletteSwatch({
     super.key,
@@ -67,6 +78,7 @@ class PaletteSwatch extends StatelessWidget {
     required this.onTap,
     this.selected = false,
     this.size = 30,
+    this.strongShadow = false,
   });
 
   @override
@@ -86,13 +98,7 @@ class PaletteSwatch extends StatelessWidget {
               color: selected ? _ringDark : (light ? _hairline : Colors.white),
               width: selected ? 2.2 : 1.2,
             ),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x1F000000),
-                blurRadius: 2,
-                offset: Offset(0, 1),
-              ),
-            ],
+            boxShadow: strongShadow ? _strongShadow : _softShadow,
           ),
           child: selected
               ? Icon(
@@ -113,8 +119,14 @@ class PaletteSwatch extends StatelessWidget {
 class MultiColorSwatch extends StatelessWidget {
   final double size;
   final VoidCallback onTap;
+  final bool strongShadow;
 
-  const MultiColorSwatch({super.key, this.size = 30, required this.onTap});
+  const MultiColorSwatch({
+    super.key,
+    this.size = 30,
+    required this.onTap,
+    this.strongShadow = false,
+  });
 
   static final List<Color> _spectrum = [
     for (var h = 0; h <= 360; h += 30)
@@ -134,13 +146,7 @@ class MultiColorSwatch extends StatelessWidget {
             shape: BoxShape.circle,
             gradient: SweepGradient(colors: _spectrum),
             border: Border.all(color: Colors.white, width: 1.2),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x1F000000),
-                blurRadius: 2,
-                offset: Offset(0, 1),
-              ),
-            ],
+            boxShadow: strongShadow ? _strongShadow : _softShadow,
           ),
           // A white centre makes it read as "pick any color".
           child: Center(
@@ -175,6 +181,9 @@ class ColorPaletteGrid extends StatelessWidget {
   /// Kept for existing callers: the gap is now chosen by the grid.
   final double spacing;
 
+  /// A deeper swatch shadow (Background panel only).
+  final bool strongShadow;
+
   const ColorPaletteGrid({
     super.key,
     required this.onSelect,
@@ -182,6 +191,7 @@ class ColorPaletteGrid extends StatelessWidget {
     this.selected,
     this.swatchSize = 30,
     this.spacing = 14,
+    this.strongShadow = false,
   });
 
   static const double _gap = 8;
@@ -208,11 +218,16 @@ class ColorPaletteGrid extends StatelessWidget {
               PaletteSwatch(
                 color: c,
                 size: size,
+                strongShadow: strongShadow,
                 selected:
                     selected != null && selected!.toARGB32() == c.toARGB32(),
                 onTap: () => onSelect(c),
               ),
-            MultiColorSwatch(size: size, onTap: onOpenCustomPicker),
+            MultiColorSwatch(
+              size: size,
+              strongShadow: strongShadow,
+              onTap: onOpenCustomPicker,
+            ),
           ],
         );
       },

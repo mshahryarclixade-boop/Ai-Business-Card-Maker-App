@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter/widgets.dart' show WidgetsBinding;
 import 'package:get/get.dart';
 
@@ -20,6 +21,7 @@ class MainNavController extends GetxController {
     super.onReady();
     final next = pendingFirstCardAction;
     pendingFirstCardAction = null;
+    debugPrint('[paywall] MainNav onReady, pending first-card action=$next');
     if (next == null) return;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       switch (next) {

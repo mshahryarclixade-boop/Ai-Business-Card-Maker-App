@@ -1,4 +1,3 @@
-import '../../../core/services/user_sync_service.dart';
 import '../widgets/pro_dialogs.dart';
 
 import '../../../core/services/remote_config_service.dart';
@@ -26,9 +25,6 @@ abstract final class FreeLimits {
   /// everything on screen: the prompt, the draft, the scan so far) and the
   /// user did not become Pro.
   static Future<bool> ensure(UsageFeature f, {String? screen}) async {
-    // The counters live in Firestore: read them first (offline or slow: the
-    // last known counts are used).
-    await UserSync.refresh();
     if (_usage.canUse(f)) return true;
     final trigger = limitTrigger(f);
     if (!PaywallTriggers.enabled(trigger)) {

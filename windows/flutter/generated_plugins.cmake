@@ -10,7 +10,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   firebase_core
   firebase_remote_config
   flutter_tts
-  flutter_udid
   gal
   irondash_engine_context
   permission_handler_windows

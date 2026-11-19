@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show VoidCallback;
+import 'package:flutter/foundation.dart' show VoidCallback, debugPrint;
 import 'package:get/get.dart' hide Trans;
 
 import '../../../core/services/remote_config_service.dart';
@@ -81,8 +81,15 @@ abstract final class PaywallTriggers {
   /// (Pro never sees a paywall; a trigger Remote Config switched off shows
   /// none and returns false).
   static Future<bool> show(PaywallTrigger t, {String? screen}) async {
-    if (_isPro) return true;
-    if (!enabled(t)) return false;
+    if (_isPro) {
+      debugPrint('[paywall] ${t.source}: skipped, user is Pro');
+      return true;
+    }
+    if (!enabled(t)) {
+      debugPrint('[paywall] ${t.source}: skipped, trigger off in Remote Config');
+      return false;
+    }
+    debugPrint('[paywall] ${t.source}: opening paywall');
     return openPaywall(
       source: t.source,
       plans: t.plans,

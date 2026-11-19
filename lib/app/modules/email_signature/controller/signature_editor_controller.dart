@@ -1,7 +1,12 @@
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
+import 'package:flutter/material.dart' show Colors;
+import 'package:get/get.dart' hide Trans;
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../core/theme/app_colors.dart';
+import '../../../core/translations/tr_extension.dart';
+import '../../profile_setup/widgets/logo_background_sheet.dart';
 import '../model/email_signature.dart';
 import '../service/email_signature_store.dart';
 
@@ -45,7 +50,35 @@ class SignatureEditorController extends GetxController {
       imageQuality: 85,
     );
     if (file == null) return;
-    final Uint8List bytes = await file.readAsBytes();
+    Uint8List bytes = await file.readAsBytes();
+    if (logo) {
+      // Same sheet as Business Details: remove the logo's background or keep it.
+      final context = Get.context;
+      if (context != null) {
+        final processed = await showLogoBackgroundSheet(context, bytes);
+        if (processed != null) bytes = processed;
+      }
+    } else {
+      // Same crop screen as the rest of the app.
+      final cropped = await ImageCropper().cropImage(
+        sourcePath: file.path,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'custom_create_crop_photo'.tr,
+            toolbarColor: AppColors.primary,
+            toolbarWidgetColor: Colors.white,
+            activeControlsWidgetColor: AppColors.primary,
+            lockAspectRatio: false,
+          ),
+          IOSUiSettings(
+            title: 'custom_create_crop_photo'.tr,
+            aspectRatioLockEnabled: false,
+          ),
+        ],
+      );
+      if (cropped == null) return;
+      bytes = await cropped.readAsBytes();
+    }
     sig.value = logo
         ? sig.value.copyWith(logo: bytes)
         : sig.value.copyWith(photo: bytes);

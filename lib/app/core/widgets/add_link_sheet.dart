@@ -82,6 +82,8 @@ Future<AddedLink?> showAddLinkSheet(BuildContext context) async {
       builder: (_) => _LinkUrlSheet(platform: platform),
     );
 
+    // Closing the sheet can hand focus back to a field behind it.
+    FocusManager.instance.primaryFocus?.unfocus();
     if (result is String && result.trim().isNotEmpty) {
       return AddedLink(platform, result.trim());
     }

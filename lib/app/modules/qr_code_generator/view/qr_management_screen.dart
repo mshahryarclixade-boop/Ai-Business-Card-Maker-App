@@ -109,7 +109,7 @@ class QrManagementScreen extends StatelessWidget {
       floatingActionButton: Tooltip(
         message: 'qr_manage_new'.tr,
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 108),
+          padding: const EdgeInsets.only(bottom: 16),
           child: ContactsFab(onTap: _create),
         ),
       ),

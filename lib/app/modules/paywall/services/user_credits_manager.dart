@@ -1,22 +1,19 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:math' show max;
+import 'dart:math' show Random, max;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../core/services/device_identity.dart';
 import '../../../core/services/remote_config_service.dart';
 import '../models/credit_config_model.dart';
 
 /// Local (SharedPreferences-backed) cache of the user's shared credit
-/// balance — a single pool spent by every generation. Firestore
-/// (`users/{deviceUdid}`) is the actual source of truth: every mutation
-/// writes through to it in a transaction, and [initUser] hydrates the local
-/// cache from it on first run after an install, so uninstalling and
-/// reinstalling (which wipes SharedPreferences but not the Keychain/
-/// Keystore-backed UDID [FlutterUdid] reads) doesn't reset the balance.
+/// balance — a single pool spent by every generation (the credit system is
+/// switched off in Remote Config). Each mutation also writes through to
+/// Firestore (`users/{installId}`), keyed by a random id made on first start;
+/// no device identifier is used, so a reinstall starts a new record.
 class UserCreditsManager {
   static const String proStatusKey = 'is_pro';
   static const String planTierKey = 'plan_tier';
@@ -55,67 +52,22 @@ class UserCreditsManager {
   static CreditPools Function() creditPoolsProvider = () =>
       RemoteConfigService().creditPools;
 
-  /// The user id the credit record and the AI usage record are kept under:
-  /// the device's actual id (see [DeviceIdentity]).
-  Future<String> _deviceUdid() => DeviceIdentity.userId();
+  static const String _installIdKey = 'credit_install_id';
 
-  /// The user id, or null if it cannot be read.
-  Future<String?> udidOrNull() => DeviceIdentity.userIdOrNull();
-
-  static const String _usersMigratedKey = 'users_doc_migrated_v2';
-
-  /// Moves the credit record saved under the old SHA-256 id to the device id
-  /// (once). The old document is kept and marked, never deleted. If the new
-  /// record already exists nothing is overwritten. Offline / failed: tried
-  /// again on the next start.
-  Future<void> migrateLegacyUserDoc() async {
+  /// The key of this install's credit record: a random id made on the first
+  /// start and kept on the phone (no device identifier is read).
+  Future<String> _installId() async {
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool(_usersMigratedKey) ?? false) return;
-    try {
-      final id = await DeviceIdentity.rawDeviceId();
-      final legacy = await DeviceIdentity.legacyHashId();
-      await moveLegacyUserDoc(
-        id: id,
-        legacy: legacy,
-        read: (docId) async {
-          final snap = await _userDoc(docId).get();
-          return snap.exists ? snap.data() : null;
-        },
-        write: (docId, data, {bool merge = false}) =>
-            _userDoc(docId).set(data, merge ? SetOptions(merge: true) : null),
-      );
-      await prefs.setBool(_usersMigratedKey, true);
-    } catch (e) {
-      log('credit record migration postponed: $e', name: 'UserCreditsManager');
-    }
+    final saved = prefs.getString(_installIdKey);
+    if (saved != null && saved.isNotEmpty) return saved;
+    final r = Random.secure();
+    final id = List.generate(24, (_) => r.nextInt(36).toRadixString(36)).join();
+    await prefs.setString(_installIdKey, id);
+    return id;
   }
 
-  /// The move itself (storage passed in, so it is testable). Returns true when
-  /// a record was moved.
-  @visibleForTesting
-  static Future<bool> moveLegacyUserDoc({
-    required String id,
-    required String legacy,
-    required Future<Map<String, dynamic>?> Function(String docId) read,
-    required Future<void> Function(
-      String docId,
-      Map<String, dynamic> data, {
-      bool merge,
-    })
-    write,
-  }) async {
-    if (id == legacy) return false;
-    if (await read(id) != null) return false; // never overwrite the new record
-    final old = await read(legacy);
-    if (old == null || old['migratedTo'] != null) return false;
-    await write(id, {...old, 'migratedFrom': legacy});
-    await write(legacy, {'migratedTo': id}, merge: true);
-    log('moved the credit record $legacy -> $id', name: 'UserCreditsManager');
-    return true;
-  }
-
-  DocumentReference<Map<String, dynamic>> _userDoc(String udid) =>
-      firestore.collection(_usersCollection).doc(udid);
+  DocumentReference<Map<String, dynamic>> _userDoc(String id) =>
+      firestore.collection(_usersCollection).doc(id);
 
   /// Copies a Firestore user document into the local cache.
   Future<void> _applyRemote(
@@ -164,9 +116,9 @@ class UserCreditsManager {
       return;
     }
 
-    final udid = await _deviceUdid();
+    final installId = await _installId();
     try {
-      final snap = await _userDoc(udid).get();
+      final snap = await _userDoc(installId).get();
       if (!snap.exists) return;
       await _applyRemote(prefs, snap.data()!);
     } catch (e) {
@@ -181,19 +133,19 @@ class UserCreditsManager {
   /// If a record already existed the guess is discarded and the real state
   /// restored; if there really is none, the guessed grant is written up.
   Future<void> _resolvePendingInit(SharedPreferences prefs) async {
-    final udid = await _deviceUdid();
+    final installId = await _installId();
     try {
-      final snap = await _userDoc(udid).get();
+      final snap = await _userDoc(installId).get();
       if (snap.exists) {
         await _applyRemote(prefs, snap.data()!, defaults: true);
         // The offline guess is known to be wrong — abandon it.
         await prefs.setBool(_pendingSyncKey, false);
         log(
-          'resolved pending init — restored existing balance for $udid',
+          'resolved pending init — restored existing balance for $installId',
           name: 'UserCreditsManager',
         );
       } else {
-        await _userDoc(udid).set({
+        await _userDoc(installId).set({
           proStatusKey: prefs.getBool(proStatusKey) ?? false,
           planTierKey: prefs.getString(planTierKey) ?? 'free',
           balanceKey: prefs.getInt(balanceKey) ?? 0,
@@ -216,10 +168,10 @@ class UserCreditsManager {
   /// Pushes the local cache's state up to Firestore and clears
   /// [_pendingSyncKey] once that succeeds.
   Future<void> _retryPendingSync(SharedPreferences prefs) async {
-    final udid = await _deviceUdid();
+    final installId = await _installId();
     try {
       final lastCreditAssigned = prefs.getString(lastCreditAssignedKey);
-      await _userDoc(udid).set({
+      await _userDoc(installId).set({
         balanceKey: prefs.getInt(balanceKey) ?? 0,
         proStatusKey: prefs.getBool(proStatusKey) ?? false,
         planTierKey: prefs.getString(planTierKey) ?? 'free',
@@ -268,11 +220,11 @@ class UserCreditsManager {
 
   Future<void> setLastCreditAssignedDate(String iso) async {
     final prefs = await SharedPreferences.getInstance();
-    final udid = await _deviceUdid();
+    final installId = await _installId();
     await prefs.setString(lastCreditAssignedKey, iso);
     try {
       await _userDoc(
-        udid,
+        installId,
       ).set({lastCreditAssignedKey: iso}, SetOptions(merge: true));
     } catch (e) {
       log(
@@ -332,11 +284,11 @@ class UserCreditsManager {
   /// local-only update if Firestore is unreachable.
   Future<int> _mutateBalance(int Function(int current) update) async {
     final prefs = await SharedPreferences.getInstance();
-    final udid = await _deviceUdid();
+    final installId = await _installId();
 
     try {
       final updated = await firestore.runTransaction<int>((tx) async {
-        final doc = _userDoc(udid);
+        final doc = _userDoc(installId);
         final snap = await tx.get(doc);
         final data = snap.data() ?? const <String, dynamic>{};
         final current = (data[balanceKey] as num?)?.toInt() ?? 0;
@@ -370,7 +322,7 @@ class UserCreditsManager {
   /// balance is snapshotted so a later [downgradeToFree] can restore it.
   Future<void> setPro(bool isPro, String planTier) async {
     final prefs = await SharedPreferences.getInstance();
-    final udid = await _deviceUdid();
+    final installId = await _installId();
 
     var preProBalance = prefs.getInt(_preProBalanceKey) ?? 0;
     if (isPro && !(prefs.getBool(proStatusKey) ?? false)) {
@@ -387,7 +339,7 @@ class UserCreditsManager {
 
     var pending = false;
     try {
-      await _userDoc(udid).set(data, SetOptions(merge: true));
+      await _userDoc(installId).set(data, SetOptions(merge: true));
     } catch (e) {
       log(
         'Firestore setPro write failed, local cache still updated: $e',
@@ -408,7 +360,7 @@ class UserCreditsManager {
   /// reports the entitlement is no longer active.
   Future<void> downgradeToFree() async {
     final prefs = await SharedPreferences.getInstance();
-    final udid = await _deviceUdid();
+    final installId = await _installId();
     final restored = prefs.getInt(_preProBalanceKey) ?? 0;
     final data = {
       proStatusKey: false,
@@ -419,7 +371,7 @@ class UserCreditsManager {
 
     var pending = false;
     try {
-      await _userDoc(udid).set(data, SetOptions(merge: true));
+      await _userDoc(installId).set(data, SetOptions(merge: true));
     } catch (e) {
       log(
         'Firestore downgradeToFree write failed, local cache still updated: $e',
@@ -435,27 +387,26 @@ class UserCreditsManager {
   }
 
   /// Call once at app startup. On a fresh install (or one that wiped local
-  /// storage) this looks up the device's Firestore record by UDID: if one
+  /// storage) this looks up this install's Firestore record: if one
   /// exists the prior balance/plan is restored; otherwise the free pool is
   /// granted and recorded.
   Future<void> initUser() async {
-    await migrateLegacyUserDoc();
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool(initializedKey) ?? false) return;
 
-    final udid = await _deviceUdid();
+    final installId = await _installId();
     try {
-      final snap = await _userDoc(udid).get();
+      final snap = await _userDoc(installId).get();
       if (snap.exists) {
         await _applyRemote(prefs, snap.data()!, defaults: true);
         await prefs.setBool(_pendingSyncKey, false);
         log(
-          'restored existing balance for device $udid',
+          'restored existing balance for device $installId',
           name: 'UserCreditsManager',
         );
       } else {
         final freePool = creditPoolsProvider().free;
-        await _userDoc(udid).set({
+        await _userDoc(installId).set({
           proStatusKey: false,
           planTierKey: 'free',
           balanceKey: freePool,

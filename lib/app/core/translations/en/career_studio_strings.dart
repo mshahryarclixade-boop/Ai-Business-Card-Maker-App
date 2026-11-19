@@ -60,7 +60,7 @@ const Map<String, String> careerStudioStrings = {
   'career_pro_continue_fixes': 'Continue to your fixes',
   'career_pro_continue': 'Continue',
   'career_pdf_sheet_title': 'Get your profile as a PDF',
-  'career_pdf_step_1': 'Open your profile in the LinkedIn app or website',
+  'career_pdf_step_1': 'Open your profile in the linkedin website',
   'career_pdf_step_2': 'Tap **More** under your name',
   'career_pdf_step_3': 'Choose **Save to PDF** and save it to Files',
   'career_pdf_choose_file': 'Choose file',
@@ -74,7 +74,7 @@ const Map<String, String> careerStudioStrings = {
       'Score your current profile and fix what holds it back.',
   'career_hub_post_planner_description':
       'Write, schedule and track your posts from one place.',
-  'career_hub_hero_title': 'Get found by the right people',
+  'career_hub_hero_title': 'Attract High Value Opportunities',
   'career_hub_hero_plan_free': 'Free this month',
   'career_hub_hero_plan_pro': 'Pro plan',
   'career_hub_hero_usage': '{builds} build · {scans} scan left',

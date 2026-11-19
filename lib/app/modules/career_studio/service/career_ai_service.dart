@@ -104,8 +104,6 @@ class CloudCareerAi extends CareerAi {
     if (!await CreditGate.canUse(cost: cost, source: 'ai_$task')) {
       throw GeminiException('credit_gate_out_of_credits_title'.tr);
     }
-    // The server counts this query for this user (ai_usage/{udid}).
-    final udid = await UserCreditsManager().udidOrNull();
     try {
       final result = await _functions
           .httpsCallable(
@@ -115,7 +113,6 @@ class CloudCareerAi extends CareerAi {
           .call(<String, dynamic>{
             'task': task,
             'language': AppStrings.locale.languageCode,
-            'udid': ?udid,
             ...data,
           })
           .timeout(timeout + const Duration(seconds: 5));

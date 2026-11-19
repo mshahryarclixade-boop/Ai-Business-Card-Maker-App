@@ -167,6 +167,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
   /// then the URL sheet, and adds the result to the social links list.
   Future<void> _openAddLinkSheet() async {
     final added = await showAddLinkSheet(context);
+    FocusManager.instance.primaryFocus?.unfocus();
     if (added == null) return;
 
     setState(() {
@@ -436,7 +437,7 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                             _SectionLabel('qr_screen_section_social'.tr),
                             ..._socialLinks.map(
                               (link) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
+                                padding: const EdgeInsets.only(bottom: 4),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 12,
@@ -468,6 +469,9 @@ class _CustomQrCodeScreenState extends State<CustomQrCodeScreen> {
                                       ),
                                       IconButton(
                                         icon: const Icon(Icons.close, size: 18),
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        visualDensity: VisualDensity.compact,
                                         onPressed: () => setState(
                                           () => _socialLinks.remove(link),
                                         ),

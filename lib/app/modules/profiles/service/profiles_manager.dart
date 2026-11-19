@@ -120,6 +120,11 @@ abstract final class ProfilesManager {
     return 'profiles_untitled'.trParams({'n': i + 1});
   }
 
+  /// Most profiles a user can have.
+  static const maxProfiles = 2;
+
+  static bool get isFull => profiles.length >= maxProfiles;
+
   /// Adds an empty profile and returns its id.
   static String create({String name = ''}) {
     final id = 'p${DateTime.now().microsecondsSinceEpoch}';

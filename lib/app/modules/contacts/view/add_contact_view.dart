@@ -165,6 +165,7 @@ class _AddContactViewState extends State<AddContactView> {
   /// `ContactModel.customLinks` is a `List<String>`.
   Future<void> _addCustomLink() async {
     final added = await showAddLinkSheet(context);
+    FocusManager.instance.primaryFocus?.unfocus();
     if (added == null) return;
 
     setState(() => _customLinks.add(added.url));
@@ -583,7 +584,7 @@ class _AddContactViewState extends State<AddContactView> {
                     const SizedBox(height: 12),
                     ..._customLinks.map(
                           (l) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.only(bottom: 4),
                         child: CustomLinkChip(
                           url: l,
                           onRemove: () =>

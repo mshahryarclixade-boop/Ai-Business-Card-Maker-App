@@ -56,10 +56,26 @@ class EmailSignatureSavedView extends StatelessWidget {
       final boundary =
           _frameKey.currentContext?.findRenderObject()
               as RenderRepaintBoundary?;
-      if (boundary == null) return;
-      final image = await boundary.toImage(pixelRatio: 3);
+      if (boundary == null) {
+        throw StateError('The signature is not ready yet');
+      }
+      // Wait for any pending paint (the sheet that was just closed).
+      // (RenderObject.debugNeedsPaint can't be read in release builds: it
+      // throws there, which made the copy fail on real installs.)
+      await WidgetsBinding.instance.endOfFrame;
+      final shot = await boundary.toImage(pixelRatio: 3);
+      // The signature card has rounded corners (transparent pixels): draw it
+      // on white so email apps and chats don't show black corners.
+      final recorder = ui.PictureRecorder();
+      final canvas = Canvas(recorder);
+      final w = shot.width.toDouble(), h = shot.height.toDouble();
+      canvas.drawRect(Rect.fromLTWH(0, 0, w, h), Paint()..color = Colors.white);
+      canvas.drawImage(shot, Offset.zero, Paint());
+      final image = await recorder.endRecording().toImage(shot.width, shot.height);
       final data = await image.toByteData(format: ui.ImageByteFormat.png);
-      if (data == null) return;
+      if (data == null) {
+        throw StateError('Could not render the signature image');
+      }
       // On the clipboard itself (not the share sheet): it pastes as a
       // picture into an email, a chat or a document.
       final clipboard = SystemClipboard.instance;

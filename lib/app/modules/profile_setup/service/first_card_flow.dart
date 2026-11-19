@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart' show debugPrint;
 import '../../../core/services/notification_service.dart';
 import '../../paywall/services/onboarding_experiment.dart';
 import '../../paywall/services/paywall_triggers.dart';
@@ -23,15 +24,21 @@ abstract final class FirstCardFlow {
   /// Swappable in tests.
   static Future<void> Function() requestNotifications = () =>
       NotificationService().requestPermissionAndSubscribe();
-  static bool Function() showsPaywall = () => OnboardingExperiment().showsPaywall;
-  static Future<void> Function() showPaywall = () =>
-      PaywallTriggers.show(PaywallTrigger.onboarding, screen: 'first_card_action');
+  static bool Function() showsPaywall = () =>
+      OnboardingExperiment().showsPaywall;
+  static Future<void> Function() showPaywall = () => PaywallTriggers.show(
+    PaywallTrigger.onboarding,
+    screen: 'first_card_action',
+  );
 
   static Future<void> afterAction() async {
+    debugPrint('[paywall] afterAction reached, armed=$_armed');
     if (!_armed) return; // never twice
     _armed = false;
     try {
-      if (showsPaywall()) {
+      final shows = showsPaywall();
+      debugPrint('[paywall] first card: showsPaywall=$shows');
+      if (shows) {
         await showPaywall();
       }
     } catch (e) {

@@ -30,6 +30,7 @@ class BackgroundToolPanel extends StatelessWidget {
                   ? controller.backgroundColor.value
                   : null,
               swatchSize: 30,
+              strongShadow: true,
               spacing: 14,
               onSelect: controller.setToolColor,
               onOpenCustomPicker: () => controller.openColorPicker(

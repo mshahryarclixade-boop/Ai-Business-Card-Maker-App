@@ -57,6 +57,15 @@
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_notification" />
 
+        <!-- super_clipboard: lets the app put images on the clipboard
+             ("Copy signature as image"). Without it Android can't hand the
+             picture to the app the user pastes into. -->
+        <provider
+            android:name="com.superlist.super_native_extensions.DataProvider"
+            android:authorities="com.business.card.scanner.reader.maker.SuperClipboardDataProvider"
+            android:exported="true"
+            android:grantUriPermissions="true" />
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

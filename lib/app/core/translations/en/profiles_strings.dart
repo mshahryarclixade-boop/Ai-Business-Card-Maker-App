@@ -17,6 +17,8 @@ const Map<String, String> profilesStrings = {
       'Its details, designs, QR codes and signatures will be removed. This can\'t be undone.',
   'profiles_last_title': 'Can\'t delete',
   'profiles_last_message': 'You need at least one profile.',
+  'profiles_max_title': 'Profile limit reached',
+  'profiles_max_message': 'You can have up to 2 profiles.',
   'profiles_switched_title': 'Profile switched',
   'profiles_switched_message': 'Now using {name}.',
   'profiles_untitled': 'Profile {n}',

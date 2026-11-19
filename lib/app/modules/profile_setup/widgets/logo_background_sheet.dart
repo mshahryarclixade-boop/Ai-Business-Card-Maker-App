@@ -1,4 +1,3 @@
-import '../../../core/services/user_sync_service.dart';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -55,7 +54,6 @@ class _LogoBackgroundSheetState extends State<_LogoBackgroundSheet> {
       result = null;
     }
     if (!mounted) return;
-    if (result != null) UserSync.track('bg_remover', detail: 'logo');
     setState(() {
       _processed = result;
       _failed = result == null;

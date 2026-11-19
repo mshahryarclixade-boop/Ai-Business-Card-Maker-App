@@ -103,7 +103,7 @@ class ProfileFixesReadyView extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       for (final f in done) ...[
-                        _ReadyRow(fix: f),
+                        _ReadyRow(fix: f, controller: c),
                         const SizedBox(height: 8),
                       ],
                       if (!isPro && locked.isNotEmpty) ...[
@@ -169,51 +169,96 @@ BoxDecoration _box() => BoxDecoration(
   border: Border.all(color: AppColors.pillBorder),
 );
 
-class _ReadyRow extends StatelessWidget {
-  const _ReadyRow({required this.fix});
+class _ReadyRow extends StatefulWidget {
+  const _ReadyRow({required this.fix, required this.controller});
   final ReportFix fix;
+  final ProfileReportController controller;
+
+  @override
+  State<_ReadyRow> createState() => _ReadyRowState();
+}
+
+class _ReadyRowState extends State<_ReadyRow> {
+  bool _open = false;
 
   @override
   Widget build(BuildContext context) {
+    final fix = widget.fix;
+    final applied = widget.controller.textFor(fix).value.trim();
     return Container(
-      padding: const EdgeInsetsDirectional.symmetric(
-        horizontal: 14,
-        vertical: 12,
-      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.pillBorder),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.check_rounded,
-            size: 16,
-            color: AppColors.onboardingBtnEnd,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              fix.titleKey.tr,
-              style: const TextStyle(
-                fontFamily: AppTextStyles.fontFamily,
-                fontSize: 12.5,
-                fontWeight: FontWeight.w700,
-                color: AppColors.titleDark,
+          InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: applied.isEmpty
+                ? null
+                : () => setState(() => _open = !_open),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: 14,
+                vertical: 12,
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.check_rounded,
+                    size: 16,
+                    color: AppColors.onboardingBtnEnd,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      fix.titleKey.tr,
+                      style: const TextStyle(
+                        fontFamily: AppTextStyles.fontFamily,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.titleDark,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '+${fix.points}',
+                    style: const TextStyle(
+                      fontFamily: AppTextStyles.fontFamily,
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textGrey,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  if (applied.isNotEmpty)
+                    Icon(
+                      _open
+                          ? Icons.keyboard_arrow_up_rounded
+                          : Icons.keyboard_arrow_down_rounded,
+                      size: 20,
+                      color: AppColors.textGrey,
+                    ),
+                ],
               ),
             ),
           ),
-          const SizedBox(width: 8),
-          Text(
-            '+${fix.points}',
-            style: const TextStyle(
-              fontFamily: AppTextStyles.fontFamily,
-              fontSize: 11.5,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textGrey,
+          if (_open && applied.isNotEmpty)
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(40, 0, 14, 12),
+              child: Text(
+                applied,
+                style: const TextStyle(
+                  fontFamily: AppTextStyles.fontFamily,
+                  fontSize: 12,
+                  height: 1.4,
+                  color: AppColors.textGrey,
+                ),
+              ),
             ),
-          ),
         ],
       ),
     );

@@ -28,12 +28,17 @@ class PersonalDetailsView extends GetView<ProfileSetupController> {
           child: ProfileSwipeNav(
             onNext: controller.onContinue,
             child: ProfileSetupLayout(
+              // Phones: scrolls with the content. Tablets: pinned at the top.
+              topBar: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ProfileBackButton(),
+                  ProfileStepHeader(step: 1),
+                ],
+              ),
               scroll: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const ProfileBackButton(),
-                  const ProfileStepHeader(step: 1),
-                  const SizedBox(height: 24),
                   Text(
                     'profile_setup_personal_title'.tr,
                     style: TextStyle(
@@ -68,6 +73,8 @@ class PersonalDetailsView extends GetView<ProfileSetupController> {
                       focusNode: controller.emailFocus,
                       keyboardType: TextInputType.emailAddress,
                       inputFormatters: InputValidators.emailFormatters,
+                      // No 20-character cap on the email (null = unlimited).
+                      maxLength: null,
                       textInputAction: TextInputAction.next,
                       errorText: controller.emailError.value,
                       onChanged: (_) => controller.emailError.value = null,

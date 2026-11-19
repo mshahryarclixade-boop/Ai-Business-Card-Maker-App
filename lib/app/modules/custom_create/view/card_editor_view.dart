@@ -15,6 +15,7 @@ import '../controller/card_editor_symbols_controller_ext.dart';
 import '../model/card_element_model.dart';
 import '../panels/background_tool_panel.dart';
 import '../panels/image_tool_panel.dart';
+import '../panels/logo_tool_panel.dart';
 import '../panels/qr_tool_panel.dart';
 import '../panels/symbols_tool_panel.dart';
 import '../panels/text_tool_panel.dart';
@@ -280,6 +281,8 @@ class _CardEditorViewState extends State<CardEditorView> {
                                   return SymbolsToolPanel(
                                     controller: controller,
                                   );
+                                case CardTool.logo:
+                                  return LogoToolPanel(controller: controller);
                                 default:
                                   return const SizedBox.shrink();
                               }

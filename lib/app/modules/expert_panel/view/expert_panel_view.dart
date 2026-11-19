@@ -1,4 +1,3 @@
-import '../../../core/services/user_sync_service.dart';
 import '../../clixa/widgets/clixa_sheets.dart';
 import '../../paywall/controller/subscription_controller.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +19,6 @@ void openExpertPanel() {
       Get.isRegistered<SubscriptionController>() &&
       Get.find<SubscriptionController>().isUserPro.value;
   if (pro) {
-    UserSync.track('expert_panel');
     Get.to(() => const ExpertPanelView(), transition: Transition.rightToLeft);
     return;
   }

@@ -143,7 +143,12 @@ extension CardEditorSymbolsX on CardEditorController {
       if (backgroundTemplate.value != null)
         AssetImage(backgroundTemplate.value!),
       for (final e in elements)
-        if (e.imageFile != null) FileImage(e.imageFile!),
+        if (e.imageFile != null)
+          ResizeImage(
+            FileImage(e.imageFile!),
+            width: 1024,
+            policy: ResizeImagePolicy.fit,
+          ),
       for (final e in elements)
         if (e.iconAsset != null) AssetImage(e.iconAsset!),
     ];

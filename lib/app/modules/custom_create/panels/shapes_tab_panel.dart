@@ -14,20 +14,24 @@ class ShapesTabPanel extends StatelessWidget {
   static const _masks = [
     CardImageMask.circle,
     CardImageMask.roundedSquare,
+    CardImageMask.rectangle,
     CardImageMask.hexagon,
     CardImageMask.star,
-    CardImageMask.cloud1,
-    CardImageMask.cloud2,
+    CardImageMask.diamond,
+    CardImageMask.pentagon,
+    CardImageMask.triangle,
+    CardImageMask.heart,
   ];
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 68,
+      height: 72,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         itemCount: _masks.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 14),
+        separatorBuilder: (_, __) => const SizedBox(width: 26),
         itemBuilder: (_, i) {
           final mask = _masks[i];
           return GestureDetector(
@@ -35,24 +39,19 @@ class ShapesTabPanel extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ClipPath(
-                  clipper: ImageMaskClipper(mask),
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xFFBEE3F8), Color(0xFF9BD59C)],
-                      ),
-                    ),
+                RepaintBoundary(
+                  child: CustomPaint(
+                    size: const Size(44, 44),
+                    painter: _ShapeOutlinePainter(ImageMaskClipper(mask)),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   mask.label,
-                  style: const TextStyle(fontSize: 10, color: Color(0xFF6B6B76)),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Color(0xFF6B6B76),
+                  ),
                 ),
               ],
             ),
@@ -61,4 +60,33 @@ class ShapesTabPanel extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The mask's silhouette as a thin outline with a transparent fill.
+class _ShapeOutlinePainter extends CustomPainter {
+  _ShapeOutlinePainter(this.clipper);
+
+  final ImageMaskClipper clipper;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const inset = Offset(2, 2);
+    final path = clipper
+        .getClip(Size(size.width - 4, size.height - 4))
+        .shift(inset);
+    canvas.drawPath(
+      path,
+      Paint()
+        ..isAntiAlias = true
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.8
+        ..strokeJoin = StrokeJoin.round
+        ..strokeCap = StrokeCap.round
+        ..color = const Color(0xFF1E1E24),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_ShapeOutlinePainter old) =>
+      old.clipper.mask != clipper.mask;
 }

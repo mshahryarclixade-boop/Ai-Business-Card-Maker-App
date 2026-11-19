@@ -40,6 +40,8 @@ const Map<String, String> customCreateStrings = {
   'custom_create_toolbar_background': 'Background',
   'custom_create_toolbar_image': 'Image',
   'custom_create_toolbar_symbols': 'Symbols',
+  'custom_create_toolbar_logo': 'Logo',
+  'custom_create_add_logo': 'Add Logo',
   'custom_create_save': 'Save',
   'custom_create_discard_title': 'Discard this card?',
   'custom_create_discard_message':
@@ -59,4 +61,9 @@ const Map<String, String> customCreateStrings = {
   'custom_create_mask_star': 'Star',
   'custom_create_mask_cloud': 'Cloud',
   'custom_create_mask_cloud_plus': 'Cloud+',
+  'custom_create_mask_diamond': 'Diamond',
+  'custom_create_mask_pentagon': 'Pentagon',
+  'custom_create_mask_rectangle': 'Rectangle',
+  'custom_create_mask_triangle': 'Triangle',
+  'custom_create_mask_heart': 'Heart',
 };

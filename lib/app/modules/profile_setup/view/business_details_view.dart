@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Trans;
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/input_validators.dart';
 import '../controller/business_details_controller.dart';
 import '../widgets/business_logo_widgets.dart';
 import '../widgets/profile_fields.dart';
@@ -29,12 +30,17 @@ class BusinessDetailsView extends GetView<BusinessDetailsController> {
               if (Navigator.of(context).canPop()) Get.back();
             },
             child: ProfileSetupLayout(
+              // Phones: scrolls with the content. Tablets: pinned at the top.
+              topBar: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ProfileBackButton(),
+                  ProfileStepHeader(step: 2),
+                ],
+              ),
               scroll: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const ProfileBackButton(),
-                  const ProfileStepHeader(step: 2),
-                  const SizedBox(height: 24),
                   Text(
                     'profile_setup_business_title'.tr,
                     style: TextStyle(
@@ -117,6 +123,8 @@ class BusinessDetailsView extends GetView<BusinessDetailsController> {
                           controller: controller.websiteController,
                           focusNode: controller.websiteFocus,
                           keyboardType: TextInputType.url,
+                          inputFormatters: InputValidators.websiteFormatters,
+                          maxLength: 25,
                           textInputAction: TextInputAction.done,
                           textColor: AppColors.profileLink,
                           onChanged: controller.onWebsiteChanged,

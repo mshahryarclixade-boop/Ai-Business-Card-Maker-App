@@ -427,11 +427,19 @@ class CanvasElementWidget extends StatelessWidget {
         if (element.imageFile == null) {
           return const SizedBox(width: 60, height: 60);
         }
-        final image = Image.file(
-          element.imageFile!,
+        // Decoded at a capped size: a full-resolution phone photo can use
+        // hundreds of MB and crash the app.
+        final image = Image(
+          image: ResizeImage(
+            FileImage(element.imageFile!),
+            width: 1024,
+            policy: ResizeImagePolicy.fit,
+          ),
           width: element.width,
           height: element.height,
           fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) =>
+              SizedBox(width: element.width, height: element.height),
         );
         return element.imageMask == CardImageMask.none
             ? ClipRRect(borderRadius: BorderRadius.circular(6), child: image)

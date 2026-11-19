@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:get_storage/get_storage.dart';
 
 import '../../../core/services/analytics_service.dart';
@@ -47,8 +48,16 @@ class OnboardingExperiment {
   }
 
   /// Whether the paywall shows before Home.
-  bool get showsPaywall =>
-      !_isPro() &&
-      PaywallTriggers.enabled(PaywallTrigger.onboarding) &&
-      variant() == paywallGroup;
+  bool get showsPaywall {
+    final pro = _isPro();
+    final trigger = PaywallTriggers.enabled(PaywallTrigger.onboarding);
+    final cfg = _config();
+    final group = variant();
+    debugPrint(
+      '[paywall] onboarding check: isPro=$pro triggerOn=$trigger '
+      'experimentEnabled=${cfg.enabled} paywallPercent=${cfg.paywallPercent} '
+      'savedVariant=${_box.read<String>(storageKey)} group=$group',
+    );
+    return !pro && trigger && group == paywallGroup;
+  }
 }

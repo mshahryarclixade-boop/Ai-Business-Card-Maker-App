@@ -1,4 +1,3 @@
-import '../../../core/services/user_sync_service.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -68,7 +67,6 @@ class ContactsController extends GetxController {
 
   Future<void> addContact(ContactModel contact) async {
     contacts.add(contact);
-    UserSync.track('contacts', detail: 'added');
     await _persist();
   }
 

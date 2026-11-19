@@ -4,7 +4,6 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_linux
-  flutter_udid
   irondash_engine_context
   super_native_extensions
   url_launcher_linux

@@ -1,5 +1,4 @@
 import '../../profile_setup/service/first_card_flow.dart';
-import '../../../core/services/user_sync_service.dart';
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -273,7 +272,6 @@ class HomeController extends GetxController {
         name: 'template_applied',
         parameters: {'category': item.category, 'method': 'live'},
       );
-      UserSync.track('template', detail: 'applied:live:${item.category}');
 
       Get.snackbar(
         'home_template_applied_title'.tr,
@@ -338,7 +336,6 @@ class HomeController extends GetxController {
         name: 'template_applied',
         parameters: {'category': item.category, 'method': 'ai'},
       );
-      UserSync.track('template', detail: 'applied:ai:${item.category}');
 
       Get.snackbar(
         'home_template_applied_title'.tr,

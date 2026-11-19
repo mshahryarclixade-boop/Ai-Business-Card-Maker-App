@@ -11,6 +11,31 @@ class OnboardingPageOne extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tablet = isTabletWidth(context);
+    final config = RemoteConfigService().onboardingConfig;
+
+    final title = Text(
+      config.title,
+      maxLines: tablet ? 1 : null,
+      style: const TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 35,
+        fontWeight: FontWeight.w700,
+        height: 1.2,
+        letterSpacing: 0,
+        color: AppColors.splashTextPrimary,
+      ),
+    );
+
+    final subtitle = Text(
+      config.subtitle,
+      maxLines: tablet ? 1 : null,
+      style: const TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 16,
+        height: 1.3,
+        color: AppColors.splashTextPrimary,
+      ),
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -18,56 +43,36 @@ class OnboardingPageOne extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: tablet ? 24 : 12),
-          Container(
-            height: tablet ? 300 : 182,
+          // No background card behind the image anymore, and it is larger.
+          SizedBox(
+            height: tablet ? 360 : 230,
             width: double.infinity,
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-              color: AppColors.onboardingTopCardBg,
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return Stack(
-                  children: [
-                    Positioned(
-                      top: tablet ? -11 : -7,
-                      left: tablet ? (constraints.maxWidth - 462) / 2 : 22,
-                      width: tablet ? 462 : 308,
-                      height: tablet ? 294 : 196,
-                      child: Image.asset(
-                        'assets/images/onboarding1_image.png',
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ],
-                );
-              },
+            child: Image.asset(
+              'assets/images/onboarding1_image.png',
+              fit: BoxFit.contain,
             ),
           ),
           const SizedBox(height: 24),
-          Text(
-            RemoteConfigService().onboardingConfig.title,
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 35,
-              fontWeight: FontWeight.w700,
-              height: 1.2,
-              letterSpacing: 0,
-              color: AppColors.splashTextPrimary,
-            ),
-          ),
-          if (RemoteConfigService().onboardingConfig.subtitle.isNotEmpty) ...[
+          // Tablets: one line each (shrinks to fit instead of wrapping).
+          // Phones: wraps as before.
+          if (tablet)
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: AlignmentDirectional.centerStart,
+              child: title,
+            )
+          else
+            title,
+          if (config.subtitle.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(
-              RemoteConfigService().onboardingConfig.subtitle,
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 16,
-                height: 1.3,
-                color: AppColors.splashTextPrimary,
-              ),
-            ),
+            if (tablet)
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: AlignmentDirectional.centerStart,
+                child: subtitle,
+              )
+            else
+              subtitle,
           ],
           const SizedBox(height: 16),
           for (int i = 0; i < onboardingPage1Features.length; i++) ...[

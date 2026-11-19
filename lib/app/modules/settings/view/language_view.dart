@@ -112,7 +112,12 @@ class LanguageView extends StatelessWidget {
                       return _LanguageRow(
                         option: o,
                         selected: o.tag == active,
-                        onTap: () => AppStrings.setLanguage(o.tag),
+                        onTap: () async {
+                          debugPrint('[lang] tap ${o.tag}');
+                          final ok = await AppStrings.setLanguage(o.tag);
+                          debugPrint('[lang] setLanguage(${o.tag}) -> $ok, '
+                              'active=${AppStrings.language}');
+                        },
                       );
                     },
                   );

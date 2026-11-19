@@ -18,6 +18,7 @@ import '../../../core/services/profile_scope.dart';
 import '../../../core/services/recent_designs_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/share_origin.dart';
+import '../../custom_create/controller/card_editor_controller.dart';
 import '../../custom_create/view/card_editor_view.dart';
 import '../../profile_setup/service/profile_store.dart';
 import '../model/qr_code_builder.dart';
@@ -276,6 +277,20 @@ Future<Uint8List> _pngBytes({double borderFraction = 0.08}) =>
                             final dir =
                                 await getApplicationDocumentsDirectory();
                             final file = await _writeBytes(dir.path, bytes);
+
+                            // Opened from inside the card editor: add the QR
+                            // to that live canvas and go back to it, so none
+                            // of its unsaved edits is lost.
+                            if (Get.isRegistered<CardEditorController>()) {
+                              final editor = Get.find<CardEditorController>();
+                              final back = editor.qrReturnRoute;
+                              if (back != null) {
+                                await editor.addGeneratedQrToCanvas(file);
+                                editor.qrReturnRoute = null;
+                                Get.until((route) => route == back);
+                                return;
+                              }
+                            }
 
                             // The user's saved card (the one shown on Home).
                             final designs =

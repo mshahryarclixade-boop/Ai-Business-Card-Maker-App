@@ -18,11 +18,22 @@ const profilesRoute = '/Profiles';
 class ProfilesView extends StatelessWidget {
   const ProfilesView({super.key});
 
-  void _add() => Get.to(
-    () => const ProfileEditorView(),
-    routeName: profileEditorRoute,
-    transition: Transition.rightToLeft,
-  );
+  void _add() {
+    if (ProfilesManager.isFull) {
+      Get.snackbar(
+        'profiles_max_title'.tr,
+        'profiles_max_message'.tr,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(15),
+      );
+      return;
+    }
+    Get.to(
+      () => const ProfileEditorView(),
+      routeName: profileEditorRoute,
+      transition: Transition.rightToLeft,
+    );
+  }
 
   void _edit(ProfileEntry e) => Get.to(
     () => ProfileEditorView(editId: e.id),
@@ -86,7 +97,7 @@ class ProfilesView extends StatelessWidget {
       floatingActionButton: Tooltip(
         message: 'profiles_add'.tr,
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 108),
+          padding: const EdgeInsets.only(bottom: 16),
           child: ContactsFab(onTap: _add),
         ),
       ),

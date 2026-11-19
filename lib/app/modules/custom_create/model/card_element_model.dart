@@ -92,6 +92,11 @@ enum CardImageMask {
   star,
   cloud1,
   cloud2,
+  diamond,
+  pentagon,
+  rectangle,
+  triangle,
+  heart,
 }
 
 extension CardImageMaskLabel on CardImageMask {
@@ -111,6 +116,16 @@ extension CardImageMaskLabel on CardImageMask {
         return 'custom_create_mask_cloud'.tr;
       case CardImageMask.cloud2:
         return 'custom_create_mask_cloud_plus'.tr;
+      case CardImageMask.diamond:
+        return 'custom_create_mask_diamond'.tr;
+      case CardImageMask.pentagon:
+        return 'custom_create_mask_pentagon'.tr;
+      case CardImageMask.rectangle:
+        return 'custom_create_mask_rectangle'.tr;
+      case CardImageMask.triangle:
+        return 'custom_create_mask_triangle'.tr;
+      case CardImageMask.heart:
+        return 'custom_create_mask_heart'.tr;
     }
   }
 }
